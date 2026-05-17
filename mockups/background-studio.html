@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TheBigIntro — background studio</title>
+<style>
+  :root{
+    --title:#0C1D34;
+    --body:#3D424C;
+    --accent:#7A3B52;
+    --accent-press:#5F2C40;
+    --line:#DED6C6;
+    --impact:#356B52;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+    color:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1{color:var(--title);font-size:clamp(2.3rem,4.6vw,3.4rem);line-height:1.12;
+    letter-spacing:-.02em;font-weight:700;max-width:15ch;margin:14px 0 16px}
+  h2{color:var(--title);font-size:1.5rem;letter-spacing:-.02em;margin-bottom:8px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 30px}
+  .eyebrow{font-size:.76rem;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--accent)}
+  .lede{font-size:1.15rem;max-width:580px;margin-bottom:30px}
+  .btn{display:inline-block;background:var(--accent-press);color:#fff;
+    text-decoration:none;font-weight:600;padding:13px 22px;border-radius:8px;
+    font-size:.95rem}
+  .inline-link{color:var(--accent);font-weight:600;text-decoration:none;margin-left:18px}
+  nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0}
+  .logo{color:var(--title);font-weight:800;font-size:1.15rem}
+  .logo span{color:var(--accent)}
+  .label{position:sticky;top:0;z-index:5;background:var(--title);color:#F3EDE1;
+    padding:10px 30px;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase}
+  .label small{opacity:.7;text-transform:none;letter-spacing:0;font-size:.85em}
+  .demo{padding-bottom:78px}
+  .hero{padding:64px 0 70px}
+  .band{padding:54px 0;margin-top:0}
+  .band .money{display:inline-flex;gap:14px;align-items:baseline;
+    background:rgba(255,255,255,.55);border:1px solid var(--line);
+    padding:16px 24px;border-radius:12px;margin-top:10px}
+  .band .big{color:var(--impact);font-size:1.7rem;font-weight:800}
+
+  /* A — richer warm flat */
+  .A{background:#EADFC6}
+  .A .band{background:#E2D4B6}
+
+  /* B — soft warm vertical gradient */
+  .B{background:linear-gradient(180deg,#F6F0E2 0%,#EBDEC4 60%,#E4D5B7 100%)}
+  .B .band{background:rgba(255,255,255,.35)}
+
+  /* C — warm base with accent glow behind hero */
+  .C{position:relative;background:#F0E9D8;overflow:hidden}
+  .C .hero{position:relative}
+  .C .hero::before{content:"";position:absolute;inset:-120px auto auto -120px;
+    width:520px;height:520px;border-radius:50%;
+    background:radial-gradient(circle,rgba(122,59,82,.20),transparent 65%);
+    pointer-events:none}
+  .C .band{background:#E7DDC4}
+
+  /* D — deep blue feature hero, warm body (the bold one) */
+  .D .hero{background:#0C1D34}
+  .D .hero h1{color:#F4EEDF;max-width:15ch}
+  .D .hero .eyebrow{color:#C9A36B}
+  .D .hero .lede{color:#CBD2DE}
+  .D .hero .logo{color:#F4EEDF}
+  .D .hero .logo span{color:#C9A36B}
+  .D .hero .btn{background:#F4EEDF;color:#0C1D34}
+  .D .hero .inline-link{color:#C9A36B}
+  .D .body{background:#EFE7D4}
+  .D .band{background:#E6DBC0}
+
+  /* E — warm paper with faint grain + deeper bands */
+  .E{background-color:#EFE7D3;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.05'/></svg>")}
+  .E .band{background:#E4D7BB}
+</style>
+</head>
+<body>
+
+<div class="label">A &nbsp;·&nbsp; Richer warm, flat <small>more pigment than oat, still simple. Calmer, grown up.</small></div>
+<div class="demo A">
+  <div class="wrap">
+    <nav><div class="logo">The<span>Big</span>Intro</div><a class="btn" href="#">Apply</a></nav>
+    <div class="hero">
+      <span class="eyebrow">Invite only · Australia first</span>
+      <h1>Meetings that fund what matters.</h1>
+      <p class="lede">Relevant, qualified introductions with senior leaders.
+        Every meeting sends a real donation to a charity they choose.</p>
+      <a class="btn" href="#">Apply as a founding executive</a>
+      <a class="inline-link" href="#">Are you a vendor? &rarr;</a>
+    </div>
+  </div>
+  <div class="band"><div class="wrap"><span class="eyebrow">Where the money goes</span>
+    <h2>Full transparency, by design.</h2>
+    <div class="money"><span>To your chosen charity, per meeting</span>
+      <span class="big">$1,000</span></div></div></div>
+</div>
+
+<div class="label">B &nbsp;·&nbsp; Soft warm gradient <small>subtle top-to-bottom warm shift. Gives depth without effort.</small></div>
+<div class="demo B">
+  <div class="wrap">
+    <nav><div class="logo">The<span>Big</span>Intro</div><a class="btn" href="#">Apply</a></nav>
+    <div class="hero">
+      <span class="eyebrow">Invite only · Australia first</span>
+      <h1>Meetings that fund what matters.</h1>
+      <p class="lede">Relevant, qualified introductions with senior leaders.
+        Every meeting sends a real donation to a charity they choose.</p>
+      <a class="btn" href="#">Apply as a founding executive</a>
+      <a class="inline-link" href="#">Are you a vendor? &rarr;</a>
+    </div>
+  </div>
+  <div class="band"><div class="wrap"><span class="eyebrow">Where the money goes</span>
+    <h2>Full transparency, by design.</h2>
+    <div class="money"><span>To your chosen charity, per meeting</span>
+      <span class="big">$1,000</span></div></div></div>
+</div>
+
+<div class="label">C &nbsp;·&nbsp; Warm base + accent glow <small>a soft mulberry bloom behind the hero. A clear focal point.</small></div>
+<div class="demo C">
+  <div class="wrap">
+    <nav><div class="logo">The<span>Big</span>Intro</div><a class="btn" href="#">Apply</a></nav>
+    <div class="hero">
+      <span class="eyebrow">Invite only · Australia first</span>
+      <h1>Meetings that fund what matters.</h1>
+      <p class="lede">Relevant, qualified introductions with senior leaders.
+        Every meeting sends a real donation to a charity they choose.</p>
+      <a class="btn" href="#">Apply as a founding executive</a>
+      <a class="inline-link" href="#">Are you a vendor? &rarr;</a>
+    </div>
+  </div>
+  <div class="band"><div class="wrap"><span class="eyebrow">Where the money goes</span>
+    <h2>Full transparency, by design.</h2>
+    <div class="money"><span>To your chosen charity, per meeting</span>
+      <span class="big">$1,000</span></div></div></div>
+</div>
+
+<div class="label">D &nbsp;·&nbsp; Deep blue feature hero <small>the bold one. Blue is a hero band only, body stays warm.</small></div>
+<div class="demo D">
+  <div class="hero">
+    <div class="wrap">
+      <nav><div class="logo">The<span>Big</span>Intro</div><a class="btn" href="#">Apply</a></nav>
+      <span class="eyebrow">Invite only · Australia first</span>
+      <h1>Meetings that fund what matters.</h1>
+      <p class="lede">Relevant, qualified introductions with senior leaders.
+        Every meeting sends a real donation to a charity they choose.</p>
+      <a class="btn" href="#">Apply as a founding executive</a>
+      <a class="inline-link" href="#">Are you a vendor? &rarr;</a>
+    </div>
+  </div>
+  <div class="body"><div class="band"><div class="wrap">
+    <span class="eyebrow">Where the money goes</span>
+    <h2>Full transparency, by design.</h2>
+    <div class="money"><span>To your chosen charity, per meeting</span>
+      <span class="big">$1,000</span></div></div></div></div>
+</div>
+
+<div class="label">E &nbsp;·&nbsp; Warm paper + faint grain <small>a barely there texture. Tactile and premium up close.</small></div>
+<div class="demo E">
+  <div class="wrap">
+    <nav><div class="logo">The<span>Big</span>Intro</div><a class="btn" href="#">Apply</a></nav>
+    <div class="hero">
+      <span class="eyebrow">Invite only · Australia first</span>
+      <h1>Meetings that fund what matters.</h1>
+      <p class="lede">Relevant, qualified introductions with senior leaders.
+        Every meeting sends a real donation to a charity they choose.</p>
+      <a class="btn" href="#">Apply as a founding executive</a>
+      <a class="inline-link" href="#">Are you a vendor? &rarr;</a>
+    </div>
+  </div>
+  <div class="band"><div class="wrap"><span class="eyebrow">Where the money goes</span>
+    <h2>Full transparency, by design.</h2>
+    <div class="money"><span>To your chosen charity, per meeting</span>
+      <span class="big">$1,000</span></div></div></div>
+</div>
+
+<div class="label">Accent shown here is mulberry. It is independent of the background and can still be brass.</div>
+
+</body>
+</html>
