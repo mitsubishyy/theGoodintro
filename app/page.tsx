@@ -5,25 +5,32 @@ import { Mark } from "./_components/mark";
 export default function Home() {
   return (
     <>
-      <header className="wrap hero">
-        <span className="eyebrow">Invite only · Australia first</span>
-        <h1>
-          Meetings that fund <Mark>what matters</Mark>.
-        </h1>
-        <p className="lede">
-          Relevant, qualified introductions with senior leaders. Every meeting
-          sends a real donation to a charity they choose.
-        </p>
-        <div className="cta">
-          <CallButton>Apply as a founding executive</CallButton>
-          <Link className="inl" href="/vendors">
-            Are you a vendor? &rarr;
-          </Link>
+      <header className="hero">
+        <span className="blob" />
+        <div className="wrap inner">
+          <div className="chips">
+            <span className="chip c">Invite only</span>
+            <span className="chip o">Australia first</span>
+            <span className="chip o">Charity funded</span>
+          </div>
+          <h1>
+            Meetings that fund <Mark>what matters</Mark>.
+          </h1>
+          <p className="lede">
+            Relevant, qualified introductions with senior leaders. Every
+            meeting sends a real donation to a charity they choose.
+          </p>
+          <div className="cta">
+            <CallButton>Apply as a founding executive</CallButton>
+            <Link className="inl" href="/vendors">
+              Are you a vendor? &rarr;
+            </Link>
+          </div>
+          <p className="trust">
+            No cold pitches. No slide decks. One focused conversation, one
+            meaningful gift.
+          </p>
         </div>
-        <p className="trust">
-          No cold pitches. No slide decks. One focused conversation, one
-          meaningful gift.
-        </p>
       </header>
 
       <section className="dark" id="why">

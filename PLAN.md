@@ -91,14 +91,16 @@ Lean, validation appropriate. Every page is wired into the footer.
 
 Canonical reference: `mockups/the-design-final.html`. Full spec in DESIGN.md.
 
-- Type: Fraunces serif headlines, Inter body, self-hosted via next/font.
-- Palette: crimson signature (hero mark, buttons, links, accents) on warm
-  porcelain and espresso neutrals, deep-blue headline text only, a soft sage
-  money section with the $1,000 figure in forest green so green still means
-  money. No orange, pink, purple or yellow.
-- Calm everywhere except the crimson signature. More warmth comes later
-  through content: real charity logos, bespoke illustrations, custom emoji
-  style icons. That is a post-launch enhancement pass, not v1 scope.
+- Type: Bricolage Grotesque headlines (the main expressive device), Inter
+  body, self-hosted via next/font.
+- Palette: crimson is the single bold colour (hero underline, buttons, links,
+  the $1,000 figure, accents) on warm porcelain, deep-blue headline text only,
+  a whisper cream-yellow soft wash on the money section, espresso for the Why,
+  Founder, vendor card and footer. No green, orange, pink, purple, no second
+  bold, no strong yellow.
+- Calm everywhere except the crimson. More warmth comes later through content:
+  real charity logos, bespoke illustrations, custom emoji style icons. That is
+  a post-launch enhancement pass, not v1 scope.
 - Components: Nav, Footer, Hero, Section, StepCards, MoneySection, CharityStrip
   (placeholder for now), PathCards, FoundingPanel, FAQAccordion, FounderNote,
   CallButton.
@@ -137,9 +139,9 @@ Canonical reference: `mockups/the-design-final.html`. Full spec in DESIGN.md.
    Registration to be confirmed by Issy before deploy.
 2. Calendly: stubbed for launch. CallButton renders with a placeholder href
    and a visible TODO marker until Issy supplies the real event link.
-3. Colour: crimson #D7263D (accessible #B81D30) is the signature. Soft sage
-   money section, $1,000 figure in forest green #2F5E49. Locked, full spec
-   in DESIGN.md.
+3. Colour: crimson #E0263F (accessible #BC1733) is the single bold. Whisper
+   cream-yellow #F1ECDC soft wash on the money section, $1,000 figure in
+   crimson. Bricolage Grotesque headlines. Locked, full spec in DESIGN.md.
 4. Tagline: "Meetings that fund what matters."
 5. Charities: copy uses "your chosen registered charity", no named partners
    yet.

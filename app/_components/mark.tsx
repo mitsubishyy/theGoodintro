@@ -1,7 +1,8 @@
-// Hand-drawn crimson underline on a key phrase, from the locked design.
+// Key phrase: text stays the headline ink colour, with a hand-drawn
+// crimson underline. From the locked design (treatment C).
 export function Mark({ children }: { children: React.ReactNode }) {
   return (
-    <span className="mark">
+    <span className="key">
       {children}
       <svg
         viewBox="0 0 300 16"
@@ -11,8 +12,8 @@ export function Mark({ children }: { children: React.ReactNode }) {
       >
         <path
           d="M3 11C60 4 150 3 297 9"
-          stroke="#D7263D"
-          strokeWidth="5"
+          stroke="#E0263F"
+          strokeWidth="6"
           strokeLinecap="round"
         />
       </svg>

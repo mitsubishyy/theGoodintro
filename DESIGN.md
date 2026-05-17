@@ -1,80 +1,83 @@
 # TheBigIntro — Design System
 
-Locked 2026-05-17. Canonical reference: `mockups/the-design-final.html`.
-Crimson is the signature colour, on a calm warm porcelain base, with a
-soft sage money section and the `$1,000` figure in forest green so green
-quietly means money. Future content (charity logos, bespoke illustrations,
-custom emoji) adds more warmth without clashing.
+Locked 2026-05-17. Canonical reference: `mockups/the-design-final.html`,
+matched 1:1 by the live Next.js site. Crimson is the single bold colour on a
+warm porcelain base, bold expressive Bricolage Grotesque headlines, a whisper
+cream-yellow soft wash on the money section only, and dark espresso Why and
+Founder sections. Future content (charity logos, bespoke illustrations, custom
+emoji) adds more warmth without clashing.
 
 ## Hard rules (do not break)
 
 1. Blue is for headline and title text only. No surface, hero, panel, footer
    or section background is ever blue. See memory feedback note.
-2. Backgrounds are warm but never yellow.
+2. Backgrounds are warm but never yellow. The only yellow is the whisper
+   cream-yellow soft wash on the money section.
 3. Nothing may resemble QuotaClub (warm terracotta editorial) or reuse any
    MeetMagic language, slogan, acronym, or the word "magic".
 4. No em dashes or en dashes in prose. En dashes only in numeric ranges.
-5. The signature colour is crimson. No purple, pink, orange or yellow as a
-   brand colour. Forest green is reserved strictly for the `$1,000` figure.
+5. Crimson is the one and only bold colour. There is no second bold. No green,
+   purple, orange, or yellow as a brand colour.
 
 ## Type
 
-- Headlines: Fraunces (warm contemporary serif), weights 500 to 650, optical
-  sizing. Tight letter spacing, large and confident.
+- Headlines: Bricolage Grotesque, weights 700 to 800, set large and
+  confident. This is the brand's main expressive device.
 - Body and UI: Inter, 400 to 700.
-- Production: self host both with next/font. No external font network calls.
-- Scale (desktop, rem): h1 clamp to 4.7, h2 to 2.8, h3 1.3, body 1.0625,
-  lede 1.2, eyebrow 0.74 uppercase tracked.
+- Production: self hosted with next/font (no external font network calls).
+- Scale (desktop, rem): h1 clamp to 5.4, h2 to 3.3, h3 1.45, body 1.0625,
+  lede 1.24, eyebrow 0.78 uppercase tracked.
 
 ## Colour
 
 | Token | Use | Value |
 |---|---|---|
 | paper | Page background | #F4F2EE |
-| paper-alt | Section banding | #EFE7DF |
 | card | Cards | #FCF8F5 |
 | ink | Headline text only (the deep blue) | #16243B |
 | body | Body text | #46434A |
-| sage | The money section background | #DCE4DD |
-| forest | The `$1,000` figure only | #2F5E49 |
-| crimson | Signature: hero mark, accents, top bar | #D7263D |
-| crimson-d | Buttons, links, logo accent, hover-from | #B81D30 |
-| espresso | Founding panel, vendor card, footer | #221E1C |
+| wash | Money section soft wash (whisper cream-yellow) | #F1ECDC |
+| crimson | The single bold: signature, actions, the `$1,000` | #E0263F |
+| crimson-d | Buttons, links, logo accent, hover-to | #BC1733 |
+| espresso | Why, Founder, vendor card, footer, founding panel | #211C1A |
 | line | Hairlines and dividers | #E7DBD3 |
 
-Crimson is the signature working colour. It carries the brand, actions and
-links, and reads charitable and confident without being terracotta. Forest
-green appears only on the `$1,000` figure, so green still means "money and
-impact" but quietly. Deep blue is headline text only. No orange, pink, purple
-or yellow anywhere. Bold where it counts, calm everywhere else.
+Crimson is the only bold working colour. It carries the brand, actions, links,
+the hero underline and the large `$1,000` figure, and reads charitable and
+confident without being terracotta. The money section sits on a whisper
+cream-yellow wash, soft enough that crimson stays the only thing that pops.
+Deep blue is headline text only. No green, orange, pink, purple or strong
+yellow anywhere. Bold where it counts, calm everywhere else.
 
 ## Layout
 
-- Max content width 1140px, 32px gutters, generous vertical rhythm.
-- Alternating paper and paper-alt bands. The money section is the only
-  coloured band (soft sage). The "Why this exists" and "From the founder"
-  sections are dark espresso with light text and a light-crimson eyebrow,
-  bookending the founding panel.
+- Max content width 1160px, 32px gutters, generous vertical rhythm.
+- Light paper sections with one soft-washed money band. The "Why this exists"
+  and "From the founder" sections are dark espresso with light text and a
+  light-crimson eyebrow, bookending the espresso founding panel.
 - Mobile first, single column under 860px, touch targets at least 44px.
 
 ## Components
 
-- Nav: serif wordmark "TheBigIntro" with the middle word in crimson, one
-  crimson action button.
-- Hero: serif headline with a hand-drawn crimson underline on the key phrase.
-- Step cards: card surface, crimson top rule, oversized serif numeral.
-- Money section: soft sage background, deep-blue heading, large forest-green
-  `$1,000`, transparent breakdown with the named admin fee as a separate line.
-- Charity strip: greyscale placeholder now, real logos later.
-- Founding panel: espresso, crimson button, honest scarcity.
-- Path cards: executives on crimson, vendors on espresso.
+- Nav: Bricolage wordmark "TheBigIntro" with the middle word in crimson, one
+  crimson pill action button.
+- Hero: soft crimson blob, pill chips, a big Bricolage headline with the text
+  one colour (deep blue) and a hand-drawn crimson underline on the key phrase.
+- Step cards: card surface, oversized crimson Bricolage numeral.
+- Money section: whisper cream-yellow wash, deep-blue heading, a very large
+  crimson `$1,000`, transparent breakdown with the named admin fee as a
+  separate line.
+- Charity strip: dashed placeholder pills now, real logos later.
+- Founding panel: espresso, soft crimson glow, crimson button, honest scarcity.
+- Path cards: executives on crimson, vendors on espresso (no second bold).
 - FAQ: native details and summary, plus icon rotating to a cross, only one
   concern open at a time.
 - Footer: espresso, every page linked.
 
 ## Engagement roadmap (later, not v1 launch)
 
-The calm base is intentional. Warmth and personality arrive through content:
+The base is intentionally restrained. Warmth and personality arrive through
+content:
 
 1. Real charity logos in the charity strip.
 2. Bespoke illustrations and custom emoji style icons (to be designed) for the
@@ -82,7 +85,7 @@ The calm base is intentional. Warmth and personality arrive through content:
 3. Possible subtle motion on the hero underline and section reveals.
 
 These must sit on the locked palette and rules above. They add warmth, they do
-not change the crimson signature or break any hard rule.
+not introduce a second bold colour or break any hard rule.
 
 ## Accessibility
 
