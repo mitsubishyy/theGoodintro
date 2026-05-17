@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TheBigIntro — no blue background, blue is text only</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+    color:#3D424C;font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .blk{--title:#0C1D34;--ac:#FF6A4D;--ac-press:#DD4A2E;--impact:#2F6B4F}
+  h1{color:var(--title);font-size:clamp(2.4rem,4.8vw,3.5rem);line-height:1.12;
+    letter-spacing:-.02em;font-weight:700;max-width:15ch;margin:14px 0 16px}
+  h2{color:var(--title);font-size:1.5rem;letter-spacing:-.02em;margin-bottom:8px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 30px}
+  .eyebrow{font-size:.76rem;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ac-press)}
+  .lede{font-size:1.15rem;max-width:580px;margin-bottom:30px;color:#454B57}
+  .btn{display:inline-block;text-decoration:none;font-weight:600;
+    padding:13px 22px;border-radius:8px;font-size:.95rem}
+  .btn-fill{background:var(--ac-press);color:#fff}
+  .btn-fill:hover{background:var(--ac)}
+  .inline-link{font-weight:600;text-decoration:none;margin-left:18px;color:var(--ac-press)}
+  nav{display:flex;justify-content:space-between;align-items:center;padding:22px 0}
+  .logo{color:var(--title);font-weight:800;font-size:1.18rem}
+  .logo span{color:var(--ac-press)}
+  .label{position:sticky;top:0;z-index:5;background:#161616;color:#fff;
+    padding:11px 30px;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase}
+  .label small{opacity:.65;text-transform:none;letter-spacing:0;font-size:.86em}
+  .sw{display:inline-block;width:11px;height:11px;border-radius:50%;
+    margin-right:8px;vertical-align:middle;border:1px solid rgba(255,255,255,.3)}
+  .hero{padding:54px 0 64px}
+  .band{padding:50px 0 76px}
+  .band-card{display:inline-flex;gap:14px;align-items:baseline;background:#fff;
+    border:1px solid rgba(0,0,0,.08);padding:16px 24px;border-radius:12px;
+    margin:10px 0 26px}
+  .band-card .big{color:var(--impact);font-size:1.7rem;font-weight:800}
+
+  /* P  paper white minimal */
+  .P{background:#F5F3F0}.P .band{background:#ECE9E4}
+  /* G  warm greige */
+  .Gr{background:#EBE8E4}.Gr .band{background:#E0DCD5}
+  /* R  dusty rose clay */
+  .R{background:#EFE0DC}.R .band{background:#E6CFC9}
+  /* E  eucalyptus grey-green */
+  .Eu{background:#E7EAE3}.Eu .band{background:#DAE0D4}
+</style>
+</head>
+<body>
+
+<div class="label">P &nbsp;·&nbsp; Paper White, minimal
+  <small>clean near-white. Blue is only in the headline. No blue anywhere else.</small></div>
+<div class="blk P">
+  <div class="wrap">
+    <nav><div class="logo">The<span>Big</span>Intro</div><a class="btn btn-fill" href="#">Apply</a></nav>
+    <div class="hero">
+      <span class="eyebrow">Invite only · Australia first</span>
+      <h1>Meetings that fund what matters.</h1>
+      <p class="lede">Relevant, qualified introductions with senior leaders.
+        Every meeting sends a real donation to a charity they choose.</p>
+      <a class="btn btn-fill" href="#">Apply as a founding executive</a>
+      <a class="inline-link" href="#">Are you a vendor? &rarr;</a>
+    </div>
+  </div>
+  <div class="band"><div class="wrap"><span class="eyebrow">Where the money goes</span>
+    <h2>Full transparency, by design.</h2>
+    <div class="band-card"><span>To your chosen charity, per meeting</span>
+      <span class="big">$1,000</span></div></div></div>
+</div>
+
+<div class="label">G &nbsp;·&nbsp; Warm Greige
+  <small>grey-warm, no yellow. Quiet and modern. Headline blue is the only blue.</small></div>
+<div class="blk Gr">
+  <div class="wrap">
+    <nav><div class="logo">The<span>Big</span>Intro</div><a class="btn btn-fill" href="#">Apply</a></nav>
+    <div class="hero">
+      <span class="eyebrow">Invite only · Australia first</span>
+      <h1>Meetings that fund what matters.</h1>
+      <p class="lede">Relevant, qualified introductions with senior leaders.
+        Every meeting sends a real donation to a charity they choose.</p>
+      <a class="btn btn-fill" href="#">Apply as a founding executive</a>
+      <a class="inline-link" href="#">Are you a vendor? &rarr;</a>
+    </div>
+  </div>
+  <div class="band"><div class="wrap"><span class="eyebrow">Where the money goes</span>
+    <h2>Full transparency, by design.</h2>
+    <div class="band-card"><span>To your chosen charity, per meeting</span>
+      <span class="big">$1,000</span></div></div></div>
+</div>
+
+<div class="label">R &nbsp;·&nbsp; Dusty Rose Clay
+  <small>warm pink-clay, characterful, not yellow, not terracotta. Blue only in the words.</small></div>
+<div class="blk R">
+  <div class="wrap">
+    <nav><div class="logo">The<span>Big</span>Intro</div><a class="btn btn-fill" href="#">Apply</a></nav>
+    <div class="hero">
+      <span class="eyebrow">Invite only · Australia first</span>
+      <h1>Meetings that fund what matters.</h1>
+      <p class="lede">Relevant, qualified introductions with senior leaders.
+        Every meeting sends a real donation to a charity they choose.</p>
+      <a class="btn btn-fill" href="#">Apply as a founding executive</a>
+      <a class="inline-link" href="#">Are you a vendor? &rarr;</a>
+    </div>
+  </div>
+  <div class="band"><div class="wrap"><span class="eyebrow">Where the money goes</span>
+    <h2>Full transparency, by design.</h2>
+    <div class="band-card"><span>To your chosen charity, per meeting</span>
+      <span class="big">$1,000</span></div></div></div>
+</div>
+
+<div class="label">E &nbsp;·&nbsp; Eucalyptus Grey-Green
+  <small>pale mineral sage, fresh, an Australia-first nod. No blue background.</small></div>
+<div class="blk Eu">
+  <div class="wrap">
+    <nav><div class="logo">The<span>Big</span>Intro</div><a class="btn btn-fill" href="#">Apply</a></nav>
+    <div class="hero">
+      <span class="eyebrow">Invite only · Australia first</span>
+      <h1>Meetings that fund what matters.</h1>
+      <p class="lede">Relevant, qualified introductions with senior leaders.
+        Every meeting sends a real donation to a charity they choose.</p>
+      <a class="btn btn-fill" href="#">Apply as a founding executive</a>
+      <a class="inline-link" href="#">Are you a vendor? &rarr;</a>
+    </div>
+  </div>
+  <div class="band"><div class="wrap"><span class="eyebrow">Where the money goes</span>
+    <h2>Full transparency, by design.</h2>
+    <div class="band-card"><span>To your chosen charity, per meeting</span>
+      <span class="big">$1,000</span></div></div></div>
+</div>
+
+<div class="label">Rule: background is always warm and never blue. Blue appears only in headline text. Accent shown as coral, still open.</div>
+
+</body>
+</html>
