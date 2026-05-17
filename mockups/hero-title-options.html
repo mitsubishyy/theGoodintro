@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TheBigIntro — hero title treatments</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;color:#46434A;font-size:17px;
+    line-height:1.6;-webkit-font-smoothing:antialiased;background:#F4F2EE}
+  :root{--paper:#F4F2EE;--ink:#16243B;--crimson:#E0263F;--crimson-d:#BC1733;
+    --wash:#F1ECDC;--espresso:#211C1A}
+  h1{font-family:'Bricolage Grotesque',system-ui,sans-serif;
+    letter-spacing:-.02em;font-weight:800;color:var(--ink);line-height:1.02;
+    font-size:clamp(2.8rem,6.5vw,5rem);max-width:15ch}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 32px}
+  .eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--crimson-d)}
+  .lede{font-size:1.2rem;max-width:52ch;margin-top:20px;color:#46434A}
+  a.btn{display:inline-block;background:var(--crimson);color:#fff;
+    text-decoration:none;font-weight:700;padding:15px 28px;border-radius:999px;
+    font-size:1rem;margin-top:30px}
+  .label{position:sticky;top:0;z-index:9;background:#161616;color:#fff;
+    padding:12px 30px;font-size:.85rem;letter-spacing:.05em}
+  .label small{opacity:.7;font-size:.86em}
+  .topbar{height:6px;background:var(--crimson)}
+  .hero{position:relative;overflow:hidden;padding:70px 0 90px}
+  .blob{position:absolute;border-radius:50%;filter:blur(12px);opacity:.38;
+    width:300px;height:300px;background:var(--crimson);right:-90px;top:-70px}
+  .inner{position:relative;z-index:1}
+  .chips{display:flex;gap:10px;margin-bottom:22px}
+  .chip{font-size:.74rem;font-weight:700;letter-spacing:.08em;
+    text-transform:uppercase;padding:8px 15px;border-radius:999px}
+  .chip.c{background:var(--crimson);color:#fff}
+  .chip.o{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+
+  /* A: one colour, no device */
+  .A h1 .key{color:inherit}
+  /* B: key phrase in crimson */
+  .B h1 .key{color:var(--crimson)}
+  /* C: ink text, hand-drawn crimson underline */
+  .C h1 .key{position:relative;white-space:nowrap}
+  .C h1 .key svg{position:absolute;left:0;right:0;bottom:-.16em;width:100%;
+    height:.18em}
+</style>
+</head>
+<body>
+
+<div class="label">A · ONE COLOUR
+  <small>whole title in deep blue, no device. Cleanest and calmest.</small></div>
+<div class="A">
+  <div class="topbar"></div>
+  <div class="hero"><span class="blob"></span><div class="wrap inner">
+    <div class="chips"><span class="chip c">Invite only</span><span class="chip o">Charity funded</span></div>
+    <h1>Meetings that fund <span class="key">what matters</span>.</h1>
+    <p class="lede">Relevant, qualified introductions with senior leaders.
+      Every meeting sends a real donation to a charity they choose.</p>
+    <a class="btn" href="#">Apply as a founding executive</a>
+  </div></div>
+</div>
+
+<div class="label">B · CRIMSON KEY PHRASE
+  <small>title in deep blue, "what matters" in the brand crimson. One bold accent, no yellow.</small></div>
+<div class="B">
+  <div class="topbar"></div>
+  <div class="hero"><span class="blob"></span><div class="wrap inner">
+    <div class="chips"><span class="chip c">Invite only</span><span class="chip o">Charity funded</span></div>
+    <h1>Meetings that fund <span class="key">what matters</span>.</h1>
+    <p class="lede">Relevant, qualified introductions with senior leaders.
+      Every meeting sends a real donation to a charity they choose.</p>
+    <a class="btn" href="#">Apply as a founding executive</a>
+  </div></div>
+</div>
+
+<div class="label">C · CRIMSON UNDERLINE
+  <small>whole title one deep-blue colour, a hand-drawn crimson underline under the key phrase. Accent without changing text colour.</small></div>
+<div class="C">
+  <div class="topbar"></div>
+  <div class="hero"><span class="blob"></span><div class="wrap inner">
+    <div class="chips"><span class="chip c">Invite only</span><span class="chip o">Charity funded</span></div>
+    <h1>Meetings that fund <span class="key">what matters<svg viewBox="0 0 300 16" preserveAspectRatio="none" fill="none"><path d="M3 11C60 4 150 3 297 9" stroke="#E0263F" stroke-width="6" stroke-linecap="round"/></svg></span>.</h1>
+    <p class="lede">Relevant, qualified introductions with senior leaders.
+      Every meeting sends a real donation to a charity they choose.</p>
+    <a class="btn" href="#">Apply as a founding executive</a>
+  </div></div>
+</div>
+
+<div class="label">Whisper Cream-Yellow palette, crimson single bold, Bricolage type all locked. Only the hero title treatment changes. Yellow is gone from the title.</div>
+
+</body>
+</html>
