@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TheBigIntro — editorial, palette round 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;font-size:17px;line-height:1.65;
+    -webkit-font-smoothing:antialiased}
+  .blk{background:var(--paper);color:var(--ink)}
+  h1,h2{font-family:'Newsreader',Georgia,serif;line-height:1.07;
+    letter-spacing:-.01em}
+  h1{font-size:clamp(2.8rem,6vw,5rem);font-weight:600;color:#fff;max-width:18ch}
+  h2{font-size:clamp(2rem,3.8vw,3rem);font-weight:500}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 36px}
+  .eyebrow{font-size:.76rem;font-weight:700;letter-spacing:.22em;
+    text-transform:uppercase}
+  .lede{font-size:1.24rem;max-width:48ch;margin-top:22px}
+  a.btn{display:inline-block;background:var(--accent);color:#fff;
+    text-decoration:none;font-weight:600;padding:16px 32px;border-radius:4px;
+    font-size:1rem}
+  .label{position:sticky;top:0;z-index:20;background:#111;color:#fff;
+    padding:13px 30px;font-size:.85rem;letter-spacing:.04em}
+  .label small{opacity:.7}
+  .sw{display:inline-block;width:13px;height:13px;border-radius:3px;
+    margin:0 4px -1px 10px}
+
+  .nav{position:absolute;top:0;left:0;right:0;z-index:5}
+  .nav .row{display:flex;align-items:center;justify-content:space-between;
+    padding:28px 0;color:#fff}
+  .logo{font-family:'Newsreader',serif;font-weight:600;font-size:1.45rem;
+    color:#fff;text-decoration:none}
+  .nlinks{display:flex;gap:30px;align-items:center}
+  .nlinks a{color:rgba(255,255,255,.85);text-decoration:none;font-weight:500;
+    font-size:.94rem}
+  .nlinks .btn{padding:11px 20px;font-size:.9rem}
+
+  .hero{position:relative;min-height:84vh;display:flex;align-items:flex-end;
+    background:#1b1b18;overflow:hidden}
+  .hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(
+    180deg,rgba(10,10,8,.5),rgba(10,10,8,.1) 40%,rgba(10,10,8,.82))}
+  .hero .inner{position:relative;z-index:2;color:#fff;padding-bottom:80px}
+  .hero .eyebrow{color:rgba(255,255,255,.82)}
+  .hero .lede{color:rgba(255,255,255,.9);margin-bottom:34px}
+
+  .impact{background:var(--band);color:#fff;padding:104px 0}
+  .impact .eyebrow{color:var(--accent-soft)}
+  .impact h2{color:#fff;max-width:20ch}
+  .figs{display:grid;grid-template-columns:repeat(3,1fr);gap:46px;margin-top:56px}
+  .fig{border-top:1px solid rgba(255,255,255,.18);padding-top:24px}
+  .fig .n{font-family:'Newsreader',serif;font-size:clamp(3rem,5.4vw,4.6rem);
+    font-weight:500;color:#fff;line-height:1}
+  .fig .l{margin-top:12px;color:rgba(255,255,255,.6);font-size:.96rem;
+    max-width:24ch}
+
+  .clear{padding:104px 0;background:var(--paper)}
+  .clear .eyebrow{color:var(--accent)}
+  .clearrow{display:flex;flex-wrap:wrap;gap:52px;align-items:flex-start;
+    margin-top:36px}
+  .big{font-family:'Newsreader',serif;font-size:clamp(3.6rem,8vw,6rem);
+    font-weight:500;line-height:.9;color:var(--accent)}
+  .ledger{flex:1;min-width:320px}
+  .ledger .r{display:flex;justify-content:space-between;gap:20px;padding:15px 0;
+    border-bottom:1px solid var(--line);font-size:1rem}
+  .ledger .r:last-child{border-bottom:0}
+  .ledger .k{font-weight:600;color:var(--ink)}
+  .ledger .v{color:var(--muted)}
+
+  /* P1 Ivory / Ink / Appeal Red */
+  .P1{--paper:#F6F2EA;--ink:#15140F;--band:#15140F;--muted:#5F594E;
+    --line:#DBD3C4;--accent:#C4382E;--accent-soft:#E79B93}
+  /* P2 Cream / Evergreen / Gold */
+  .P2{--paper:#F4F1E8;--ink:#16241D;--band:#16241D;--muted:#56564A;
+    --line:#DAD6C5;--accent:#BE8635;--accent-soft:#E4C58A}
+  /* P3 Sand / Charcoal / Burnt Amber */
+  .P3{--paper:#EFE9DD;--ink:#1A1714;--band:#1A1714;--muted:#5E574C;
+    --line:#D6CDBC;--accent:#CC6B2C;--accent-soft:#E9B383}
+</style>
+</head>
+<body>
+
+<!-- P1 -->
+<div class="label">1 · IVORY · INK · APPEAL RED
+  <span class="sw" style="background:#C4382E"></span>
+  <small>warm ivory, near-black, a confident humanitarian red accent. Urgent and human.</small></div>
+<div class="blk P1">
+  <div style="position:relative">
+    <div class="nav"><div class="wrap"><div class="row">
+      <a class="logo" href="#">TheBigIntro</a>
+      <div class="nlinks"><a href="#">How it works</a><a href="#">For executives</a>
+        <a href="#">For vendors</a><a class="btn" href="#">Apply</a></div></div></div></div>
+    <header class="hero">
+      <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1920&q=70" alt="">
+      <div class="wrap inner">
+        <span class="eyebrow">Invite only · Australia first</span>
+        <h1>Meetings that fund what matters.</h1>
+        <p class="lede">Relevant, qualified introductions with senior leaders.
+          Every meeting sends a real donation to a charity they choose.</p>
+        <a class="btn" href="#">Apply as a founding executive</a>
+      </div>
+    </header>
+  </div>
+  <section class="impact"><div class="wrap"><span class="eyebrow">The promise</span>
+    <h2>Every meeting becomes a thousand dollars of good.</h2>
+    <div class="figs">
+      <div class="fig"><div class="n">$1,000</div><div class="l">to a charity the executive chooses, every meeting</div></div>
+      <div class="fig"><div class="n">100%</div><div class="l">of the meeting gift reaches the charity</div></div>
+      <div class="fig"><div class="n">AU</div><div class="l">Australia first, local and verifiable</div></div>
+    </div></div></section>
+  <section class="clear"><div class="wrap"><span class="eyebrow">Where the money goes</span>
+    <h2>Full transparency, by design.</h2>
+    <div class="clearrow"><div class="big">$1,000</div><div class="ledger">
+      <div class="r"><span class="k">To your chosen charity, per meeting</span><span class="v">the full meeting gift</span></div>
+      <div class="r"><span class="k">Platform admin fee</span><span class="v">charged separately and named</span></div>
+      <div class="r"><span class="k">Taken from the donation</span><span class="v">nothing</span></div>
+    </div></div></div></section>
+</div>
+
+<!-- P2 -->
+<div class="label">2 · CREAM · EVERGREEN · GOLD
+  <span class="sw" style="background:#16241D"></span><span class="sw" style="background:#BE8635"></span>
+  <small>deep evergreen darks, cream, a quiet gold accent. Premium, hopeful, foundation-grade.</small></div>
+<div class="blk P2">
+  <div style="position:relative">
+    <div class="nav"><div class="wrap"><div class="row">
+      <a class="logo" href="#">TheBigIntro</a>
+      <div class="nlinks"><a href="#">How it works</a><a href="#">For executives</a>
+        <a href="#">For vendors</a><a class="btn" href="#">Apply</a></div></div></div></div>
+    <header class="hero">
+      <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1920&q=70" alt="">
+      <div class="wrap inner">
+        <span class="eyebrow">Invite only · Australia first</span>
+        <h1>Meetings that fund what matters.</h1>
+        <p class="lede">Relevant, qualified introductions with senior leaders.
+          Every meeting sends a real donation to a charity they choose.</p>
+        <a class="btn" href="#">Apply as a founding executive</a>
+      </div>
+    </header>
+  </div>
+  <section class="impact"><div class="wrap"><span class="eyebrow">The promise</span>
+    <h2>Every meeting becomes a thousand dollars of good.</h2>
+    <div class="figs">
+      <div class="fig"><div class="n">$1,000</div><div class="l">to a charity the executive chooses, every meeting</div></div>
+      <div class="fig"><div class="n">100%</div><div class="l">of the meeting gift reaches the charity</div></div>
+      <div class="fig"><div class="n">AU</div><div class="l">Australia first, local and verifiable</div></div>
+    </div></div></section>
+  <section class="clear"><div class="wrap"><span class="eyebrow">Where the money goes</span>
+    <h2>Full transparency, by design.</h2>
+    <div class="clearrow"><div class="big">$1,000</div><div class="ledger">
+      <div class="r"><span class="k">To your chosen charity, per meeting</span><span class="v">the full meeting gift</span></div>
+      <div class="r"><span class="k">Platform admin fee</span><span class="v">charged separately and named</span></div>
+      <div class="r"><span class="k">Taken from the donation</span><span class="v">nothing</span></div>
+    </div></div></div></section>
+</div>
+
+<!-- P3 -->
+<div class="label">3 · SAND · CHARCOAL · BURNT AMBER
+  <span class="sw" style="background:#1A1714"></span><span class="sw" style="background:#CC6B2C"></span>
+  <small>warm sand, charcoal, a burnt amber accent. Earthy, human, editorial.</small></div>
+<div class="blk P3">
+  <div style="position:relative">
+    <div class="nav"><div class="wrap"><div class="row">
+      <a class="logo" href="#">TheBigIntro</a>
+      <div class="nlinks"><a href="#">How it works</a><a href="#">For executives</a>
+        <a href="#">For vendors</a><a class="btn" href="#">Apply</a></div></div></div></div>
+    <header class="hero">
+      <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1920&q=70" alt="">
+      <div class="wrap inner">
+        <span class="eyebrow">Invite only · Australia first</span>
+        <h1>Meetings that fund what matters.</h1>
+        <p class="lede">Relevant, qualified introductions with senior leaders.
+          Every meeting sends a real donation to a charity they choose.</p>
+        <a class="btn" href="#">Apply as a founding executive</a>
+      </div>
+    </header>
+  </div>
+  <section class="impact"><div class="wrap"><span class="eyebrow">The promise</span>
+    <h2>Every meeting becomes a thousand dollars of good.</h2>
+    <div class="figs">
+      <div class="fig"><div class="n">$1,000</div><div class="l">to a charity the executive chooses, every meeting</div></div>
+      <div class="fig"><div class="n">100%</div><div class="l">of the meeting gift reaches the charity</div></div>
+      <div class="fig"><div class="n">AU</div><div class="l">Australia first, local and verifiable</div></div>
+    </div></div></section>
+  <section class="clear"><div class="wrap"><span class="eyebrow">Where the money goes</span>
+    <h2>Full transparency, by design.</h2>
+    <div class="clearrow"><div class="big">$1,000</div><div class="ledger">
+      <div class="r"><span class="k">To your chosen charity, per meeting</span><span class="v">the full meeting gift</span></div>
+      <div class="r"><span class="k">Platform admin fee</span><span class="v">charged separately and named</span></div>
+      <div class="r"><span class="k">Taken from the donation</span><span class="v">nothing</span></div>
+    </div></div></div></section>
+</div>
+
+<div class="label">Editorial layout + cause-led hero photo locked. Newsreader serif. Only the palette changes: appeal red / evergreen+gold / burnt amber. No purple. Photo is placeholder.</div>
+
+</body>
+</html>
