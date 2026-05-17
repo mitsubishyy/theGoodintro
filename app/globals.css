@@ -36,6 +36,8 @@
   --tint-mint: #ecf6f1;
   --line: #ece6de;
   --espresso: #211c1a;
+  --sh-1: 0 1px 2px rgba(31, 38, 56, 0.04), 0 6px 16px rgba(31, 38, 56, 0.05);
+  --sh-2: 0 2px 4px rgba(31, 38, 56, 0.05), 0 16px 38px rgba(31, 38, 56, 0.09);
 }
 
 * {
@@ -125,19 +127,24 @@ section {
   border-radius: 999px;
   font-size: 1.02rem;
   font-family: var(--font-jakarta), sans-serif;
+  box-shadow: 0 8px 18px rgba(221, 100, 80, 0.26);
   transition:
-    transform 0.15s,
-    background 0.15s;
+    transform 0.16s ease,
+    background 0.16s ease,
+    box-shadow 0.16s ease;
 }
 .btn:hover {
   background: #c9543f;
   transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(221, 100, 80, 0.34);
 }
 .btn.mint {
   background: var(--mint-d);
+  box-shadow: 0 8px 18px rgba(47, 150, 118, 0.24);
 }
 .btn.mint:hover {
   background: #247f62;
+  box-shadow: 0 12px 26px rgba(47, 150, 118, 0.32);
 }
 .inl {
   font-weight: 700;
@@ -232,6 +239,7 @@ nav {
   border-radius: 999px;
   background: var(--surface);
   border: 1px solid var(--line);
+  box-shadow: var(--sh-1);
   color: var(--ink);
 }
 .hero h1 {
@@ -294,6 +302,14 @@ nav {
   border: 1px solid var(--line);
   border-radius: 24px;
   padding: 38px;
+  box-shadow: var(--sh-1);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sh-2);
 }
 .card .ic {
   margin-bottom: 18px;
@@ -329,6 +345,7 @@ nav {
   border: 1px solid var(--line);
   border-radius: 20px;
   padding: 14px 26px;
+  box-shadow: var(--sh-2);
 }
 .mlines .r {
   display: flex;
@@ -350,25 +367,31 @@ nav {
   padding: 80px 0;
   text-align: center;
 }
-.charities .row {
+.charities h2 {
+  margin-top: 4px;
+}
+.causes {
   display: flex;
-  gap: 18px;
+  gap: 14px;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: 28px;
+  margin-top: 42px;
 }
-.charities .ph {
-  width: 132px;
-  height: 52px;
+.cause {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
   border-radius: 999px;
   background: var(--surface);
   border: 1px solid var(--line);
-  display: grid;
-  place-items: center;
-  color: #aeb3bd;
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
+  box-shadow: var(--sh-1);
+  color: var(--ink);
+  font-size: 0.95rem;
   font-weight: 700;
+}
+.cause svg {
+  flex-shrink: 0;
 }
 .note {
   font-size: 0.84rem;
@@ -377,6 +400,36 @@ nav {
   font-weight: 500;
 }
 
+.difflist {
+  margin-top: 52px;
+  display: flex;
+  flex-direction: column;
+}
+.difflist .row2 {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 30px;
+  align-items: start;
+  padding: 34px 0;
+  border-top: 1px solid var(--line);
+}
+.difflist .row2:first-child {
+  border-top: 0;
+  padding-top: 8px;
+}
+.difflist .row2 svg {
+  margin-top: 2px;
+}
+.difflist h3 {
+  font-size: 1.45rem;
+  margin-bottom: 8px;
+}
+.difflist p {
+  font-size: 1.08rem;
+  max-width: 60ch;
+}
+
+/* Legacy three-up value grid, still used by /about. */
 .diff {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -396,12 +449,13 @@ nav {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 30px;
-  padding: 60px;
+  padding: 64px 60px;
   text-align: center;
-  max-width: 880px;
+  max-width: 900px;
   margin: 0 auto;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--sh-2);
 }
 .founding .glow {
   position: absolute;
@@ -434,6 +488,14 @@ nav {
   flex-direction: column;
   gap: 14px;
   border: 1px solid var(--line);
+  box-shadow: var(--sh-1);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.path:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sh-2);
 }
 .path.exec {
   background: var(--tint-coral);
@@ -503,6 +565,12 @@ details {
   padding: 22px 26px;
   margin-bottom: 14px;
   background: var(--surface);
+  box-shadow: var(--sh-1);
+  transition: box-shadow 0.18s ease;
+}
+details[open],
+details:hover {
+  box-shadow: var(--sh-2);
 }
 summary {
   list-style: none;
@@ -608,6 +676,14 @@ footer a:hover {
   .paths {
     grid-template-columns: 1fr;
   }
+  .difflist .row2 {
+    grid-template-columns: 44px 1fr;
+    gap: 18px;
+    padding: 26px 0;
+  }
+  .difflist h3 {
+    font-size: 1.25rem;
+  }
   .nlinks a:not(.btn) {
     display: none;
   }
@@ -619,5 +695,158 @@ footer a:hover {
   }
   .founding {
     padding: 42px 24px;
+  }
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .hero-art {
+    display: none;
+  }
+}
+
+/* ---- Section-header rhythm ---- */
+.sect-head {
+  max-width: 62ch;
+}
+.sect-head .eyebrow {
+  display: inline-block;
+  margin-bottom: 16px;
+}
+.sect-head h2 {
+  margin: 0;
+}
+.sect-head .lede {
+  margin-top: 18px;
+}
+.charities .sect-head {
+  margin-inline: auto;
+}
+.flowcard .fc-txt {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Numbered step cards ---- */
+.card .ictop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.card .ictop .ic {
+  margin-bottom: 0;
+}
+.step-n {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--coral-d);
+}
+
+/* ---- Hero composition ---- */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.08fr 0.92fr;
+  gap: 56px;
+  align-items: center;
+}
+.hero-art {
+  position: relative;
+  justify-self: center;
+  width: 100%;
+  max-width: 420px;
+}
+.flowcard {
+  position: relative;
+  z-index: 1;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  box-shadow: var(--sh-2);
+  padding: 26px 26px 28px;
+}
+.flowcard .fc-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 0;
+}
+.flowcard .fc-step + .fc-step {
+  border-top: 1px solid var(--line);
+}
+.flowcard .fc-ic {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  background: var(--tint-coral);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.flowcard .fc-step.is-mint .fc-ic {
+  background: var(--tint-mint);
+}
+.flowcard .fc-k {
+  font-family: var(--font-jakarta), sans-serif;
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.3;
+}
+.flowcard .fc-s {
+  font-size: 0.86rem;
+  color: var(--body);
+  margin-top: 2px;
+}
+.flowcard .fc-give {
+  margin-top: 6px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.flowcard .fc-amt {
+  font-family: var(--font-jakarta), sans-serif;
+  font-weight: 800;
+  font-size: 1.7rem;
+  color: var(--coral-d);
+}
+.flowcard .fc-cap {
+  font-size: 0.8rem;
+  color: var(--body);
+}
+.hero-art .ha-glow {
+  position: absolute;
+  inset: -28px -22px -34px -22px;
+  background: radial-gradient(
+    60% 55% at 70% 35%,
+    rgba(242, 137, 123, 0.22),
+    transparent 70%
+  );
+  filter: blur(8px);
+  z-index: 0;
+}
+
+/* ---- Progressive, motion-safe scroll reveal ---- */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 4% entry 46%;
+    }
+    @keyframes reveal-in {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   }
 }

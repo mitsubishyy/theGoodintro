@@ -4,7 +4,7 @@ import { Mark } from "../_components/mark";
 import {
   IcoBadgeCheck,
   IcoHeartPlus,
-  IcoTarget,
+  IcoMeeting,
   IcoHeartDollar,
   IcoSparkleBig,
 } from "../_components/icons";
@@ -63,7 +63,7 @@ export default function Vendors() {
               </p>
             </div>
             <div className="card">
-              <IcoTarget />
+              <IcoMeeting />
               <h3>Meet on their terms</h3>
               <p>
                 One meaningful conversation, led by the leader&apos;s
