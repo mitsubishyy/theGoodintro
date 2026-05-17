@@ -54,7 +54,8 @@ Lean, validation appropriate. Every page is wired into the footer.
    "Apply as a founding executive" to Calendly. Secondary inline link "Are you
    a vendor?".
 2. Why this exists. The senior leader's inbox is full of irrelevant pitches.
-   What if the few meetings worth taking also did real good.
+   What if the few meetings worth taking also did real good. Dark espresso
+   section.
 3. How it works in three steps for executives: you define what is relevant,
    you only receive context-rich qualified requests, you take one focused
    meeting and $1,000 goes to your chosen charity.
@@ -66,7 +67,8 @@ Lean, validation appropriate. Every page is wired into the footer.
    transparent. Stated as our position, never by naming a competitor.
 6. Founding cohort. Invite-only first group, limited places, you help shape it.
 7. Two paths band. "For executives" and "For vendors" cards, each to Calendly.
-8. Founder note. Short, from Issy, gives the site a real face.
+8. Founder note. Short, from Issy, gives the site a real face. Dark espresso
+   section, matching the Why section.
 9. FAQ. Collapsible accordion using native details and summary, a plus icon
    that rotates to a cross on open. Never all expanded at once.
 10. Closing CTA and footer with every page linked.

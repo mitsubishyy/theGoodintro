@@ -52,7 +52,9 @@ or yellow anywhere. Bold where it counts, calm everywhere else.
 
 - Max content width 1140px, 32px gutters, generous vertical rhythm.
 - Alternating paper and paper-alt bands. The money section is the only
-  coloured band (soft sage).
+  coloured band (soft sage). The "Why this exists" and "From the founder"
+  sections are dark espresso with light text and a light-crimson eyebrow,
+  bookending the founding panel.
 - Mobile first, single column under 860px, touch targets at least 44px.
 
 ## Components
