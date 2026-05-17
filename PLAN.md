@@ -50,8 +50,9 @@ Lean, validation appropriate. Every page is wired into the footer.
 
 ## 5. Homepage section flow
 
-1. Hero. Executive-focused headline plus subhead. Primary CTA "Apply as a
-   founding executive" to Calendly. Secondary inline link "Are you a vendor?".
+1. Hero. Headline "Meetings that fund what matters" plus subhead. Primary CTA
+   "Apply as a founding executive" to Calendly. Secondary inline link "Are you
+   a vendor?".
 2. Why this exists. The senior leader's inbox is full of irrelevant pitches.
    What if the few meetings worth taking also did real good.
 3. How it works in three steps for executives: you define what is relevant,
@@ -122,18 +123,20 @@ Lean, validation appropriate. Every page is wired into the footer.
 8. Deploy to Vercel, wire the domain, run IndexNow.
 9. Review against DESIGN.md quality bar.
 
-## 10. Open decisions (need Issy before or during build)
+## 10. Decisions (resolved 2026-05-17)
 
-1. Domain. Is there a preferred domain (for example thebigintro.com or
-   .com.au) and is it already owned. Needed for deploy, metadata, IndexNow.
-   Does not block local build.
-2. Calendly. Create a dedicated TheBigIntro intro-call event, or temporarily
-   reuse the QuotaClub link. Blocks final CTA wiring only.
-3. Accent colour. Confirm cobalt, or pick another single accent within the
-   navy modern direction.
-4. Tagline. Choose from proposed options during build.
-5. Charities. Name specific partner charities, or use "your chosen registered
-   charity". Affects how-it-works copy only.
+1. Domain: thebigintro.com. Build assumes this for metadata and IndexNow.
+   Registration to be confirmed by Issy before deploy.
+2. Calendly: stubbed for launch. CallButton renders with a placeholder href
+   and a visible TODO marker until Issy supplies the real event link.
+3. Accent colour: cobalt #2F6BFF confirmed.
+4. Tagline: "Meetings that fund what matters."
+5. Charities: copy uses "your chosen registered charity", no named partners
+   yet.
+
+Remaining follow-ups, non-blocking:
+- Confirm thebigintro.com registration before the Vercel domain step.
+- Supply the real Calendly link to replace the stub before public launch.
 
 ## 11. Explicitly out of scope for this site
 
