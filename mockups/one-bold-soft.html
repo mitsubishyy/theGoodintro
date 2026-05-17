@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TheBigIntro — one bold, soft support</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;color:#46434A;font-size:17px;
+    line-height:1.6;-webkit-font-smoothing:antialiased;background:#F4F2EE}
+  .blk{--paper:#F4F2EE;--ink:#16243B;--espresso:#211C1A;
+    --crimson:#E0263F;--crimson-d:#BC1733;--line:#E7DBD3;--on:#241B0B}
+  h1,h2{font-family:'Bricolage Grotesque',system-ui,sans-serif;
+    letter-spacing:-.02em;font-weight:800;color:var(--ink);line-height:1.02}
+  h1{font-size:clamp(2.6rem,6vw,4.6rem);max-width:15ch}
+  h2{font-size:clamp(2rem,4vw,3rem)}
+  h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.7rem}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 32px}
+  .eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--crimson-d)}
+  .lede{font-size:1.18rem;max-width:52ch;margin-top:18px}
+  a.btn{display:inline-block;background:var(--crimson);color:#fff;
+    text-decoration:none;font-weight:700;padding:15px 28px;border-radius:999px;
+    font-size:1rem}
+  .label{position:sticky;top:0;z-index:9;background:#161616;color:#fff;
+    padding:12px 30px;font-size:.85rem;letter-spacing:.05em}
+  .label small{opacity:.7;font-size:.86em}
+  .sw{display:inline-block;width:13px;height:13px;border-radius:50%;
+    margin-right:9px;vertical-align:middle;border:1px solid rgba(255,255,255,.3)}
+  .topbar{height:6px;background:var(--crimson)}
+  .hero{position:relative;overflow:hidden;padding:56px 0 70px}
+  .blob{position:absolute;border-radius:50%;filter:blur(12px);opacity:.4;
+    width:300px;height:300px;background:var(--crimson);right:-90px;top:-70px}
+  .hero .inner{position:relative;z-index:1}
+  .chips{display:flex;gap:10px;margin-bottom:20px}
+  .chip{font-size:.74rem;font-weight:700;letter-spacing:.08em;
+    text-transform:uppercase;padding:8px 15px;border-radius:999px}
+  .chip.c{background:var(--crimson);color:#fff}
+  .chip.o{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+  .hl{position:relative;display:inline-block;color:var(--on);padding:0 .12em}
+  .hl::before{content:"";position:absolute;inset:6% -.04em;background:var(--wash);
+    border-radius:10px;transform:rotate(-1.4deg);z-index:-1}
+  .cta{margin-top:30px}
+  .money{background:var(--wash);color:var(--ink);padding:64px 0}
+  .money .eyebrow{color:var(--crimson-d)}
+  .bignum{font-family:'Bricolage Grotesque',sans-serif;
+    font-size:clamp(4rem,11vw,7.5rem);font-weight:800;line-height:.85;
+    color:var(--crimson);margin-top:14px}
+  .paths{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:56px 0}
+  .path{border-radius:24px;padding:42px;min-height:190px}
+  .path.exec{background:var(--crimson);color:#fff}
+  .path.exec .tag{color:rgba(255,255,255,.85)}
+  .path.exec p{color:rgba(255,255,255,.92)}
+  .path.exec h3{color:#fff}
+  .path.vend{background:var(--espresso);color:#fff}
+  .path.vend .tag{color:rgba(255,255,255,.8)}
+  .path.vend p{color:rgba(255,255,255,.88)}
+  .path.vend h3{color:#fff}
+  .path .tag{font-size:.72rem;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase}
+  .path p{margin-top:8px}
+
+  /* only the money/highlight wash changes; crimson is the only bold */
+  .A{--wash:#F4EBC8}   /* soft butter */
+  .B{--wash:#F1ECDC}   /* whisper cream-yellow */
+  .C{--wash:#E4E7E0}   /* no yellow: soft neutral sage-grey */
+</style>
+</head>
+<body>
+
+<div class="label"><span class="sw" style="background:#F4EBC8"></span>
+  1 · SOFT BUTTER <small>crimson is the only bold. Yellow is just a gentle warm wash on the money section and highlight, not a block.</small></div>
+<div class="blk A">
+  <div class="topbar"></div>
+  <div class="hero"><span class="blob"></span><div class="wrap inner">
+    <div class="chips"><span class="chip c">Invite only</span><span class="chip o">Charity funded</span></div>
+    <h1>Meetings that fund <span class="hl">what matters</span>.</h1>
+    <p class="lede">Relevant, qualified introductions with senior leaders.</p>
+    <div class="cta"><a class="btn" href="#">Apply as a founding executive</a></div>
+  </div></div>
+  <div class="money"><div class="wrap"><span class="eyebrow">Where the money goes</span>
+    <h2>Full transparency.</h2><div class="bignum">$1,000</div></div></div>
+  <div class="wrap"><div class="paths">
+    <div class="path exec"><span class="tag">For executives</span><h3>Free to join.</h3>
+      <p>Take only the meetings you want.</p></div>
+    <div class="path vend"><span class="tag">For vendors</span><h3>Reach leaders honestly.</h3>
+      <p>State your reason, fund real impact.</p></div></div></div>
+</div>
+
+<div class="label"><span class="sw" style="background:#F1ECDC"></span>
+  2 · WHISPER CREAM-YELLOW <small>even softer. Yellow barely there, almost a warm cream. The calmest with a hint of warmth.</small></div>
+<div class="blk B">
+  <div class="topbar"></div>
+  <div class="hero"><span class="blob"></span><div class="wrap inner">
+    <div class="chips"><span class="chip c">Invite only</span><span class="chip o">Charity funded</span></div>
+    <h1>Meetings that fund <span class="hl">what matters</span>.</h1>
+    <p class="lede">Relevant, qualified introductions with senior leaders.</p>
+    <div class="cta"><a class="btn" href="#">Apply as a founding executive</a></div>
+  </div></div>
+  <div class="money"><div class="wrap"><span class="eyebrow">Where the money goes</span>
+    <h2>Full transparency.</h2><div class="bignum">$1,000</div></div></div>
+  <div class="wrap"><div class="paths">
+    <div class="path exec"><span class="tag">For executives</span><h3>Free to join.</h3>
+      <p>Take only the meetings you want.</p></div>
+    <div class="path vend"><span class="tag">For vendors</span><h3>Reach leaders honestly.</h3>
+      <p>State your reason, fund real impact.</p></div></div></div>
+</div>
+
+<div class="label"><span class="sw" style="background:#E4E7E0"></span>
+  3 · NO SECOND COLOUR <small>crimson only. The money wash is a soft neutral sage-grey, zero yellow. The true single-bold look.</small></div>
+<div class="blk C">
+  <div class="topbar"></div>
+  <div class="hero"><span class="blob"></span><div class="wrap inner">
+    <div class="chips"><span class="chip c">Invite only</span><span class="chip o">Charity funded</span></div>
+    <h1>Meetings that fund <span class="hl">what matters</span>.</h1>
+    <p class="lede">Relevant, qualified introductions with senior leaders.</p>
+    <div class="cta"><a class="btn" href="#">Apply as a founding executive</a></div>
+  </div></div>
+  <div class="money"><div class="wrap"><span class="eyebrow">Where the money goes</span>
+    <h2>Full transparency.</h2><div class="bignum">$1,000</div></div></div>
+  <div class="wrap"><div class="paths">
+    <div class="path exec"><span class="tag">For executives</span><h3>Free to join.</h3>
+      <p>Take only the meetings you want.</p></div>
+    <div class="path vend"><span class="tag">For vendors</span><h3>Reach leaders honestly.</h3>
+      <p>State your reason, fund real impact.</p></div></div></div>
+</div>
+
+<div class="label">Crimson is the single bold everywhere. Bricolage type, highlight and blob locked. Only the soft money wash changes: butter / cream / no-yellow.</div>
+
+</body>
+</html>
