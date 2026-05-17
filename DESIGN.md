@@ -30,7 +30,7 @@ custom emoji) adds more warmth without clashing.
 
 | Token | Use | Value |
 |---|---|---|
-| paper | Page background | #F7F1ED |
+| paper | Page background | #F4F2EE |
 | paper-alt | Section banding | #EFE7DF |
 | card | Cards | #FCF8F5 |
 | ink | Headline text only (the deep blue) | #16243B |
