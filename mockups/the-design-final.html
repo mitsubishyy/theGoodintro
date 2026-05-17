@@ -67,9 +67,11 @@
   .chip.c{background:var(--crimson);color:#fff}
   .chip.o{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
   .hero h1{max-width:15ch}
-  .key{position:relative;white-space:nowrap}
-  .key svg{position:absolute;left:0;right:0;bottom:-.14em;width:100%;
-    height:.17em;overflow:visible}
+  .key{position:relative;display:inline-block;color:#fff;padding:0 .14em;
+    white-space:nowrap;isolation:isolate}
+  .key::before{content:"";position:absolute;inset:6% -.04em;
+    background:var(--crimson);border-radius:10px;transform:rotate(-1.4deg);
+    z-index:-1}
   .cta{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:40px}
   .trust{margin-top:26px;font-size:.95rem;color:#6A6670;font-weight:500}
 
@@ -194,11 +196,7 @@
       <span class="chip o">Australia first</span>
       <span class="chip o">Charity funded</span>
     </div>
-    <h1>Meetings that fund
-      <span class="key">what matters<svg viewBox="0 0 300 16"
-        preserveAspectRatio="none" fill="none"><path d="M3 11C60 4 150 3 297 9"
-        stroke="#E0263F" stroke-width="6" stroke-linecap="round"/></svg></span>.
-    </h1>
+    <h1>Meetings that fund <span class="key">what matters</span>.</h1>
     <p class="lede">Relevant, qualified introductions with senior leaders.
       Every meeting sends a real donation to a charity they choose.</p>
     <div class="cta">
