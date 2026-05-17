@@ -1,9 +1,10 @@
 # TheBigIntro — Design System
 
 Locked 2026-05-17. Canonical reference: `mockups/the-design-final.html`.
-This is the "for now" system: deliberately calm so that future content
-(charity logos, bespoke illustrations, custom emoji) brings the warmth and
-engagement without clashing.
+Crimson is the signature colour, on a calm warm porcelain base, with a
+soft sage money section and the `$1,000` figure in forest green so green
+quietly means money. Future content (charity logos, bespoke illustrations,
+custom emoji) adds more warmth without clashing.
 
 ## Hard rules (do not break)
 
@@ -13,8 +14,8 @@ engagement without clashing.
 3. Nothing may resemble QuotaClub (warm terracotta editorial) or reuse any
    MeetMagic language, slogan, acronym, or the word "magic".
 4. No em dashes or en dashes in prose. En dashes only in numeric ranges.
-5. No purple, no pink, no orange, no yellow as brand colour. The signature is
-   deliberately not a loud accent for now.
+5. The signature colour is crimson. No purple, pink, orange or yellow as a
+   brand colour. Forest green is reserved strictly for the `$1,000` figure.
 
 ## Type
 
@@ -35,15 +36,17 @@ engagement without clashing.
 | ink | Headline text only (the deep blue) | #16243B |
 | body | Body text | #46434A |
 | sage | The money section background | #DCE4DD |
-| forest | Money figure, buttons, accents, links | #2F5E49 |
-| forest-d | Button hover and press | #244A3A |
+| forest | The `$1,000` figure only | #2F5E49 |
+| crimson | Signature: hero mark, accents, top bar | #D7263D |
+| crimson-d | Buttons, links, logo accent, hover-from | #B81D30 |
 | espresso | Founding panel, vendor card, footer | #221E1C |
 | line | Hairlines and dividers | #E7DBD3 |
 
-Forest green is the single working colour. It carries actions and the money
-figure, so green consistently means "money and impact". There is no red,
-orange, pink, purple or yellow anywhere. The page reads calm and professional
-on purpose.
+Crimson is the signature working colour. It carries the brand, actions and
+links, and reads charitable and confident without being terracotta. Forest
+green appears only on the `$1,000` figure, so green still means "money and
+impact" but quietly. Deep blue is headline text only. No orange, pink, purple
+or yellow anywhere. Bold where it counts, calm everywhere else.
 
 ## Layout
 
@@ -54,15 +57,15 @@ on purpose.
 
 ## Components
 
-- Nav: serif wordmark "TheBigIntro" with the middle word in forest, one
-  forest action button.
-- Hero: serif headline with a hand-drawn forest underline on the key phrase.
-- Step cards: card surface, forest top rule, oversized serif numeral.
-- Money section: soft sage background, deep-blue heading, large forest
+- Nav: serif wordmark "TheBigIntro" with the middle word in crimson, one
+  crimson action button.
+- Hero: serif headline with a hand-drawn crimson underline on the key phrase.
+- Step cards: card surface, crimson top rule, oversized serif numeral.
+- Money section: soft sage background, deep-blue heading, large forest-green
   `$1,000`, transparent breakdown with the named admin fee as a separate line.
 - Charity strip: greyscale placeholder now, real logos later.
-- Founding panel: espresso, paper button, honest scarcity.
-- Path cards: executives on forest, vendors on espresso.
+- Founding panel: espresso, crimson button, honest scarcity.
+- Path cards: executives on crimson, vendors on espresso.
 - FAQ: native details and summary, plus icon rotating to a cross, only one
   concern open at a time.
 - Footer: espresso, every page linked.
@@ -77,12 +80,12 @@ The calm base is intentional. Warmth and personality arrive through content:
 3. Possible subtle motion on the hero underline and section reveals.
 
 These must sit on the locked palette and rules above. They add warmth, they do
-not introduce a loud brand accent or break any hard rule.
+not change the crimson signature or break any hard rule.
 
 ## Accessibility
 
 - WCAG AA contrast minimum on text and controls.
-- Visible keyboard focus styles in forest.
+- Visible keyboard focus styles in crimson.
 - Real semantic elements for accordions and buttons.
 - Respect prefers-reduced-motion.
 
