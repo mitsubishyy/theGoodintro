@@ -15,6 +15,7 @@
   --color-crimson-d: #bc1733;
   --color-espresso: #211c1a;
   --color-line: #e7dbd3;
+  --color-hl: #f4d14e;
 
   --font-display: var(--font-bricolage);
   --font-sans: var(--font-inter);
@@ -30,6 +31,7 @@
   --crimson-d: #bc1733;
   --espresso: #211c1a;
   --line: #e7dbd3;
+  --hl: #f4d14e;
 }
 
 * {
@@ -220,7 +222,7 @@ nav {
 .key {
   position: relative;
   display: inline-block;
-  color: #fff;
+  color: var(--ink);
   padding: 0 0.14em;
   white-space: nowrap;
   isolation: isolate;
@@ -229,7 +231,7 @@ nav {
   content: "";
   position: absolute;
   inset: 6% -0.04em;
-  background: var(--crimson);
+  background: var(--hl);
   border-radius: 10px;
   transform: rotate(-1.4deg);
   z-index: -1;

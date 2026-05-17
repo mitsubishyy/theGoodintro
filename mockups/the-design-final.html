@@ -21,6 +21,7 @@
     --crimson:#E0263F;
     --crimson-d:#BC1733;
     --wash:#F1ECDC;
+    --hl:#F4D14E;
     --espresso:#211C1A;
     --line:#E7DBD3;
   }
@@ -67,10 +68,10 @@
   .chip.c{background:var(--crimson);color:#fff}
   .chip.o{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
   .hero h1{max-width:15ch}
-  .key{position:relative;display:inline-block;color:#fff;padding:0 .14em;
+  .key{position:relative;display:inline-block;color:var(--ink);padding:0 .14em;
     white-space:nowrap;isolation:isolate}
   .key::before{content:"";position:absolute;inset:6% -.04em;
-    background:var(--crimson);border-radius:10px;transform:rotate(-1.4deg);
+    background:var(--hl);border-radius:10px;transform:rotate(-1.4deg);
     z-index:-1}
   .cta{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:40px}
   .trust{margin-top:26px;font-size:.95rem;color:#6A6670;font-weight:500}
