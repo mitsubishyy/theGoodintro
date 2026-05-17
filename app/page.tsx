@@ -1,24 +1,55 @@
 import Link from "next/link";
 import { CallButton } from "./_components/call-button";
 import { Mark } from "./_components/mark";
+import {
+  FloatCalendar,
+  FloatHeartCoin,
+  FloatSparkle,
+  ChipCheck,
+  ChipInfo,
+  ChipHeart,
+  IcoRelevant,
+  IcoQualified,
+  IcoMeeting,
+  IcoHeartDollar,
+  IcoBadgeCheck,
+  IcoHeartPlus,
+  IcoTarget,
+  IcoSparkleBig,
+  IcoPerson,
+  IcoChat,
+} from "./_components/icons";
 
 export default function Home() {
   return (
     <>
       <header className="hero">
-        <span className="blob" />
+        <span className="b b1" />
+        <span className="b b2" />
+        <FloatCalendar />
+        <FloatHeartCoin />
+        <FloatSparkle />
         <div className="wrap inner">
           <div className="chips">
-            <span className="chip c">Invite only</span>
-            <span className="chip o">Australia first</span>
-            <span className="chip o">Charity funded</span>
+            <span className="chip">
+              <ChipCheck />
+              Invite only
+            </span>
+            <span className="chip">
+              <ChipInfo />
+              Australia first
+            </span>
+            <span className="chip">
+              <ChipHeart />
+              Charity funded
+            </span>
           </div>
           <h1>
             Meetings that fund <Mark>what matters</Mark>.
           </h1>
           <p className="lede">
-            Relevant, qualified introductions with senior leaders. Every
-            meeting sends a real donation to a charity they choose.
+            Senior leaders take a few genuinely relevant conversations. Every
+            one sends a real donation to a charity they choose.
           </p>
           <div className="cta">
             <CallButton>Apply as a founding executive</CallButton>
@@ -27,13 +58,13 @@ export default function Home() {
             </Link>
           </div>
           <p className="trust">
-            No cold pitches. No slide decks. One focused conversation, one
-            meaningful gift.
+            No cold pitches. No scripts. Meaningful conversations that do real
+            good.
           </p>
         </div>
       </header>
 
-      <section className="dark" id="why">
+      <section className="soft-mint" id="why">
         <div className="wrap">
           <span className="eyebrow">Why this exists</span>
           <h2>
@@ -42,9 +73,9 @@ export default function Home() {
             pitches that go nowhere.
           </h2>
           <p className="lede">
-            What if the few meetings actually worth taking also did real good.
-            That is the whole idea. Fewer, sharper conversations, each one
-            turned into a meaningful donation.
+            What if the few conversations actually worth having also did real
+            good. That is the whole idea. Fewer, more relevant meetings, each
+            one turned into a meaningful donation for a cause that matters.
           </p>
         </div>
       </section>
@@ -54,27 +85,27 @@ export default function Home() {
           <span className="eyebrow">How it works</span>
           <h2>Three steps, for executives.</h2>
           <div className="grid3">
-            <div className="step">
-              <div className="n">01</div>
+            <div className="card">
+              <IcoRelevant />
               <h3>You set what is relevant</h3>
               <p>
                 Tell us the priorities you actually want to talk about. Nothing
-                else reaches you.
+                outside that ever reaches you.
               </p>
             </div>
-            <div className="step">
-              <div className="n">02</div>
+            <div className="card">
+              <IcoQualified />
               <h3>You get qualified requests</h3>
               <p>
                 A vendor must state the specific initiative or problem before
-                they can ask. You see the reason first.
+                they can ask. You see the reason, and you decide.
               </p>
             </div>
-            <div className="step">
-              <div className="n">03</div>
-              <h3>One focused meeting</h3>
+            <div className="card">
+              <IcoMeeting />
+              <h3>One meaningful conversation</h3>
               <p>
-                You take a single, well prepared conversation, and a
+                You have a single, well prepared conversation, and a
                 substantial donation goes to your chosen charity.
               </p>
             </div>
@@ -82,12 +113,15 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="money" id="money">
+      <section className="soft-coral" id="money">
         <div className="wrap">
           <span className="eyebrow">Where the money goes</span>
           <h2>Full transparency, by design.</h2>
           <div className="moneywrap">
-            <div className="bignum">$1,000</div>
+            <div className="bignum">
+              $1,000
+              <IcoHeartDollar />
+            </div>
             <div className="mlines">
               <div className="r">
                 <span className="k">To your chosen charity, per meeting</span>
@@ -103,7 +137,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <p className="lede" style={{ marginTop: 26 }}>
+          <p className="lede" style={{ marginTop: 24 }}>
             The gift stays clean and whole. Running costs are recovered through
             a clearly labelled admin fee, never skimmed from what reaches the
             charity.
@@ -131,23 +165,26 @@ export default function Home() {
       <section id="diff">
         <div className="wrap">
           <span className="eyebrow">What makes this different</span>
-          <h2>Built around relevance and honesty.</h2>
+          <h2>Built around relevance and giving.</h2>
           <div className="diff">
-            <div>
+            <div className="d">
+              <IcoBadgeCheck />
               <h3>Qualified by requirement</h3>
               <p>
-                No cold asks. A vendor must show why the meeting earns your
-                time before it ever reaches you.
+                No cold asks. A vendor must show why the conversation earns
+                your time before it ever reaches you.
               </p>
             </div>
-            <div>
+            <div className="d">
+              <IcoHeartPlus />
               <h3>A deliberately larger gift</h3>
               <p>
-                The donation is set high on purpose, so the impact is real, not
-                a token gesture.
+                The donation is set high on purpose, so the impact is real and
+                worth the conversation, not a token gesture.
               </p>
             </div>
-            <div>
+            <div className="d">
+              <IcoTarget />
               <h3>Nothing hidden</h3>
               <p>
                 The full money flow is on the page. No vague claims, no fine
@@ -158,16 +195,16 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="alt">
+      <section className="soft-mint">
         <div className="wrap">
           <div className="founding">
-            <span className="eyebrow" style={{ color: "rgba(255,255,255,.8)" }}>
-              The first cohort
-            </span>
+            <span className="glow" />
+            <IcoSparkleBig />
+            <span className="eyebrow">The first cohort</span>
             <h2>Join as a founding member.</h2>
             <p>
-              The first group is invite only and small on purpose. Founding
-              members help shape how this works, and places are limited.
+              We are starting small on purpose. Founding members help shape how
+              this works, for executives and for the causes they support.
             </p>
             <CallButton>Request your place</CallButton>
           </div>
@@ -180,34 +217,36 @@ export default function Home() {
           <h2>Start a conversation.</h2>
           <div className="paths">
             <div className="path exec" id="exec">
+              <IcoPerson />
               <span className="tag">For executives</span>
               <h3>Free to join.</h3>
               <p>
-                You decide what is relevant, you take only the meetings you
-                want, and your charity benefits every single time.
+                You decide what is relevant, you take only the conversations
+                you want, and your chosen charity benefits every single time.
               </p>
               <CallButton>Book a call</CallButton>
             </div>
             <div className="path vend" id="vendor">
+              <IcoChat />
               <span className="tag">For vendors</span>
               <h3>Reach leaders honestly.</h3>
               <p>
-                State your reason, meet on their terms, and fund real impact
-                while you build the relationships you need.
+                Earn a qualified introduction to a vetted senior audience by
+                being relevant and generous, and fund real giving as you do.
               </p>
-              <CallButton>Book a call</CallButton>
+              <CallButton className="btn mint">Book a call</CallButton>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="dark">
+      <section className="founder-sec">
         <div className="wrap">
           <div className="founder">
             <div className="ava">IH</div>
             <div>
               <span className="eyebrow">From the founder</span>
-              <p style={{ marginTop: 14 }}>
+              <p style={{ marginTop: 12 }}>
                 I kept seeing senior people buried in irrelevant outreach, and
                 vendors with genuine value unable to get through honestly.
                 TheBigIntro is my attempt to fix both at once, and to make
@@ -222,7 +261,7 @@ export default function Home() {
       <section>
         <div className="wrap">
           <span className="eyebrow">Questions</span>
-          <h2 style={{ marginBottom: 20 }}>Good things to ask.</h2>
+          <h2 style={{ marginBottom: 24 }}>Good things to ask.</h2>
           <details open>
             <summary>
               Is this just a sales meeting in disguise?
@@ -230,8 +269,8 @@ export default function Home() {
             </summary>
             <p>
               No. A vendor cannot reach you without stating a specific,
-              relevant reason, and the meeting is about your priorities, not a
-              hard sell.
+              relevant reason, and the conversation is about your priorities,
+              not a hard sell.
             </p>
           </details>
           <details>
@@ -247,7 +286,7 @@ export default function Home() {
             <summary>
               What does it cost an executive?<span className="i">+</span>
             </summary>
-            <p>Nothing. It is free for executives. Vendors fund the model.</p>
+            <p>Nothing. It is free for executives. Vendors fund the giving.</p>
           </details>
           <details>
             <summary>
@@ -255,7 +294,7 @@ export default function Home() {
             </summary>
             <p>
               We are starting deliberately small so the first members shape how
-              this works. Places are limited.
+              this works.
             </p>
           </details>
         </div>

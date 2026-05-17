@@ -1,102 +1,98 @@
 # TheBigIntro — Design System
 
-Locked 2026-05-17. Canonical reference: `mockups/the-design-final.html`,
-matched 1:1 by the live Next.js site. Crimson is the single bold colour on a
-warm porcelain base, bold expressive Bricolage Grotesque headlines, a whisper
-cream-yellow soft wash on the money section only, and dark espresso Why and
-Founder sections. Future content (charity logos, bespoke illustrations, custom
-emoji) adds more warmth without clashing.
+Locked 2026-05-17 (fresh & friendly direction). Canonical reference:
+`mockups/the-design-fresh.html`, mirrored by the live app in
+`app/globals.css`. This superseded an earlier crimson/Bricolage
+exploration; that history is in the other `mockups/*.html` files.
+
+## The direction
+
+Light, airy and optimistic. It should feel like a good thing, friendly
+but credible, with generous white space doing most of the work and colour
+used sparingly. Custom refined line illustrations carry meaning.
 
 ## Hard rules (do not break)
 
-1. Blue is for headline and title text only. No surface, hero, panel, footer
-   or section background is ever blue. See memory feedback note.
-2. Backgrounds are warm but never yellow. The only yellow is the whisper
-   cream-yellow soft wash on the money section.
-3. Nothing may resemble QuotaClub (warm terracotta editorial) or reuse any
-   MeetMagic language, slogan, acronym, or the word "magic".
-4. No em dashes or en dashes in prose. En dashes only in numeric ranges.
-5. Crimson is the one and only bold colour. There is no second bold. No green,
-   purple, orange, or yellow as a brand colour.
+1. Light and warm. No dark page or section backgrounds. The single
+   deliberate exception is the "From the founder" panel, which is espresso
+   (`#211C1A`) for a personal moment.
+2. Never blue or yellow as a background. Deep ink (`#1F2638`) is text only.
+3. Two soft fun colours only: coral and mint, used subtly (small accents,
+   gentle section tints, illustration strokes), never loud blocks.
+4. No purple. No second loud bold colour.
+5. Nothing may resemble QuotaClub or reuse any MeetMagic or Employment Hero
+   language, slogan, acronym, or illustration style.
+6. No em dashes or en dashes in prose. En dashes only in numeric ranges.
+7. No timer, countdown, or time-pressure language anywhere in copy.
 
 ## Type
 
-- Headlines: Bricolage Grotesque, weights 700 to 800, set large and
-  confident. This is the brand's main expressive device.
-- Body and UI: Inter, 400 to 700.
-- Production: self hosted with next/font (no external font network calls).
-- Scale (desktop, rem): h1 clamp to 5.4, h2 to 3.3, h3 1.45, body 1.0625,
-  lede 1.24, eyebrow 0.78 uppercase tracked.
+- Display and headings: Plus Jakarta Sans, weights 600 to 800.
+- Body and UI: Inter.
+- Self-hosted via next/font (no runtime font network calls).
 
 ## Colour
 
 | Token | Use | Value |
 |---|---|---|
-| paper | Page background | #F4F2EE |
-| card | Cards | #FCF8F5 |
-| ink | Headline text only (the deep blue) | #16243B |
-| body | Body text | #46434A |
-| wash | Money section soft wash (whisper cream-yellow) | #F1ECDC |
-| crimson | The single bold: signature, actions, the `$1,000` | #E0263F |
-| crimson-d | Buttons, links, logo accent, hover-to | #BC1733 |
-| espresso | Why, Founder, vendor card, footer, founding panel | #211C1A |
-| line | Hairlines and dividers | #E7DBD3 |
+| bg | Page background | #FCFBF8 |
+| surface | Cards | #FFFFFF |
+| ink | Headline and key text | #1F2638 |
+| body | Body text | #5C6170 |
+| coral | Primary accent (buttons, links, key word) | #F2897B |
+| coral-d | Accessible coral for text and buttons | #DD6450 |
+| mint | Secondary accent | #4FB493 |
+| mint-d | Accessible mint for text and buttons | #2F9676 |
+| tint-coral | Gentle section wash | #FDF0EC |
+| tint-mint | Gentle section wash and footer | #ECF6F1 |
+| line | Hairlines and card borders | #ECE6DE |
+| espresso | The single dark moment: founder panel | #211C1A |
 
-Crimson is the only bold working colour. It carries the brand, actions, links,
-the hero underline and the large `$1,000` figure, and reads charitable and
-confident without being terracotta. The money section sits on a whisper
-cream-yellow wash, soft enough that crimson stays the only thing that pops.
-Deep blue is headline text only. No green, orange, pink, purple or strong
-yellow anywhere. Bold where it counts, calm everywhere else.
+Coral leads, mint supports. The `$1,000` and the key hero word are coral.
+No green or red is used as a bold block. Sections alternate plain bg, soft
+coral and soft mint tints. The footer is a soft mint tint, not dark.
 
-## Layout
+## Illustrations
 
-- Max content width 1160px, 32px gutters, generous vertical rhythm.
-- Light paper sections with one soft-washed money band. The "Why this exists"
-  and "From the founder" sections are dark espresso with light text and a
-  light-crimson eyebrow, bookending the espresso founding panel.
-- Mobile first, single column under 860px, touch targets at least 44px.
+Refined line art: thin consistent stroke, no fills, no cartoon faces, one
+small coral or mint accent per icon. Components live in
+`app/_components/icons.tsx`. They are deliberately editorial, not childish.
 
 ## Components
 
-- Nav: Bricolage wordmark "TheBigIntro" with the middle word in crimson, one
-  crimson pill action button.
-- Hero: soft crimson blob, pill chips, a big Bricolage headline with the text
-  one colour (deep blue) and a hand-drawn crimson underline on the key phrase.
-- Step cards: card surface, oversized crimson Bricolage numeral.
-- Money section: whisper cream-yellow wash, deep-blue heading, a very large
-  crimson `$1,000`, transparent breakdown with the named admin fee as a
-  separate line.
-- Charity strip: dashed placeholder pills now, real logos later.
-- Founding panel: espresso, soft crimson glow, crimson button, honest scarcity.
-- Path cards: executives on crimson, vendors on espresso (no second bold).
-- FAQ: native details and summary, plus icon rotating to a cross, only one
-  concern open at a time.
-- Footer: espresso, every page linked.
+- Nav: refined line logo mark, wordmark with "Big" in coral, one coral
+  pill action.
+- Hero: soft coral and mint blur shapes, refined floating illustrations,
+  pill chips, the key phrase in coral, pill CTA.
+- Step and value cards: white rounded cards with a line illustration.
+- Money section: soft coral tint, large coral `$1,000` with the heart mark,
+  transparent breakdown with the named admin fee as its own line.
+- Charity strip: rounded placeholder pills now, real logos later.
+- Founding card: white rounded card, mint glow, sparkle illustration.
+- Path cards: executives on soft coral, vendors on soft mint.
+- Founder panel: espresso, coral avatar, the one dark moment.
+- FAQ: bordered rounded accordions, plus icon rotating to a cross.
+- Footer: soft mint tint, light, every page linked.
 
-## Engagement roadmap (later, not v1 launch)
+## Voice
 
-The base is intentionally restrained. Warmth and personality arrive through
-content:
+Executive-led. Charity and meaningful conversation are the spine. Keep the
+word "qualified". Warm, plain, honest. No urgency tactics.
 
-1. Real charity logos in the charity strip.
-2. Bespoke illustrations and custom emoji style icons (to be designed) for the
-   steps, the differentiators and the founding panel.
-3. Possible subtle motion on the hero underline and section reveals.
+## Engagement roadmap (later)
 
-These must sit on the locked palette and rules above. They add warmth, they do
-not introduce a second bold colour or break any hard rule.
+Real charity logos and more bespoke illustrations replace placeholders.
+These sit on this palette and rules and add warmth, not a loud accent.
 
 ## Accessibility
 
-- WCAG AA contrast minimum on text and controls.
-- Visible keyboard focus styles in crimson.
-- Real semantic elements for accordions and buttons.
-- Respect prefers-reduced-motion.
+WCAG AA contrast on text and controls. Visible coral focus rings. Real
+semantic accordions and buttons. Respect prefers-reduced-motion.
 
 ## Quality bar
 
-Done when: a busy executive understands the model in one read, there is one
-obvious action per view, nothing invented is presented as fact, it is fully
-responsive, it passes AA contrast, it contains zero blue backgrounds, and it
-does not resemble QuotaClub or reuse any MeetMagic language.
+Done when: a busy executive understands the model in one read, there is
+one obvious action per view, nothing invented is presented as fact, it is
+fully responsive, it passes AA contrast, it is light and warm with no
+stray dark or blue or yellow surfaces, and it does not resemble QuotaClub,
+MeetMagic or Employment Hero.

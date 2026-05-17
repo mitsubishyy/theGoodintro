@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CALENDLY_URL } from "@/lib/config";
+import { LogoMark } from "./icons";
 
 export function Footer() {
   return (
@@ -8,16 +9,10 @@ export function Footer() {
         <div className="fcols">
           <div>
             <Link href="/" className="logo">
+              <LogoMark />
               The<span>Big</span>Intro
             </Link>
-            <p
-              style={{
-                marginTop: 14,
-                maxWidth: "34ch",
-                color: "#A89F99",
-                fontSize: "0.94rem",
-              }}
-            >
+            <p style={{ marginTop: 14, maxWidth: "34ch", fontSize: "0.94rem" }}>
               Relevant senior meetings that fund real giving. Australia first,
               invite only.
             </p>

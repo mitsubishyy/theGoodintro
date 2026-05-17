@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CallButton } from "./call-button";
+import { LogoMark } from "./icons";
 
 export function Nav() {
   return (
@@ -8,6 +9,7 @@ export function Nav() {
       <div className="wrap">
         <nav>
           <Link href="/" className="logo">
+            <LogoMark />
             The<span>Big</span>Intro
           </Link>
           <div className="nlinks">

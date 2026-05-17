@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TheBigIntro — fresh &amp; friendly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FCFBF8;
+    --surface:#FFFFFF;
+    --ink:#1F2638;
+    --body:#5C6170;
+    --coral:#F2897B;
+    --coral-d:#DD6450;
+    --mint:#4FB493;
+    --mint-d:#2F9676;
+    --tint-coral:#FDF0EC;
+    --tint-mint:#ECF6F1;
+    --line:#ECE6DE;
+    --espresso:#211C1A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--body);
+    font-family:'Inter',system-ui,sans-serif;font-size:17px;line-height:1.65;
+    -webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+    color:var(--ink);line-height:1.12;letter-spacing:-.02em;font-weight:800}
+  h1{font-size:clamp(2.7rem,6vw,4.6rem)}
+  h2{font-size:clamp(1.9rem,3.6vw,2.9rem)}
+  h3{font-size:1.3rem;font-weight:700}
+  p{max-width:60ch}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 32px}
+  .eyebrow{font-size:.76rem;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--coral-d)}
+  section{padding:104px 0}
+  .lede{font-size:1.22rem;max-width:54ch;margin-top:20px}
+  a.btn{display:inline-flex;align-items:center;gap:10px;background:var(--coral-d);
+    color:#fff;text-decoration:none;font-weight:700;padding:16px 30px;
+    border-radius:999px;font-size:1.02rem;font-family:'Plus Jakarta Sans',sans-serif;
+    transition:transform .15s,background .15s}
+  a.btn:hover{background:#C9543F;transform:translateY(-2px)}
+  a.btn.mint{background:var(--mint-d)}
+  a.btn.mint:hover{background:#247F62}
+  a.inl{font-weight:700;text-decoration:none;color:var(--coral-d);
+    font-family:'Plus Jakarta Sans',sans-serif}
+  a.inl:hover{text-decoration:underline}
+  .topbar{height:5px;background:linear-gradient(90deg,var(--coral),var(--mint))}
+
+  nav{display:flex;align-items:center;justify-content:space-between;padding:26px 0}
+  .logo{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;
+    font-size:1.4rem;color:var(--ink);text-decoration:none;display:flex;
+    align-items:center;gap:10px}
+  .logo span{color:var(--coral-d)}
+  .nlinks{display:flex;gap:30px;align-items:center}
+  .nlinks a{color:var(--body);text-decoration:none;font-weight:600;font-size:.96rem}
+  .nlinks a:hover{color:var(--ink)}
+
+  .hero{position:relative;overflow:hidden;padding:64px 0 96px}
+  .b{position:absolute;border-radius:50%;filter:blur(14px);pointer-events:none}
+  .b1{width:300px;height:300px;background:rgba(242,137,123,.20);right:-60px;top:-30px}
+  .b2{width:240px;height:240px;background:rgba(79,180,147,.18);left:-90px;bottom:0}
+  .hero .inner{position:relative;z-index:1}
+  .chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+  .chip{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;
+    font-weight:700;padding:8px 15px 8px 11px;border-radius:999px;
+    background:var(--surface);border:1px solid var(--line);color:var(--ink)}
+  .hero h1{max-width:16ch}
+  .hero h1 .a{color:var(--coral-d)}
+  .cta{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:38px}
+  .trust{margin-top:24px;font-size:.95rem;color:#8A8E99;font-weight:500}
+  .floaty{position:absolute;z-index:1;
+    filter:drop-shadow(0 12px 22px rgba(31,38,56,.07))}
+  .f1{right:8%;top:13%}
+  .f2{right:21%;bottom:9%}
+  .f3{right:3%;bottom:26%}
+  @media(max-width:980px){.floaty{display:none}}
+
+  .soft-mint{background:var(--tint-mint)}
+  .soft-coral{background:var(--tint-coral)}
+
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:54px}
+  .card{background:var(--surface);border:1px solid var(--line);
+    border-radius:24px;padding:38px}
+  .card .ic{margin-bottom:18px}
+  .card h3{margin-bottom:8px}
+  .card p{font-size:1rem}
+
+  .moneywrap{display:flex;flex-wrap:wrap;align-items:center;gap:40px;margin-top:30px}
+  .bignum{font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:clamp(4rem,11vw,7rem);font-weight:800;color:var(--coral-d);
+    line-height:.9;display:flex;align-items:center;gap:20px}
+  .mlines{flex:1;min-width:300px;background:var(--surface);
+    border:1px solid var(--line);border-radius:20px;padding:14px 26px}
+  .mlines .r{display:flex;justify-content:space-between;gap:18px;padding:15px 0;
+    border-bottom:1px solid var(--line);font-size:1rem}
+  .mlines .r:last-child{border-bottom:0}
+  .mlines .k{font-weight:700;color:var(--ink)}
+
+  .charities{padding:80px 0;text-align:center}
+  .charities .row{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;
+    margin-top:28px}
+  .charities .ph{width:132px;height:52px;border-radius:999px;
+    background:var(--surface);border:1px solid var(--line);display:grid;
+    place-items:center;color:#AEB3BD;font-size:.72rem;letter-spacing:.12em;
+    font-weight:700}
+  .note{font-size:.84rem;color:#AEB3BD;margin-top:22px;font-weight:500}
+
+  .diff{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:50px}
+  .diff .d{display:flex;flex-direction:column;gap:10px}
+  .diff h3{margin-top:6px}
+
+  .founding{background:var(--surface);border:1px solid var(--line);
+    border-radius:30px;padding:60px;text-align:center;max-width:880px;
+    margin:0 auto;position:relative;overflow:hidden}
+  .founding .glow{position:absolute;width:240px;height:240px;border-radius:50%;
+    background:rgba(79,180,147,.16);right:-70px;top:-80px;filter:blur(10px)}
+  .founding .ic{margin:0 auto 16px}
+  .founding p{margin:14px auto 28px;max-width:46ch}
+
+  .paths{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:54px}
+  .path{border-radius:26px;padding:46px;display:flex;flex-direction:column;
+    gap:14px;border:1px solid var(--line)}
+  .path.exec{background:var(--tint-coral)}
+  .path.vend{background:var(--tint-mint)}
+  .path .ic{margin-bottom:8px}
+  .path .tag{font-size:.74rem;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--coral-d)}
+  .path.vend .tag{color:var(--mint-d)}
+  .path h3{font-size:1.6rem}
+  .path .btn{align-self:flex-start;margin-top:6px}
+
+  .founder-sec{background:var(--espresso)}
+  .founder{display:flex;gap:34px;align-items:flex-start;max-width:840px}
+  .founder .eyebrow{color:#F4A99B}
+  .founder p{color:rgba(255,255,255,.9)}
+  .ava{width:80px;height:80px;border-radius:50%;flex-shrink:0;
+    background:var(--coral-d);display:grid;place-items:center;
+    font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;
+    font-size:1.55rem;color:#fff}
+  .sig{font-family:'Plus Jakarta Sans',sans-serif;color:#fff;
+    font-weight:700;margin-top:14px}
+
+  details{border:1px solid var(--line);border-radius:18px;padding:22px 26px;
+    margin-bottom:14px;background:var(--surface)}
+  summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;
+    gap:24px;align-items:center;font-family:'Plus Jakarta Sans',sans-serif;
+    color:var(--ink);font-weight:700;font-size:1.1rem}
+  summary::-webkit-details-marker{display:none}
+  summary .i{color:var(--coral-d);font-size:1.6rem;line-height:1;
+    transition:transform .2s}
+  details[open] summary .i{transform:rotate(45deg)}
+  details p{margin-top:12px}
+
+  footer{background:var(--tint-mint);color:var(--body);padding:70px 0 44px}
+  .fcols{display:grid;grid-template-columns:2.2fr 1fr 1fr;gap:48px}
+  .fcols strong{display:block;color:var(--ink);font-size:.78rem;
+    letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;
+    font-family:'Plus Jakarta Sans',sans-serif}
+  footer a{color:var(--body);text-decoration:none;display:block;margin:9px 0;
+    font-size:.95rem}
+  footer a:hover{color:var(--ink)}
+  .fnote{margin-top:42px;padding-top:22px;border-top:1px solid #D8E6DF;
+    font-size:.85rem;color:#8A8E99}
+
+  /* refined line-illustration defaults */
+  .ln{fill:none;stroke:var(--ink);stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round}
+  .ln-c{fill:none;stroke:var(--coral-d);stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round}
+  .ln-m{fill:none;stroke:var(--mint-d);stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round}
+
+  @media(max-width:860px){
+    .grid3,.diff,.paths{grid-template-columns:1fr}
+    .nlinks a:not(.btn){display:none}
+    .fcols{grid-template-columns:1fr}
+    section{padding:68px 0}
+    .founding{padding:42px 24px}
+  }
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+
+<div class="wrap">
+  <nav>
+    <a href="#" class="logo">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <rect x="5" y="6" width="22" height="17" rx="6" class="ln" stroke-width="2.2"/>
+        <path d="M12 23v4l5-4" class="ln" stroke-width="2.2"/>
+        <path d="M11 13.5h10M11 17.5h6" class="ln" stroke-width="2.2"/>
+        <circle cx="25" cy="7" r="2.4" fill="#F2897B"/>
+      </svg>
+      The<span>Big</span>Intro
+    </a>
+    <div class="nlinks">
+      <a href="#how">How it works</a>
+      <a href="#exec">For executives</a>
+      <a href="#vendor">For vendors</a>
+      <a class="btn" href="#apply">Apply</a>
+    </div>
+  </nav>
+</div>
+
+<header class="hero">
+  <span class="b b1"></span><span class="b b2"></span>
+
+  <!-- refined line spot illustrations -->
+  <svg class="floaty f1" width="96" height="96" viewBox="0 0 64 64" fill="none">
+    <rect x="12" y="14" width="40" height="38" rx="8" class="ln" stroke-width="2.4"/>
+    <path d="M12 25h40M23 11v7M41 11v7" class="ln" stroke-width="2.4"/>
+    <path d="M24 38l6 6 11-13" class="ln-c" stroke-width="3"/>
+  </svg>
+  <svg class="floaty f2" width="84" height="84" viewBox="0 0 64 64" fill="none">
+    <path d="M32 51C20 43 13 35 13 26a9 9 0 0 1 19-5 9 9 0 0 1 19 5c0 9-7 17-19 25z" class="ln" stroke-width="2.6"/>
+    <circle cx="44" cy="22" r="8.5" class="ln-m" stroke-width="2.4"/>
+    <path d="M44 18v8M41.5 20.5h4a1.8 1.8 0 0 1 0 3.6h-3a1.8 1.8 0 0 0 0 3.6h4" class="ln-m" stroke-width="2"/>
+  </svg>
+  <svg class="floaty f3" width="66" height="66" viewBox="0 0 64 64" fill="none">
+    <path d="M32 12c1.6 12 4 14.4 16 16-12 1.6-14.4 4-16 16-1.6-12-4-14.4-16-16 12-1.6 14.4-4 16-16z" class="ln-c" stroke-width="2.4"/>
+    <circle cx="50" cy="15" r="2.6" fill="#4FB493"/>
+  </svg>
+
+  <div class="wrap inner">
+    <div class="chips">
+      <span class="chip"><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" class="ln-c" stroke-width="2.2"/><path d="M8.5 12.5l2.5 2.5 4.5-5.5" class="ln-c" stroke-width="2.2"/></svg>Invite only</span>
+      <span class="chip"><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" class="ln-m" stroke-width="2.2"/><path d="M12 8v5M12 16h.01" class="ln-m" stroke-width="2.2"/></svg>Australia first</span>
+      <span class="chip"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M12 19c-6-4-9-7.5-9-11a4.5 4.5 0 0 1 9-1 4.5 4.5 0 0 1 9 1c0 3.5-3 7-9 11z" class="ln-c" stroke-width="2.2"/></svg>Charity funded</span>
+    </div>
+    <h1>Meetings that fund <span class="a">what matters</span>.</h1>
+    <p class="lede">Relevant, qualified introductions with senior leaders.
+      Every meeting sends a real donation to a charity they choose.</p>
+    <div class="cta">
+      <a class="btn" href="#apply">Apply as a founding executive</a>
+      <a class="inl" href="#vendor">Are you a vendor? &rarr;</a>
+    </div>
+    <p class="trust">No cold pitches. No slide decks. One focused
+      conversation, one meaningful gift.</p>
+  </div>
+</header>
+
+<section class="soft-mint" id="why">
+  <div class="wrap">
+    <span class="eyebrow">Why this exists</span>
+    <h2>A senior leader's calendar is full of<br>pitches that go nowhere.</h2>
+    <p class="lede">What if the few meetings actually worth taking also did
+      real good. That is the whole idea. Fewer, sharper conversations, each one
+      turned into a meaningful donation.</p>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <span class="eyebrow">How it works</span>
+    <h2>Three steps, for executives.</h2>
+    <div class="grid3">
+      <div class="card">
+        <svg class="ic" width="56" height="56" viewBox="0 0 64 64" fill="none">
+          <path d="M14 14h26a8 8 0 0 1 8 8v12a8 8 0 0 1-8 8H26l-11 9V22a8 8 0 0 1 8-8z" class="ln" stroke-width="2.6"/>
+          <path d="M24 26h16M24 32h10" class="ln" stroke-width="2.6"/>
+          <circle cx="44" cy="44" r="3" fill="#F2897B"/>
+        </svg>
+        <h3>You set what is relevant</h3>
+        <p>Tell us the priorities you actually want to talk about. Nothing
+          else reaches you.</p></div>
+      <div class="card">
+        <svg class="ic" width="56" height="56" viewBox="0 0 64 64" fill="none">
+          <path d="M33 12H16a4 4 0 0 0-4 4v17a4 4 0 0 0 1.2 2.8l18 18a4 4 0 0 0 5.6 0l14-14a4 4 0 0 0 0-5.6l-18-18A4 4 0 0 0 33 12z" class="ln" stroke-width="2.6"/>
+          <circle cx="23" cy="23" r="3.4" class="ln" stroke-width="2.4"/>
+          <path d="M30 36l5 5 9-9" class="ln-c" stroke-width="3"/>
+        </svg>
+        <h3>You get qualified requests</h3>
+        <p>A vendor must state the specific initiative or problem before they
+          can ask. You see the reason first.</p></div>
+      <div class="card">
+        <svg class="ic" width="56" height="56" viewBox="0 0 64 64" fill="none">
+          <circle cx="25" cy="28" r="13" class="ln" stroke-width="2.6"/>
+          <circle cx="41" cy="36" r="13" class="ln-m" stroke-width="2.6"/>
+        </svg>
+        <h3>One focused meeting</h3>
+        <p>You take a single, well prepared conversation, and a substantial
+          donation goes to your chosen charity.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="soft-coral" id="money">
+  <div class="wrap">
+    <span class="eyebrow">Where the money goes</span>
+    <h2>Full transparency, by design.</h2>
+    <div class="moneywrap">
+      <div class="bignum">$1,000
+        <svg width="66" height="66" viewBox="0 0 64 64" fill="none">
+          <path d="M32 53C19 44 12 35 12 25a10 10 0 0 1 20-5 10 10 0 0 1 20 5c0 10-7 19-20 28z" class="ln-c" stroke-width="2.8"/>
+          <path d="M32 23v18M27 28a5 5 0 0 1 5-4 4 4 0 0 1 0 8 4 4 0 0 0 0 8 5 5 0 0 1-5-4" class="ln-c" stroke-width="2.4"/>
+        </svg>
+      </div>
+      <div class="mlines">
+        <div class="r"><span class="k">To your chosen charity, per meeting</span>
+          <span>the full meeting gift</span></div>
+        <div class="r"><span class="k">Platform admin fee</span>
+          <span>charged separately and named</span></div>
+        <div class="r"><span class="k">Focus at launch</span>
+          <span>Australia first</span></div>
+      </div>
+    </div>
+    <p class="lede" style="margin-top:24px">The gift stays clean and whole.
+      Running costs are recovered through a clearly labelled admin fee, never
+      skimmed from what reaches the charity.</p>
+  </div>
+</section>
+
+<section class="charities">
+  <div class="wrap">
+    <span class="eyebrow">Causes our members support</span>
+    <div class="row">
+      <div class="ph">LOGO</div><div class="ph">LOGO</div>
+      <div class="ph">LOGO</div><div class="ph">LOGO</div>
+      <div class="ph">LOGO</div>
+    </div>
+    <p class="note">Real charity logos and bespoke illustrations go here in
+      the engagement pass.</p>
+  </div>
+</section>
+
+<section id="diff">
+  <div class="wrap">
+    <span class="eyebrow">What makes this different</span>
+    <h2>Built around relevance and honesty.</h2>
+    <div class="diff">
+      <div class="d">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <path d="M24 6l4.6 3.4 5.7-.2 1.7 5.4 4.6 3.4-1.7 5.4 1.7 5.4-4.6 3.4-1.7 5.4-5.7-.2L24 42l-4.6-3.4-5.7.2-1.7-5.4-4.6-3.4 1.7-5.4-1.7-5.4 4.6-3.4 1.7-5.4 5.7.2z" class="ln" stroke-width="2.2"/>
+          <path d="M18 24l4.5 4.5 8.5-9" class="ln-c" stroke-width="2.6"/>
+        </svg>
+        <h3>Qualified by requirement</h3>
+        <p>No cold asks. A vendor must show why the meeting earns your time
+          before it ever reaches you.</p></div>
+      <div class="d">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <path d="M24 39C14 32 9 26 9 19a7 7 0 0 1 15-3 7 7 0 0 1 15 3c0 7-5 13-15 20z" class="ln-m" stroke-width="2.4"/>
+          <path d="M24 17v10M19 22h10" class="ln-m" stroke-width="2.2"/>
+        </svg>
+        <h3>A deliberately larger gift</h3>
+        <p>The donation is set high on purpose, so the impact is real, not a
+          token gesture.</p></div>
+      <div class="d">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="24" r="17" class="ln" stroke-width="2.2"/>
+          <circle cx="24" cy="24" r="9" class="ln" stroke-width="2.2"/>
+          <circle cx="24" cy="24" r="2.6" fill="#F2897B"/>
+        </svg>
+        <h3>Nothing hidden</h3>
+        <p>The full money flow is on the page. No vague claims, no fine print
+          games.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="soft-mint">
+  <div class="wrap">
+    <div class="founding">
+      <span class="glow"></span>
+      <svg class="ic" width="58" height="58" viewBox="0 0 64 64" fill="none">
+        <path d="M32 10c2 14 5 17 20 19-15 2-18 5-20 19-2-14-5-17-20-19 15-2 18-5 20-19z" class="ln-c" stroke-width="2.6"/>
+        <circle cx="51" cy="15" r="3" class="ln-m" stroke-width="2.2"/>
+      </svg>
+      <span class="eyebrow">The first cohort</span>
+      <h2>Join as a founding member.</h2>
+      <p>The first group is invite only and small on purpose. Founding members
+        help shape how this works, and places are limited.</p>
+      <a class="btn" href="#apply">Request your place</a>
+    </div>
+  </div>
+</section>
+
+<section id="apply">
+  <div class="wrap">
+    <span class="eyebrow">Two ways in</span>
+    <h2>Start a conversation.</h2>
+    <div class="paths">
+      <div class="path exec" id="exec">
+        <svg class="ic" width="52" height="52" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="22" r="10" class="ln-c" stroke-width="2.6"/>
+          <path d="M14 52c0-10 8-16 18-16s18 6 18 16" class="ln-c" stroke-width="2.6"/>
+        </svg>
+        <span class="tag">For executives</span>
+        <h3>Free to join.</h3>
+        <p>You decide what is relevant, you take only the meetings you want,
+          and your charity benefits every single time.</p>
+        <a class="btn" href="#">Book a call</a>
+      </div>
+      <div class="path vend" id="vendor">
+        <svg class="ic" width="52" height="52" viewBox="0 0 64 64" fill="none">
+          <path d="M14 16h30a6 6 0 0 1 6 6v14a6 6 0 0 1-6 6H26l-12 9V22a6 6 0 0 1 6-6z" class="ln-m" stroke-width="2.6"/>
+          <path d="M23 27h18M23 33h12" class="ln-m" stroke-width="2.4"/>
+        </svg>
+        <span class="tag">For vendors</span>
+        <h3>Reach leaders honestly.</h3>
+        <p>State your reason, meet on their terms, and fund real impact while
+          you build the relationships you need.</p>
+        <a class="btn mint" href="#">Book a call</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="founder-sec">
+  <div class="wrap">
+    <div class="founder">
+      <div class="ava">IH</div>
+      <div>
+        <span class="eyebrow">From the founder</span>
+        <p style="margin-top:12px">I kept seeing senior people buried in
+          irrelevant outreach, and vendors with genuine value unable to get
+          through honestly. TheBigIntro is my attempt to fix both at once, and
+          to make every meeting count for a cause that matters.</p>
+        <div class="sig">Isobel Hardwick, founder</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <span class="eyebrow">Questions</span>
+    <h2 style="margin-bottom:24px">Good things to ask.</h2>
+    <details open><summary>Is this just a sales meeting in disguise?
+      <span class="i">+</span></summary>
+      <p>No. A vendor cannot reach you without stating a specific, relevant
+        reason, and the meeting is about your priorities, not a hard sell.</p>
+    </details>
+    <details><summary>Which charities can I choose?<span class="i">+</span></summary>
+      <p>Your chosen registered charity. You direct exactly where the donation
+        goes.</p></details>
+    <details><summary>What does it cost an executive?<span class="i">+</span></summary>
+      <p>Nothing. It is free for executives. Vendors fund the model.</p></details>
+    <details><summary>Why founding members?<span class="i">+</span></summary>
+      <p>We are starting deliberately small so the first members shape how this
+        works. Places are limited.</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fcols">
+      <div>
+        <a href="#" class="logo">The<span>Big</span>Intro</a>
+        <p style="margin-top:14px;max-width:34ch;font-size:.94rem">
+          Relevant senior meetings that fund real giving. Australia first,
+          invite only.</p>
+      </div>
+      <div><strong>Explore</strong>
+        <a href="#how">How it works</a><a href="#exec">For executives</a>
+        <a href="#vendor">For vendors</a><a href="#">About</a></div>
+      <div><strong>Legal</strong>
+        <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a></div>
+    </div>
+    <div class="fnote">TheBigIntro · relevant senior meetings that fund real giving</div>
+  </div>
+</footer>
+</body>
+</html>

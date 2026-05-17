@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Inter } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Nav } from "./_components/nav";
 import { Footer } from "./_components/footer";
 import { SITE_URL, SITE_DESCRIPTION } from "@/lib/config";
 
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
-  weight: ["500", "700", "800"],
+  weight: ["500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -43,10 +43,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={`${bricolage.variable} ${inter.variable}`}
-    >
+    <html lang="en" className={`${jakarta.variable} ${inter.variable}`}>
       <body suppressHydrationWarning>
         <Nav />
         <main>{children}</main>

@@ -89,18 +89,21 @@ Lean, validation appropriate. Every page is wired into the footer.
 
 ## 7. Visual identity (LOCKED 2026-05-17, full spec in DESIGN.md)
 
-Canonical reference: `mockups/the-design-final.html`. Full spec in DESIGN.md.
+Canonical reference: `mockups/the-design-fresh.html`, mirrored live in
+`app/globals.css`. Full spec in DESIGN.md. (Superseded an earlier
+crimson/Bricolage exploration kept in the other mockups/ files.)
 
-- Type: Bricolage Grotesque headlines (the main expressive device), Inter
-  body, self-hosted via next/font.
-- Palette: crimson is the single bold colour (hero underline, buttons, links,
-  the $1,000 figure, accents) on warm porcelain, deep-blue headline text only,
-  a whisper cream-yellow soft wash on the money section, espresso for the Why,
-  Founder, vendor card and footer. No green, orange, pink, purple, no second
-  bold, no strong yellow.
-- Calm everywhere except the crimson. More warmth comes later through content:
-  real charity logos, bespoke illustrations, custom emoji style icons. That is
-  a post-launch enhancement pass, not v1 scope.
+- Type: Plus Jakarta Sans headings, Inter body, self-hosted via next/font.
+- Palette: light and airy. Warm near-white bg, deep ink headline text only,
+  two soft fun colours used subtly (coral primary, mint secondary), gentle
+  coral/mint section tints, soft mint footer. The only dark moment is the
+  espresso "From the founder" panel. No blue or yellow backgrounds, no
+  purple, no second loud bold.
+- Refined line illustrations carry meaning (app/_components/icons.tsx),
+  editorial not childish. Real charity logos and more illustration come
+  later as a post-launch pass, not v1 scope.
+- Voice: executive-led, charity and meaningful conversation forward, keep
+  "qualified", no timer or urgency language.
 - Components: Nav, Footer, Hero, Section, StepCards, MoneySection, CharityStrip
   (placeholder for now), PathCards, FoundingPanel, FAQAccordion, FounderNote,
   CallButton.

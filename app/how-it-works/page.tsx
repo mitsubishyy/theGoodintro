@@ -1,28 +1,39 @@
 import type { Metadata } from "next";
 import { CallButton } from "../_components/call-button";
 import { Mark } from "../_components/mark";
+import {
+  IcoRelevant,
+  IcoQualified,
+  IcoMeeting,
+  IcoHeartDollar,
+  IcoSparkleBig,
+} from "../_components/icons";
 
 export const metadata: Metadata = {
   title: "How it works. TheBigIntro.",
   description:
-    "The full model end to end: how relevant meetings are matched, how the $1,000 charity gift and named admin fee work, and how leaders choose where the money goes.",
+    "The full model end to end: how relevant conversations are matched, how the $1,000 charity gift and named admin fee work, and how leaders choose where the giving goes.",
 };
 
 export default function HowItWorks() {
   return (
     <>
-      <header className="wrap hero">
-        <span className="eyebrow">How it works</span>
-        <h1>
-          The whole model, <Mark>in the open</Mark>.
-        </h1>
-        <p className="lede">
-          One requirement keeps it honest: a vendor must say why a meeting is
-          relevant before a leader ever sees it. Everything else follows from
-          that.
-        </p>
-        <div className="cta">
-          <CallButton>Start a conversation</CallButton>
+      <header className="hero">
+        <span className="b b1" />
+        <span className="b b2" />
+        <div className="wrap inner">
+          <span className="eyebrow">How it works</span>
+          <h1>
+            The whole model, <Mark>in the open</Mark>.
+          </h1>
+          <p className="lede">
+            One requirement keeps it honest: a vendor must say why a
+            conversation is relevant before a leader ever sees it. Everything
+            else, including the giving, follows from that.
+          </p>
+          <div className="cta">
+            <CallButton>Start a conversation</CallButton>
+          </div>
         </div>
       </header>
 
@@ -31,17 +42,17 @@ export default function HowItWorks() {
           <span className="eyebrow">End to end</span>
           <h2>From request to real giving.</h2>
           <div className="grid3">
-            <div className="step">
-              <div className="n">01</div>
+            <div className="card">
+              <IcoRelevant />
               <h3>The leader sets relevance</h3>
               <p>
                 An executive joins free and tells us the priorities they will
-                actually take meetings about. Nothing outside that gets near
-                them.
+                actually take conversations about. Nothing outside that gets
+                near them.
               </p>
             </div>
-            <div className="step">
-              <div className="n">02</div>
+            <div className="card">
+              <IcoQualified />
               <h3>The vendor qualifies the ask</h3>
               <p>
                 A vendor states the specific initiative or problem. That
@@ -49,11 +60,11 @@ export default function HowItWorks() {
                 obligation.
               </p>
             </div>
-            <div className="step">
-              <div className="n">03</div>
-              <h3>The meeting funds a cause</h3>
+            <div className="card">
+              <IcoMeeting />
+              <h3>The conversation funds a cause</h3>
               <p>
-                One focused conversation happens, and a substantial donation
+                One meaningful conversation happens, and a substantial donation
                 goes to the leader&apos;s chosen registered charity.
               </p>
             </div>
@@ -61,12 +72,15 @@ export default function HowItWorks() {
         </div>
       </section>
 
-      <section className="money">
+      <section className="soft-coral">
         <div className="wrap">
           <span className="eyebrow">Where the money goes</span>
           <h2>The money flow, exactly.</h2>
           <div className="moneywrap">
-            <div className="bignum">$1,000</div>
+            <div className="bignum">
+              $1,000
+              <IcoHeartDollar />
+            </div>
             <div className="mlines">
               <div className="r">
                 <span className="k">To the chosen charity, per meeting</span>
@@ -86,7 +100,7 @@ export default function HowItWorks() {
               </div>
             </div>
           </div>
-          <p className="lede" style={{ marginTop: 26 }}>
+          <p className="lede" style={{ marginTop: 24 }}>
             The charity figure stays whole on purpose. Running costs are
             recovered through the named admin fee, so the two numbers never get
             blended.
@@ -94,15 +108,15 @@ export default function HowItWorks() {
         </div>
       </section>
 
-      <section className="dark">
+      <section className="soft-mint">
         <div className="wrap">
           <span className="eyebrow">Choosing the charity</span>
           <h2>The leader decides, every time.</h2>
           <p className="lede">
             The executive directs where the donation goes, to their chosen
-            registered charity. It is their meeting and their cause. At launch
-            we are Australia first so the giving stays local and verifiable
-            while the model is proven.
+            registered charity. It is their conversation and their cause. At
+            launch we are Australia first so the giving stays local and
+            verifiable while the model is proven.
           </p>
         </div>
       </section>
@@ -110,7 +124,7 @@ export default function HowItWorks() {
       <section>
         <div className="wrap">
           <span className="eyebrow">Questions</span>
-          <h2 style={{ marginBottom: 20 }}>Good things to ask.</h2>
+          <h2 style={{ marginBottom: 24 }}>Good things to ask.</h2>
           <details open>
             <summary>
               Who pays for the meeting?<span className="i">+</span>
@@ -141,12 +155,12 @@ export default function HowItWorks() {
         </div>
       </section>
 
-      <section className="alt">
+      <section className="soft-mint">
         <div className="wrap">
           <div className="founding">
-            <span className="eyebrow" style={{ color: "rgba(255,255,255,.8)" }}>
-              The first cohort
-            </span>
+            <span className="glow" />
+            <IcoSparkleBig />
+            <span className="eyebrow">The first cohort</span>
             <h2>Be part of shaping it.</h2>
             <p>
               Invite only and small on purpose. Founding members help decide
