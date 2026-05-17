@@ -1,75 +1,94 @@
 # TheBigIntro — Design System
 
-Identity direction: modern and trusted. Crisp, structured, credible. It should
-read like a serious B2B platform that senior leaders trust with their time. It
-must feel clearly separate from QuotaClub (which is warm terracotta editorial).
+Locked 2026-05-17. Canonical reference: `mockups/the-design-final.html`.
+This is the "for now" system: deliberately calm so that future content
+(charity logos, bespoke illustrations, custom emoji) brings the warmth and
+engagement without clashing.
 
-## Principles
+## Hard rules (do not break)
 
-1. Confident, not flashy. Restraint signals seriousness.
-2. Clarity is the brand. The model is unusual, so the design must explain.
-3. One accent only. Colour is used sparingly for emphasis and action.
-4. Generous space. Senior readers skim. Let the page breathe.
-5. Honest by default. No fake stats, no stock-photo theatre, no dark patterns.
-
-## Colour
-
-| Token | Use | Proposed value |
-|---|---|---|
-| surface | Page background | #FFFFFF |
-| surface-alt | Section banding | #F5F7FA |
-| ink | Primary text, headings | #0E1A2B |
-| ink-soft | Secondary text | #45526A |
-| accent | Links, primary actions | #2F6BFF (cobalt, to confirm) |
-| accent-press | Active and hover | #1F4FCC |
-| line | Borders, dividers | #E3E8F0 |
-| positive | Charity and impact figures | #0E7A5F |
-
-The accent is deliberately a cool blue so the brand never reads like
-QuotaClub's terracotta. Final accent is an open decision in PLAN.md.
+1. Blue is for headline and title text only. No surface, hero, panel, footer
+   or section background is ever blue. See memory feedback note.
+2. Backgrounds are warm but never yellow.
+3. Nothing may resemble QuotaClub (warm terracotta editorial) or reuse any
+   MeetMagic language, slogan, acronym, or the word "magic".
+4. No em dashes or en dashes in prose. En dashes only in numeric ranges.
+5. No purple, no pink, no orange, no yellow as brand colour. The signature is
+   deliberately not a loud accent for now.
 
 ## Type
 
-- Headings: a geometric grotesk, tight tracking, large and confident.
-- Body: a clean neutral sans at comfortable reading size.
-- Self-hosted with next/font. No external font network calls.
+- Headlines: Fraunces (warm contemporary serif), weights 500 to 650, optical
+  sizing. Tight letter spacing, large and confident.
+- Body and UI: Inter, 400 to 700.
+- Production: self host both with next/font. No external font network calls.
+- Scale (desktop, rem): h1 clamp to 4.7, h2 to 2.8, h3 1.3, body 1.0625,
+  lede 1.2, eyebrow 0.74 uppercase tracked.
 
-Scale (desktop, rem): display 3.5, h1 2.5, h2 1.875, h3 1.375, body 1.0625,
-small 0.875. Line height 1.15 for headings, 1.6 for body.
+## Colour
+
+| Token | Use | Value |
+|---|---|---|
+| paper | Page background | #F7F1ED |
+| paper-alt | Section banding | #EFE7DF |
+| card | Cards | #FCF8F5 |
+| ink | Headline text only (the deep blue) | #16243B |
+| body | Body text | #46434A |
+| sage | The money section background | #DCE4DD |
+| forest | Money figure, buttons, accents, links | #2F5E49 |
+| forest-d | Button hover and press | #244A3A |
+| espresso | Founding panel, vendor card, footer | #221E1C |
+| line | Hairlines and dividers | #E7DBD3 |
+
+Forest green is the single working colour. It carries actions and the money
+figure, so green consistently means "money and impact". There is no red,
+orange, pink, purple or yellow anywhere. The page reads calm and professional
+on purpose.
 
 ## Layout
 
-- Twelve column grid, max content width about 1200px, comfortable gutters.
-- Section vertical rhythm generous and consistent.
-- Alternating white and surface-alt bands to separate ideas.
-- Mobile first, single column under 768px, all touch targets at least 44px.
+- Max content width 1140px, 32px gutters, generous vertical rhythm.
+- Alternating paper and paper-alt bands. The money section is the only
+  coloured band (soft sage).
+- Mobile first, single column under 860px, touch targets at least 44px.
 
 ## Components
 
-- Nav: text logo "TheBigIntro", minimal links, one accent action button.
-- Footer: every page linked, quiet, includes legal and contact.
-- Hero: short headline, one sentence subhead, one primary action.
-- Section: titled block with optional eyebrow label.
-- StepList: numbered three-step explanation.
-- MoneyFlow: the where-the-money-goes block, the $1,000 figure emphasised in
-  the positive colour, admin fee shown as a separate clearly labelled line.
-- PathCards: two cards, executives and vendors, each one action.
-- FoundingCohort: invite-only framing with scarcity stated honestly.
-- FAQAccordion: native details and summary, plus icon rotating to a cross on
-  open, only one concern surfaced at a time, never all expanded.
-- FounderNote: small portrait optional, short signed note from Issy.
-- CallButton: the single conversion control, links to Calendly.
+- Nav: serif wordmark "TheBigIntro" with the middle word in forest, one
+  forest action button.
+- Hero: serif headline with a hand-drawn forest underline on the key phrase.
+- Step cards: card surface, forest top rule, oversized serif numeral.
+- Money section: soft sage background, deep-blue heading, large forest
+  `$1,000`, transparent breakdown with the named admin fee as a separate line.
+- Charity strip: greyscale placeholder now, real logos later.
+- Founding panel: espresso, paper button, honest scarcity.
+- Path cards: executives on forest, vendors on espresso.
+- FAQ: native details and summary, plus icon rotating to a cross, only one
+  concern open at a time.
+- Footer: espresso, every page linked.
+
+## Engagement roadmap (later, not v1 launch)
+
+The calm base is intentional. Warmth and personality arrive through content:
+
+1. Real charity logos in the charity strip.
+2. Bespoke illustrations and custom emoji style icons (to be designed) for the
+   steps, the differentiators and the founding panel.
+3. Possible subtle motion on the hero underline and section reveals.
+
+These must sit on the locked palette and rules above. They add warmth, they do
+not introduce a loud brand accent or break any hard rule.
 
 ## Accessibility
 
-- WCAG AA contrast minimum on all text and controls.
-- Visible keyboard focus styles in the accent colour.
-- Accordions and buttons use real semantic elements.
-- Respect prefers-reduced-motion. Motion is subtle by default.
+- WCAG AA contrast minimum on text and controls.
+- Visible keyboard focus styles in forest.
+- Real semantic elements for accordions and buttons.
+- Respect prefers-reduced-motion.
 
 ## Quality bar
 
-A page is done when: the model is understandable by a busy executive in one
-read, there is exactly one obvious action, nothing invented is presented as
-fact, it is fully responsive, it passes AA contrast, and it does not resemble
-QuotaClub or reuse any MeetMagic language.
+Done when: a busy executive understands the model in one read, there is one
+obvious action per view, nothing invented is presented as fact, it is fully
+responsive, it passes AA contrast, it contains zero blue backgrounds, and it
+does not resemble QuotaClub or reuse any MeetMagic language.

@@ -85,15 +85,20 @@ Lean, validation appropriate. Every page is wired into the footer.
   scope.
 - `/about`: Issy, why she is building this, the founding-member invitation.
 
-## 7. Visual identity (summary, full spec in DESIGN.md)
+## 7. Visual identity (LOCKED 2026-05-17, full spec in DESIGN.md)
 
-- Palette: white surfaces, deep navy-ink primary, one bright cool accent
-  (proposed cobalt) chosen to stay clearly away from QuotaClub's terracotta.
-- Type: geometric grotesk for headings, clean sans for body, self-hosted via
-  next/font.
-- Layout: strong twelve column grid, generous spacing, confident not flashy.
-- Components: Nav, Footer, Hero, Section, StepList, MoneyFlow, PathCards,
-  FoundingCohort, FAQAccordion, FounderNote, CallButton.
+Canonical reference: `mockups/the-design-final.html`. Full spec in DESIGN.md.
+
+- Type: Fraunces serif headlines, Inter body, self-hosted via next/font.
+- Palette: warm porcelain and espresso neutrals, deep-blue headline text only,
+  a soft sage money section with a forest-green figure. Forest green also
+  carries buttons, links and accents. No red, orange, pink, purple or yellow.
+- The calm base is deliberate. Engagement comes later through content, not a
+  loud accent: real charity logos, bespoke illustrations, custom emoji style
+  icons. This is a post-launch enhancement pass, not v1 scope.
+- Components: Nav, Footer, Hero, Section, StepCards, MoneySection, CharityStrip
+  (placeholder for now), PathCards, FoundingPanel, FAQAccordion, FounderNote,
+  CallButton.
 
 ## 8. Technical approach
 
@@ -129,7 +134,8 @@ Lean, validation appropriate. Every page is wired into the footer.
    Registration to be confirmed by Issy before deploy.
 2. Calendly: stubbed for launch. CallButton renders with a placeholder href
    and a visible TODO marker until Issy supplies the real event link.
-3. Accent colour: cobalt #2F6BFF confirmed.
+3. Colour: forest green #2F5E49 as the single working colour, no loud
+   accent. Calm sage money section. Locked, full spec in DESIGN.md.
 4. Tagline: "Meetings that fund what matters."
 5. Charities: copy uses "your chosen registered charity", no named partners
    yet.
