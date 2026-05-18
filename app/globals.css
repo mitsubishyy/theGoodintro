@@ -184,13 +184,13 @@ nav {
   gap: 30px;
   align-items: center;
 }
-.nlinks a {
+.nlinks a:not(.btn) {
   color: var(--body);
   text-decoration: none;
   font-weight: 600;
   font-size: 0.96rem;
 }
-.nlinks a:hover {
+.nlinks a:not(.btn):hover {
   color: var(--ink);
 }
 
