@@ -23,6 +23,7 @@ export function Footer() {
             <Link href="/executives">For executives</Link>
             <Link href="/vendors">For vendors</Link>
             <Link href="/about">About</Link>
+            <Link href="/opportunity">Partner with us</Link>
           </div>
           <div>
             <strong>Legal</strong>

@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/vendors",
     "/how-it-works",
     "/about",
+    "/opportunity",
     "/privacy",
     "/terms",
   ];
