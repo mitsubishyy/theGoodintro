@@ -1,6 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BadgeCheck, Heart, HeartHandshake, Target } from "lucide-react";
 import { CALENDLY_URL } from "@/lib/config";
+import {
+  PageHero,
+  SectionHead,
+  ClosingCta,
+  PrimaryCta,
+} from "../_components/ui";
+import {
+  IconBriefcase,
+  IconHandshake,
+  IconIntro,
+  IconHeartCircle,
+  IconNetwork,
+} from "../_components/icons";
+import { OpportunityIllustration } from "../_components/illustrations";
 
 export const metadata: Metadata = {
   title: "Partner with me. TheBigIntro.",
@@ -10,170 +25,201 @@ export const metadata: Metadata = {
 
 export default function Opportunity() {
   return (
-    <article>
-      <header>
-        <p>The opportunity</p>
-        <h1>Build this with me.</h1>
-        <p>
-          TheBigIntro is early. A marketplace where senior leaders take only
-          the meetings worth their time, and every one sends $1,000 to a
-          charity they choose. The idea is on the page. I am looking for one
-          person to build it into a company.
-        </p>
-        <p>
-          <a href={CALENDLY_URL}>Start a conversation</a>
-        </p>
-        <p>
-          Honest about the stage. No funding claimed, no team yet. A clear
-          model and the will to build it.
-        </p>
-      </header>
+    <>
+      <PageHero
+        eyebrow="The opportunity"
+        title="Build this"
+        italicWord="with me"
+        lede="TheBigIntro is early. A marketplace where senior leaders take only the meetings worth their time, and every one sends $1,000 to a charity they choose. The idea is on the page. I am looking for one person to build it into a company."
+        primaryCta="Start a conversation"
+        pill="Honest about the stage · Australia first"
+        bg="var(--cream-6)"
+        illustration={<OpportunityIllustration className="w-full h-auto" />}
+      />
 
+      {/* ── Why this is worth building ───────────────────────────── */}
       <section>
-        <p>Why this is worth building</p>
-        <h2>Two broken sides, one fix.</h2>
-        <p>
-          Senior leaders ignore most outreach because almost none of it is
-          relevant. Vendors spend heavily to reach them and mostly fail.
-          Neither side has a reason to make the exchange worth anything
-          beyond the deal. TheBigIntro changes the incentive: a meeting
-          happens only when it is genuinely relevant, and when it does, real
-          money goes to a cause the leader chose.
-        </p>
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <SectionHead
+            label="Why this is worth building"
+            title="Two broken sides, one fix."
+            lede="Senior leaders ignore most outreach because almost none of it is relevant. Vendors spend heavily to reach them and mostly fail. Neither side has a reason to make the exchange worth anything beyond the deal. TheBigIntro changes the incentive: a meeting happens only when it is genuinely relevant, and when it does, real money goes to a cause the leader chose."
+          />
+        </div>
       </section>
 
-      <section>
-        <p>The model</p>
-        <h2>Simple, and hard to game.</h2>
-        <ul>
-          <li>
-            <h3>Qualified by requirement</h3>
-            <p>
-              A vendor must state a specific initiative before a request
-              reaches a leader. Relevance is the entry fee.
-            </p>
-          </li>
-          <li>
-            <h3>$1,000 a meeting to charity</h3>
-            <p>
-              Every meeting sends $1,000 to the leader&apos;s chosen
-              registered charity. A separate, clearly named admin fee covers
-              the platform.
-            </p>
-          </li>
-          <li>
-            <h3>Free for the scarce side</h3>
-            <p>
-              Executives join free. Vendors pay, because access to a vetted,
-              relevant audience is worth it.
-            </p>
-          </li>
-        </ul>
-        <p>
-          The full flow, end to end, is on the{" "}
-          <Link href="/how-it-works">how it works page</Link>.
-        </p>
+      {/* ── The model ────────────────────────────────────────────── */}
+      <section
+        className="border-y"
+        style={{ background: "var(--mint-tint)", borderColor: "var(--border)" }}
+      >
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <SectionHead label="The model" title="Simple, and hard to game." />
+          <div className="mt-16 grid md:grid-cols-3 gap-4">
+            <OpCard
+              icon={IconHandshake}
+              title="Qualified by requirement"
+              body="A vendor must state a specific initiative before a request reaches a leader. Relevance is the entry fee."
+            />
+            <OpCard
+              icon={IconHeartCircle}
+              title="$1,000 a meeting to charity"
+              body="Every meeting sends $1,000 to the leader's chosen registered charity. A separate, clearly named admin fee covers the platform."
+            />
+            <OpCard
+              icon={IconIntro}
+              title="Free for the scarce side"
+              body="Executives join free. Vendors pay, because access to a vetted, relevant audience is worth it."
+            />
+          </div>
+          <p className="mt-10 text-center text-base text-muted-foreground">
+            The full flow, end to end, is on the{" "}
+            <Link className="underline underline-offset-4 hover:text-primary transition-colors" href="/how-it-works">
+              how it works page
+            </Link>
+            .
+          </p>
+        </div>
       </section>
 
+      {/* ── The wedge ────────────────────────────────────────────── */}
       <section>
-        <p>Why it can work</p>
-        <h2>The wedge.</h2>
-        <ul>
-          <li>
-            <h3>Relevance changes who says yes</h3>
-            <p>
-              The one requirement is what makes a senior person willing to be
-              here at all. It is the product, not a feature.
-            </p>
-          </li>
-          <li>
-            <h3>Giving changes the story</h3>
-            <p>
-              A $1,000 gift per meeting is a reason to take the call, and a
-              story worth repeating. It compounds goodwill instead of spending
-              it.
-            </p>
-          </li>
-          <li>
-            <h3>Australia first keeps it provable</h3>
-            <p>
-              Starting in one market keeps the giving verifiable and the
-              quality high while the model is proven.
-            </p>
-          </li>
-        </ul>
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <SectionHead label="Why it can work" title="The wedge." />
+          <div className="mt-16 grid md:grid-cols-3 gap-4">
+            <OpCard
+              icon={BadgeCheck}
+              title="Relevance changes who says yes"
+              body="The one requirement is what makes a senior person willing to be here at all. It is the product, not a feature."
+              lucide
+            />
+            <OpCard
+              icon={Heart}
+              title="Giving changes the story"
+              body="A $1,000 gift per meeting is a reason to take the call, and a story worth repeating. It compounds goodwill instead of spending it."
+              lucide
+            />
+            <OpCard
+              icon={Target}
+              title="Australia first keeps it provable"
+              body="Starting in one market keeps the giving verifiable and the quality high while the model is proven."
+              lucide
+            />
+          </div>
+        </div>
       </section>
 
-      <section>
-        <p>Where it is today</p>
-        <h2>Honest about the stage.</h2>
-        <p>
-          This is a validation site, not the platform. There is no outside
-          funding, no team yet, and no inflated numbers on this page on
-          purpose. What exists is a clear model, a name, and the conviction
-          to build it. The next step is proving demand on both sides and
-          building the first version.
-        </p>
+      {/* ── Where it is today ────────────────────────────────────── */}
+      <section
+        className="border-y"
+        style={{ background: "var(--stone-tint)", borderColor: "var(--border)" }}
+      >
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <SectionHead
+            label="Where it is today"
+            title="Honest about the stage."
+            lede="This is a validation site, not the platform. There is no outside funding, no team yet, and no inflated numbers on this page on purpose. What exists is a clear model, a name, and the conviction to build it. The next step is proving demand on both sides and building the first version."
+          />
+        </div>
       </section>
 
+      {/* ── Who I am looking for ─────────────────────────────────── */}
       <section>
-        <p>Who I am looking for</p>
-        <h2>One person to build it with.</h2>
-        <ul>
-          <li>
-            <h3>You open doors</h3>
-            <p>
-              You can reach senior leaders or vendors, and people take your
-              introductions seriously.
-            </p>
-          </li>
-          <li>
-            <h3>You build product</h3>
-            <p>
-              You can take this from a page to a working platform, and ship
-              without waiting to be told how.
-            </p>
-          </li>
-          <li>
-            <h3>You have done this</h3>
-            <p>
-              You have built a marketplace or a two-sided business before and
-              know where they break.
-            </p>
-          </li>
-        </ul>
-        <p>
-          You do not need all three. You need to complement what I bring, and
-          care that the giving is real. This is a founding partner, shaping
-          it from here, not a hire.
-        </p>
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <SectionHead label="Who I am looking for" title="One person to build it with." />
+          <div className="mt-16 grid md:grid-cols-3 gap-4">
+            <OpCard
+              icon={HeartHandshake}
+              title="You open doors"
+              body="You can reach senior leaders or vendors, and people take your introductions seriously."
+              lucide
+            />
+            <OpCard
+              icon={IconNetwork}
+              title="You build product"
+              body="You can take this from a page to a working platform, and ship without waiting to be told how."
+            />
+            <OpCard
+              icon={IconBriefcase}
+              title="You have done this"
+              body="You have built a marketplace or a two-sided business before and know where they break."
+            />
+          </div>
+          <p className="mt-10 text-center text-base text-muted-foreground italic max-w-3xl mx-auto">
+            You do not need all three. You need to complement what I bring,
+            and care that the giving is real. This is a founding partner,
+            shaping it from here, not a hire.
+          </p>
+        </div>
       </section>
 
-      <section>
-        <p>From the founder</p>
-        <h2>I would rather build it well than alone.</h2>
-        <p>
-          I am Isobel Hardwick. I have spent a long time on the sending side
-          of sales and I know exactly why this is needed. What I want now is
-          the right person to build it with.
-        </p>
-        <p>
-          <a href={CALENDLY_URL}>Start a conversation</a>
-        </p>
+      {/* ── From the founder ─────────────────────────────────────── */}
+      <section
+        className="border-t"
+        style={{ borderColor: "var(--border)" }}
+      >
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <div
+            className="rounded-3xl border p-10 md:p-14 max-w-4xl mx-auto"
+            style={{ background: "var(--stone-tint)", borderColor: "var(--stone-soft)" }}
+          >
+            <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+              From the founder
+            </div>
+            <h3 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">
+              I would rather build it well than{" "}
+              <span className="serif-italic">alone</span>.
+            </h3>
+            <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
+              I am Isobel Hardwick. I have spent a long time on the sending
+              side of sales and I know exactly why this is needed. What I
+              want now is the right person to build it with.
+            </p>
+            <div className="mt-8">
+              <PrimaryCta href={CALENDLY_URL}>Start a conversation</PrimaryCta>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section>
-        <p>The invitation</p>
-        <h2>If this is your kind of problem.</h2>
-        <p>
-          Tell me what you would change, what you would own, and where you
-          think it breaks. That is the conversation I want to have.
-        </p>
-        <p>
-          <a href={CALENDLY_URL}>Start a conversation</a>
-        </p>
-        <p>Early and honest. One conversation to start.</p>
-      </section>
-    </article>
+      <ClosingCta
+        title="If this is your kind"
+        italicWord="of problem."
+        lede="Tell me what you would change, what you would own, and where you think it breaks. That is the conversation I want to have."
+        primaryCta="Start a conversation"
+        sub="Early and honest · One conversation to start"
+      />
+    </>
+  );
+}
+
+function OpCard({
+  icon: Icon,
+  title,
+  body,
+  lucide,
+}: {
+  icon: React.ComponentType<{ className?: string; size?: number }>;
+  title: string;
+  body: string;
+  lucide?: boolean;
+}) {
+  return (
+    <div
+      className="rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-0.5"
+      style={{ background: "var(--card)", borderColor: "var(--border)" }}
+    >
+      <div className="size-10 rounded-xl bg-foreground/[0.04] grid place-items-center mb-6">
+        {lucide ? (
+          <Icon className="size-5 text-foreground" />
+        ) : (
+          <Icon size={20} className="text-foreground" />
+        )}
+      </div>
+      <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
+      <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+        {body}
+      </p>
+    </div>
   );
 }
