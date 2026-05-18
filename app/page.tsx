@@ -366,6 +366,25 @@ export default function Home() {
           </details>
         </div>
       </section>
+
+      <section className="closing">
+        <div className="wrap">
+          <div className="closecard reveal">
+            <span className="glow" />
+            <span className="eyebrow">The invitation</span>
+            <h2>Fewer meetings, real giving.</h2>
+            <p>
+              Apply as a founding executive. You decide what is relevant, you
+              take only the conversations you want, and the charity you choose
+              receives $1,000 each time.
+            </p>
+            <CallButton>Apply as a founding executive</CallButton>
+            <p className="closing-sub">
+              Free for executives. Invite only. One short call to start.
+            </p>
+          </div>
+        </div>
+      </section>
     </>
   );
 }

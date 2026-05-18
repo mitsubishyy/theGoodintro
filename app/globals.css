@@ -705,6 +705,55 @@ footer a:hover {
   }
 }
 
+/* ---- Closing CTA band ---- */
+.closing {
+  background: var(--tint-coral);
+}
+.closecard {
+  max-width: 780px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+}
+.closecard .glow {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: rgba(242, 137, 123, 0.18);
+  top: -150px;
+  left: 50%;
+  transform: translateX(-50%);
+  filter: blur(12px);
+  pointer-events: none;
+}
+.closecard .eyebrow,
+.closecard h2,
+.closecard p {
+  position: relative;
+}
+.closecard h2 {
+  margin: 0;
+  max-width: 16ch;
+}
+.closecard p {
+  color: var(--body);
+  max-width: 54ch;
+}
+.closecard .btn {
+  margin-top: 8px;
+}
+.closing-sub {
+  font-size: 0.95rem;
+  color: #8a8e99;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
 /* ---- Section-header rhythm ---- */
 .sect-head {
   max-width: 62ch;
