@@ -6,7 +6,7 @@ import { IcoBadgeCheck, IcoHeartPlus, IcoSparkleBig } from "../_components/icons
 export const metadata: Metadata = {
   title: "About. TheBigIntro.",
   description:
-    "Why Isobel Hardwick is building TheBigIntro: fix irrelevant outreach for senior leaders and make every conversation count for a cause that matters.",
+    "Why Isobel Hardwick is building TheBigIntro: fix irrelevant outreach for senior leaders and turn every conversation into $1,000 for a cause that matters.",
 };
 
 export default function About() {
@@ -16,24 +16,27 @@ export default function About() {
         <span className="b b1" />
         <span className="b b2" />
         <div className="wrap inner">
-          <span className="eyebrow">About</span>
-          <h1>
-            Built to fix <Mark>both sides</Mark>.
-          </h1>
-          <p className="lede">
-            Senior people are buried in irrelevant outreach. Vendors with
-            genuine value cannot get through honestly. TheBigIntro is an
-            attempt to fix both at once, and to make every conversation count.
-          </p>
-          <div className="cta">
-            <CallButton>Start a conversation</CallButton>
+          <div className="hero-copy">
+            <span className="eyebrow">About</span>
+            <h1>
+              Built to fix <Mark>both sides</Mark>.
+            </h1>
+            <p className="lede">
+              Senior people are buried in irrelevant outreach. Vendors with
+              genuine value cannot get through honestly. TheBigIntro fixes both
+              at once, and turns every conversation into $1,000 for a cause the
+              leader chooses.
+            </p>
+            <div className="cta">
+              <CallButton>Start a conversation</CallButton>
+            </div>
           </div>
         </div>
       </header>
 
       <section className="founder-sec">
         <div className="wrap">
-          <div className="founder">
+          <div className="founder reveal">
             <div className="ava">IH</div>
             <div>
               <span className="eyebrow">From the founder</span>
@@ -47,8 +50,8 @@ export default function About() {
               </p>
               <p style={{ marginTop: 12 }}>
                 TheBigIntro is that rule, built into a place. Every
-                conversation here funds a real donation to a cause the leader
-                chooses. That is the whole point.
+                conversation here sends $1,000 to a cause the leader chooses.
+                That is the whole point.
               </p>
               <div className="sig">Isobel Hardwick, founder</div>
             </div>
@@ -58,32 +61,40 @@ export default function About() {
 
       <section>
         <div className="wrap">
-          <span className="eyebrow">What we believe</span>
-          <h2>Three things we will not compromise.</h2>
-          <div className="diff">
-            <div className="d">
+          <div className="sect-head reveal">
+            <span className="eyebrow">What we believe</span>
+            <h2>Three things we will not compromise.</h2>
+          </div>
+          <div className="difflist reveal">
+            <div className="row2">
               <IcoBadgeCheck />
-              <h3>Relevance is earned</h3>
-              <p>
-                No one reaches a leader without a stated, specific reason. That
-                requirement is the product.
-              </p>
+              <div>
+                <h3>Relevance is earned</h3>
+                <p>
+                  No one reaches a leader without a stated, specific reason.
+                  That requirement is the product.
+                </p>
+              </div>
             </div>
-            <div className="d">
+            <div className="row2">
               <IcoHeartPlus />
-              <h3>Giving stays whole</h3>
-              <p>
-                The donation figure is never blended with our costs. The admin
-                fee is its own named line.
-              </p>
+              <div>
+                <h3>Giving stays whole</h3>
+                <p>
+                  The donation figure is never blended with our costs. The
+                  admin fee is its own named line.
+                </p>
+              </div>
             </div>
-            <div className="d">
+            <div className="row2">
               <IcoSparkleBig />
-              <h3>Small on purpose</h3>
-              <p>
-                We are starting with a deliberately small invite-only cohort so
-                the first members shape it.
-              </p>
+              <div>
+                <h3>Small on purpose</h3>
+                <p>
+                  We are starting with a deliberately small invite-only cohort
+                  so the first members shape it.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -91,7 +102,7 @@ export default function About() {
 
       <section className="soft-mint">
         <div className="wrap">
-          <div className="founding">
+          <div className="founding reveal">
             <span className="glow" />
             <IcoSparkleBig />
             <span className="eyebrow">The first cohort</span>
@@ -101,6 +112,25 @@ export default function About() {
               in how TheBigIntro runs.
             </p>
             <CallButton>Start a conversation</CallButton>
+          </div>
+        </div>
+      </section>
+
+      <section className="closing">
+        <div className="wrap">
+          <div className="closecard reveal">
+            <span className="glow" />
+            <span className="eyebrow">The invitation</span>
+            <h2>A few better conversations.</h2>
+            <p>
+              Apply as a founding executive. You decide what is relevant, you
+              take only the conversations you want, and the charity you choose
+              receives $1,000 each time.
+            </p>
+            <CallButton>Apply as a founding executive</CallButton>
+            <p className="closing-sub">
+              Free for executives. Invite only. One short call to start.
+            </p>
           </div>
         </div>
       </section>
