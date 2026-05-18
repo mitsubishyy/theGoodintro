@@ -1,7 +1,11 @@
 # TheBigIntro — Website Build Plan
 
-Status: planning, agreed 2026-05-17. This document is the source of truth for
-the first website. It is a validation marketing site, not the platform.
+Status: business plan agreed 2026-05-17. Design reset 2026-05-18: the
+previous visual identity, language rules, design system and homepage
+section flow have been wiped so the site can be redesigned from scratch.
+The copy from the previous build is preserved in `copy/*.md`. The
+strategy, site map and per-page intent below are still the source of
+truth. It is a validation marketing site, not the platform.
 
 ## 1. Goal of this site
 
@@ -20,71 +24,28 @@ Success signal: booked calls from credible executives and willing vendors.
 |---|---|
 | Site type | Static validation marketing site. No login, no database, no booking engine. |
 | Stack | Next.js 16 (App Router), React 19, Tailwind v4, TypeScript, Vercel. Mirrors QuotaClub so it is easy to maintain. |
-| Identity | Fresh and distinct from QuotaClub. "Modern and trusted": white, deep navy-ink, one bright accent, geometric grotesk type, strong grid. |
 | Lead audience | Homepage speaks to executives first, with a clear secondary path for vendors. |
 | Conversion | Homepage commits to the executive; the vendor is routed to a first-class /vendors page. Both sides book a call via Calendly. |
 | Credibility | Founding-member framing. Invite-only first cohort. No invented stats or fake testimonials. |
 | Disclosure | Full transparency: $1,000 per meeting to charity, a separate clearly named admin fee, Australia-first. |
 
-## 3. Language rules
+Visual identity, voice and language rules: open. To be redecided as part of the
+design reset.
 
-- Do not reuse anything from MeetMagic: not the word "magic" in any form, not
-  "Magic Circle", not the "MAGIC" acronym, not "Turn Your Expertise Into
-  Impact", "Zero Wasted Time", "Meet Better", "Connecting The Business World
-  for Good", "turning conversation into contribution", "time well spent",
-  "pitch-free".
-- No em dashes or en dashes in prose. En dashes only inside numeric ranges.
-- Do not invent a forced acronym. The name stays literal: TheBigIntro.
-
-## 4. Site map
+## 3. Site map
 
 Lean, validation appropriate. Every page is wired into the footer.
 
-1. `/` Home (executive only; vendor routed to /vendors via the hero link, the bar-for-vendors pointer, and the footer)
+1. `/` Home (executive only; vendor routed to /vendors via the hero link and the footer)
 2. `/executives` For executives (deep value, how it works for them, CTA)
 3. `/vendors` For vendors (value, qualification expectations, pricing, CTA)
 4. `/how-it-works` The full model end to end, including the money flow
 5. `/about` Issy and the why, founding-member positioning
-6. `/privacy` Privacy policy (lightweight)
-7. `/terms` Terms (lightweight)
+6. `/opportunity` Co-founder pitch (footer-linked)
+7. `/privacy` Privacy policy (lightweight)
+8. `/terms` Terms (lightweight)
 
-## 5. Homepage section flow
-
-1. Hero. Headline "Meetings that fund what matters" plus subhead. Primary CTA
-   "Apply as a founding executive" to Calendly. Secondary inline link "Are you
-   a vendor?".
-2. Why this exists. The senior leader's inbox is full of irrelevant pitches.
-   What if the few meetings worth taking also did real good. Dark espresso
-   section.
-3. How it works in three steps for executives: you define what is relevant,
-   you only receive context-rich qualified requests, you take one focused
-   meeting and $1,000 goes to your chosen charity.
-4. Where the money goes. Plain transparency block: the full meeting fee to
-   charity equals $1,000, the admin fee is charged separately and named,
-   Australia-first.
-5. What makes this different. Requests must state the specific initiative or
-   challenge, the donation is deliberately higher, the model is fully
-   transparent. Stated as our position, never by naming a competitor.
-6. Causes band. Real cause-area pills, never "LOGO" placeholders.
-7. What makes this different. Editorial icon-and-text list.
-8. Who this is for. Standards block (the executive, the bar for vendors
-   with a link to /vendors, where we start). Standards, not scarcity.
-9. You stay in control. Process and risk-reversal reassurances.
-10. Founding cohort. Invite-only first group, you help shape it. No
-    "limited places" or any urgency language.
-11. Founder note. Short, from Issy, espresso section.
-12. FAQ. Collapsible native details/summary accordion, plus rotating to
-    a cross. Never all expanded.
-13. Closing CTA band, then footer with every page linked.
-
-The homepage no longer carries a co-equal two-audience band. It commits
-to the executive; the vendor is routed to /vendors via the hero link,
-the "bar for vendors" pointer, and the footer. This audience decision is
-locked, informed by how AlphaSights, Hampton, Toptal and Intro.co handle
-two-sided sites (commit the homepage, route the other side). See
-DESIGN.md "Voice".
-
-## 6. Per-page intent
+## 4. Per-page intent
 
 - `/executives`: expand the three steps, address the trust question (this is
   not a sales trap), explain charity choice, time commitment, the founding
@@ -97,32 +58,11 @@ DESIGN.md "Voice".
   flow diagram in words, qualification, charity selection, Australia-first
   scope.
 - `/about`: Issy, why she is building this, the founding-member invitation.
+- `/opportunity`: honest about the stage, the model, the wedge, who I am
+  looking for as a co-founder.
 
-## 7. Visual identity (LOCKED 2026-05-17, full spec in DESIGN.md)
+## 5. Technical approach
 
-Canonical reference: `mockups/the-design-fresh.html`, mirrored live in
-`app/globals.css`. Full spec in DESIGN.md. (Superseded an earlier
-crimson/Bricolage exploration kept in the other mockups/ files.)
-
-- Type: Plus Jakarta Sans headings, Inter body, self-hosted via next/font.
-- Palette: light and airy. Warm near-white bg, deep ink headline text only,
-  two soft fun colours used subtly (coral primary, mint secondary), gentle
-  coral/mint section tints, soft mint footer. The only dark moment is the
-  espresso "From the founder" panel. No blue or yellow backgrounds, no
-  purple, no second loud bold.
-- Refined line illustrations carry meaning (app/_components/icons.tsx),
-  editorial not childish. Real charity logos and more illustration come
-  later as a post-launch pass, not v1 scope.
-- Voice: executive-led, charity and meaningful conversation forward, keep
-  "qualified", no timer or urgency language.
-- Components: Nav, Footer, Hero, Section, StepCards, MoneySection, CharityStrip
-  (placeholder for now), PathCards, FoundingPanel, FAQAccordion, FounderNote,
-  CallButton.
-
-## 8. Technical approach
-
-- Scaffold the Next.js app at the repo root (README, research/, marketing/
-  already exist and stay).
 - App Router, TypeScript strict, Tailwind v4, ESLint config mirroring
   QuotaClub.
 - SEO: per-page metadata, Open Graph image, sitemap.ts, robots, and the
@@ -130,41 +70,36 @@ crimson/Bricolage exploration kept in the other mockups/ files.)
   set).
 - Analytics: Vercel Analytics.
 - CallButton: links to a Calendly event. A dedicated TheBigIntro event is
-  preferred over reusing the QuotaClub link. See open decisions.
-- Deploy: new Vercel project connected to github.com/mitsubishyy/thebigintro,
+  preferred over reusing the QuotaClub link.
+- Deploy: Vercel project connected to github.com/mitsubishyy/thebigintro,
   custom domain once chosen.
-- DESIGN.md committed alongside this plan as the identity source of truth.
 
-## 9. Build sequence
+## 6. Build sequence (post-reset)
 
-1. Resolve the open decisions in section 10 that block the build.
-2. Scaffold Next.js, Tailwind, fonts, base layout, Nav and Footer.
-3. Build the design primitives (Section, buttons, typography scale).
-4. Build the homepage section by section.
-5. Build the four content pages.
-6. Add the two legal pages.
-7. SEO, analytics, accessibility and responsive passes.
-8. Deploy to Vercel, wire the domain, run IndexNow.
-9. Review against DESIGN.md quality bar.
+1. Decide the new visual direction and voice from scratch.
+2. Build the design primitives (typography, spacing, colour, components).
+3. Rebuild the homepage section by section using the copy in `copy/home.md`.
+4. Rebuild the four content pages from their respective copy files.
+5. Rebuild the two legal pages.
+6. SEO, analytics, accessibility and responsive passes.
+7. Deploy to Vercel, wire the domain, run IndexNow.
 
-## 10. Decisions (resolved 2026-05-17)
+## 7. Decisions (resolved 2026-05-17)
 
 1. Domain: thebigintro.com. Build assumes this for metadata and IndexNow.
    Registration to be confirmed by Issy before deploy.
 2. Calendly: stubbed for launch. CallButton renders with a placeholder href
    and a visible TODO marker until Issy supplies the real event link.
-3. Colour: crimson #E0263F (accessible #BC1733) is the single bold. Whisper
-   cream-yellow #F1ECDC soft wash on the money section, $1,000 figure in
-   crimson. Bricolage Grotesque headlines. Locked, full spec in DESIGN.md.
-4. Tagline: "Meetings that fund what matters."
-5. Charities: copy uses "your chosen registered charity", no named partners
+3. Tagline: "Meetings that fund what matters." (carries over from previous
+   build; revisit if the redesign suggests a different lead.)
+4. Charities: copy uses "your chosen registered charity", no named partners
    yet.
 
 Remaining follow-ups, non-blocking:
 - Confirm thebigintro.com registration before the Vercel domain step.
 - Supply the real Calendly link to replace the stub before public launch.
 
-## 11. Explicitly out of scope for this site
+## 8. Explicitly out of scope for this site
 
 - Accounts, authentication, profiles.
 - Meeting requests, booking engine, payments.

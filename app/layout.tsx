@@ -1,23 +1,8 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Inter } from "next/font/google";
+import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
-import { Nav } from "./_components/nav";
-import { Footer } from "./_components/footer";
-import { SITE_URL, SITE_DESCRIPTION } from "@/lib/config";
-
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-  display: "swap",
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
+import { SITE_URL, SITE_DESCRIPTION, CALENDLY_URL } from "@/lib/config";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -43,11 +28,31 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${jakarta.variable} ${inter.variable}`}>
+    <html lang="en">
       <body suppressHydrationWarning>
-        <Nav />
+        <header>
+          <Link href="/">TheBigIntro</Link>
+          <nav>
+            <Link href="/how-it-works">How it works</Link>
+            <Link href="/executives">For executives</Link>
+            <Link href="/vendors">For vendors</Link>
+            <Link href="/about">About</Link>
+            <a href={CALENDLY_URL}>Apply</a>
+          </nav>
+        </header>
         <main>{children}</main>
-        <Footer />
+        <footer>
+          <p>TheBigIntro · relevant senior meetings that fund real giving</p>
+          <nav>
+            <Link href="/how-it-works">How it works</Link>
+            <Link href="/executives">For executives</Link>
+            <Link href="/vendors">For vendors</Link>
+            <Link href="/about">About</Link>
+            <Link href="/opportunity">Partner with us</Link>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/terms">Terms</Link>
+          </nav>
+        </footer>
         <Analytics />
       </body>
     </html>
