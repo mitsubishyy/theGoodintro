@@ -673,7 +673,10 @@ footer a:hover {
 @media (max-width: 860px) {
   .grid3,
   .diff,
-  .paths {
+  .paths,
+  .giveflow,
+  .standardrow,
+  .control-list {
     grid-template-columns: 1fr;
   }
   .difflist .row2 {
@@ -752,6 +755,82 @@ footer a:hover {
   color: #8a8e99;
   font-weight: 500;
   margin-top: 2px;
+}
+
+/* ---- Trust: donation verification (within money section) ---- */
+.giveflow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin-top: 34px;
+}
+.gf {
+  border-top: 2px solid var(--coral-d);
+  padding-top: 14px;
+}
+.gf-k {
+  display: block;
+  font-family: var(--font-jakarta), sans-serif;
+  font-weight: 800;
+  color: var(--ink);
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+.gf-v {
+  color: var(--body);
+  font-size: 0.95rem;
+}
+
+/* ---- Trust: who this is for ---- */
+.standardrow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 50px;
+}
+.std-k {
+  display: block;
+  font-family: var(--font-jakarta), sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  color: var(--coral-d);
+  margin-bottom: 12px;
+}
+.std p {
+  color: var(--body);
+}
+
+/* ---- Trust: you stay in control ---- */
+.control-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  margin-top: 50px;
+}
+.ctl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: start;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--sh-1);
+  border-radius: 18px;
+  padding: 26px;
+}
+.ctl svg {
+  width: 34px;
+  height: 34px;
+  margin-top: 2px;
+}
+.ctl p {
+  color: var(--body);
+}
+.ctl strong {
+  color: var(--ink);
+  font-weight: 700;
 }
 
 /* ---- Section-header rhythm ---- */

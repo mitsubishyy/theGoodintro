@@ -162,6 +162,24 @@ export default function Home() {
             its costs through a clearly named admin fee paid by the vendor,
             never taken from the donation.
           </p>
+          <div className="giveflow reveal">
+            <div className="gf">
+              <span className="gf-k">After the meeting</span>
+              <span className="gf-v">
+                the donation is sent to your chosen registered charity
+              </span>
+            </div>
+            <div className="gf">
+              <span className="gf-k">You get confirmation</span>
+              <span className="gf-v">in writing, every time</span>
+            </div>
+            <div className="gf">
+              <span className="gf-k">The admin fee</span>
+              <span className="gf-v">
+                is the vendor&apos;s, billed separately
+              </span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -237,6 +255,87 @@ export default function Home() {
                   nothing buried in terms.
                 </p>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="soft-mint" id="who-for">
+        <div className="wrap">
+          <div className="sect-head reveal">
+            <span className="eyebrow">Who this is for</span>
+            <h2>Built for senior leaders.</h2>
+            <p className="lede">
+              Invite only, and curated on purpose. We are starting with senior
+              leaders in Australia whose time is genuinely in demand, and who
+              would value a few relevant conversations that also fund a cause
+              they choose.
+            </p>
+          </div>
+          <div className="standardrow reveal">
+            <div className="std">
+              <span className="std-k">The executive</span>
+              <p>
+                Director, executive or equivalent, where your attention is the
+                scarce thing. You set the topics, and nothing outside them
+                reaches you.
+              </p>
+            </div>
+            <div className="std">
+              <span className="std-k">The bar for vendors</span>
+              <p>
+                A specific initiative, genuine intent, no hard sell. Held to
+                that standard before they can ask.{" "}
+                <Link className="inl" href="/vendors">
+                  The vendor page &rarr;
+                </Link>
+              </p>
+            </div>
+            <div className="std">
+              <span className="std-k">Where we start</span>
+              <p>
+                Australia first, with a small founding cohort, so the first
+                members shape how it works.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="soft-coral" id="control">
+        <div className="wrap">
+          <div className="sect-head reveal">
+            <span className="eyebrow">What to expect</span>
+            <h2>You stay in control, always.</h2>
+          </div>
+          <div className="control-list reveal">
+            <div className="ctl">
+              <IcoBadgeCheck />
+              <p>
+                <strong>Every request states its reason.</strong> You see the
+                specific initiative before anything happens.
+              </p>
+            </div>
+            <div className="ctl">
+              <IcoQualified />
+              <p>
+                <strong>You approve or decline each one.</strong> Nothing is
+                automatic, and a no needs no explanation.
+              </p>
+            </div>
+            <div className="ctl">
+              <IcoMeeting />
+              <p>
+                <strong>One short conversation, on your terms.</strong> No hard
+                sell, and no obligation to meet again.
+              </p>
+            </div>
+            <div className="ctl">
+              <IcoTarget />
+              <p>
+                <strong>Your details are never sold or shared.</strong> You can
+                step away at any time.
+              </p>
             </div>
           </div>
         </div>
