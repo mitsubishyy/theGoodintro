@@ -14,8 +14,6 @@ import {
   IcoHeartPlus,
   IcoTarget,
   IcoSparkleBig,
-  IcoPerson,
-  IcoChat,
   IcoCross,
   IcoBook,
   IcoLeaf,
@@ -128,6 +126,11 @@ export default function Home() {
               </p>
             </div>
           </div>
+          <p className="loopline reveal">
+            A vendor states a specific need, you approve only what fits, you
+            have one short conversation, and $1,000 goes to your chosen
+            charity.
+          </p>
         </div>
       </section>
 
@@ -354,39 +357,6 @@ export default function Home() {
               support.
             </p>
             <CallButton>Request your place</CallButton>
-          </div>
-        </div>
-      </section>
-
-      <section id="apply">
-        <div className="wrap">
-          <div className="sect-head reveal">
-            <span className="eyebrow">Two ways in</span>
-            <h2>Start a conversation.</h2>
-          </div>
-          <div className="paths reveal">
-            <div className="path exec" id="exec">
-              <IcoPerson />
-              <span className="tag">For executives</span>
-              <h3>On your terms.</h3>
-              <p>
-                You decide what&apos;s relevant, you take only the
-                conversations you want, and the charity you choose receives
-                $1,000 each time. Free for executives, always.
-              </p>
-              <CallButton>Book a call</CallButton>
-            </div>
-            <div className="path vend" id="vendor">
-              <IcoChat />
-              <span className="tag">For vendors</span>
-              <h3>Reach leaders honestly.</h3>
-              <p>
-                Earn a qualified introduction to a vetted senior audience by
-                being genuinely relevant. Every meeting you book sends $1,000
-                to the executive&apos;s chosen charity.
-              </p>
-              <CallButton className="btn mint">Book a call</CallButton>
-            </div>
           </div>
         </div>
       </section>

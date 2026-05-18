@@ -22,7 +22,7 @@ Success signal: booked calls from credible executives and willing vendors.
 | Stack | Next.js 16 (App Router), React 19, Tailwind v4, TypeScript, Vercel. Mirrors QuotaClub so it is easy to maintain. |
 | Identity | Fresh and distinct from QuotaClub. "Modern and trusted": white, deep navy-ink, one bright accent, geometric grotesk type, strong grid. |
 | Lead audience | Homepage speaks to executives first, with a clear secondary path for vendors. |
-| Conversion | Two paths, "For executives" and "For vendors", both leading to a call booked via Calendly. |
+| Conversion | Homepage commits to the executive; the vendor is routed to a first-class /vendors page. Both sides book a call via Calendly. |
 | Credibility | Founding-member framing. Invite-only first cohort. No invented stats or fake testimonials. |
 | Disclosure | Full transparency: $1,000 per meeting to charity, a separate clearly named admin fee, Australia-first. |
 
@@ -40,7 +40,7 @@ Success signal: booked calls from credible executives and willing vendors.
 
 Lean, validation appropriate. Every page is wired into the footer.
 
-1. `/` Home (executive-led, with the vendor path clearly offered)
+1. `/` Home (executive only; vendor routed to /vendors via the hero link, the bar-for-vendors pointer, and the footer)
 2. `/executives` For executives (deep value, how it works for them, CTA)
 3. `/vendors` For vendors (value, qualification expectations, pricing, CTA)
 4. `/how-it-works` The full model end to end, including the money flow
@@ -65,13 +65,24 @@ Lean, validation appropriate. Every page is wired into the footer.
 5. What makes this different. Requests must state the specific initiative or
    challenge, the donation is deliberately higher, the model is fully
    transparent. Stated as our position, never by naming a competitor.
-6. Founding cohort. Invite-only first group, limited places, you help shape it.
-7. Two paths band. "For executives" and "For vendors" cards, each to Calendly.
-8. Founder note. Short, from Issy, gives the site a real face. Dark espresso
-   section, matching the Why section.
-9. FAQ. Collapsible accordion using native details and summary, a plus icon
-   that rotates to a cross on open. Never all expanded at once.
-10. Closing CTA and footer with every page linked.
+6. Causes band. Real cause-area pills, never "LOGO" placeholders.
+7. What makes this different. Editorial icon-and-text list.
+8. Who this is for. Standards block (the executive, the bar for vendors
+   with a link to /vendors, where we start). Standards, not scarcity.
+9. You stay in control. Process and risk-reversal reassurances.
+10. Founding cohort. Invite-only first group, you help shape it. No
+    "limited places" or any urgency language.
+11. Founder note. Short, from Issy, espresso section.
+12. FAQ. Collapsible native details/summary accordion, plus rotating to
+    a cross. Never all expanded.
+13. Closing CTA band, then footer with every page linked.
+
+The homepage no longer carries a co-equal two-audience band. It commits
+to the executive; the vendor is routed to /vendors via the hero link,
+the "bar for vendors" pointer, and the footer. This audience decision is
+locked, informed by how AlphaSights, Hampton, Toptal and Intro.co handle
+two-sided sites (commit the homepage, route the other side). See
+DESIGN.md "Voice".
 
 ## 6. Per-page intent
 

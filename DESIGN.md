@@ -122,11 +122,28 @@ giving), never a sparkle.
   identical mini-cards.
 - Founding card: white rounded card, mint glow, ribbon-medal-with-heart
   illustration, raised elevation, generous padding.
-- Path cards: executives on soft coral, vendors on soft mint, hover lift.
+- Trust band 1, "Who this is for": soft-mint, a three-up standards row
+  (the executive, the bar for vendors with a link to /vendors, where we
+  start). Standards, never scarcity pressure.
+- Trust band 2, "You stay in control": soft-coral, a 2x2 grid of
+  process and risk-reversal reassurances.
+- Donation verification: a three-part strip inside the money section
+  (sent after the meeting, written confirmation, admin fee billed
+  separately).
+- Loop line: one centred sentence under the How cards naming the full
+  loop start to finish.
 - Founder panel: espresso, coral avatar, the one dark moment.
 - FAQ: bordered rounded elevated accordions, plus icon rotating to a
   cross, raised on open or hover.
+- Closing CTA band: soft-coral on the homepage, soft-mint (`.vend`) on
+  /vendors, centred, glow, one button, a reassurance subline. Every
+  page must end on a clear ask before the footer.
 - Footer: soft mint tint, light, every page linked.
+- Social share card: `app/opengraph-image` (reused for Twitter), on the
+  locked palette with the mark and tagline. No bare links anywhere.
+- Section rhythm: vertical padding is 88px (56px on mobile). The
+  homepage commits to one audience; it does not carry a co-equal
+  two-audience band.
 
 ## Elevation & motion
 
@@ -144,6 +161,14 @@ giving), never a sparkle.
 
 Executive-led. Charity and meaningful conversation are the spine. Keep the
 word "qualified". Warm, plain, honest. No urgency tactics.
+
+Audience commitment (locked, informed by AlphaSights, Hampton, Toptal,
+Intro.co): the homepage speaks only to the executive. The vendor is the
+revenue side but the scarce, brand-defining side is the executive, so
+the vendor is routed to a first-class `/vendors` page via the hero link,
+the "bar for vendors" pointer, and the footer, never via a co-equal
+homepage band. `/vendors` is the vendor's homepage and matches this
+system one for one (sect-head rhythm, elevation, reveal, closing CTA).
 
 ## Engagement roadmap (later)
 

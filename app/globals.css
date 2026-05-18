@@ -107,7 +107,7 @@ a {
   color: var(--coral-d);
 }
 section {
-  padding: 104px 0;
+  padding: 88px 0;
 }
 .lede {
   font-size: 1.22rem;
@@ -694,7 +694,7 @@ footer a:hover {
     grid-template-columns: 1fr;
   }
   section {
-    padding: 68px 0;
+    padding: 56px 0;
   }
   .founding {
     padding: 42px 24px;
@@ -708,9 +708,27 @@ footer a:hover {
   }
 }
 
+/* ---- End-to-end loop line (How section) ---- */
+.loopline {
+  margin: 40px auto 0;
+  max-width: 760px;
+  text-align: center;
+  font-family: var(--font-jakarta), sans-serif;
+  font-weight: 700;
+  font-size: 1.16rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
 /* ---- Closing CTA band ---- */
 .closing {
   background: var(--tint-coral);
+}
+.closing.vend {
+  background: var(--tint-mint);
+}
+.closing.vend .glow {
+  background: rgba(79, 180, 147, 0.18);
 }
 .closecard {
   max-width: 780px;
