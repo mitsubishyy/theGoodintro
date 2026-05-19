@@ -43,6 +43,10 @@ them:
 - Magic / wizard imagery (MeetMagic uses this — must differentiate)
 - The words "magic", "magic circle", "MAGIC", "turn your expertise into impact",
   "zero wasted time", "meet better", "pitch-free" (MeetMagic vocabulary)
+- The word "marketplace" anywhere (hard rule). Use "network" or another
+  context fit ("invite-only network", "two-sided platform"). Note: still
+  present in app/page.tsx, app/apply/page.tsx, app/opportunity/page.tsx,
+  copy/opportunity.md and this file's intro; sweep on next copy pass.
 - Timer / countdown / urgency language anywhere
 - "Cute" copy, friendly-pastel illustrations, Notion-style hand-drawn doodles
 - Generic startup gradients

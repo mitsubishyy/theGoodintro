@@ -71,15 +71,6 @@ export async function POST(req: NextRequest) {
   const company = str(body.company, 200);
   const consent = body.consent === true || body.consent === "true";
 
-  if (!fullName) {
-    return NextResponse.json({ error: "Please enter your name." }, { status: 400 });
-  }
-  if (!title) {
-    return NextResponse.json({ error: "Please enter your title." }, { status: 400 });
-  }
-  if (!company) {
-    return NextResponse.json({ error: "Please enter your company." }, { status: 400 });
-  }
   if (!consent) {
     return NextResponse.json(
       { error: "Please confirm you are happy for your answers to be used to shape the platform." },
@@ -99,23 +90,23 @@ export async function POST(req: NextRequest) {
     title,
     company,
     charityAmount: str(body.charityAmount, 60),
-    conflictOfInterest: str(body.conflictOfInterest, 60),
-    conflictDetail: str(body.conflictDetail, 2000),
+    charityTheme: str(body.charityTheme, 300),
+    charityThemeOther: str(body.charityThemeOther, 300),
     beyondCharity: str(body.beyondCharity, 600),
     beyondCharityOther: str(body.beyondCharityOther, 600),
-    needToSee: str(body.needToSee, 3000),
-    meetingsPerYear: str(body.meetingsPerYear, 60),
-    alignMatters: str(body.alignMatters, 10),
+    vendorMustProvide: str(body.vendorMustProvide, 800),
+    vendorMustProvideOther: str(body.vendorMustProvideOther, 600),
+    needToSee: str(body.needToSee, 800),
+    needToSeeOther: str(body.needToSeeOther, 600),
     questionnaireWilling: str(body.questionnaireWilling, 10),
     shareWithVendor: str(body.shareWithVendor, 10),
-    mandatoryPutOff: str(body.mandatoryPutOff, 10),
+    guidance: str(body.guidance, 3000),
     wouldRefer: str(body.wouldRefer, 30),
-    biggestConcern: str(body.biggestConcern, 3000),
-    anythingElse: str(body.anythingElse, 3000),
     joinWhenReady: str(body.joinWhenReady, 60),
     utmSource: str(body.utmSource, 100),
     utmMedium: str(body.utmMedium, 100),
     utmCampaign: str(body.utmCampaign, 100),
+    utmContent: str(body.utmContent, 100),
   };
 
   const webhook = process.env.SHEETS_WEBHOOK_URL;
@@ -142,7 +133,7 @@ export async function POST(req: NextRequest) {
     console.error("[apply] Failed to forward to Sheet:", err);
     console.error("[apply] LOST-LEAD-RECOVERY:", JSON.stringify(record));
     return NextResponse.json(
-      { error: "Something went wrong saving your answers. Please try again, or email hello@thebigintro.com." },
+      { error: "Something went wrong saving your answers. Please try again in a moment." },
       { status: 502 },
     );
   }

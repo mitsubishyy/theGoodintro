@@ -170,7 +170,7 @@ function MultiSelectDropdown({
         <div
           role="listbox"
           aria-multiselectable
-          className="absolute z-30 mt-2 w-full rounded-xl border border-border bg-card p-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.10)]"
+          className="absolute z-30 mt-2 max-h-72 w-full overflow-y-auto rounded-xl border border-border bg-card p-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.10)]"
         >
           {options.map((o) => {
             const on = value.includes(o);
@@ -206,7 +206,7 @@ function MultiSelectDropdown({
 function Brand() {
   return (
     <>
-      the<span style={{ color: "var(--primary)" }}>Good</span>intro
+      The <span style={{ color: "var(--primary)" }}>Good</span> Intro
     </>
   );
 }
@@ -227,9 +227,47 @@ function readUtm(key: string): string {
   );
 }
 
-const NEED_TO_SEE_SUGGESTIONS = [
-  "Proof that other senior leaders are already taking part",
-  "Which charities are supported, and that donations are actually paid",
+/* ── Answer option sets ─────────────────────────────────────────── */
+
+const CHARITY_THEMES = [
+  "Cancer",
+  "Children & families",
+  "Mental health",
+  "Medical research & health",
+  "Education & young people",
+  "Poverty & food relief",
+  "Homelessness",
+  "Environment & wildlife",
+  "First Nations communities",
+  "International aid & development",
+  "Animal welfare",
+  "Other",
+];
+
+const BEYOND_OPTS = [
+  "1:1 with other senior executives",
+  "Curated peer or network events",
+  "Genuinely relevant vendor conversations",
+  "A personal gift per meeting",
+  "Nothing, the charity is the point",
+  "Other",
+];
+
+const VENDOR_PROVIDE_OPTS = [
+  "The specific initiative or problem they are addressing",
+  "Why it is relevant to my company right now",
+  "Who they are and who they already work with",
+  "Other",
+];
+
+const NEED_TO_SEE_OPTS = [
+  "Proof other senior leaders are already in",
+  "Named charities, and that donations are genuinely paid",
+  "Who is behind it",
+  "The calibre bar applied to vendors",
+  "An introduction from someone I trust",
+  "Nothing, the idea is enough on its own",
+  "Other",
 ];
 
 /* ────────────────────────────────────────────────────────────────
@@ -244,33 +282,35 @@ export default function ApplyForm() {
 
   // The model
   const [charityAmount, setCharityAmount] = useState("");
-  const [conflictOfInterest, setConflictOfInterest] = useState("");
-  const [conflictDetail, setConflictDetail] = useState("");
+  const [charityTheme, setCharityTheme] = useState<string[]>([]);
+  const [charityThemeOther, setCharityThemeOther] = useState("");
   const [beyondCharity, setBeyondCharity] = useState<string[]>([]);
   const [beyondCharityOther, setBeyondCharityOther] = useState("");
 
-  // Joining
-  const [needToSee, setNeedToSee] = useState("");
-  const [meetingsPerYear, setMeetingsPerYear] = useState("");
-
-  // Better matching
-  const [alignMatters, setAlignMatters] = useState("");
+  // Relevance
+  const [vendorMustProvide, setVendorMustProvide] = useState<string[]>([]);
+  const [vendorMustProvideOther, setVendorMustProvideOther] = useState("");
+  const [needToSee, setNeedToSee] = useState<string[]>([]);
+  const [needToSeeOther, setNeedToSeeOther] = useState("");
   const [questionnaireWilling, setQuestionnaireWilling] = useState("");
   const [shareWithVendor, setShareWithVendor] = useState("");
-  const [mandatoryPutOff, setMandatoryPutOff] = useState("");
 
   // Last things
+  const [guidance, setGuidance] = useState("");
   const [wouldRefer, setWouldRefer] = useState("");
-  const [biggestConcern, setBiggestConcern] = useState("");
-  const [anythingElse, setAnythingElse] = useState("");
 
-  // The very last question
+  // The very last question (the waitlist)
   const [joinWhenReady, setJoinWhenReady] = useState("");
 
   // Privacy + meta
   const [consent, setConsent] = useState(false);
   const [website, setWebsite] = useState(""); // honeypot
-  const [utm, setUtm] = useState({ source: "", medium: "", campaign: "" });
+  const [utm, setUtm] = useState({
+    source: "",
+    medium: "",
+    campaign: "",
+    content: "",
+  });
 
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -295,6 +335,7 @@ export default function ApplyForm() {
       source: readUtm("utm_source"),
       medium: readUtm("utm_medium"),
       campaign: readUtm("utm_campaign"),
+      content: readUtm("utm_content"),
     });
     setShareUrl(window.location.origin + "/apply");
   }, []);
@@ -332,33 +373,16 @@ export default function ApplyForm() {
     }
   }
 
-  // Hide the conditional detail box if they move away from "It depends"
-  useEffect(() => {
-    if (conflictOfInterest !== "It depends" && conflictDetail) {
-      setConflictDetail("");
-    }
-  }, [conflictOfInterest, conflictDetail]);
+  // Conditional "other" boxes are cleared inline when their trigger is
+  // deselected (see the onChange handlers below), so no effect is needed.
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
 
-    if (!fullName.trim()) return setError("Please enter your name.");
-    if (!title.trim()) return setError("Please enter your title or role.");
-    if (!company.trim()) return setError("Please enter your company.");
-    if (!charityAmount)
-      return setError("Please pick a charity amount that would be worth your time.");
-    if (!conflictOfInterest)
-      return setError("Please answer whether charity is a conflict of interest.");
-    if (needToSee.trim().length < 10)
-      return setError("Please say what you'd need to see before joining.");
-    if (!alignMatters)
-      return setError("Please answer the relevance question.");
-    if (!joinWhenReady)
-      return setError("Please answer whether you'd join when it's ready.");
     if (!consent)
       return setError(
-        "Please confirm you're happy for your answers to be used to shape the platform.",
+        "Please confirm you're happy for your answers to be used to shape The Good Intro.",
       );
 
     setSubmitting(true);
@@ -368,25 +392,25 @@ export default function ApplyForm() {
         title: title.trim(),
         company: company.trim(),
         charityAmount,
-        conflictOfInterest,
-        conflictDetail: conflictDetail.trim(),
+        charityTheme: charityTheme.join("; "),
+        charityThemeOther: charityThemeOther.trim(),
         beyondCharity: beyondCharity.join("; "),
         beyondCharityOther: beyondCharityOther.trim(),
-        needToSee: needToSee.trim(),
-        meetingsPerYear,
-        alignMatters,
+        vendorMustProvide: vendorMustProvide.join("; "),
+        vendorMustProvideOther: vendorMustProvideOther.trim(),
+        needToSee: needToSee.join("; "),
+        needToSeeOther: needToSeeOther.trim(),
         questionnaireWilling,
         shareWithVendor,
-        mandatoryPutOff,
+        guidance: guidance.trim(),
         wouldRefer,
-        biggestConcern: biggestConcern.trim(),
-        anythingElse: anythingElse.trim(),
         joinWhenReady,
         consent,
         website,
         utmSource: utm.source,
         utmMedium: utm.medium,
         utmCampaign: utm.campaign,
+        utmContent: utm.content,
       };
       setSubmitted(payload);
       const res = await fetch("/api/apply", {
@@ -475,7 +499,7 @@ export default function ApplyForm() {
                 onClick={() => {
                   if (typeof navigator !== "undefined" && navigator.share) {
                     navigator
-                      .share({ title: "TheBigIntro", url: shareUrl })
+                      .share({ title: "The Good Intro", url: shareUrl })
                       .catch(() => {});
                   } else {
                     copyShareLink();
@@ -580,8 +604,12 @@ export default function ApplyForm() {
       {/* ── About you ─────────────────────────────────────────────── */}
       <section className={sectionCls}>
         <SectionLabel>About you</SectionLabel>
+        <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+          All optional. If you would feel better answering anonymously, leave
+          any of these blank.
+        </p>
         <div className="mt-6 space-y-5">
-          <Field label="Full name" required>
+          <Field label="Full name">
             <input
               className={inputCls}
               value={fullName}
@@ -589,7 +617,7 @@ export default function ApplyForm() {
               placeholder="Jane Doe"
             />
           </Field>
-          <Field label="Title or role" required>
+          <Field label="Title or role">
             <input
               className={inputCls}
               value={title}
@@ -597,7 +625,7 @@ export default function ApplyForm() {
               placeholder="Chief Financial Officer"
             />
           </Field>
-          <Field label="Company" required>
+          <Field label="Company">
             <input
               className={inputCls}
               value={company}
@@ -612,56 +640,53 @@ export default function ApplyForm() {
       <section className={sectionCls}>
         <SectionLabel>The model</SectionLabel>
         <div className="mt-6 space-y-8">
-          <Field
-            label="What charity amount would make a meeting worth your time?"
-            required
-          >
+          <Field label="What charity amount would make a meeting worth your time?">
             <Pills
               ariaLabel="Charity amount"
-              options={["$200", "$400", "$600", "$800", "$1,000", "More than $1,000"]}
+              options={[
+                "$200",
+                "$400",
+                "$600",
+                "$800",
+                "$1,000",
+                "More than $1,000",
+              ]}
               value={charityAmount}
               onChange={setCharityAmount}
             />
           </Field>
 
-          <Field
-            label="Would charity donated in exchange for your time be a conflict of interest for you or the business?"
-            required
-          >
-            <Pills
-              ariaLabel="Conflict of interest"
-              options={["No, not at all", "It depends", "Yes, it could be"]}
-              value={conflictOfInterest}
-              onChange={setConflictOfInterest}
-            />
-          </Field>
-
-          {conflictOfInterest === "It depends" && (
-            <div className="reveal reveal-1">
-              <Field label="If it depends, what would make it a problem?">
-                <textarea
-                  className={areaCls}
-                  value={conflictDetail}
-                  onChange={(e) => setConflictDetail(e.target.value)}
-                  placeholder="A sentence is plenty."
-                />
-              </Field>
-            </div>
-          )}
-
-          <Field label="Set the charity aside. What else would make this worth your time / want to join?">
+          <Field label="Is there a cause that sits close to you that you would want supported on The Good Intro?">
             <MultiSelectDropdown
               placeholder="Select all that apply"
-              options={[
-                "1:1 with other senior executives",
-                "Curated peer or network events",
-                "Genuinely relevant vendor conversations",
-                "A personal gift per meeting",
-                "Nothing, the charity is the point",
-                "Other",
-              ]}
+              options={CHARITY_THEMES}
+              value={charityTheme}
+              onChange={(v) => {
+                setCharityTheme(v);
+                if (!v.includes("Other")) setCharityThemeOther("");
+              }}
+            />
+            {charityTheme.includes("Other") && (
+              <div className="reveal reveal-1 mt-3">
+                <input
+                  className={inputCls}
+                  value={charityThemeOther}
+                  onChange={(e) => setCharityThemeOther(e.target.value)}
+                  placeholder="Name the cause or a specific charity"
+                />
+              </div>
+            )}
+          </Field>
+
+          <Field label="Set the charity aside. What else would make this worth your time, or make you want to join?">
+            <MultiSelectDropdown
+              placeholder="Select all that apply"
+              options={BEYOND_OPTS}
               value={beyondCharity}
-              onChange={setBeyondCharity}
+              onChange={(v) => {
+                setBeyondCharity(v);
+                if (!v.includes("Other")) setBeyondCharityOther("");
+              }}
             />
             {beyondCharity.includes("Other") && (
               <div className="reveal reveal-1 mt-3">
@@ -677,81 +702,71 @@ export default function ApplyForm() {
         </div>
       </section>
 
-      {/* ── Joining ───────────────────────────────────────────────── */}
+      {/* ── Relevance ─────────────────────────────────────────────── */}
       <section className={sectionCls}>
-        <SectionLabel>Joining</SectionLabel>
+        <SectionLabel>Relevance</SectionLabel>
         <div className="mt-6 space-y-8">
-          <Field
-            label="What would you need to see on the platform before you'd consider joining?"
-            required
-            help={NEED_TO_SEE_SUGGESTIONS}
-          >
-            <textarea
-              className={areaCls}
+          <Field label="Before you would take a conversation, what would you need each vendor to provide so you can decide whether it is relevant?">
+            <MultiSelectDropdown
+              placeholder="Select all that apply"
+              options={VENDOR_PROVIDE_OPTS}
+              value={vendorMustProvide}
+              onChange={(v) => {
+                setVendorMustProvide(v);
+                if (!v.includes("Other")) setVendorMustProvideOther("");
+              }}
+            />
+            {vendorMustProvide.includes("Other") && (
+              <div className="reveal reveal-1 mt-3">
+                <input
+                  className={inputCls}
+                  value={vendorMustProvideOther}
+                  onChange={(e) => setVendorMustProvideOther(e.target.value)}
+                  placeholder="What else would you need from them"
+                />
+              </div>
+            )}
+          </Field>
+
+          <Field label="What would you need to see on the platform before you would join?">
+            <MultiSelectDropdown
+              placeholder="Select all that apply"
+              options={NEED_TO_SEE_OPTS}
               value={needToSee}
-              onChange={(e) => setNeedToSee(e.target.value)}
-              placeholder="A few sentences is plenty."
+              onChange={(v) => {
+                setNeedToSee(v);
+                if (!v.includes("Other")) setNeedToSeeOther("");
+              }}
             />
+            {needToSee.includes("Other") && (
+              <div className="reveal reveal-1 mt-3">
+                <input
+                  className={inputCls}
+                  value={needToSeeOther}
+                  onChange={(e) => setNeedToSeeOther(e.target.value)}
+                  placeholder="What else would you need to see"
+                />
+              </div>
+            )}
           </Field>
 
-          <Field label="If you joined, how many meetings would you take per year?">
+          <Field label="To keep every conversation relevant, would you spend five minutes telling us your current priorities?">
             <Pills
-              ariaLabel="Meetings per year"
-              options={["1–3", "4–6", "7–12", "12+", "Not sure"]}
-              value={meetingsPerYear}
-              onChange={setMeetingsPerYear}
-            />
-          </Field>
-        </div>
-      </section>
-
-      {/* ── Better matching ───────────────────────────────────────── */}
-      <section className={sectionCls}>
-        <SectionLabel>Better matching</SectionLabel>
-        <div className="mt-6 space-y-8">
-          <Field
-            label="Would you appreciate a meeting with a vendor more if what they offer aligns with a current challenge or interest of the business?"
-            required
-          >
-            <Pills
-              ariaLabel="Alignment matters"
+              ariaLabel="Would do the priorities step"
               options={["Yes", "No"]}
-              value={alignMatters}
-              onChange={setAlignMatters}
+              value={questionnaireWilling}
+              onChange={setQuestionnaireWilling}
             />
           </Field>
 
-          {alignMatters === "Yes" && (
-            <div
-              className="reveal reveal-1 rounded-2xl p-5 md:p-6 space-y-8"
-              style={{ background: "var(--mint-tint)" }}
-            >
-              <Field label="If you joined, would you invest 5 minutes answering a questionnaire on the platform so I could match you with more relevant vendor meetings?">
-                <Pills
-                  ariaLabel="Questionnaire willing"
-                  options={["Yes", "No"]}
-                  value={questionnaireWilling}
-                  onChange={setQuestionnaireWilling}
-                />
-              </Field>
-              <Field label="Could I share those answers with the vendor you're meeting so they could come prepared with an aligned agenda?">
-                <Pills
-                  ariaLabel="Share answers with vendor"
-                  options={["Yes", "No"]}
-                  value={shareWithVendor}
-                  onChange={setShareWithVendor}
-                />
-              </Field>
-              <Field label="If filling that questionnaire about your current interests were mandatory to join, would that put you off?">
-                <Pills
-                  ariaLabel="Mandatory questionnaire"
-                  options={["Yes", "No"]}
-                  value={mandatoryPutOff}
-                  onChange={setMandatoryPutOff}
-                />
-              </Field>
-            </div>
-          )}
+          <Field label="And would you let the vendor see those priorities, so they arrive prepared and on point?">
+            <Pills
+              ariaLabel="Share priorities with the vendor"
+              options={["Yes", "No"]}
+              value={shareWithVendor}
+              onChange={setShareWithVendor}
+            />
+          </Field>
         </div>
       </section>
 
@@ -759,25 +774,17 @@ export default function ApplyForm() {
       <section className={sectionCls}>
         <SectionLabel>A few last things</SectionLabel>
         <div className="mt-6 space-y-8">
-          <Field label="Biggest concern or objection with this model?">
+          <Field label="Any guidance for me as I'm building this?">
             <textarea
               className={areaCls}
-              value={biggestConcern}
-              onChange={(e) => setBiggestConcern(e.target.value)}
+              value={guidance}
+              onChange={(e) => setGuidance(e.target.value)}
               placeholder="Optional. The sharper the better."
             />
           </Field>
-          <Field label="Anything else you want to tell me?">
-            <textarea
-              className={areaCls}
-              value={anythingElse}
-              onChange={(e) => setAnythingElse(e.target.value)}
-              placeholder="Optional."
-            />
-          </Field>
-          <Field label="Is this platform something you would refer to a peer to join?">
+          <Field label="Would you point a peer toward this?">
             <Pills
-              ariaLabel="Would refer"
+              ariaLabel="Would refer a peer"
               options={["Yes", "Maybe", "No"]}
               value={wouldRefer}
               onChange={setWouldRefer}
@@ -790,7 +797,7 @@ export default function ApplyForm() {
       <section className={sectionCls}>
         <SectionLabel>One last thing</SectionLabel>
         <div className="mt-6">
-          <Field label="Would you join when the platform is ready?" required>
+          <Field label="Would you join when the platform is ready?">
             <Pills
               ariaLabel="Join when ready"
               options={["Yes", "Maybe, with conditions", "No"]}
