@@ -299,7 +299,7 @@ export default function ApplyForm() {
   const [guidance, setGuidance] = useState("");
   const [wouldRefer, setWouldRefer] = useState("");
 
-  // The very last question (the waitlist)
+  // The waitlist question
   const [joinWhenReady, setJoinWhenReady] = useState("");
 
   // Privacy + meta
@@ -790,13 +790,6 @@ export default function ApplyForm() {
               onChange={setWouldRefer}
             />
           </Field>
-        </div>
-      </section>
-
-      {/* ── The very last question ────────────────────────────────── */}
-      <section className={sectionCls}>
-        <SectionLabel>One last thing</SectionLabel>
-        <div className="mt-6">
           <Field label="Would you join when the platform is ready?">
             <Pills
               ariaLabel="Join when ready"
