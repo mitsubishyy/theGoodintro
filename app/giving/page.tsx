@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {
   PageHero,
   SectionHead,
+  MoneyBlock,
   ComparisonRow,
   Faq,
   ClosingCta,
@@ -14,6 +15,9 @@ import {
   IconHandshake,
   IconPaw,
   IconHeartCircle,
+  IconBriefcase,
+  IconNetwork,
+  IconGift,
 } from "../_components/icons";
 import {
   DGR_CHARITY_EXAMPLES,
@@ -22,9 +26,9 @@ import {
 } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Charities. TheBigIntro.",
+  title: "Giving. TheBigIntro.",
   description:
-    "Every meeting funds a charity the executive chooses, restricted to deductible gift recipient (DGR) endorsed Australian charities so the gift is tax-receiptable and verifiable on the public register.",
+    "Exactly how the giving works: every meeting sends $1,000 to a deductible gift recipient (DGR) endorsed Australian charity the executive chooses, the terms it runs on, and how to verify all of it.",
 };
 
 const CAUSES = [
@@ -36,19 +40,108 @@ const CAUSES = [
   { icon: IconHeartCircle, label: "Any other DGR-endorsed cause" },
 ];
 
-export default function Charities() {
+const TERMS = [
+  "The gift is $1,000 per meeting that is actually held, paid by the vendor, never by the executive.",
+  "Once a meeting takes place the donation is committed and is paid within 14 days, regardless of the commercial outcome of the conversation.",
+  "The full $1,000 reaches the charity. No part of it is taken to cover platform costs; the platform fee is a separate, clearly named line billed to the vendor.",
+  "Funds are held separately from platform revenue between invoice and payment to the charity.",
+  "Only deductible gift recipient (DGR) endorsed Australian charities are eligible, so the vendor receives a tax-deductible receipt and every gift is publicly verifiable.",
+  "The charity confirms receipt of the full amount directly to the executive, in writing.",
+  "The executive chooses and can change the charity at any time, including a different charity per meeting. We never assign one.",
+  "If a vendor behaves badly in a meeting, the gift is still paid in full; the vendor loses access.",
+];
+
+export default function Giving() {
   return (
     <>
       <PageHero
-        eyebrow="Charities"
+        eyebrow="Giving"
         title="Where the gift"
         italicWord="actually lands"
-        lede="Every meeting sends $1,000 to a charity the executive chooses. We restrict that choice to deductible gift recipient (DGR) endorsed Australian charities, so every gift is tax-receiptable and verifiable on a public register."
+        lede="Every meeting sends $1,000 to a charity the executive chooses. This page is the whole of it: how the money moves, the terms it runs on, and how anyone can verify it independently."
         primaryCta="Apply as a founding executive"
         secondaryLabel="See how it works"
         secondaryHref="/how-it-works"
         bg="var(--cream-9)"
       />
+
+      {/* ── The money path ───────────────────────────────────────── */}
+      <section
+        className="border-y overflow-hidden relative"
+        style={{ background: "var(--mint-tint)", borderColor: "var(--border)" }}
+      >
+        <div className="absolute inset-0 dotgrid opacity-40" aria-hidden />
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <SectionHead
+            label="The giving promise"
+            title="The money path, exactly."
+            lede="The donation is paid by the vendor, held separately, and delivered to the executive's chosen charity within 14 days of the meeting, confirmed in writing. The gift is never the revenue."
+          />
+          <div className="mt-12">
+            <MoneyBlock
+              lede="The charity figure stays whole on purpose. Running costs are recovered through a separately named platform fee, so the two numbers never get blended."
+              rows={[
+                { k: "To the chosen DGR-endorsed charity, per meeting", v: "the full $1,000" },
+                { k: "Taken from the donation for costs", v: "nothing" },
+                { k: "Paid to the charity", v: "within 14 days" },
+                { k: "Confirmed to the executive", v: "in writing" },
+              ]}
+            />
+          </div>
+          <div className="mt-16 flex flex-col sm:flex-row items-stretch gap-3 sm:gap-0">
+            <FlowStep
+              icon={IconBriefcase}
+              label="Vendor"
+              detail="Pays the $1,000 gift plus a separate, named platform fee"
+            />
+            <FlowArrow />
+            <FlowStep
+              icon={IconNetwork}
+              label="TheBigIntro"
+              detail="Holds the gift separately, takes nothing from it"
+            />
+            <FlowArrow />
+            <FlowStep
+              icon={IconGift}
+              label="Chosen charity"
+              detail="Receives $1,000 in full, confirms in writing"
+              accent
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── The terms ────────────────────────────────────────────── */}
+      <section>
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <div className="grid lg:grid-cols-12 gap-12 items-start">
+            <div className="lg:col-span-5">
+              <SectionHead
+                label="The terms"
+                title="What we commit to, in plain words."
+                lede="The conditions the giving runs on. These are deliberate, and they are the same for everyone."
+              />
+            </div>
+            <div className="lg:col-span-7">
+              <ol className="space-y-5">
+                {TERMS.map((t, i) => (
+                  <li key={i} className="flex gap-4">
+                    <span
+                      className="shrink-0 size-7 rounded-full grid place-items-center text-xs font-mono"
+                      style={{ background: "var(--accent)", color: "var(--foreground)" }}
+                    >
+                      {i + 1}
+                    </span>
+                    <span className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                      {t}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ── What DGR means ───────────────────────────────────────── */}
       <section
@@ -167,8 +260,8 @@ export default function Charities() {
             ariaLabel="Example DGR-endorsed Australian charities"
           />
           <p className="mt-10 text-center text-xs text-muted-foreground italic max-w-2xl mx-auto">
-            Illustrative only. These are not partners and have no affiliation
-            with TheBigIntro. Each executive chooses their own charity.
+            Illustrative examples, not partners. The executive chooses any
+            DGR-endorsed Australian charity.
           </p>
         </div>
       </section>
@@ -255,6 +348,12 @@ export default function Charities() {
                 a tax-deductible receipt and keeps every gift verifiable, with
                 no grey area about where money went.
               </Faq>
+              <Faq q="What if the meeting does not go well?">
+                The donation is still paid in full within 14 days. It is
+                committed once the meeting happens, regardless of the
+                commercial outcome. A vendor who behaves badly loses access,
+                but the gift to the charity is never clawed back.
+              </Faq>
               <Faq q="Who receives the tax receipt?">
                 The vendor, because the vendor pays the donation. The
                 executive does not claim a deduction and does not pay
@@ -272,10 +371,6 @@ export default function Charities() {
                 the executive, in writing, within 14 days of the meeting. The
                 donation is never reduced for platform costs.
               </Faq>
-              <Faq q="Can the charity change between meetings?">
-                Yes. You can nominate a different DGR-endorsed charity for
-                every meeting, and change your default at any time.
-              </Faq>
             </div>
           </div>
         </div>
@@ -290,5 +385,51 @@ export default function Charities() {
         secondaryHref="/pricing"
       />
     </>
+  );
+}
+
+function FlowStep({
+  icon: Icon,
+  label,
+  detail,
+  accent,
+}: {
+  icon: React.ComponentType<{ className?: string; size?: number }>;
+  label: string;
+  detail: string;
+  accent?: boolean;
+}) {
+  return (
+    <div
+      className="flex-1 rounded-2xl border p-6 text-center transition-all duration-200 hover:-translate-y-0.5"
+      style={
+        accent
+          ? { background: "var(--signal-soft)", borderColor: "var(--primary)" }
+          : { background: "var(--card)", borderColor: "var(--border)" }
+      }
+    >
+      <div
+        className="size-12 rounded-xl mx-auto mb-4 grid place-items-center"
+        style={{
+          background: accent ? "var(--card)" : "var(--accent)",
+          color: accent ? "var(--primary)" : "var(--foreground)",
+        }}
+      >
+        <Icon size={22} />
+      </div>
+      <div className="text-sm font-semibold tracking-tight">{label}</div>
+      <div className="mt-2 text-xs text-muted-foreground leading-relaxed">
+        {detail}
+      </div>
+    </div>
+  );
+}
+
+function FlowArrow() {
+  return (
+    <div className="flex items-center justify-center px-2" aria-hidden>
+      <span className="text-muted-foreground hidden sm:block">→</span>
+      <span className="text-muted-foreground sm:hidden">↓</span>
+    </div>
   );
 }

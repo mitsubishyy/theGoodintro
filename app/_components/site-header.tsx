@@ -5,6 +5,14 @@ import { usePathname } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { CALENDLY_URL } from "@/lib/config";
 
+const NAV = [
+  { href: "/how-it-works", label: "How it works" },
+  { href: "/vendors", label: "For vendors" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/giving", label: "Giving" },
+  { href: "/faq", label: "FAQ" },
+];
+
 export default function SiteHeader() {
   const pathname = usePathname();
   const bare = pathname === "/apply"; // survey: brand only, no nav
@@ -19,37 +27,41 @@ export default function SiteHeader() {
                 the<span style={{ color: "var(--primary)" }}>Good</span>intro
               </>
             ) : (
-              "TheBigIntro"
+              <>
+                The<span style={{ color: "var(--primary)" }}>Big</span>Intro
+              </>
             )}
           </span>
-          {!bare && (
-            <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.16em] text-muted-foreground border border-border rounded-full px-2 py-0.5">
-              <span
-                className="size-1.5 rounded-full pulse-dot"
-                style={{ background: "var(--signal)" }}
-              />
-              Founding cohort
-            </span>
-          )}
         </Link>
 
         {!bare && (
           <>
-            <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-              <Link href="/how-it-works" className="hover:text-foreground transition-colors">
-                How it works
+            <nav className="hidden md:flex items-center gap-7 text-sm text-muted-foreground">
+              {NAV.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="hover:text-foreground transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <span
+                className="h-4 w-px"
+                style={{ background: "var(--border)" }}
+                aria-hidden
+              />
+              <Link
+                href="/privacy"
+                className="text-xs hover:text-foreground transition-colors"
+              >
+                Privacy
               </Link>
-              <Link href="/executives" className="hover:text-foreground transition-colors">
-                For executives
-              </Link>
-              <Link href="/vendors" className="hover:text-foreground transition-colors">
-                For vendors
-              </Link>
-              <Link href="/pricing" className="hover:text-foreground transition-colors">
-                Pricing
-              </Link>
-              <Link href="/about" className="hover:text-foreground transition-colors">
-                About
+              <Link
+                href="/terms"
+                className="text-xs hover:text-foreground transition-colors"
+              >
+                Terms
               </Link>
             </nav>
             <a

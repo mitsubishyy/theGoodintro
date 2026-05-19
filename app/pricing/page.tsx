@@ -230,8 +230,8 @@ export default function Pricing() {
         italicWord="real giving."
         lede="Executives join free. Vendors fund a $1,000 gift and a clearly named fee, never one hidden inside the other."
         primaryCta="Book a vendor call"
-        secondaryLabel="For executives"
-        secondaryHref="/executives"
+        secondaryLabel="See how it works"
+        secondaryHref="/how-it-works"
         sub="Free for executives · The gift never blends with the fee"
       />
     </>

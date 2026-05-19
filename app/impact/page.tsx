@@ -26,7 +26,7 @@ export default function Impact() {
         lede="Every executive gets a public, shareable page showing exactly how much their meetings have sent to charity. This is the shape of that page. No real figures exist yet, so everything below is a clearly marked sample."
         primaryCta="Apply as a founding executive"
         secondaryLabel="How the giving works"
-        secondaryHref="/charities"
+        secondaryHref="/giving"
         bg="var(--cream-10)"
       />
 
