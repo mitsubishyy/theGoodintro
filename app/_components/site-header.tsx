@@ -46,23 +46,6 @@ export default function SiteHeader() {
                   {item.label}
                 </Link>
               ))}
-              <span
-                className="h-4 w-px"
-                style={{ background: "var(--border)" }}
-                aria-hidden
-              />
-              <Link
-                href="/privacy"
-                className="text-xs hover:text-foreground transition-colors"
-              >
-                Privacy
-              </Link>
-              <Link
-                href="/terms"
-                className="text-xs hover:text-foreground transition-colors"
-              >
-                Terms
-              </Link>
             </nav>
             <a
               href={CALENDLY_URL}

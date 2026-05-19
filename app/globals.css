@@ -231,6 +231,8 @@ body {
    to a static wrapped row when reduced motion is requested. */
 .marquee {
   overflow: hidden;
+  /* vertical room so a magnified chip is never clipped */
+  padding-block: 1.75rem;
   -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
   mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
   cursor: grab;
@@ -249,8 +251,8 @@ body {
 }
 .marquee-item {
   display: inline-flex;
-  transition: transform 130ms ease-out;
-  transform-origin: center;
+  transition: transform 140ms ease-out;
+  transform-origin: center center;
 }
 
 /* Per-page entrance. Re-keyed on navigation by PageTransition. Disabled
