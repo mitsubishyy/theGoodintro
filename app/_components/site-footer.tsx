@@ -5,6 +5,16 @@ import { usePathname } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
 import { CALENDLY_URL } from "@/lib/config";
 
+const EXPLORE = [
+  { href: "/how-it-works", label: "How it works" },
+  { href: "/vendors", label: "For vendors" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/giving", label: "Giving" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/impact", label: "Impact" },
+  { href: "/opportunity", label: "Partner with us" },
+];
+
 export default function SiteFooter() {
   const pathname = usePathname();
   // The survey is a focused, distraction-free page: no footer nav.
@@ -16,7 +26,7 @@ export default function SiteFooter() {
         <div className="grid lg:grid-cols-3 gap-12 mb-16">
           <div>
             <Link href="/" className="text-base font-semibold tracking-tight">
-              TheBigIntro
+              The<span style={{ color: "var(--primary)" }}>Big</span>Intro
             </Link>
             <p className="mt-4 text-sm text-muted-foreground max-w-xs leading-relaxed">
               Relevant senior meetings that fund real giving. Australia
@@ -32,11 +42,16 @@ export default function SiteFooter() {
               Explore
             </div>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/how-it-works" className="hover:text-foreground transition-colors text-muted-foreground">How it works</Link></li>
-              <li><Link href="/executives" className="hover:text-foreground transition-colors text-muted-foreground">For executives</Link></li>
-              <li><Link href="/vendors" className="hover:text-foreground transition-colors text-muted-foreground">For vendors</Link></li>
-              <li><Link href="/about" className="hover:text-foreground transition-colors text-muted-foreground">About</Link></li>
-              <li><Link href="/opportunity" className="hover:text-foreground transition-colors text-muted-foreground">Partner with us</Link></li>
+              {EXPLORE.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="hover:text-foreground transition-colors text-muted-foreground"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
           <div>

@@ -69,6 +69,10 @@
   --cream-5: oklch(0.96 0.010 85);    /* how-it-works: balanced */
   --cream-6: oklch(0.955 0.022 75);   /* opportunity: warmest, most ochre */
   --cream-7: oklch(0.962 0.013 80);   /* apply: calm, focused cream */
+  --cream-8: oklch(0.958 0.016 86);   /* pricing: warm, businesslike */
+  --cream-9: oklch(0.963 0.018 80);   /* charities: warm, generous */
+  --cream-10: oklch(0.957 0.012 83);  /* impact: calm, evidentiary */
+  --cream-11: oklch(0.961 0.015 84);  /* faq: plain, legible */
 
   /* Illustration palette */
   --ill-emerald: oklch(0.5 0.14 155);
@@ -220,6 +224,44 @@ body {
   @keyframes pulse-soft {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.45; }
+  }
+}
+
+/* Auto-scrolling logo marquee. Rightward, pauses on hover, and falls back
+   to a static wrapped row when reduced motion is requested. */
+.marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+.marquee.is-dragging {
+  cursor: grabbing;
+}
+.marquee-track {
+  display: flex;
+  align-items: center;
+  gap: 2.75rem;
+  width: max-content;
+  will-change: transform;
+}
+.marquee-item {
+  display: inline-flex;
+  transition: transform 130ms ease-out;
+  transform-origin: center;
+}
+
+/* Per-page entrance. Re-keyed on navigation by PageTransition. Disabled
+   under reduced motion (content simply appears). */
+@media (prefers-reduced-motion: no-preference) {
+  .page-enter {
+    animation: page-enter 520ms cubic-bezier(0.2, 0.65, 0.3, 1) both;
+  }
+  @keyframes page-enter {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 }
 

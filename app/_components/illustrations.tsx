@@ -19,65 +19,56 @@ export function HeroIllustration({ className }: Props) {
       className={className}
       aria-hidden
     >
-      {/* soft halo */}
-      <ellipse
-        cx="260"
-        cy="240"
-        rx="240"
-        ry="200"
-        fill="var(--ill-emerald-light)"
-        opacity="0.18"
-      />
+      {/* layered halo */}
+      <ellipse cx="270" cy="240" rx="250" ry="210" fill="var(--ill-emerald-light)" opacity="0.16" />
+      <ellipse cx="270" cy="240" rx="168" ry="150" fill="var(--ill-emerald-light)" opacity="0.12" />
 
-      {/* back card — second meeting */}
-      <g transform="translate(110, 80) rotate(-6 140 100)">
-        <rect width="280" height="200" rx="20" fill="var(--ill-tan-light)" />
-        <rect x="22" y="22" width="120" height="10" rx="5" fill="var(--ill-ink)" opacity="0.2" />
-        <rect x="22" y="46" width="180" height="8" rx="4" fill="var(--ill-ink)" opacity="0.12" />
-        <rect x="22" y="64" width="160" height="8" rx="4" fill="var(--ill-ink)" opacity="0.12" />
-        <rect x="22" y="120" width="60" height="50" rx="10" fill="var(--ill-tan-deep)" />
-        <text x="52" y="152" textAnchor="middle" fontFamily="sans-serif" fontSize="22" fontWeight="700" fill="var(--ill-cream)">10:00</text>
+      {/* depth card behind */}
+      <g transform="translate(96, 92) rotate(-5 144 106)">
+        <rect width="288" height="212" rx="22" fill="var(--ill-tan-light)" />
+        <rect width="288" height="212" rx="22" fill="var(--ill-tan-deep)" opacity="0.12" transform="translate(6 8)" />
       </g>
 
-      {/* front card — the active meeting */}
-      <g transform="translate(160, 140) rotate(3 140 100)">
-        <rect width="280" height="200" rx="20" fill="var(--card)" stroke="var(--border)" strokeWidth="1.5" />
-        <rect x="22" y="22" width="60" height="10" rx="5" fill="var(--ill-emerald)" />
-        <rect x="22" y="46" width="200" height="14" rx="4" fill="var(--ill-ink)" />
-        <rect x="22" y="70" width="240" height="8" rx="4" fill="var(--ill-ink)" opacity="0.4" />
-        <rect x="22" y="86" width="180" height="8" rx="4" fill="var(--ill-ink)" opacity="0.4" />
-        <rect x="22" y="120" width="100" height="50" rx="10" fill="var(--ill-emerald)" />
-        <text x="72" y="153" textAnchor="middle" fontFamily="sans-serif" fontSize="20" fontWeight="700" fill="var(--ill-cream)">Confirm</text>
-        {/* small heart icon on right */}
-        <g transform="translate(220, 132)">
-          <circle r="20" fill="var(--ill-tan-light)" />
-          <path
-            d="M-9 -2 c-3 -3, 1 -8, 4 -5 l5 4 l5 -4 c3 -3, 7 2, 4 5 l-9 8 z"
-            fill="var(--ill-emerald-deep)"
-          />
+      {/* primary meeting card */}
+      <g transform="translate(132, 132) rotate(3 144 104)">
+        <rect width="288" height="208" rx="22" fill="var(--card)" stroke="var(--border)" strokeWidth="1.5" />
+        <rect x="26" y="26" width="74" height="12" rx="6" fill="var(--ill-emerald)" />
+        <circle cx="262" cy="32" r="11" fill="var(--ill-emerald)" opacity="0.16" />
+        <path d="M256 32 l4 4 l7 -8" stroke="var(--ill-emerald-deep)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <rect x="26" y="58" width="220" height="13" rx="5" fill="var(--ill-ink)" />
+        <rect x="26" y="84" width="236" height="8" rx="4" fill="var(--ill-ink)" opacity="0.32" />
+        <rect x="26" y="100" width="196" height="8" rx="4" fill="var(--ill-ink)" opacity="0.32" />
+        <g transform="translate(26, 130)">
+          <rect width="86" height="54" rx="12" fill="var(--ill-emerald)" />
+          <rect width="86" height="16" rx="12" fill="var(--ill-emerald-deep)" opacity="0.5" />
+          <text x="43" y="41" textAnchor="middle" fontFamily="sans-serif" fontSize="19" fontWeight="700" fill="var(--ill-cream)">Mtg</text>
         </g>
+        <rect x="128" y="142" width="134" height="42" rx="21" fill="var(--ill-tan)" />
+        <text x="195" y="168" textAnchor="middle" fontFamily="sans-serif" fontSize="15" fontWeight="700" fill="var(--ill-cream)">Confirmed</text>
       </g>
 
-      {/* floating coin top right */}
-      <g transform="translate(420, 90)">
-        <circle r="36" fill="var(--ill-tan)" />
-        <circle r="36" fill="var(--ill-tan-deep)" opacity="0.2" transform="translate(3 3)" />
-        <text textAnchor="middle" y="9" fontFamily="serif" fontSize="34" fontWeight="700" fill="var(--ill-cream)">$</text>
+      {/* flow arc from card to medallion */}
+      <path d="M408 286 Q452 310 444 352" stroke="var(--ill-emerald-deep)" strokeWidth="2.4" strokeDasharray="2 7" strokeLinecap="round" fill="none" opacity="0.5" />
+
+      {/* $1,000 medallion */}
+      <g transform="translate(428, 384)">
+        <circle r="52" fill="var(--ill-emerald-deep)" opacity="0.15" transform="translate(4 6)" />
+        <circle r="52" fill="var(--ill-emerald)" />
+        <text textAnchor="middle" y="-3" fontFamily="serif" fontSize="22" fontWeight="700" fill="var(--ill-cream)">$1,000</text>
+        <text textAnchor="middle" y="17" fontFamily="sans-serif" fontSize="9" fontWeight="700" fill="var(--ill-cream)" opacity="0.85" letterSpacing="1.5">TO CHARITY</text>
       </g>
 
-      {/* floating coin bottom left */}
-      <g transform="translate(75, 360)">
-        <circle r="28" fill="var(--ill-emerald)" />
-        <text textAnchor="middle" y="8" fontFamily="serif" fontSize="26" fontWeight="700" fill="var(--ill-cream)">$</text>
+      {/* heart cause badge */}
+      <g transform="translate(74, 384)">
+        <circle r="34" fill="var(--ill-tan-light)" />
+        <circle r="34" fill="none" stroke="var(--ill-tan-deep)" strokeWidth="1.5" opacity="0.5" />
+        <path d="M-13 -3 c-5 -5, 3 -13, 7 -6 l6 5 l6 -5 c4 -7, 12 1, 7 6 l-13 13 z" fill="var(--ill-emerald-deep)" />
       </g>
 
-      {/* small floating heart */}
-      <g transform="translate(460, 320)">
-        <circle r="24" fill="var(--ill-emerald-light)" opacity="0.6" />
-        <path
-          d="M-8 -1 c-3 -3, 1 -8, 4 -5 l4 3 l4 -3 c3 -3, 7 2, 4 5 l-8 8 z"
-          fill="var(--ill-emerald-deep)"
-        />
+      {/* small floating coin */}
+      <g transform="translate(456, 122)">
+        <circle r="26" fill="var(--ill-tan)" />
+        <text textAnchor="middle" y="8" fontFamily="serif" fontSize="24" fontWeight="700" fill="var(--ill-cream)">$</text>
       </g>
     </svg>
   );
@@ -197,41 +188,46 @@ export function VendorsIllustration({ className }: Props) {
 export function HowItWorksIllustration({ className }: Props) {
   return (
     <svg viewBox="0 0 520 420" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden>
-      <ellipse cx="260" cy="210" rx="220" ry="180" fill="var(--ill-emerald-light)" opacity="0.2" />
+      <ellipse cx="260" cy="200" rx="222" ry="172" fill="var(--ill-emerald-light)" opacity="0.16" />
 
-      {/* three nodes */}
-      <g transform="translate(60, 180)">
-        <circle r="40" fill="var(--ill-tan)" />
-        <rect x="-12" y="-14" width="24" height="20" rx="3" fill="var(--ill-cream)" />
-        <rect x="-12" y="-14" width="24" height="6" rx="1" fill="var(--ill-tan-deep)" />
+      {/* node 1: vendor request */}
+      <g transform="translate(70, 178)">
+        <circle r="46" fill="var(--ill-tan)" />
+        <rect x="-15" y="-18" width="30" height="36" rx="4" fill="var(--ill-cream)" />
+        <rect x="-15" y="-18" width="30" height="8" rx="2" fill="var(--ill-tan-deep)" />
+        <rect x="-9" y="-1" width="18" height="3" rx="1.5" fill="var(--ill-ink)" opacity="0.4" />
+        <rect x="-9" y="7" width="18" height="3" rx="1.5" fill="var(--ill-ink)" opacity="0.4" />
       </g>
-      <path d="M105 180 Q160 130 215 180" stroke="var(--ill-ink)" strokeWidth="2" strokeDasharray="4 4" fill="none" />
+      <text x="70" y="252" textAnchor="middle" fontFamily="sans-serif" fontSize="13" fontWeight="700" fill="var(--ill-ink)" letterSpacing="1">VENDOR</text>
 
-      <g transform="translate(260, 180)">
-        <rect x="-44" y="-44" width="88" height="88" rx="14" fill="var(--ill-emerald)" />
-        <circle cx="0" cy="-12" r="14" fill="var(--ill-cream)" opacity="0.95" />
-        <path d="M-12 6 Q0 -2 12 6 L12 18 L-12 18 Z" fill="var(--ill-cream)" opacity="0.95" />
-      </g>
-      <path d="M310 180 Q360 230 415 180" stroke="var(--ill-ink)" strokeWidth="2" strokeDasharray="4 4" fill="none" />
-
-      <g transform="translate(460, 180)">
-        <circle r="40" fill="var(--ill-tan-light)" />
-        <path d="M-15 -4 c-5 -5, 2 -14, 7 -7 l8 6 l8 -6 c5 -7, 12 2, 7 7 l-15 14 z" fill="var(--ill-emerald-deep)" />
+      {/* arc 1 with $1,000 */}
+      <path d="M120 168 Q186 116 252 168" stroke="var(--ill-emerald-deep)" strokeWidth="2.4" strokeDasharray="2 7" strokeLinecap="round" fill="none" opacity="0.55" />
+      <path d="M245 160 l8 9 l9 -7" stroke="var(--ill-emerald-deep)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.55" />
+      <g transform="translate(186, 102)">
+        <rect x="-35" y="-17" width="70" height="31" rx="15" fill="var(--ill-emerald)" />
+        <text textAnchor="middle" y="5" fontFamily="serif" fontSize="15" fontWeight="700" fill="var(--ill-cream)">$1,000</text>
       </g>
 
-      {/* dollar labels */}
-      <g transform="translate(60, 280)">
-        <text textAnchor="middle" fontFamily="sans-serif" fontSize="14" fontWeight="700" fill="var(--ill-ink)">VENDOR</text>
+      {/* node 2: hub */}
+      <g transform="translate(262, 178)">
+        <rect x="-46" y="-46" width="92" height="92" rx="20" fill="var(--ill-emerald)" />
+        <circle cx="0" cy="-10" r="13" fill="var(--ill-cream)" opacity="0.95" />
+        <path d="M-13 8 Q0 -3 13 8 L13 20 L-13 20 Z" fill="var(--ill-cream)" opacity="0.95" />
       </g>
-      <g transform="translate(260, 280)">
-        <text textAnchor="middle" fontFamily="sans-serif" fontSize="14" fontWeight="700" fill="var(--ill-ink)">THEBIGINTRO</text>
-      </g>
-      <g transform="translate(460, 280)">
-        <text textAnchor="middle" fontFamily="sans-serif" fontSize="14" fontWeight="700" fill="var(--ill-ink)">CHARITY</text>
-      </g>
+      <text x="262" y="258" textAnchor="middle" fontFamily="sans-serif" fontSize="13" fontWeight="700" fill="var(--ill-ink)" letterSpacing="1">THEBIGINTRO</text>
 
-      <text x="155" y="125" textAnchor="middle" fontFamily="sans-serif" fontSize="20" fontWeight="800" fill="var(--ill-emerald-deep)">$1,000</text>
-      <text x="365" y="245" textAnchor="middle" fontFamily="sans-serif" fontSize="14" fontWeight="700" fill="var(--ill-ink)" opacity="0.55">routes 100%</text>
+      {/* arc 2 with 100% */}
+      <path d="M324 168 Q390 116 456 168" stroke="var(--ill-emerald-deep)" strokeWidth="2.4" strokeDasharray="2 7" strokeLinecap="round" fill="none" opacity="0.55" />
+      <path d="M449 160 l8 9 l9 -7" stroke="var(--ill-emerald-deep)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.55" />
+      <text x="390" y="104" textAnchor="middle" fontFamily="sans-serif" fontSize="13" fontWeight="700" fill="var(--ill-ink)" opacity="0.6">100%</text>
+
+      {/* node 3: charity */}
+      <g transform="translate(456, 178)">
+        <circle r="46" fill="var(--ill-tan-light)" />
+        <circle r="46" fill="none" stroke="var(--ill-tan-deep)" strokeWidth="1.5" opacity="0.5" />
+        <path d="M-16 -5 c-6 -6, 3 -16, 8 -7 l8 6 l8 -6 c5 -9, 14 1, 8 7 l-16 16 z" fill="var(--ill-emerald-deep)" />
+      </g>
+      <text x="456" y="252" textAnchor="middle" fontFamily="sans-serif" fontSize="13" fontWeight="700" fill="var(--ill-ink)" letterSpacing="1">CHARITY</text>
     </svg>
   );
 }
@@ -240,27 +236,79 @@ export function HowItWorksIllustration({ className }: Props) {
 export function OpportunityIllustration({ className }: Props) {
   return (
     <svg viewBox="0 0 520 420" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden>
-      <ellipse cx="260" cy="210" rx="220" ry="180" fill="var(--ill-tan-light)" opacity="0.4" />
+      <ellipse cx="260" cy="220" rx="220" ry="178" fill="var(--ill-tan-light)" opacity="0.38" />
 
-      {/* foundation block */}
-      <rect x="160" y="270" width="200" height="60" rx="6" fill="var(--ill-ink)" />
+      {/* foundation */}
+      <rect x="150" y="286" width="220" height="56" rx="10" fill="var(--ill-ink)" />
+      <text x="260" y="320" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fontWeight="700" fill="var(--ill-cream)" letterSpacing="1">FOUNDER</text>
 
-      {/* middle blocks */}
-      <rect x="180" y="200" width="80" height="60" rx="6" fill="var(--ill-tan)" />
-      <rect x="270" y="200" width="80" height="60" rx="6" fill="var(--ill-emerald)" />
+      {/* tier two */}
+      <rect x="166" y="220" width="92" height="56" rx="10" fill="var(--ill-tan)" />
+      <text x="212" y="254" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fontWeight="700" fill="var(--ill-cream)" letterSpacing="1">MODEL</text>
+      <rect x="262" y="220" width="92" height="56" rx="10" fill="var(--ill-emerald)" />
+      <text x="308" y="254" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fontWeight="700" fill="var(--ill-cream)" letterSpacing="1">GIVING</text>
 
-      {/* top block */}
-      <rect x="220" y="130" width="100" height="60" rx="6" fill="var(--ill-tan-deep)" />
+      {/* tier three */}
+      <rect x="210" y="154" width="100" height="56" rx="10" fill="var(--ill-tan-deep)" />
+      <text x="260" y="188" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fontWeight="700" fill="var(--ill-cream)" letterSpacing="1">NETWORK</text>
 
-      {/* missing block (looking for partner) — dashed outline */}
-      <rect x="220" y="60" width="100" height="60" rx="6" fill="none" stroke="var(--ill-emerald-deep)" strokeWidth="2.5" strokeDasharray="6 4" />
-      <text x="270" y="98" textAnchor="middle" fontFamily="sans-serif" fontSize="14" fontWeight="700" fill="var(--ill-emerald-deep)">YOU?</text>
+      {/* the missing block — the role on offer */}
+      <path d="M260 154 L260 132" stroke="var(--ill-emerald-deep)" strokeWidth="2.4" strokeDasharray="2 6" strokeLinecap="round" opacity="0.6" />
+      <rect x="210" y="74" width="100" height="56" rx="10" fill="var(--ill-emerald-light)" opacity="0.18" />
+      <rect x="210" y="74" width="100" height="56" rx="10" fill="none" stroke="var(--ill-emerald-deep)" strokeWidth="2.5" strokeDasharray="7 5" />
+      <text x="260" y="108" textAnchor="middle" fontFamily="sans-serif" fontSize="15" fontWeight="800" fill="var(--ill-emerald-deep)">YOU?</text>
 
-      {/* labels on existing blocks */}
-      <text x="220" y="234" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fontWeight="700" fill="var(--ill-cream)">MODEL</text>
-      <text x="310" y="234" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fontWeight="700" fill="var(--ill-cream)">GIVING</text>
-      <text x="270" y="164" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fontWeight="700" fill="var(--ill-cream)">NETWORK</text>
-      <text x="260" y="305" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fontWeight="700" fill="var(--ill-cream)">FOUNDER</text>
+      {/* accent coin */}
+      <g transform="translate(408, 122)">
+        <circle r="24" fill="var(--ill-tan)" />
+        <text textAnchor="middle" y="7" fontFamily="serif" fontSize="22" fontWeight="700" fill="var(--ill-cream)">$</text>
+      </g>
+    </svg>
+  );
+}
+
+/* ─── Pricing page: a statement with two clearly separated lines,
+   the gift and the platform fee, never blended */
+export function PricingIllustration({ className }: Props) {
+  return (
+    <svg viewBox="0 0 520 420" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden>
+      <ellipse cx="260" cy="210" rx="220" ry="180" fill="var(--ill-emerald-light)" opacity="0.18" />
+
+      {/* statement card */}
+      <g transform="translate(120, 70)">
+        <rect width="280" height="280" rx="18" fill="var(--card)" stroke="var(--border)" strokeWidth="1.5" />
+        <rect x="28" y="30" width="120" height="12" rx="6" fill="var(--ill-ink)" opacity="0.7" />
+        <rect x="28" y="52" width="80" height="8" rx="4" fill="var(--ill-ink)" opacity="0.25" />
+
+        {/* line 1: the gift, emphasised */}
+        <rect x="24" y="92" width="232" height="50" rx="10" fill="var(--ill-emerald)" opacity="0.12" />
+        <circle cx="50" cy="117" r="12" fill="var(--ill-emerald)" />
+        <path d="M45 117 l4 4 l8 -9" stroke="var(--ill-cream)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <rect x="72" y="110" width="92" height="9" rx="4" fill="var(--ill-ink)" opacity="0.5" />
+        <text x="234" y="124" textAnchor="end" fontFamily="serif" fontSize="22" fontWeight="700" fill="var(--ill-emerald-deep)">$1,000</text>
+
+        {/* line 2: the platform fee, separate */}
+        <rect x="24" y="156" width="232" height="44" rx="10" fill="var(--ill-tan-light)" opacity="0.55" />
+        <circle cx="50" cy="178" r="12" fill="var(--ill-tan)" />
+        <rect x="72" y="171" width="108" height="9" rx="4" fill="var(--ill-ink)" opacity="0.4" />
+        <rect x="206" y="173" width="46" height="12" rx="6" fill="var(--ill-tan-deep)" opacity="0.5" />
+
+        {/* divider + footer note */}
+        <rect x="24" y="222" width="232" height="2" rx="1" fill="var(--ill-ink)" opacity="0.12" />
+        <rect x="24" y="240" width="150" height="8" rx="4" fill="var(--ill-ink)" opacity="0.2" />
+      </g>
+
+      {/* floating heart coin */}
+      <g transform="translate(425, 108)">
+        <circle r="30" fill="var(--ill-emerald)" />
+        <path d="M-10 -2 c-4 -4, 2 -10, 6 -5 l4 4 l4 -4 c4 -5, 10 1, 6 5 l-10 9 z" fill="var(--ill-cream)" />
+      </g>
+
+      {/* floating coin */}
+      <g transform="translate(82, 330)">
+        <circle r="26" fill="var(--ill-tan)" />
+        <text textAnchor="middle" y="8" fontFamily="serif" fontSize="24" fontWeight="700" fill="var(--ill-cream)">$</text>
+      </g>
     </svg>
   );
 }

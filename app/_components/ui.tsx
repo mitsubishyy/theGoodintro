@@ -383,6 +383,31 @@ export function ComparisonRow({ text, bad }: { text: string; bad?: boolean }) {
   );
 }
 
+export function MetricCard({
+  value,
+  label,
+  note,
+}: {
+  value: string;
+  label: string;
+  note: string;
+}) {
+  return (
+    <div
+      className="rounded-2xl border p-6 md:p-8"
+      style={{ background: "var(--card)", borderColor: "var(--border)" }}
+    >
+      <div className="display-serif text-5xl md:text-6xl text-foreground leading-none">
+        {value}
+      </div>
+      <div className="mt-4 text-sm font-semibold">{label}</div>
+      <div className="mt-2 text-xs text-muted-foreground leading-relaxed">
+        {note}
+      </div>
+    </div>
+  );
+}
+
 export function SectionHead({
   label,
   title,

@@ -5,6 +5,7 @@ import "./globals.css";
 import { SITE_URL, SITE_DESCRIPTION } from "@/lib/config";
 import SiteHeader from "./_components/site-header";
 import SiteFooter from "./_components/site-footer";
+import PageTransition from "./_components/PageTransition";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -56,7 +57,9 @@ export default function RootLayout({
       <body suppressHydrationWarning className="text-foreground bg-background antialiased">
         <SiteHeader />
 
-        <main>{children}</main>
+        <main>
+          <PageTransition>{children}</PageTransition>
+        </main>
 
         <SiteFooter />
 
