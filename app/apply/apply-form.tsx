@@ -115,11 +115,13 @@ function MultiSelectDropdown({
   value,
   onChange,
   placeholder,
+  collapseOn,
 }: {
   options: string[];
   value: string[];
   onChange: (v: string[]) => void;
   placeholder: string;
+  collapseOn?: string;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -137,6 +139,8 @@ function MultiSelectDropdown({
 
   function toggle(o: string) {
     onChange(value.includes(o) ? value.filter((x) => x !== o) : [...value, o]);
+    // The free-text option collapses the list and hands focus to the box.
+    if (collapseOn && o === collapseOn) setOpen(false);
   }
 
   const summary =
@@ -241,7 +245,7 @@ const CHARITY_THEMES = [
   "First Nations communities",
   "International aid & development",
   "Animal welfare",
-  "Other",
+  "Type your answer",
 ];
 
 const BEYOND_OPTS = [
@@ -661,18 +665,20 @@ export default function ApplyForm() {
               placeholder="Select all that apply"
               options={CHARITY_THEMES}
               value={charityTheme}
+              collapseOn="Type your answer"
               onChange={(v) => {
                 setCharityTheme(v);
-                if (!v.includes("Other")) setCharityThemeOther("");
+                if (!v.includes("Type your answer")) setCharityThemeOther("");
               }}
             />
-            {charityTheme.includes("Other") && (
+            {charityTheme.includes("Type your answer") && (
               <div className="reveal reveal-1 mt-3">
                 <input
+                  autoFocus
                   className={inputCls}
                   value={charityThemeOther}
                   onChange={(e) => setCharityThemeOther(e.target.value)}
-                  placeholder="Name the cause or a specific charity"
+                  placeholder="Type the charity or cause you want to support"
                 />
               </div>
             )}
@@ -683,6 +689,7 @@ export default function ApplyForm() {
               placeholder="Select all that apply"
               options={BEYOND_OPTS}
               value={beyondCharity}
+              collapseOn="Other"
               onChange={(v) => {
                 setBeyondCharity(v);
                 if (!v.includes("Other")) setBeyondCharityOther("");
@@ -691,6 +698,7 @@ export default function ApplyForm() {
             {beyondCharity.includes("Other") && (
               <div className="reveal reveal-1 mt-3">
                 <input
+                  autoFocus
                   className={inputCls}
                   value={beyondCharityOther}
                   onChange={(e) => setBeyondCharityOther(e.target.value)}
@@ -711,6 +719,7 @@ export default function ApplyForm() {
               placeholder="Select all that apply"
               options={VENDOR_PROVIDE_OPTS}
               value={vendorMustProvide}
+              collapseOn="Other"
               onChange={(v) => {
                 setVendorMustProvide(v);
                 if (!v.includes("Other")) setVendorMustProvideOther("");
@@ -719,6 +728,7 @@ export default function ApplyForm() {
             {vendorMustProvide.includes("Other") && (
               <div className="reveal reveal-1 mt-3">
                 <input
+                  autoFocus
                   className={inputCls}
                   value={vendorMustProvideOther}
                   onChange={(e) => setVendorMustProvideOther(e.target.value)}
@@ -733,6 +743,7 @@ export default function ApplyForm() {
               placeholder="Select all that apply"
               options={NEED_TO_SEE_OPTS}
               value={needToSee}
+              collapseOn="Other"
               onChange={(v) => {
                 setNeedToSee(v);
                 if (!v.includes("Other")) setNeedToSeeOther("");
@@ -741,6 +752,7 @@ export default function ApplyForm() {
             {needToSee.includes("Other") && (
               <div className="reveal reveal-1 mt-3">
                 <input
+                  autoFocus
                   className={inputCls}
                   value={needToSeeOther}
                   onChange={(e) => setNeedToSeeOther(e.target.value)}

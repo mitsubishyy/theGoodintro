@@ -45,7 +45,7 @@ export default function ApplyPage() {
             <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
               The Good Intro is an invite-only network where senior leaders take
               a small number of genuinely relevant vendor conversations, and
-              every meeting sends a donation to a charity you choose. You are
+              100% of every meeting fee goes to a charity you choose. You are
               never pitched without a specific, stated reason, and you approve
               every request before it reaches you.
             </p>
