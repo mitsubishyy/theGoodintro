@@ -649,7 +649,7 @@ export default function ApplyForm() {
             </div>
           )}
 
-          <Field label="Set the charity aside. What else would make this worth your time / join the platform?">
+          <Field label="Set the charity aside. What else would make this worth your time / want to join?">
             <MultiSelectDropdown
               placeholder="Select all that apply"
               options={[
@@ -742,7 +742,7 @@ export default function ApplyForm() {
                   onChange={setShareWithVendor}
                 />
               </Field>
-              <Field label="Would making this questionnaire about your current interests and business goals mandatory put you off from joining the business?">
+              <Field label="If filling that questionnaire about your current interests were mandatory to join, would that put you off?">
                 <Pills
                   ariaLabel="Mandatory questionnaire"
                   options={["Yes", "No"]}
