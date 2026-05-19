@@ -3,18 +3,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 /* ─────────────────────────────────────────────────────────────────────
-   Interactive infinite logo marquee.
-   - Auto-scrolls rightward in a seamless loop (two identical copies, the
-     offset is wrapped so there is no beginning or end).
-   - Hovering pauses the scroll; grab and drag to swipe either way.
-   - macOS-dock magnification: the logo nearest the cursor enlarges with
-     a gentle falloff. The band has vertical room so nothing is clipped.
+   Infinite logo strip on a NATIVE horizontal scroller.
+   - Scroll it like any page: trackpad two-finger, mouse wheel, phone
+     swipe. No click-drag.
+   - Auto-drifts rightward when idle; pauses on hover and for a moment
+     after you interact, so it never fights you.
+   - Three identical copies + a wrap keep it seamless in both directions
+     with no start or end.
+   - macOS-dock magnification on pointer move; the band has vertical
+     room so a magnified chip is never clipped.
    - Each logo is preloaded in JS through a chain of real-logo sources
      (an official file in /public/charities first, then logo-by-domain
-     services). A broken image is never rendered: until/unless a real
-     logo loads, the charity name shows in its brand colour.
-   - Respects prefers-reduced-motion (no auto-scroll, no magnify; manual
-     drag still works).
+     services). A broken image is never shown: until a real logo loads,
+     the charity name shows in its brand colour.
+   - Respects prefers-reduced-motion (no auto-drift, no magnify; manual
+     scrolling still works).
    ───────────────────────────────────────────────────────────────────── */
 
 export type MarqueeItem = {
@@ -65,7 +68,6 @@ function LogoChip({ item }: { item: MarqueeItem }) {
       img.referrerPolicy = "no-referrer";
       img.onload = () => {
         if (cancelled) return;
-        // skip 1x1 trackers / empty placeholders
         if (img.naturalWidth > 2 && img.naturalHeight > 2) setSrc(url);
         else tryNext();
       };
@@ -107,9 +109,10 @@ function LogoChip({ item }: { item: MarqueeItem }) {
   );
 }
 
-const SPEED = 42; // px per second
+const SPEED = 38; // px per second of idle drift
 const MAGNIFY = 0.3; // peak extra scale
 const RADIUS = 150; // px of cursor influence
+const RESUME_MS = 1600; // pause auto-drift this long after interaction
 
 export function LogoMarquee({
   items,
@@ -118,99 +121,77 @@ export function LogoMarquee({
   items: MarqueeItem[];
   ariaLabel?: string;
 }) {
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-
-  const offset = useRef(0);
-  const setWidth = useRef(0);
+  const scroller = useRef<HTMLDivElement>(null);
+  const setW = useRef(0);
   const hovering = useRef(false);
-  const dragging = useRef(false);
-  const moved = useRef(false);
-  const dragStartX = useRef(0);
-  const dragStartOffset = useRef(0);
+  const lastInteract = useRef(0);
   const reduced = useRef(false);
 
-  const all = [
-    ...items.map((it) => ({ it, clone: false })),
-    ...items.map((it) => ({ it, clone: true })),
-  ];
-
-  const wrap = useCallback(() => {
-    const w = setWidth.current;
-    if (w <= 0) return;
-    if (offset.current > 0) offset.current -= w;
-    else if (offset.current < -w) offset.current += w;
-  }, []);
+  // three copies so native scrolling is seamless in both directions
+  const copies = [0, 1, 2];
 
   const magnify = useCallback((clientX: number | null) => {
-    const track = trackRef.current;
-    if (!track) return;
-    const nodes = track.querySelectorAll<HTMLElement>(".marquee-item");
-    nodes.forEach((el) => {
+    const el = scroller.current;
+    if (!el) return;
+    el.querySelectorAll<HTMLElement>(".marquee-item").forEach((node) => {
       if (clientX == null || reduced.current) {
-        el.style.transform = "scale(1)";
-        el.style.zIndex = "0";
+        node.style.transform = "scale(1)";
+        node.style.zIndex = "0";
         return;
       }
-      const r = el.getBoundingClientRect();
-      const center = r.left + r.width / 2;
-      const t = Math.max(0, 1 - Math.abs(clientX - center) / RADIUS);
-      el.style.transform = `scale(${1 + MAGNIFY * t * t})`;
-      el.style.zIndex = t > 0 ? "1" : "0";
+      const r = node.getBoundingClientRect();
+      const c = r.left + r.width / 2;
+      const t = Math.max(0, 1 - Math.abs(clientX - c) / RADIUS);
+      node.style.transform = `scale(${1 + MAGNIFY * t * t})`;
+      node.style.zIndex = t > 0 ? "1" : "0";
     });
   }, []);
 
-  const onWinMove = useCallback(
-    (e: PointerEvent) => {
-      if (dragging.current) {
-        const dx = e.clientX - dragStartX.current;
-        if (Math.abs(dx) > 4) moved.current = true;
-        offset.current = dragStartOffset.current + dx;
-        wrap();
-      }
-      magnify(e.clientX);
-    },
-    [wrap, magnify],
-  );
-
-  const onWinUp = useCallback(() => {
-    dragging.current = false;
-    viewportRef.current?.classList.remove("is-dragging");
-    window.removeEventListener("pointermove", onWinMove);
-    window.removeEventListener("pointerup", onWinUp);
-    window.removeEventListener("pointercancel", onWinUp);
-  }, [onWinMove]);
+  // keep the scroll position inside the middle copy so it loops forever
+  const normalize = useCallback(() => {
+    const el = scroller.current;
+    const s = setW.current;
+    if (!el || s <= 0) return;
+    if (el.scrollLeft < s * 0.5) el.scrollLeft += s;
+    else if (el.scrollLeft > s * 1.5) el.scrollLeft -= s;
+  }, []);
 
   useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
     reduced.current = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
     const measure = () => {
-      const track = trackRef.current;
-      if (track) setWidth.current = track.scrollWidth / 2;
+      setW.current = el.scrollWidth / 3;
+      if (el.scrollLeft === 0) el.scrollLeft = setW.current; // start middle
     };
     measure();
     const ro = new ResizeObserver(measure);
-    if (trackRef.current) ro.observe(trackRef.current);
-    window.addEventListener("resize", measure);
+    ro.observe(el);
+
+    const note = () => {
+      lastInteract.current = performance.now();
+    };
+    el.addEventListener("scroll", normalize, { passive: true });
+    el.addEventListener("wheel", note, { passive: true });
+    el.addEventListener("touchstart", note, { passive: true });
+    el.addEventListener("pointerdown", note, { passive: true });
 
     let raf = 0;
     let last = performance.now();
     const tick = (now: number) => {
       const dt = Math.min((now - last) / 1000, 0.05);
       last = now;
-      if (
+      const idle =
         !hovering.current &&
-        !dragging.current &&
         !reduced.current &&
-        setWidth.current > 0
-      ) {
-        offset.current += SPEED * dt;
-        wrap();
-      }
-      if (trackRef.current) {
-        trackRef.current.style.transform = `translate3d(${offset.current}px,0,0)`;
+        now - lastInteract.current > RESUME_MS &&
+        setW.current > 0;
+      if (idle) {
+        el.scrollLeft += SPEED * dt;
+        normalize();
       }
       raf = requestAnimationFrame(tick);
     };
@@ -219,16 +200,16 @@ export function LogoMarquee({
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
-      window.removeEventListener("resize", measure);
-      window.removeEventListener("pointermove", onWinMove);
-      window.removeEventListener("pointerup", onWinUp);
-      window.removeEventListener("pointercancel", onWinUp);
+      el.removeEventListener("scroll", normalize);
+      el.removeEventListener("wheel", note);
+      el.removeEventListener("touchstart", note);
+      el.removeEventListener("pointerdown", note);
     };
-  }, [wrap, onWinMove, onWinUp]);
+  }, [normalize]);
 
   return (
     <div
-      ref={viewportRef}
+      ref={scroller}
       className="marquee"
       role="region"
       aria-label={ariaLabel}
@@ -237,45 +218,30 @@ export function LogoMarquee({
       }}
       onPointerLeave={() => {
         hovering.current = false;
-        if (!dragging.current) magnify(null);
+        magnify(null);
       }}
       onPointerMove={(e) => {
-        if (!dragging.current) magnify(e.clientX);
-      }}
-      onPointerDown={(e) => {
-        if (e.button !== 0) return;
-        dragging.current = true;
-        moved.current = false;
-        dragStartX.current = e.clientX;
-        dragStartOffset.current = offset.current;
-        viewportRef.current?.classList.add("is-dragging");
-        window.addEventListener("pointermove", onWinMove);
-        window.addEventListener("pointerup", onWinUp);
-        window.addEventListener("pointercancel", onWinUp);
-      }}
-      onClickCapture={(e) => {
-        if (moved.current) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
+        if (e.pointerType === "mouse") magnify(e.clientX);
       }}
     >
-      <div ref={trackRef} className="marquee-track">
-        {all.map(({ it, clone }, i) => (
-          <a
-            key={(clone ? "c-" : "") + it.name + i}
-            href={it.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-hidden={clone || undefined}
-            tabIndex={clone ? -1 : undefined}
-            className="marquee-item shrink-0"
-            draggable={false}
-            onDragStart={(e) => e.preventDefault()}
-          >
-            <LogoChip item={it} />
-          </a>
-        ))}
+      <div className="marquee-track">
+        {copies.map((cp) =>
+          items.map((it) => (
+            <a
+              key={cp + "-" + it.name}
+              href={it.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-hidden={cp !== 0 || undefined}
+              tabIndex={cp !== 0 ? -1 : undefined}
+              className="marquee-item shrink-0"
+              draggable={false}
+              onDragStart={(e) => e.preventDefault()}
+            >
+              <LogoChip item={it} />
+            </a>
+          )),
+        )}
       </div>
     </div>
   );
