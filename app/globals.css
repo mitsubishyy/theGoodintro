@@ -68,6 +68,7 @@
   --cream-4: oklch(0.97 0.016 88);    /* vendors: lighter peachy cream */
   --cream-5: oklch(0.96 0.010 85);    /* how-it-works: balanced */
   --cream-6: oklch(0.955 0.022 75);   /* opportunity: warmest, most ochre */
+  --cream-7: oklch(0.962 0.013 80);   /* apply: calm, focused cream */
 
   /* Illustration palette */
   --ill-emerald: oklch(0.5 0.14 155);
