@@ -4,20 +4,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 /* ─────────────────────────────────────────────────────────────────────
    Infinite logo strip on a NATIVE horizontal scroller.
-   - Scroll it like any page: trackpad two-finger, mouse wheel, phone
-     swipe. No click-drag.
-   - Auto-drifts rightward when idle; pauses on hover and for a moment
-     after you interact, so it never fights you.
-   - Three identical copies + a wrap keep it seamless in both directions
-     with no start or end.
-   - macOS-dock magnification on pointer move; the band has vertical
-     room so a magnified chip is never clipped.
-   - Each logo is preloaded in JS through a chain of real-logo sources
-     (an official file in /public/charities first, then logo-by-domain
-     services). A broken image is never shown: until a real logo loads,
-     the charity name shows in its brand colour.
-   - Respects prefers-reduced-motion (no auto-drift, no magnify; manual
-     scrolling still works).
+   - Scroll like any page: trackpad, mouse wheel, phone swipe.
+   - Auto-drifts rightward when idle; pauses on hover and briefly after
+     you interact so it never fights you.
+   - Three copies + a wrap keep it seamless both directions.
+   - macOS-dock magnification on mouse move; the band has vertical room
+     so a magnified chip is never clipped.
+   - Each logo loads from a chain of real sources (an official file in
+     /public/charities first, then logo-by-domain services). The image
+     is hidden until it actually loads, so a broken image never flashes;
+     if none load, the charity name shows in its brand colour.
+   - Respects prefers-reduced-motion.
    ───────────────────────────────────────────────────────────────────── */
 
 export type MarqueeItem = {
@@ -51,59 +48,47 @@ function logoSources(it: MarqueeItem): string[] {
 
 function LogoChip({ item }: { item: MarqueeItem }) {
   const sources = useMemo(() => logoSources(item), [item]);
-  const [src, setSrc] = useState<string | null>(null);
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    let i = 0;
-    const tryNext = () => {
-      if (cancelled) return;
-      if (i >= sources.length) {
-        setFailed(true);
-        return;
-      }
-      const url = sources[i++];
-      const img = new window.Image();
-      img.referrerPolicy = "no-referrer";
-      img.onload = () => {
-        if (cancelled) return;
-        if (img.naturalWidth > 2 && img.naturalHeight > 2) setSrc(url);
-        else tryNext();
-      };
-      img.onerror = () => tryNext();
-      img.src = url;
-    };
-    tryNext();
-    return () => {
-      cancelled = true;
-    };
-  }, [sources]);
+  const [idx, setIdx] = useState(0);
+  const [loaded, setLoaded] = useState(false);
+  const exhausted = idx >= sources.length;
 
   return (
     <span
-      className="flex h-12 items-center justify-center rounded-xl border px-6"
+      className="relative flex h-12 min-w-[8rem] items-center justify-center rounded-xl border px-6"
       style={{ background: "var(--card)", borderColor: "var(--border)" }}
     >
-      {src ? (
+      {/* name: shown while loading and as the final fallback */}
+      <span
+        className="whitespace-nowrap text-base md:text-lg font-semibold tracking-tight pointer-events-none select-none transition-opacity"
+        style={{
+          color: exhausted
+            ? item.color ?? "var(--foreground)"
+            : "var(--muted-foreground)",
+          opacity: loaded ? 0 : 1,
+        }}
+      >
+        {item.name}
+      </span>
+      {!exhausted && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={src}
+          key={sources[idx]}
+          src={sources[idx]}
           alt={item.name}
           draggable={false}
-          className="max-h-8 w-auto object-contain pointer-events-none select-none"
-        />
-      ) : (
-        <span
-          className="whitespace-nowrap text-base md:text-lg font-semibold tracking-tight pointer-events-none select-none"
-          style={{
-            color: failed
-              ? item.color ?? "var(--foreground)"
-              : "var(--muted-foreground)",
+          referrerPolicy="no-referrer"
+          onLoad={(e) => {
+            const el = e.currentTarget;
+            if (el.naturalWidth > 2 && el.naturalHeight > 2) setLoaded(true);
+            else setIdx((i) => i + 1);
           }}
-        >
-          {item.name}
-        </span>
+          onError={() => {
+            setLoaded(false);
+            setIdx((i) => i + 1);
+          }}
+          className="absolute max-h-8 w-auto object-contain pointer-events-none select-none transition-opacity"
+          style={{ opacity: loaded ? 1 : 0 }}
+        />
       )}
     </span>
   );
@@ -127,7 +112,6 @@ export function LogoMarquee({
   const lastInteract = useRef(0);
   const reduced = useRef(false);
 
-  // three copies so native scrolling is seamless in both directions
   const copies = [0, 1, 2];
 
   const magnify = useCallback((clientX: number | null) => {
@@ -147,7 +131,6 @@ export function LogoMarquee({
     });
   }, []);
 
-  // keep the scroll position inside the middle copy so it loops forever
   const normalize = useCallback(() => {
     const el = scroller.current;
     const s = setW.current;
@@ -165,7 +148,7 @@ export function LogoMarquee({
 
     const measure = () => {
       setW.current = el.scrollWidth / 3;
-      if (el.scrollLeft === 0) el.scrollLeft = setW.current; // start middle
+      if (el.scrollLeft === 0) el.scrollLeft = setW.current;
     };
     measure();
     const ro = new ResizeObserver(measure);
@@ -190,7 +173,7 @@ export function LogoMarquee({
         now - lastInteract.current > RESUME_MS &&
         setW.current > 0;
       if (idle) {
-        el.scrollLeft += SPEED * dt;
+        el.scrollLeft -= SPEED * dt; // drift content rightward
         normalize();
       }
       raf = requestAnimationFrame(tick);
