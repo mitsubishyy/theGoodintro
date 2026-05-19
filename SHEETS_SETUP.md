@@ -158,10 +158,33 @@ function doPost(e) {
       sheet.appendRow(HEADERS);
       sheet.setFrozenRows(1);
     }
-    var row = HEADERS.map(function (k) { return data[k] != null ? data[k] : ""; });
-    sheet.appendRow(row);
-
     if (data.type === "copyRequest") {
+      // One row per person: find their submission row and fill in the
+      // wantsCopy / copyEmail cells in place (do NOT add a new row).
+      var wcCol = HEADERS.indexOf("wantsCopy") + 1;
+      var ceCol = HEADERS.indexOf("copyEmail") + 1;
+      var fnCol = HEADERS.indexOf("fullName") + 1;
+      var coCol = HEADERS.indexOf("company") + 1;
+      var nameV = String(data.fullName || "");
+      var compV = String(data.company || "");
+      var last = sheet.getLastRow();
+      var updated = false;
+      if (last >= 2) {
+        var vals = sheet.getRange(2, 1, last - 1, HEADERS.length).getValues();
+        for (var r = vals.length - 1; r >= 0; r--) {
+          if (String(vals[r][fnCol - 1]) === nameV &&
+              String(vals[r][coCol - 1]) === compV &&
+              String(vals[r][wcCol - 1]).trim() === "") {
+            sheet.getRange(r + 2, wcCol).setValue("Yes");
+            sheet.getRange(r + 2, ceCol).setValue(data.copyEmail || "");
+            updated = true;
+            break;
+          }
+        }
+      }
+      if (!updated) {
+        sheet.appendRow(HEADERS.map(function (k) { return data[k] != null ? data[k] : ""; }));
+      }
       var answers = {};
       try { answers = JSON.parse(data.answersJson || "{}"); } catch (x) {}
       if (data.copyEmail) {
@@ -177,6 +200,7 @@ function doPost(e) {
         });
       }
     } else {
+      sheet.appendRow(HEADERS.map(function (k) { return data[k] != null ? data[k] : ""; }));
       MailApp.sendEmail({
         to: NOTIFY_EMAIL,
         subject: "New theGoodintro response: " + (data.fullName || "") +
