@@ -10,10 +10,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
    - Three copies + a wrap keep it seamless both directions.
    - macOS-dock magnification on mouse move; the band has vertical room
      so a magnified chip is never clipped.
-   - Each logo loads from a chain of real sources (an official file in
-     /public/charities first, then logo-by-domain services). The image
-     is hidden until it actually loads, so a broken image never flashes;
-     if none load, the charity name shows in its brand colour.
+   - Logos are resolved entirely on the client (no server-render race):
+     each is preloaded through a chain of real-logo sources and the
+     first that loads is shown. The chain ends in a favicon service, so
+     a real mark resolves for essentially every charity. Drop an
+     official file in /public/charities to override with the full logo.
    - Respects prefers-reduced-motion.
    ───────────────────────────────────────────────────────────────────── */
 
@@ -23,8 +24,6 @@ export type MarqueeItem = {
   domain?: string;
   /** Explicit logo URL or /public path; tried before the domain lookups. */
   logo?: string;
-  /** Brand colour, used for the text fallback. */
-  color?: string;
 };
 
 function slugify(name: string): string {
@@ -40,55 +39,70 @@ function logoSources(it: MarqueeItem): string[] {
   out.push(`/charities/${slugify(it.name)}.svg`);
   out.push(`/charities/${slugify(it.name)}.png`);
   if (it.domain) {
-    out.push(`https://logo.clearbit.com/${it.domain}?size=160`);
+    out.push(`https://logo.clearbit.com/${it.domain}?size=200`);
     out.push(`https://icons.duckduckgo.com/ip3/${it.domain}.ico`);
+    out.push(`https://www.google.com/s2/favicons?sz=128&domain=${it.domain}`);
   }
   return out;
 }
 
 function LogoChip({ item }: { item: MarqueeItem }) {
   const sources = useMemo(() => logoSources(item), [item]);
-  const [idx, setIdx] = useState(0);
-  const [loaded, setLoaded] = useState(false);
-  const exhausted = idx >= sources.length;
+  const [resolved, setResolved] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    let i = 0;
+    const attempt = () => {
+      if (cancelled) return;
+      if (i >= sources.length) {
+        setDone(true);
+        return;
+      }
+      const url = sources[i++];
+      const probe = new window.Image();
+      probe.referrerPolicy = "no-referrer";
+      probe.onload = () => {
+        if (cancelled) return;
+        if (probe.naturalWidth >= 8 && probe.naturalHeight >= 8) {
+          setResolved(url);
+          setDone(true);
+        } else {
+          attempt();
+        }
+      };
+      probe.onerror = () => {
+        if (!cancelled) attempt();
+      };
+      probe.src = url;
+    };
+    attempt();
+    return () => {
+      cancelled = true;
+    };
+  }, [sources]);
 
   return (
     <span
-      className="relative flex h-12 min-w-[8rem] items-center justify-center rounded-xl border px-6"
+      className="flex h-12 min-w-[8rem] items-center justify-center rounded-xl border px-6"
       style={{ background: "var(--card)", borderColor: "var(--border)" }}
     >
-      {/* name: shown while loading and as the final fallback */}
-      <span
-        className="whitespace-nowrap text-base md:text-lg font-semibold tracking-tight pointer-events-none select-none transition-opacity"
-        style={{
-          color: exhausted
-            ? item.color ?? "var(--foreground)"
-            : "var(--muted-foreground)",
-          opacity: loaded ? 0 : 1,
-        }}
-      >
-        {item.name}
-      </span>
-      {!exhausted && (
+      {resolved ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          key={sources[idx]}
-          src={sources[idx]}
+          src={resolved}
           alt={item.name}
           draggable={false}
-          referrerPolicy="no-referrer"
-          onLoad={(e) => {
-            const el = e.currentTarget;
-            if (el.naturalWidth > 2 && el.naturalHeight > 2) setLoaded(true);
-            else setIdx((i) => i + 1);
-          }}
-          onError={() => {
-            setLoaded(false);
-            setIdx((i) => i + 1);
-          }}
-          className="absolute max-h-8 w-auto object-contain pointer-events-none select-none transition-opacity"
-          style={{ opacity: loaded ? 1 : 0 }}
+          className="max-h-9 w-auto object-contain pointer-events-none select-none"
         />
+      ) : (
+        <span
+          className="whitespace-nowrap text-sm font-medium tracking-tight text-muted-foreground pointer-events-none select-none"
+          aria-hidden={!done}
+        >
+          {item.name}
+        </span>
       )}
     </span>
   );
