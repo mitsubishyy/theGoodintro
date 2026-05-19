@@ -1,0 +1,1645 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TheBigIntro · Meetings that fund what matters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Midnight + Champagne. Ink on ivory, champagne-gold strictly rationed */
+    --bg:#f5f2ec;          /* ivory canvas */
+    --bg-deep:#ece8de;     /* alt light wash */
+    --surface:#ffffff;
+    --ink:#1b1d22;         /* near-black ink: headlines + key text */
+    --body:#4c4e55;        /* body text */
+    --soft:#636570;        /* muted captions / eyebrows (AA on ivory) */
+    --forest:#c9a86b;      /* RATIONED champagne accent (on midnight / large only) */
+    --forest-d:#7f6126;    /* RATIONED champagne accent (small text on light, AA) */
+    --forest-h:#6e5421;    /* button hover only */
+    --forest-ink:#7f6126;  /* rationed accent text on light */
+    --clay:#c9a86b;        /* RARE micro-accent: the single gold whisper */
+    --tint:#ece8de;        /* neutral alt-light panel */
+    --tint-deep:#e2ddd0;   /* slightly deeper neutral panel */
+    --line:#e2ddd0;        /* neutral hairline */
+    --espresso:#16181d;    /* the midnight immersive ground */
+
+    /* On-midnight text tokens (all AA+ on #16181d midnight) */
+    --d-fg:#ece7da;        /* primary on midnight, ~13:1 on #16181d */
+    --d-fg-2:rgba(236,231,218,.82);  /* body on midnight, AA */
+    --d-fg-3:rgba(236,231,218,.66);  /* muted on midnight, AA on #16181d */
+    --d-mint:rgba(236,231,218,.76);  /* eyebrow / accent on midnight = ivory, AA */
+    --d-line:rgba(236,231,218,.16);
+    --d-card:rgba(255,255,255,.045);
+    --d-card-line:rgba(236,231,218,.12);
+
+    /* Composed organic shapes. Soft ink, very low alpha, restrained */
+    --sh-1:rgba(27,29,34,.09);
+    --sh-2:rgba(27,29,34,.06);
+    --sh-3:rgba(27,29,34,.04);
+    --sh-clay:rgba(201,168,107,.13);
+    --sh-clay-soft:rgba(201,168,107,.08);
+
+    /* ---- Elevation system: top-left light, soft neutral ink, restrained ---- */
+    --el-1:
+      0 1px 1px rgba(27,29,34,.04),
+      0 4px 10px -5px rgba(27,29,34,.10),
+      0 12px 26px -14px rgba(27,29,34,.13);
+    --el-2:
+      0 1px 2px rgba(27,29,34,.05),
+      0 8px 18px -8px rgba(27,29,34,.13),
+      0 24px 50px -22px rgba(27,29,34,.20);
+    --el-3:
+      0 2px 3px rgba(27,29,34,.055),
+      0 14px 28px -10px rgba(27,29,34,.15),
+      0 44px 90px -30px rgba(27,29,34,.24);
+    --el-float:
+      0 2px 4px rgba(27,29,34,.055),
+      0 12px 22px -8px rgba(27,29,34,.16),
+      0 34px 70px -26px rgba(27,29,34,.28);
+    /* paired hairline + 1px inner top highlight (the "lit edge") */
+    --edge:inset 0 1px 0 rgba(255,255,255,.9), inset 0 0 0 1px rgba(226,221,208,.7);
+    --edge-soft:inset 0 1px 0 rgba(255,255,255,.75), inset 0 0 0 1px rgba(226,221,208,.55);
+    --edge-dark:inset 0 1px 0 rgba(236,231,218,.10), inset 0 0 0 1px rgba(236,231,218,.07);
+    --surf-grad:linear-gradient(177deg,#ffffff 0%,#fbf9f3 58%,#f4f1e9 100%);
+    --surf-grad-tint:linear-gradient(177deg,#ffffff 0%,#faf7f0 60%,#eee9df 100%);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--body);
+    font-family:'Inter',system-ui,sans-serif;font-size:17px;line-height:1.72;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    overflow-x:hidden;position:relative;
+  }
+
+  /* ---- TYPOGRAPHY: confident, optical, dramatic scale contrast ---- */
+  h1,h2,h3,h4{
+    font-family:'Fraunces',Georgia,serif;color:var(--ink);
+    font-weight:600;line-height:1.05;letter-spacing:-.02em;
+    font-optical-sizing:auto;
+  }
+  h1{
+    font-size:clamp(2.55rem,5.6vw,4.45rem);font-weight:600;line-height:1.04;
+    letter-spacing:-.032em;
+    font-variation-settings:"opsz" 144;
+  }
+  h2{
+    font-size:clamp(1.95rem,3.6vw,3.05rem);font-weight:600;line-height:1.08;
+    letter-spacing:-.026em;font-variation-settings:"opsz" 96;
+  }
+  h3{font-size:clamp(1.2rem,1.6vw,1.42rem);font-weight:600;line-height:1.24;
+    letter-spacing:-.014em}
+  p{max-width:60ch}
+  em,.serif-i{font-family:'Fraunces',serif;font-style:italic;font-weight:500}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 clamp(22px,5vw,56px);position:relative}
+  .wrap-narrow{max-width:880px;margin:0 auto;padding:0 clamp(22px,5vw,56px);position:relative}
+
+  section{padding:clamp(84px,12vw,164px) 0;position:relative;overflow:hidden}
+
+  /* ---- Paper grain over the whole canvas (very subtle, refined) ---- */
+  .grain{
+    position:fixed;inset:0;z-index:1;pointer-events:none;
+    opacity:.34;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.86' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.106  0 0 0 0 0.114  0 0 0 0 0.133  0 0 0 0.42 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  body > *:not(.grain){position:relative;z-index:2}
+  @media print{.grain{display:none}}
+
+  /* ---- Eyebrows / chips / dividers ---- */
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:11px;
+    font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;
+    letter-spacing:.24em;text-transform:uppercase;color:var(--soft);
+  }
+  .eyebrow::before{
+    content:"";width:28px;height:2px;border-radius:2px;
+    background:var(--soft);display:inline-block;
+  }
+  .eyebrow.mint{color:var(--soft)}
+  .eyebrow.mint::before{background:var(--soft)}
+  .eyebrow.light{color:var(--d-mint)}
+  .eyebrow.light::before{background:var(--d-mint)}
+
+  .lede{font-size:clamp(1.06rem,1.35vw,1.22rem);line-height:1.62;max-width:50ch;color:var(--body)}
+
+  /* ---- Composed organic shapes ---- */
+  .blob{position:absolute;pointer-events:none;z-index:0}
+  .blob svg{display:block;width:100%;height:100%}
+
+  /* ---- Buttons: gradient + inner highlight + crisp states ---- */
+  .btn{
+    position:relative;display:inline-flex;align-items:center;gap:12px;
+    background:linear-gradient(180deg,#d6b878,var(--forest) 58%,#bb9a5a);
+    color:#16181d;text-decoration:none;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:1.02rem;
+    padding:18px 34px;border-radius:999px;letter-spacing:.005em;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.34),
+      inset 0 -1px 0 rgba(22,24,29,.16),
+      0 2px 4px rgba(22,24,29,.18),
+      0 14px 28px -10px rgba(138,108,54,.42);
+    transition:transform .16s ease,box-shadow .18s ease,filter .18s ease;
+  }
+  .btn:hover{
+    filter:brightness(1.05);transform:translateY(-2px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.38),
+      inset 0 -1px 0 rgba(22,24,29,.18),
+      0 3px 6px rgba(22,24,29,.20),
+      0 22px 44px -12px rgba(138,108,54,.5);
+  }
+  .btn:active{transform:translateY(0);filter:brightness(.97);
+    box-shadow:
+      inset 0 2px 5px rgba(22,24,29,.24),
+      0 2px 6px rgba(138,108,54,.36);}
+  .btn:focus-visible{outline:3px solid rgba(138,108,54,.6);outline-offset:3px}
+  .btn .arr{font-family:'Fraunces',serif;transition:transform .18s ease}
+  .btn:hover .arr{transform:translateX(3px)}
+  .btn.on-dark{
+    background:linear-gradient(180deg,#d6b878,var(--forest) 58%,#bb9a5a);color:#16181d;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.34),
+      inset 0 -1px 0 rgba(22,24,29,.16),
+      0 2px 5px rgba(0,0,0,.34),
+      0 16px 34px -12px rgba(0,0,0,.55);
+  }
+  .btn.on-dark:hover{filter:brightness(1.05);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.38),
+      0 3px 7px rgba(0,0,0,.36),
+      0 24px 48px -14px rgba(0,0,0,.6);}
+  .btn.on-dark:focus-visible{outline:3px solid rgba(201,168,107,.8)}
+  .inl{
+    font-family:'Inter',sans-serif;font-weight:600;text-decoration:none;
+    color:var(--ink);border-bottom:1.5px solid rgba(27,29,34,.30);
+    padding-bottom:2px;transition:border-color .15s,color .15s;
+  }
+  .inl:hover{color:var(--body);border-color:var(--ink)}
+  .inl:focus-visible{outline:2px solid rgba(27,29,34,.5);outline-offset:3px;border-radius:3px}
+  .inl.on-dark{color:var(--d-mint);border-bottom-color:rgba(236,231,218,.4)}
+  .inl.on-dark:hover{color:var(--forest);border-bottom-color:var(--forest)}
+
+  /* ---- Nav ---- */
+  .topline{height:4px;background:linear-gradient(90deg,#23252c,var(--ink),#23252c);position:relative;z-index:3}
+  nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:26px 0;position:relative;z-index:5;
+  }
+  .logo{
+    font-family:'Fraunces',serif;font-weight:600;font-size:1.42rem;
+    color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:12px;
+    letter-spacing:-.02em;
+  }
+  .logo .big{color:var(--ink)}
+  .logo .mark{
+    width:36px;height:36px;border-radius:11px;flex-shrink:0;
+    background:linear-gradient(150deg,#22242b,#16181d);
+    display:grid;place-items:center;color:var(--forest);
+    font-family:'Fraunces',serif;font-weight:600;font-size:1.22rem;
+    box-shadow:
+      inset 0 1px 0 rgba(236,231,218,.16),
+      inset 0 0 0 1px rgba(201,168,107,.18),
+      0 6px 16px -7px rgba(22,24,29,.5);
+  }
+  .nlinks{display:flex;gap:36px;align-items:center}
+  .nlinks a:not(.btn){
+    color:var(--body);text-decoration:none;font-weight:500;font-size:.97rem;
+    transition:color .15s;
+  }
+  .nlinks a:not(.btn):hover{color:var(--ink)}
+  .nlinks a:not(.btn)[aria-current],
+  .nlinks a:not(.btn).active{color:var(--forest-d)}
+  .nlinks .btn{padding:13px 26px;font-size:.95rem}
+
+  /* ====================== HERO ====================== */
+  .hero{padding:clamp(40px,7vw,92px) 0 clamp(88px,13vw,168px)}
+  .hero .blob-1{width:min(58vw,800px);height:min(58vw,800px);right:-18vw;top:-22vw}
+  .hero .blob-2{width:min(42vw,520px);height:min(42vw,520px);left:-16vw;bottom:-22vw}
+  .hero .blob-3{width:min(26vw,320px);height:min(26vw,320px);right:23vw;bottom:-7vw}
+  .hero-grid{
+    position:relative;z-index:2;display:grid;
+    grid-template-columns:minmax(0,1.06fr) minmax(0,1fr);
+    gap:clamp(40px,6vw,88px);align-items:center;
+  }
+  .hero-inner{max-width:620px}
+  .chips{display:flex;gap:11px;flex-wrap:wrap;margin-bottom:36px}
+  .chip{
+    display:inline-flex;align-items:center;gap:9px;font-size:.79rem;
+    font-weight:600;padding:9px 17px 9px 14px;border-radius:999px;
+    background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.74));
+    color:var(--ink);backdrop-filter:blur(3px);
+    box-shadow:var(--edge-soft),var(--el-1);
+  }
+  .hero h1{max-width:13ch;margin-bottom:26px}
+  .hero h1 .mk{
+    color:var(--forest-d);font-style:italic;font-weight:500;
+    position:relative;white-space:nowrap;letter-spacing:-.026em;
+  }
+  .hero h1 .mk::after{
+    content:"";position:absolute;left:-.04em;right:-.04em;bottom:.05em;
+    height:.34em;
+    background:linear-gradient(180deg,rgba(201,168,107,.0),rgba(201,168,107,.22));
+    border-radius:.3em;z-index:-1;
+  }
+  .hero .lede{
+    max-width:44ch;font-size:clamp(1.16rem,1.6vw,1.42rem);color:var(--ink);
+    font-family:'Fraunces',serif;font-weight:400;line-height:1.46;
+    letter-spacing:-.006em;
+  }
+  .cta{display:flex;gap:26px;align-items:center;flex-wrap:wrap;margin-top:42px}
+  .trust{margin-top:30px;font-size:.97rem;color:var(--soft);max-width:46ch}
+
+  /* ---- Hero focal vignette: lifted, glassy art object ---- */
+  .vignette{position:relative;z-index:2}
+  .vig-stage{
+    position:relative;width:100%;max-width:560px;margin-left:auto;
+  }
+  .vig-glow{
+    position:absolute;inset:-10% -12% -14% -10%;border-radius:50%;
+    background:radial-gradient(58% 58% at 56% 40%,rgba(27,29,34,.10),rgba(27,29,34,.04) 54%,transparent 72%);
+    filter:blur(10px);z-index:0;
+  }
+  .vig-frame{
+    position:relative;z-index:1;border-radius:30px;
+    background:linear-gradient(168deg,#ffffff 0%,#faf7f0 55%,#eee9df 100%);
+    box-shadow:var(--edge),var(--el-float);
+    padding:clamp(20px,3vw,30px);
+  }
+  .vig-frame svg{display:block;width:100%;height:auto;border-radius:16px}
+  .vig-cap{
+    margin-top:16px;display:flex;align-items:center;justify-content:space-between;
+    gap:14px;font-size:.74rem;color:var(--soft);font-weight:500;
+    letter-spacing:.01em;
+  }
+  .vig-cap b{font-family:'Fraunces',serif;font-weight:600;color:var(--ink);
+    font-size:.82rem;letter-spacing:.02em}
+  .vig-cap .dot{width:6px;height:6px;border-radius:50%;background:var(--soft);
+    box-shadow:0 0 0 4px rgba(27,29,34,.10)}
+
+  /* ====================== Section heads (deliberate air) ====================== */
+  .sect-head{max-width:46ch;margin-bottom:clamp(52px,7vw,88px);position:relative;z-index:2}
+  .sect-head .eyebrow{margin-bottom:24px}
+  .sect-head h2{max-width:20ch}
+  .sect-head .lede{margin-top:22px}
+
+  /* ====================== WHY (editorial pull-quote moment) ====================== */
+  .manifesto{background:var(--bg-deep);
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .manifesto .blob-a{width:min(46vw,620px);height:min(46vw,620px);left:-17vw;top:-15vw}
+  .manifesto .blob-b{width:min(34vw,440px);height:min(34vw,440px);right:-13vw;bottom:-17vw}
+  .manifesto .wrap-narrow{z-index:2;text-align:center}
+  .manifesto .eyebrow{margin-bottom:34px}
+  .pullq{
+    position:relative;display:inline-block;
+  }
+  .pullq::before{
+    content:"\201C";position:absolute;left:-.16em;top:-.46em;
+    font-family:'Fraunces',serif;font-weight:600;
+    font-size:clamp(4rem,9vw,8rem);line-height:1;color:rgba(27,29,34,.13);
+    z-index:0;
+  }
+  .pull{
+    font-family:'Fraunces',serif;font-weight:500;
+    font-size:clamp(2rem,4.4vw,3.5rem);line-height:1.16;
+    color:var(--ink);max-width:18ch;letter-spacing:-.026em;
+    margin:0 auto;position:relative;z-index:1;
+  }
+  .pull .accent{color:var(--forest-d);font-style:italic;font-weight:500}
+  .manifesto .body-after{
+    margin:34px auto 0;font-size:clamp(1.06rem,1.25vw,1.2rem);
+    max-width:56ch;line-height:1.68;text-align:center;color:var(--body);
+  }
+
+  /* ====================== HOW IT WORKS ====================== */
+  .how .blob-a{width:min(40vw,560px);height:min(40vw,560px);right:-17vw;top:4%}
+  .how .blob-b{width:min(28vw,360px);height:min(28vw,360px);left:-13vw;bottom:-13vw}
+  .beats{display:flex;flex-direction:column;gap:0;position:relative;z-index:2}
+  .beat{
+    display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1.55fr);
+    gap:clamp(30px,6vw,84px);align-items:start;
+    padding:clamp(46px,5.8vw,72px) 0;
+    border-top:1px solid var(--line);position:relative;
+  }
+  .beat::before{
+    content:"";position:absolute;top:-1px;left:0;width:64px;height:2px;
+    background:linear-gradient(90deg,var(--ink),transparent);
+  }
+  .beat:first-child{border-top:0;padding-top:0}
+  .beat:first-child::before{display:none}
+  .beat-n{
+    font-family:'Fraunces',serif;font-weight:500;font-style:italic;
+    font-size:clamp(2.4rem,4vw,3.6rem);line-height:1;color:var(--ink);
+    display:flex;align-items:flex-start;gap:24px;letter-spacing:-.02em;
+  }
+  .beat-n .spot{
+    margin-top:-.18rem;flex-shrink:0;border-radius:22px;
+    background:var(--surf-grad-tint);
+    box-shadow:var(--edge),var(--el-2);
+    width:118px;height:118px;display:grid;place-items:center;
+  }
+  .beat-n .spot svg{display:block;width:64px;height:64px}
+  .beat-c h3{margin-bottom:14px;font-size:clamp(1.3rem,1.8vw,1.6rem)}
+  .beat-c p{font-size:1.08rem;max-width:52ch;line-height:1.66}
+  .loopline{
+    position:relative;z-index:2;margin-top:clamp(52px,6vw,80px);
+    font-family:'Fraunces',serif;font-style:italic;font-weight:400;
+    font-size:clamp(1.18rem,1.8vw,1.56rem);line-height:1.5;
+    color:var(--ink);max-width:42ch;padding-left:30px;
+    border-left:3px solid var(--line);letter-spacing:-.008em;
+  }
+
+  /* ====================== MONEY (midnight editorial centrepiece) ======================
+     The $1,000 editorial moment, on midnight with champagne-gold as the accent. */
+  .money{
+    background:
+      radial-gradient(110% 80% at 18% 0%,#1c1e25 0%,transparent 54%),
+      linear-gradient(168deg,#181a20 0%,#16181d 55%,#131419 100%);
+    border-top:1px solid var(--d-line);border-bottom:1px solid var(--d-line);
+    color:var(--d-fg-2);
+  }
+  .money .blob-a{width:min(52vw,720px);height:min(52vw,720px);left:-20vw;bottom:-22vw}
+  .money .blob-b{width:min(30vw,400px);height:min(30vw,400px);right:-10vw;top:-10vw}
+  .money .wrap{z-index:2}
+  .money .eyebrow{color:var(--d-mint)}
+  .money .eyebrow::before{background:var(--d-mint)}
+  .money .sect-head h2{color:var(--d-fg)}
+  .money .sect-head{margin-bottom:clamp(44px,6vw,68px)}
+  .money-stage{
+    display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);
+    gap:clamp(34px,5vw,72px);align-items:center;
+  }
+  /* the lifted, glowing $1,000 card */
+  .moneycard{
+    position:relative;border-radius:30px;
+    background:linear-gradient(168deg,#1f2128 0%,#191b21 52%,#131419 100%);
+    padding:clamp(40px,4.8vw,60px);
+    box-shadow:var(--edge-dark),
+      0 2px 3px rgba(0,0,0,.4),
+      0 14px 28px -10px rgba(0,0,0,.5),
+      0 44px 90px -30px rgba(0,0,0,.6);
+    overflow:hidden;isolation:isolate;
+  }
+  .moneycard::before{
+    content:"";position:absolute;inset:-2px;border-radius:32px;z-index:-1;
+    background:radial-gradient(50% 60% at 50% 35%,rgba(201,168,107,.16),rgba(201,168,107,.0) 70%);
+    filter:blur(24px);
+  }
+  .moneycard::after{
+    content:"";position:absolute;right:-70px;top:-70px;width:260px;height:260px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(201,168,107,.10),transparent 66%);
+  }
+  .mc-eye{
+    display:inline-flex;align-items:center;gap:9px;font-size:.7rem;
+    font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--d-mint);margin-bottom:20px;position:relative;
+  }
+  .bignum{
+    font-family:'Fraunces',serif;font-weight:600;
+    font-size:clamp(4.4rem,11vw,8.4rem);line-height:.86;color:var(--forest);
+    letter-spacing:-.045em;display:flex;align-items:flex-start;
+    gap:clamp(16px,2.6vw,30px);position:relative;
+    font-variation-settings:"opsz" 144;
+  }
+  .bignum .num{
+    background:linear-gradient(176deg,#d9bc7e,#bb9a5a);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .bignum .givemark{margin-top:.06em;flex-shrink:0}
+  .bignum .givemark svg{display:block;width:clamp(64px,9vw,96px);height:auto}
+  .mc-saying{
+    font-family:'Fraunces',serif;font-style:italic;font-weight:400;
+    font-size:clamp(1.16rem,1.6vw,1.46rem);line-height:1.42;
+    color:var(--d-fg);max-width:22ch;margin-top:26px;position:relative;
+    letter-spacing:-.008em;
+  }
+  .mlines{
+    background:linear-gradient(177deg,#1e2027 0%,#191b21 60%,#15161b 100%);
+    border-radius:24px;padding:6px clamp(24px,3vw,36px);
+    box-shadow:var(--edge-dark),0 1px 2px rgba(0,0,0,.4),0 12px 26px -14px rgba(0,0,0,.5);
+  }
+  .mlines .r{
+    display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+    padding:24px 0;border-bottom:1px solid var(--d-line);
+  }
+  .mlines .r:last-child{border-bottom:0}
+  .mlines .k{font-family:'Fraunces',serif;font-weight:600;color:var(--d-fg);
+    font-size:1.12rem;max-width:22ch;letter-spacing:-.01em}
+  .mlines .v{color:var(--d-fg-2);font-size:1rem;text-align:right}
+  .money .body-after{
+    margin-top:38px;font-size:1.1rem;max-width:62ch;
+    line-height:1.66;position:relative;z-index:2;color:var(--d-fg-2);
+  }
+  .giveflow{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,3vw,24px);
+    margin-top:clamp(44px,6vw,60px);position:relative;z-index:2;
+  }
+  .gf{
+    background:linear-gradient(177deg,#1e2027 0%,#191b21 60%,#15161b 100%);
+    border-radius:20px;padding:30px 28px;
+    box-shadow:var(--edge-dark),0 1px 2px rgba(0,0,0,.4),0 12px 26px -14px rgba(0,0,0,.5);
+    transition:transform .18s ease,box-shadow .18s ease;
+  }
+  .gf:hover{transform:translateY(-3px);box-shadow:var(--edge-dark),0 8px 18px -8px rgba(0,0,0,.5),0 24px 50px -22px rgba(0,0,0,.6)}
+  .gf-ic{margin-bottom:18px;display:block}
+  .gf-k{display:block;font-family:'Fraunces',serif;font-weight:600;
+    color:var(--d-fg);font-size:1.1rem;margin-bottom:8px;letter-spacing:-.01em}
+  .gf-v{display:block;color:var(--d-fg-2);font-size:.98rem;line-height:1.55}
+
+  /* ====================== CAUSES ====================== */
+  .causes-sec .blob-a{width:min(36vw,500px);height:min(36vw,500px);right:-13vw;bottom:-16vw}
+  .causes-sec .blob-b{width:min(24vw,300px);height:min(24vw,300px);left:-10vw;top:-8vw}
+  .causes-grid{
+    display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);
+    gap:clamp(40px,5.5vw,80px);align-items:center;position:relative;z-index:2;
+  }
+  .causes-art{
+    position:relative;border-radius:28px;
+    background:var(--surf-grad-tint);
+    box-shadow:var(--edge),var(--el-2);
+    padding:clamp(28px,3.4vw,40px);display:grid;place-items:center;
+  }
+  .causes-art svg{display:block;width:100%;height:auto;max-width:380px}
+  .causes{display:flex;flex-wrap:wrap;gap:13px;margin-top:8px}
+  .cause{
+    display:inline-flex;align-items:center;gap:13px;
+    font-family:'Inter',sans-serif;font-weight:600;color:var(--ink);
+    font-size:1.02rem;padding:15px 24px 15px 18px;border-radius:999px;
+    background:var(--surf-grad);
+    box-shadow:var(--edge-soft),var(--el-1);
+    transition:transform .18s ease,box-shadow .18s ease;
+  }
+  .cause:hover{transform:translateY(-2px);box-shadow:var(--edge-soft),var(--el-2)}
+  .cause .cdot{
+    width:36px;height:36px;border-radius:11px;flex-shrink:0;
+    background:var(--tint);display:grid;place-items:center;
+    box-shadow:inset 0 0 0 1px rgba(27,29,34,.07);
+  }
+  .note{margin-top:28px;font-size:.95rem;color:var(--soft);max-width:50ch}
+
+  /* ====================== DIFFERENCE (editorial credibility / standards band) ====================== */
+  .diff{background:var(--bg-deep);
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .diff .blob-a{width:min(44vw,620px);height:min(44vw,620px);left:-18vw;top:-12vw}
+  .diff .blob-b{width:min(26vw,340px);height:min(26vw,340px);right:-10vw;bottom:-12vw}
+  .difflist{display:flex;flex-direction:column;gap:0;position:relative;z-index:2}
+  .row2{
+    display:grid;grid-template-columns:auto minmax(0,1fr) auto;
+    gap:clamp(24px,4vw,48px);align-items:center;
+    padding:clamp(38px,4.8vw,58px) 0;border-top:1px solid var(--line);
+    position:relative;
+  }
+  .row2:first-child{border-top:0;padding-top:0}
+  .row2 .glyph{
+    width:84px;height:84px;border-radius:24px;flex-shrink:0;
+    display:grid;place-items:center;
+    background:var(--surf-grad-tint);
+    box-shadow:var(--edge),var(--el-1);
+  }
+  .row2 h3{margin-bottom:10px;font-size:clamp(1.3rem,1.7vw,1.55rem)}
+  .row2 p{font-size:1.1rem;max-width:56ch;line-height:1.62}
+  .row2 .idx{
+    font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+    font-size:clamp(2rem,3vw,2.8rem);color:rgba(27,29,34,.22);
+    line-height:1;align-self:start;letter-spacing:-.02em;
+  }
+
+  /* ====================== WHO FOR (alternating: art left, text right) ====================== */
+  .whofor{background:var(--bg);
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .whofor .blob-a{width:min(48vw,680px);height:min(48vw,680px);right:-20vw;bottom:-20vw}
+  .whofor .blob-b{width:min(28vw,360px);height:min(28vw,360px);left:-9vw;top:-8vw}
+  .whofor .wrap{z-index:2}
+  .whofor-grid{
+    display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);
+    gap:clamp(40px,5.5vw,80px);align-items:center;
+    margin-bottom:clamp(52px,7vw,84px);
+  }
+  .whofor-art{
+    position:relative;border-radius:28px;
+    background:var(--surf-grad);
+    box-shadow:var(--edge),var(--el-2);
+    padding:clamp(28px,3.4vw,42px);display:grid;place-items:center;
+  }
+  .whofor-art svg{display:block;width:100%;height:auto;max-width:340px}
+  .whofor .sh-text{max-width:48ch}
+  .whofor .sh-text .eyebrow{margin-bottom:24px}
+  .whofor .sh-text .lede{margin-top:22px;color:var(--body)}
+  .standardrow{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3vw,28px);
+    position:relative;z-index:2;
+  }
+  .std{
+    background:var(--surf-grad);
+    border-radius:24px;padding:clamp(30px,3.5vw,40px);
+    box-shadow:var(--edge-soft),var(--el-1);
+    transition:transform .18s ease,box-shadow .18s ease;
+  }
+  .std:hover{transform:translateY(-3px);box-shadow:var(--edge-soft),var(--el-2)}
+  .std-ic{margin-bottom:20px;display:block}
+  .std-k{display:block;font-family:'Fraunces',serif;font-weight:600;
+    color:var(--ink);font-size:1.22rem;margin-bottom:12px;letter-spacing:-.012em}
+  .std p{font-size:1rem;color:var(--body);line-height:1.6}
+
+  /* ====================== CONTROL ====================== */
+  .control .blob-a{width:min(40vw,560px);height:min(40vw,560px);left:-17vw;bottom:-18vw}
+  .control .blob-b{width:min(26vw,340px);height:min(26vw,340px);right:-11vw;top:-8vw}
+  .control-list{
+    display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,3vw,28px);
+    position:relative;z-index:2;
+  }
+  .ctl{
+    display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start;
+    background:var(--surf-grad);
+    border-radius:24px;padding:clamp(28px,3.2vw,38px);
+    box-shadow:var(--edge-soft),var(--el-1);
+    transition:transform .18s ease,box-shadow .18s ease;
+  }
+  .ctl:hover{transform:translateY(-3px);box-shadow:var(--edge-soft),var(--el-2)}
+  .ctl .glyph{
+    width:58px;height:58px;border-radius:17px;flex-shrink:0;
+    display:grid;place-items:center;background:var(--tint);
+    box-shadow:inset 0 0 0 1px rgba(27,29,34,.06);
+  }
+  .ctl p{font-size:1.03rem;max-width:42ch;line-height:1.6}
+  .ctl strong{color:var(--ink);font-family:'Fraunces',serif;font-weight:600;
+    display:block;margin-bottom:5px;letter-spacing:-.01em;font-size:1.08rem}
+
+  /* ====================== FOUNDING (lifted card on deeper bone) ====================== */
+  .founding-sec{background:var(--bg-deep);
+    border-top:1px solid var(--line)}
+  .founding-sec .blob-a{width:min(44vw,620px);height:min(44vw,620px);right:-16vw;top:-12vw}
+  .founding-sec .blob-b{width:min(30vw,400px);height:min(30vw,400px);left:-12vw;bottom:-14vw}
+  .founding{
+    position:relative;z-index:2;max-width:840px;margin:0 auto;
+    background:linear-gradient(164deg,#ffffff 0%,#faf7f0 52%,#eee9df 100%);
+    border-radius:34px;
+    padding:clamp(48px,6.5vw,80px) clamp(32px,5vw,72px);
+    text-align:center;box-shadow:var(--edge),var(--el-3);
+    overflow:hidden;isolation:isolate;
+  }
+  .founding::before{
+    content:"";position:absolute;inset:-2px;border-radius:36px;z-index:-1;
+    background:radial-gradient(50% 60% at 50% 30%,rgba(27,29,34,.16),transparent 70%);
+    filter:blur(24px);
+  }
+  .founding .medal{margin:0 auto 28px;display:block}
+  .founding .medal svg{display:block;width:96px;height:auto;margin:0 auto}
+  .founding .eyebrow{margin-bottom:24px}
+  .founding h2{max-width:14ch;margin:0 auto 24px}
+  .founding p{margin:0 auto 38px;max-width:46ch;font-size:1.18rem;
+    font-family:'Fraunces',serif;font-weight:400;line-height:1.52;color:var(--ink);
+    letter-spacing:-.006em}
+
+  /* ====================== FOUNDER (deepest-midnight immersive beat #2) ====================== */
+  .founder-sec{
+    background:
+      radial-gradient(110% 80% at 80% 0%,#191b21 0%,transparent 52%),
+      linear-gradient(168deg,#15161b 0%,#111317 55%,#0e0f13 100%);
+    color:var(--d-fg-2);
+  }
+  .founder-sec .blob-a{width:min(40vw,560px);height:min(40vw,560px);right:-15vw;bottom:-18vw}
+  .founder-sec .blob-b{width:min(26vw,340px);height:min(26vw,340px);left:-10vw;top:-8vw}
+  .founder{position:relative;z-index:2;max-width:920px;margin:0 auto}
+  .founder .eyebrow{color:var(--d-mint);margin-bottom:36px}
+  .founder .eyebrow::before{background:rgba(236,231,218,.55)}
+  .founder blockquote{
+    font-family:'Fraunces',serif;font-weight:400;font-style:normal;
+    font-size:clamp(1.6rem,3.2vw,2.6rem);line-height:1.32;
+    color:var(--d-fg);max-width:24ch;letter-spacing:-.022em;position:relative;
+  }
+  .founder blockquote::before{
+    content:"\201C";position:absolute;left:-.5em;top:-.34em;
+    font-family:'Fraunces',serif;font-weight:600;font-size:3.4em;line-height:1;
+    color:rgba(236,231,218,.22);
+  }
+  .founder blockquote .hl{color:var(--d-fg);font-style:italic}
+  .sig-row{display:flex;align-items:center;gap:22px;margin-top:48px}
+  .ava{
+    width:64px;height:64px;border-radius:50%;flex-shrink:0;
+    background:linear-gradient(150deg,#262830,#16181d);
+    display:grid;place-items:center;
+    font-family:'Fraunces',serif;font-weight:600;font-size:1.3rem;color:var(--forest);
+    box-shadow:
+      inset 0 1px 0 rgba(236,231,218,.16),
+      inset 0 0 0 1px rgba(201,168,107,.18),
+      0 14px 30px -12px rgba(0,0,0,.6);
+  }
+  .sig-name{font-family:'Fraunces',serif;font-weight:600;color:var(--d-fg);font-size:1.14rem}
+  .sig-role{font-size:.95rem;color:var(--d-fg-3)}
+
+  /* ====================== FAQ ====================== */
+  .faq .blob-a{width:min(38vw,520px);height:min(38vw,520px);left:-16vw;top:4%}
+  .faq .blob-b{width:min(24vw,300px);height:min(24vw,300px);right:-9vw;bottom:-10vw}
+  .faq .wrap-narrow{z-index:2}
+  .faq .sect-head{margin-bottom:clamp(40px,5vw,60px)}
+  .faqlist{
+    background:var(--surf-grad);
+    border-radius:28px;padding:0 clamp(24px,3.4vw,42px);
+    box-shadow:var(--edge),var(--el-2);
+  }
+  details{border-top:1px solid var(--line);padding:2px 0}
+  details:first-of-type{border-top:0}
+  summary{
+    list-style:none;cursor:pointer;display:flex;justify-content:space-between;
+    gap:30px;align-items:center;font-family:'Fraunces',serif;color:var(--ink);
+    font-weight:600;font-size:clamp(1.1rem,1.5vw,1.32rem);line-height:1.32;
+    padding:30px 0;letter-spacing:-.014em;transition:color .15s;
+  }
+  summary:hover{color:var(--body)}
+  summary::-webkit-details-marker{display:none}
+  summary .i{
+    font-family:'Inter',sans-serif;color:var(--ink);font-size:1.4rem;
+    line-height:1;flex-shrink:0;transition:transform .26s cubic-bezier(.4,0,.2,1);
+    font-weight:400;width:30px;height:30px;border-radius:50%;
+    display:grid;place-items:center;background:var(--tint);
+    box-shadow:inset 0 0 0 1px rgba(27,29,34,.10);
+  }
+  details[open] summary .i{transform:rotate(135deg)}
+  details p{
+    padding:0 0 32px;font-size:1.06rem;max-width:62ch;color:var(--body);
+    line-height:1.66;
+  }
+  @media (prefers-reduced-motion: no-preference){
+    @supports (interpolate-size:allow-keywords){
+      details{interpolate-size:allow-keywords}
+      details::details-content{
+        block-size:0;overflow:hidden;
+        transition:block-size .32s ease,content-visibility .32s allow-discrete;
+        content-visibility:hidden;
+      }
+      details[open]::details-content{block-size:auto;content-visibility:visible}
+    }
+  }
+
+  /* ====================== CLOSING (midnight confident final band) ====================== */
+  .closing{
+    background:
+      radial-gradient(120% 90% at 80% 100%,#1c1e25 0%,transparent 56%),
+      linear-gradient(168deg,#181a20 0%,#16181d 55%,#131419 100%);
+    border-top:1px solid var(--d-line);
+    color:var(--d-fg-2);
+  }
+  .closing .blob-a{width:min(56vw,780px);height:min(56vw,780px);right:-22vw;bottom:-26vw}
+  .closing .blob-b{width:min(34vw,460px);height:min(34vw,460px);left:-14vw;top:-12vw}
+  .closecard{
+    position:relative;z-index:2;max-width:820px;margin:0 auto;text-align:center;
+  }
+  .closecard .closemark{margin:0 auto 26px;display:block}
+  .closecard .closemark svg{display:block;width:96px;height:auto;margin:0 auto}
+  .closecard .eyebrow{margin:0 auto 24px;color:var(--d-mint)}
+  .closecard .eyebrow::before{background:var(--d-mint)}
+  .closecard h2{font-size:clamp(2.2rem,4.4vw,3.6rem);max-width:18ch;
+    margin:0 auto 26px;color:var(--d-fg);letter-spacing:-.028em}
+  .closecard p{margin:0 auto 38px;max-width:52ch;font-size:1.18rem;
+    font-family:'Fraunces',serif;font-weight:400;line-height:1.5;color:var(--d-fg);
+    letter-spacing:-.006em}
+  .closing-sub{margin:30px auto 0;font-size:.96rem;color:var(--d-fg-3);
+    font-family:'Inter',sans-serif}
+
+  /* ====================== FOOTER (richer multi-column, fine baseline) ====================== */
+  footer{background:var(--bg-deep);color:var(--body);
+    padding:clamp(64px,8vw,92px) 0 48px;border-top:1px solid var(--line)}
+  .fcols{display:grid;grid-template-columns:2.4fr 1fr 1fr 1fr;gap:clamp(32px,5vw,56px)}
+  .fbrand .logo{margin-bottom:18px}
+  .fbrand .fstmt{
+    max-width:34ch;font-family:'Fraunces',serif;font-weight:400;
+    font-size:1.06rem;line-height:1.5;color:var(--ink);letter-spacing:-.006em;
+  }
+  .fbrand .fmeta{margin-top:16px;font-size:.92rem;color:var(--soft);max-width:34ch}
+  .fcols strong{
+    display:block;color:var(--ink);font-size:.74rem;letter-spacing:.18em;
+    text-transform:uppercase;margin-bottom:20px;font-family:'Inter',sans-serif;
+    font-weight:700;
+  }
+  footer a:not(.logo){color:var(--body);text-decoration:none;display:block;margin:12px 0;
+    font-size:.98rem;transition:color .15s}
+  footer a:not(.logo):hover{color:var(--ink)}
+  footer .logo{text-decoration:none}
+  .fnote{
+    margin-top:clamp(44px,6vw,60px);padding-top:28px;
+    border-top:1px solid var(--line);font-size:.88rem;color:var(--soft);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;
+  }
+
+  /* line-illustration helpers */
+  .ln{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .ln-c{fill:none;stroke:var(--body);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .ln-m{fill:none;stroke:var(--body);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .fl-tint{fill:rgba(27,29,34,.10)}
+  .fl-tint-2{fill:rgba(27,29,34,.16)}
+  .fl-clay{fill:rgba(201,168,107,.14)}
+
+  /* ---- placeholder art (swapped verbatim at ART markers) ---- */
+  .ph{display:block;background:transparent}
+  .ph .ph-bg{fill:rgba(27,29,34,.045)}
+  .ph .ph-st{fill:none;stroke:rgba(27,29,34,.26);stroke-width:2;stroke-dasharray:6 7;stroke-linecap:round}
+  .ph .ph-ic{fill:none;stroke:var(--ink);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .ph .ph-tx{fill:rgba(27,29,34,.40);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase}
+
+  /* ---- Scroll reveal (motion-safe) ---- */
+  .reveal{opacity:1;transform:none}
+  @media (prefers-reduced-motion: no-preference){
+    @supports (animation-timeline: view()){
+      .reveal{
+        opacity:0;transform:translateY(28px);
+        animation:rise both;animation-timeline:view();
+        animation-range:entry 0% cover 24%;
+      }
+      @keyframes rise{to{opacity:1;transform:none}}
+    }
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width:980px){
+    .hero-grid{grid-template-columns:1fr;gap:clamp(44px,8vw,60px)}
+    .hero h1{max-width:16ch}
+    .vignette{margin:0 auto;max-width:520px}
+    .money-stage{grid-template-columns:1fr;gap:36px}
+    .causes-grid{grid-template-columns:1fr;gap:36px}
+    .causes-art{order:-1}
+    .whofor-grid{grid-template-columns:1fr;gap:36px}
+    .whofor-art{order:-1;max-width:420px;margin:0 auto}
+  }
+  @media (max-width:920px){
+    .nlinks a:not(.btn){display:none}
+    .beat{grid-template-columns:1fr;gap:22px}
+    .beat-n{font-size:clamp(2rem,8vw,2.8rem)}
+    .giveflow{grid-template-columns:1fr}
+    .standardrow{grid-template-columns:1fr}
+    .control-list{grid-template-columns:1fr}
+    .fcols{grid-template-columns:1fr 1fr;gap:36px}
+    .fbrand{grid-column:1 / -1}
+    .row2{grid-template-columns:auto 1fr;gap:22px}
+    .row2 .idx{display:none}
+  }
+  @media (max-width:560px){
+    .bignum{font-size:clamp(3.6rem,20vw,5rem)}
+    .cta{flex-direction:column;align-items:flex-start;gap:18px}
+    .btn{width:100%;justify-content:center}
+    .sig-row{flex-wrap:wrap}
+    .mlines .v{text-align:left}
+    .fcols{grid-template-columns:1fr}
+    .pull{max-width:none}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<div class="topline"></div>
+
+<div class="wrap">
+  <nav>
+    <a href="#" class="logo" aria-label="TheBigIntro home">
+      <span class="mark" aria-hidden="true">B</span>
+      The<span class="big">Big</span>Intro
+    </a>
+    <div class="nlinks">
+      <a href="#how">How it works</a>
+      <a href="#who-for">For executives</a>
+      <a href="/vendors">For vendors</a>
+      <a class="btn" href="#apply">Apply</a>
+    </div>
+  </nav>
+</div>
+
+<!-- ===================== HERO ===================== -->
+<header class="hero">
+  <div class="blob blob-1" aria-hidden="true">
+    <svg viewBox="0 0 600 600"><path fill="var(--sh-2)" d="M455 95c64 52 102 138 88 219-14 80-79 156-160 188-82 33-180 22-238-32-58-53-77-149-52-235 25-87 95-163 178-182 84-19 119-10 184 42z"/></svg>
+  </div>
+  <div class="blob blob-2" aria-hidden="true">
+    <svg viewBox="0 0 460 460"><path fill="var(--sh-3)" d="M360 92c50 47 70 132 50 200-21 69-82 118-152 130-71 12-150-12-186-72-36-61-28-158 22-214 50-57 138-79 206-58 30 9 38 13 60 14z"/></svg>
+  </div>
+  <div class="blob blob-3" aria-hidden="true">
+    <svg viewBox="0 0 320 320"><path fill="var(--sh-clay-soft)" d="M250 64c34 30 50 84 40 134-10 49-46 92-94 110-48 18-104 8-138-26-34-34-44-92-26-142 18-50 62-90 110-98 40-7 74 0 108 22z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-inner">
+        <div class="chips">
+          <span class="chip">
+            <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" class="ln-c" stroke-width="2.4"/><path d="M8.5 12.5l2.4 2.4 4.6-5.4" class="ln-c" stroke-width="2.4"/></svg>
+            Invite only
+          </span>
+          <span class="chip">
+            <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" class="ln-m" stroke-width="2.4"/><path d="M12 8v5M12 16h.01" class="ln-m" stroke-width="2.4"/></svg>
+            Australia first
+          </span>
+          <span class="chip">
+            <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19c-6-4-9-7.5-9-11a4.5 4.5 0 0 1 9-1 4.5 4.5 0 0 1 9 1c0 3.5-3 7-9 11z" class="ln-c" stroke-width="2.4"/></svg>
+            Funds charity
+          </span>
+        </div>
+        <h1>Meetings that fund <span class="mk">what matters</span>.</h1>
+        <p class="lede">You take a handful of conversations worth your time. Each one sends $1,000 to a charity you choose.</p>
+        <div class="cta">
+          <a class="btn" href="#apply">Apply as a founding executive</a>
+          <a class="inl" href="/vendors">Are you a vendor? <span class="arr">&rarr;</span></a>
+        </div>
+        <p class="trust">No cold pitches. No hard sells. Every meeting funds a cause that matters to you.</p>
+      </div>
+
+      <!-- HERO FOCAL VIGNETTE: the flow object -->
+      <div class="vignette" aria-hidden="true">
+        <div class="vig-stage">
+          <div class="vig-glow"></div>
+          <div class="vig-frame">
+<!-- ART:hero START -->
+<svg width="520" height="576" viewBox="0 0 560 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A qualified request arrives, the executive approves it, one focused conversation, and one thousand dollars reaches a named cause.">
+  <defs>
+    <linearGradient id="hero-glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1B1D22" stop-opacity="0.10"/>
+      <stop offset="0.55" stop-color="#1B1D22" stop-opacity="0.035"/>
+      <stop offset="1" stop-color="#1B1D22" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="hero-halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#1B1D22" stop-opacity="0.10"/>
+      <stop offset="0.6" stop-color="#1B1D22" stop-opacity="0.035"/>
+      <stop offset="1" stop-color="#1B1D22" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hero-gift" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#ECE8DE"/>
+    </linearGradient>
+    <linearGradient id="hero-seal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22242b"/>
+      <stop offset="1" stop-color="#16181d"/>
+    </linearGradient>
+    <filter id="hero-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="5" dy="9" stdDeviation="11" flood-color="#1B1D22" flood-opacity="0.16"/>
+    </filter>
+    <filter id="hero-soft-lg" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="7" dy="13" stdDeviation="16" flood-color="#1B1D22" flood-opacity="0.18"/>
+    </filter>
+    <clipPath id="hero-gift-clip"><rect x="300" y="430" width="232" height="156" rx="20"/></clipPath>
+  </defs>
+
+  <!-- ambient halo -->
+  <ellipse cx="296" cy="300" rx="276" ry="300" fill="url(#hero-halo)"/>
+
+  <!-- the quiet connecting path: one continuous spine through all four beats -->
+  <path d="M178 152 C 300 176, 372 196, 408 250"
+        fill="none" stroke="#1B1D22" stroke-opacity="0.26" stroke-width="2.2"
+        stroke-linecap="round" stroke-dasharray="0.5 8"/>
+  <path d="M408 300 C 372 374, 250 374, 168 416"
+        fill="none" stroke="#1B1D22" stroke-opacity="0.26" stroke-width="2.2"
+        stroke-linecap="round" stroke-dasharray="0.5 8"/>
+  <path d="M186 470 C 280 520, 348 514, 392 506"
+        fill="none" stroke="#1B1D22" stroke-opacity="0.26" stroke-width="2.2"
+        stroke-linecap="round" stroke-dasharray="0.5 8"/>
+  <!-- path nodes -->
+  <circle cx="178" cy="152" r="4.5" fill="#1B1D22" fill-opacity="0.32"/>
+  <circle cx="408" cy="275" r="4.5" fill="#1B1D22" fill-opacity="0.32"/>
+  <circle cx="168" cy="416" r="4.5" fill="#1B1D22" fill-opacity="0.32"/>
+  <circle cx="392" cy="506" r="4.5" fill="#1B1D22" fill-opacity="0.32"/>
+
+  <!-- ===== BEAT 1 — qualified request arriving ===== -->
+  <g filter="url(#hero-soft)">
+    <rect x="40" y="44" width="316" height="180" rx="20" fill="#FFFFFF"/>
+  </g>
+  <rect x="40" y="44" width="316" height="180" rx="20" fill="none" stroke="#1B1D22" stroke-opacity="0.12" stroke-width="1.4"/>
+  <!-- depth shape behind the card head -->
+  <rect x="56" y="60" width="284" height="46" rx="12" fill="#1B1D22" fill-opacity="0.06"/>
+  <!-- qualified tag -->
+  <rect x="68" y="72" width="138" height="24" rx="12" fill="#1B1D22" fill-opacity="0.10"/>
+  <path d="M82 84 l5 5 9.5-11" fill="none" stroke="#1B1D22" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="102" y="88.5" font-family="Inter, sans-serif" font-size="11" font-weight="700" letter-spacing="1.4" fill="#1B1D22">QUALIFIED</text>
+  <!-- document avatar -->
+  <rect x="68" y="124" width="44" height="44" rx="11" fill="#1B1D22" fill-opacity="0.06"/>
+  <path d="M82 134 h12 l8 8 v18 a2 2 0 0 1 -2 2 h-16 a2 2 0 0 1 -2 -2 v-24 a2 2 0 0 1 2 -2 z"
+        fill="#FFFFFF" stroke="#1B1D22" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M94 134 v8 h8" fill="none" stroke="#1B1D22" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M86 150 h12 M86 156 h8" fill="none" stroke="#4C4E55" stroke-width="1.4" stroke-linecap="round"/>
+  <!-- stated need lines -->
+  <rect x="128" y="128" width="150" height="9" rx="4.5" fill="#1B1D22" fill-opacity="0.14"/>
+  <rect x="128" y="146" width="200" height="8" rx="4" fill="#1B1D22" fill-opacity="0.11"/>
+  <rect x="128" y="162" width="138" height="8" rx="4" fill="#1B1D22" fill-opacity="0.11"/>
+  <rect x="128" y="178" width="174" height="8" rx="4" fill="#1B1D22" fill-opacity="0.11"/>
+
+  <!-- ===== BEAT 2 — the executive approving ===== -->
+  <g filter="url(#hero-soft-lg)">
+    <rect x="356" y="222" width="186" height="108" rx="20" fill="#FFFFFF"/>
+  </g>
+  <rect x="356" y="222" width="186" height="108" rx="20" fill="none" stroke="#1B1D22" stroke-opacity="0.12" stroke-width="1.4"/>
+  <!-- approve seal: the single champagne accent of the hero illustration -->
+  <circle cx="404" cy="276" r="29" fill="#1B1D22" fill-opacity="0.10"/>
+  <circle cx="402" cy="274" r="26" fill="url(#hero-seal)"/>
+  <path d="M390 274.5 l9 9 17-19" fill="none" stroke="#C9A86B" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="442" y="258" width="78" height="11" rx="5.5" fill="#1B1D22" fill-opacity="0.16"/>
+  <rect x="442" y="278" width="62" height="9" rx="4.5" fill="#1B1D22" fill-opacity="0.11"/>
+
+  <!-- ===== BEAT 3 — one focused conversation ===== -->
+  <g filter="url(#hero-soft)">
+    <rect x="58" y="356" width="244" height="148" rx="20" fill="#FFFFFF"/>
+  </g>
+  <rect x="58" y="356" width="244" height="148" rx="20" fill="none" stroke="#1B1D22" stroke-opacity="0.12" stroke-width="1.4"/>
+  <!-- header label -->
+  <rect x="80" y="376" width="118" height="10" rx="5" fill="#1B1D22" fill-opacity="0.16"/>
+  <!-- speech form A (incoming, light) with depth -->
+  <path d="M84 408 h96 a13 13 0 0 1 13 13 v18 a13 13 0 0 1 -13 13 h-58 l-22 17 v-17 a13 13 0 0 1 -16 -13 v-18 a13 13 0 0 1 16 -13 z"
+        fill="#1B1D22" fill-opacity="0.07"/>
+  <path d="M88 404 h94 a13 13 0 0 1 13 13 v18 a13 13 0 0 1 -13 13 h-58 l-22 17 v-18 a13 13 0 0 1 -14 -12 v-18 a13 13 0 0 1 14 -13 z"
+        fill="#FFFFFF" stroke="#1B1D22" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M104 422 h62 M104 433 h40" fill="none" stroke="#4C4E55" stroke-width="1.4" stroke-linecap="round"/>
+  <!-- speech form B (reply): ink charcoal, not forest -->
+  <path d="M196 444 h70 a13 13 0 0 1 13 13 v14 a13 13 0 0 1 -13 13 h-6 l8 14 -18 -14 h-54 a13 13 0 0 1 -13 -13 v-14 a13 13 0 0 1 13 -13 z"
+        fill="#1B1D22"/>
+  <path d="M210 462 h46 M210 472 h30" fill="none" stroke="#FFFFFF" stroke-opacity="0.85" stroke-width="1.4" stroke-linecap="round"/>
+
+  <!-- ===== BEAT 4 — $1,000 reaching a named cause (focal moment) ===== -->
+  <g filter="url(#hero-soft-lg)">
+    <rect x="300" y="430" width="232" height="156" rx="20" fill="url(#hero-gift)"/>
+  </g>
+  <g clip-path="url(#hero-gift-clip)">
+    <circle cx="540" cy="600" r="120" fill="url(#hero-glow)"/>
+  </g>
+  <rect x="300" y="430" width="232" height="156" rx="20" fill="none" stroke="#1B1D22" stroke-opacity="0.14" stroke-width="1.4"/>
+
+  <!-- eyebrow -->
+  <rect x="324" y="452" width="14" height="2.6" rx="1.3" fill="#636570"/>
+  <text x="346" y="456.5" font-family="Inter, sans-serif" font-size="10.5" font-weight="700" letter-spacing="1.6" fill="#636570">SENT TO YOUR CAUSE</text>
+
+  <!-- THE focal numeral: rationed champagne (allowance: the $1,000 in the hero) -->
+  <text x="322" y="516" font-family="Fraunces, Georgia, serif" font-size="60" font-weight="600" letter-spacing="-2" fill="#8A6C36">$1,000</text>
+
+  <!-- the recurring giving mark: a gift cradling a heart (ink-led, clay heart) -->
+  <g transform="translate(452 470)">
+    <!-- depth parcel -->
+    <rect x="-29" y="6" width="58" height="40" rx="9" fill="#1B1D22" fill-opacity="0.10"/>
+    <!-- parcel body -->
+    <rect x="-31" y="2" width="58" height="40" rx="9" fill="#FFFFFF" stroke="#1B1D22" stroke-width="2.6"/>
+    <path d="M-31 16 H27" fill="none" stroke="#1B1D22" stroke-width="2.2"/>
+    <path d="M-2 2 V42" fill="none" stroke="#1B1D22" stroke-width="2.2"/>
+    <!-- ribbon bow cradling the heart -->
+    <path d="M-2 -1 C -9 -13 -22 -10 -22 -3 C -22 3 -12 3 -2 1 C 8 3 18 3 18 -3 C 18 -10 5 -13 -2 -1 Z"
+          fill="#FFFFFF" stroke="#1B1D22" stroke-width="2.4" stroke-linejoin="round"/>
+    <!-- the cradled heart: the single clay whisper -->
+    <path d="M-2 -14 C -5 -19 -12 -17.5 -12 -12 C -12 -8.4 -6.5 -5.4 -2 -2.6 C 2.5 -5.4 8 -8.4 8 -12 C 8 -17.5 1 -19 -2 -14 Z"
+          fill="none" stroke="#8A6C36" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- named-cause line -->
+  <g transform="translate(322 548)">
+    <rect x="0" y="-13" width="22" height="22" rx="7" fill="#1B1D22" fill-opacity="0.08"/>
+    <path d="M11 4 C 7 1 4 -1.4 4 -4.4 A 3.3 3.3 0 0 1 11 -6 A 3.3 3.3 0 0 1 18 -4.4 C 18 -1.4 15 1 11 4 Z"
+          fill="none" stroke="#4C4E55" stroke-width="1.8" stroke-linejoin="round"/>
+    <text x="34" y="4.5" font-family="Fraunces, Georgia, serif" font-size="14.5" font-weight="500" fill="#1B1D22">to a charity you name</text>
+  </g>
+</svg>
+<!-- ART:hero END -->
+          </div>
+          <div class="vig-cap">
+            <span><b>Relevant in</b> &nbsp;&rarr;&nbsp; qualified &nbsp;&rarr;&nbsp; one conversation</span>
+            <span style="display:inline-flex;align-items:center;gap:8px"><span class="dot"></span><b>$1,000 out</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== WHY THIS EXISTS ===================== -->
+<section class="manifesto" id="why">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 560 560"><path fill="var(--sh-3)" d="M420 78c62 50 100 140 84 222-16 81-86 152-168 178-82 25-176 4-228-56-52-61-62-163-26-244 36-82 118-142 200-150 56-6 76 0 138 50z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 400 400"><path fill="var(--sh-2)" d="M312 76c44 42 62 118 44 178-18 61-72 104-134 114-62 11-132-12-162-66-30-55-22-142 24-188 46-47 122-64 184-44 26 9 32 12 44 6z"/></svg>
+  </div>
+  <div class="wrap-narrow reveal">
+    <span class="eyebrow">Why this exists</span>
+    <div class="pullq">
+      <p class="pull">Your calendar is full of <span class="accent">pitches that go nowhere.</span></p>
+    </div>
+    <p class="body-after">What if the few conversations worth having also did some good? That is the whole idea. Fewer, more relevant meetings, each one sending $1,000 to a cause you care about.</p>
+  </div>
+</section>
+
+<!-- ===================== HOW IT WORKS ===================== -->
+<section class="how" id="how">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 500 500"><path fill="var(--sh-2)" d="M380 84c54 46 78 130 60 200-18 70-78 124-150 142-72 18-158-4-200-62-42-58-40-152 6-208 46-57 132-86 204-66 38 11 50 16 80-6z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 360 360"><path fill="var(--sh-3)" d="M280 70c40 38 56 106 40 160-16 55-64 94-120 102-56 9-118-12-146-60-28-49-20-128 22-170 42-43 110-58 166-40 24 8 30 11 38 8z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="sect-head reveal">
+      <span class="eyebrow">How it works</span>
+      <h2>Three steps, for executives.</h2>
+    </div>
+    <div class="beats">
+      <div class="beat reveal">
+        <div class="beat-n">
+          01
+          <span class="spot" aria-hidden="true">
+<!-- ART:step1 START --><svg class="ph" viewBox="0 0 128 128" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Step one placeholder">
+  <rect x="6" y="6" width="116" height="116" rx="18" class="ph-bg"/>
+  <rect x="6" y="6" width="116" height="116" rx="18" class="ph-st"/>
+  <rect x="34" y="30" width="60" height="74" rx="8" class="ph-st"/>
+  <path d="M46 50h36M46 64h36M46 78h22" class="ph-ic"/>
+  <circle cx="84" cy="84" r="16" class="ph-st"/>
+  <path d="M77 84l5 5 10-11" class="ph-ic"/>
+</svg><!-- ART:step1 END -->
+          </span>
+        </div>
+        <div class="beat-c">
+          <h3>You decide what&apos;s relevant</h3>
+          <p>Tell us the priorities you want to talk about. Nothing outside that ever reaches you.</p>
+        </div>
+      </div>
+      <div class="beat reveal">
+        <div class="beat-n">
+          02
+          <span class="spot" aria-hidden="true">
+<!-- ART:step2 START --><svg class="ph" viewBox="0 0 128 128" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Step two placeholder">
+  <rect x="6" y="6" width="116" height="116" rx="18" class="ph-bg"/>
+  <rect x="6" y="6" width="116" height="116" rx="18" class="ph-st"/>
+  <path d="M34 26h34l20 20v52a4 4 0 0 1-4 4H34a4 4 0 0 1-4-4V30a4 4 0 0 1 4-4z" class="ph-st"/>
+  <path d="M68 26v20h20" class="ph-ic"/>
+  <path d="M44 60h36M44 74h24" class="ph-ic"/>
+  <circle cx="82" cy="86" r="15" class="ph-st"/>
+  <path d="M75 86l5 5 10-11" class="ph-ic"/>
+</svg><!-- ART:step2 END -->
+          </span>
+        </div>
+        <div class="beat-c">
+          <h3>You get qualified requests</h3>
+          <p>A vendor must state the specific initiative or problem before they can ask. You see the reason, and you decide.</p>
+        </div>
+      </div>
+      <div class="beat reveal">
+        <div class="beat-n">
+          03
+          <span class="spot" aria-hidden="true">
+<!-- ART:step3 START --><svg class="ph" viewBox="0 0 128 128" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Step three placeholder">
+  <rect x="6" y="6" width="116" height="116" rx="18" class="ph-bg"/>
+  <rect x="6" y="6" width="116" height="116" rx="18" class="ph-st"/>
+  <path d="M26 36h44a9 9 0 0 1 9 9v16a9 9 0 0 1-9 9H46l-16 13V45a9 9 0 0 1-4-9z" class="ph-st"/>
+  <path d="M70 56h26a8 8 0 0 1 8 8v14a8 8 0 0 1-8 8l7 10-13-10H74a8 8 0 0 1-8-8" class="ph-st"/>
+  <path d="M38 48h22M38 58h14" class="ph-ic"/>
+</svg><!-- ART:step3 END -->
+          </span>
+        </div>
+        <div class="beat-c">
+          <h3>One focused conversation</h3>
+          <p>You have one focused conversation, and $1,000 goes to the charity you choose.</p>
+        </div>
+      </div>
+    </div>
+    <p class="loopline reveal">A vendor states a specific need, you approve only what fits, you have one short conversation, and $1,000 goes to your chosen charity.</p>
+  </div>
+</section>
+
+<!-- ===================== WHERE THE MONEY GOES (deep-forest immersive beat) ===================== -->
+<section class="money" id="money">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 680 680"><path fill="var(--sh-3)" d="M510 96c74 60 116 162 98 256-18 92-96 174-190 204-94 30-204 8-264-62-60-70-72-186-30-280 42-94 138-162 232-170 64-6 80 0 154 52z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 400 400"><path fill="var(--sh-clay-soft)" d="M280 70c40 38 56 106 40 160-16 55-64 94-120 102-56 9-118-12-146-60-28-49-20-128 22-170 42-43 110-58 166-40 24 8 30 11 38 8z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="sect-head reveal">
+      <span class="eyebrow">Where the money goes</span>
+      <h2>Full transparency.</h2>
+    </div>
+    <div class="money-stage reveal">
+      <div class="moneycard">
+        <span class="mc-eye">
+          <svg width="14" height="14" viewBox="0 0 24 24"><path d="M12 21c-5.5-3.8-9-7-9-11a4.4 4.4 0 0 1 9-1 4.4 4.4 0 0 1 9 1c0 4-3.5 7.2-9 11z" fill="none" stroke="#C9A86B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Every single meeting
+        </span>
+        <div class="bignum">
+          <span class="num">$1,000</span>
+          <span class="givemark" aria-hidden="true">
+            <!-- crafted giving mark: a refined gift parcel cradling a heart -->
+            <svg width="96" height="96" viewBox="0 0 80 80" fill="none">
+              <rect x="16" y="34" width="48" height="34" rx="6" fill="rgba(236,231,218,.10)"/>
+              <rect x="14" y="32" width="48" height="34" rx="6" fill="none" stroke="#C9A86B" stroke-width="2.6"/>
+              <path d="M14 44h48" stroke="#C9A86B" stroke-width="2.4"/>
+              <path d="M38 32v34" stroke="#C9A86B" stroke-width="2.4"/>
+              <path d="M38 30c-5-9-16-7-16 0 0 4 8 4 16 4 8 0 16 0 16-4 0-7-11-9-16 0z" fill="rgba(236,231,218,.07)"/>
+              <path d="M38 28c-3.4-6.4-12-5.4-12 0 0 3.6 7 3.6 12 3.6 5 0 12 0 12-3.6 0-5.4-8.6-6.4-12 0z" fill="none" stroke="#C9A86B" stroke-width="2.4"/>
+            </svg>
+          </span>
+        </div>
+        <p class="mc-saying">goes to the cause you choose, every single meeting.</p>
+      </div>
+      <div>
+        <div class="mlines">
+          <div class="r">
+            <span class="k">To your chosen charity, per meeting</span>
+            <span class="v">the full meeting gift</span>
+          </div>
+          <div class="r">
+            <span class="k">Platform admin fee</span>
+            <span class="v">paid by the vendor, never you</span>
+          </div>
+          <div class="r">
+            <span class="k">What it costs you</span>
+            <span class="v">nothing, ever</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="body-after reveal">Every dollar of the gift reaches the charity. The platform covers its costs through a clearly named admin fee paid by the vendor, never taken from the donation.</p>
+    <div class="giveflow reveal">
+      <div class="gf">
+        <span class="gf-ic" aria-hidden="true">
+          <svg width="34" height="34" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="17" fill="rgba(236,231,218,.06)"/><path d="M24 9v15l9 6" fill="none" stroke="#ECE7DA" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24" cy="24" r="17" fill="none" stroke="#ECE7DA" stroke-width="2.4"/></svg>
+        </span>
+        <span class="gf-k">After the meeting</span>
+        <span class="gf-v">the donation is sent to your chosen registered charity</span>
+      </div>
+      <div class="gf">
+        <span class="gf-ic" aria-hidden="true">
+          <svg width="34" height="34" viewBox="0 0 48 48" fill="none"><rect x="11" y="9" width="26" height="30" rx="4" fill="rgba(236,231,218,.06)"/><path d="M14 7h16l8 8v22a3 3 0 0 1-3 3H14a3 3 0 0 1-3-3V10a3 3 0 0 1 3-3z" fill="none" stroke="#ECE7DA" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 7v8h8" fill="none" stroke="#ECE7DA" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 28l4 4 9-10" fill="none" stroke="#C9A86B" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="gf-k">You get confirmation</span>
+        <span class="gf-v">in writing, every time</span>
+      </div>
+      <div class="gf">
+        <span class="gf-ic" aria-hidden="true">
+          <svg width="34" height="34" viewBox="0 0 48 48" fill="none"><rect x="9" y="13" width="30" height="22" rx="4" fill="rgba(236,231,218,.06)"/><rect x="9" y="13" width="30" height="22" rx="4" fill="none" stroke="#ECE7DA" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 21h30" fill="none" stroke="#ECE7DA" stroke-width="2.4"/><circle cx="31" cy="29" r="3" fill="none" stroke="#C9A86B" stroke-width="2.4"/></svg>
+        </span>
+        <span class="gf-k">The admin fee</span>
+        <span class="gf-v">is the vendor&apos;s, billed separately</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CAUSES BAND ===================== -->
+<section class="causes-sec" id="causes">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 440 440"><path fill="var(--sh-2)" d="M340 84c48 42 68 116 50 178-18 63-72 108-134 118-62 11-132-14-162-68-30-55-22-140 22-184 44-45 116-62 178-42 28 9 34 12 46-2z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 300 300"><path fill="var(--sh-3)" d="M232 60c34 32 46 90 32 142-14 50-56 86-106 92-50 6-104-14-128-58-24-44-16-114 22-150 38-37 96-50 144-32 18 7 24 10 36 8z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="sect-head reveal">
+      <span class="eyebrow mint">Causes you could choose</span>
+      <h2>Real causes, your call.</h2>
+    </div>
+    <div class="causes-grid reveal">
+      <div class="causes-art" aria-hidden="true">
+<!-- ART:causes START -->
+<svg width="304" height="240" viewBox="0 0 380 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A gift of one thousand dollars lowered into cupped open hands.">
+  <defs>
+    <filter id="causes-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="5" dy="8" stdDeviation="10" flood-color="#1B1D22" flood-opacity="0.14"/>
+    </filter>
+    <linearGradient id="causes-parcel" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#ECE8DE"/>
+    </linearGradient>
+    <radialGradient id="causes-halo" cx="0.5" cy="0.42" r="0.55">
+      <stop offset="0" stop-color="#1B1D22" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#1B1D22" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="190" cy="150" rx="150" ry="140" fill="url(#causes-halo)"/>
+  <!-- ground shadow -->
+  <ellipse cx="190" cy="276" rx="120" ry="15" fill="#1B1D22" fill-opacity="0.07"/>
+
+  <!-- the quiet connecting path: gift descending into hands -->
+  <path d="M190 96 C 190 118 190 132 190 150" fill="none" stroke="#1B1D22" stroke-opacity="0.24" stroke-width="2" stroke-linecap="round" stroke-dasharray="0.5 7"/>
+
+  <!-- cupped open hands (depth layer behind) -->
+  <path d="M92 196 C 86 176 96 162 112 168 C 120 150 144 150 152 168 L 200 168 C 232 168 264 184 276 210 C 286 232 268 256 230 256 C 178 256 96 234 92 196 Z"
+        fill="#1B1D22" fill-opacity="0.10"/>
+  <!-- hands primary form -->
+  <path d="M86 192 C 80 172 90 158 106 164 C 114 146 138 146 146 164 L 196 164 C 228 164 260 180 272 206 C 282 228 264 252 226 252 C 174 252 90 230 86 192 Z"
+        fill="#FFFFFF" stroke="#1B1D22" stroke-width="2.6" stroke-linejoin="round"/>
+  <!-- finger / palm definition (hairline) -->
+  <path d="M146 164 C 150 184 168 198 196 200 M122 168 C 124 188 138 204 162 210 M226 198 C 234 200 250 200 262 196" fill="none" stroke="#4C4E55" stroke-width="1.4" stroke-linecap="round"/>
+
+  <!-- the gift parcel cradling a heart -->
+  <g transform="translate(190 96)">
+    <!-- depth -->
+    <rect x="-43" y="6" width="86" height="62" rx="12" fill="#1B1D22" fill-opacity="0.10"/>
+    <g filter="url(#causes-soft)">
+      <rect x="-46" y="0" width="86" height="62" rx="12" fill="url(#causes-parcel)"/>
+    </g>
+    <rect x="-46" y="0" width="86" height="62" rx="12" fill="none" stroke="#1B1D22" stroke-width="2.6"/>
+    <path d="M-46 22 H40" fill="none" stroke="#1B1D22" stroke-width="2.2"/>
+    <path d="M-3 0 V62" fill="none" stroke="#1B1D22" stroke-width="2.2"/>
+    <!-- ribbon bow cradling the heart -->
+    <path d="M-3 -3 C -12 -19 -32 -15 -32 -5 C -32 4 -16 4 -3 1 C 10 4 26 4 26 -5 C 26 -15 6 -19 -3 -3 Z"
+          fill="#FFFFFF" stroke="#1B1D22" stroke-width="2.4" stroke-linejoin="round"/>
+    <!-- $1,000 on the parcel face: the single small champagne accent of this illustration -->
+    <text x="-3" y="40" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="22" font-weight="600" letter-spacing="-0.6" fill="#8A6C36">$1,000</text>
+  </g>
+  <!-- the cradled heart: single clay whisper -->
+  <path d="M187 70 C 183 62 172 64 172 73 C 172 79 180 84 187 89 C 194 84 202 79 202 73 C 202 64 191 62 187 70 Z"
+        fill="none" stroke="#8A6C36" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<!-- ART:causes END -->
+      </div>
+      <div>
+        <div class="causes">
+          <span class="cause">
+            <span class="cdot"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M10 4h4v6h6v4h-6v6h-4v-6H4v-4h6z" class="ln-c" stroke-width="2.2"/></svg></span>
+            Health and medical research
+          </span>
+          <span class="cause">
+            <span class="cdot"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4z" class="ln-m" stroke-width="2.2"/><path d="M7 9.5V15c0 1.5 5 3 5 3s5-1.5 5-3V9.5" class="ln-m" stroke-width="2.2"/></svg></span>
+            Education and young people
+          </span>
+          <span class="cause">
+            <span class="cdot"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 21c0-7 3-12 9-15-1 8-4 12-9 15z" class="ln-m" stroke-width="2.2"/><path d="M12 21c0-5-2-9-7-11 1 6 3 9 7 11z" class="ln-m" stroke-width="2.2"/></svg></span>
+            Environment and climate
+          </span>
+          <span class="cause">
+            <span class="cdot"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 20c-5-3.5-8-6.5-8-10a4 4 0 0 1 8-1 4 4 0 0 1 8 1c0 3.5-3 6.5-8 10z" class="ln-c" stroke-width="2.2"/></svg></span>
+            Community and crisis relief
+          </span>
+          <span class="cause">
+            <span class="cdot"><svg width="18" height="18" viewBox="0 0 24 24"><circle cx="7" cy="9" r="2.2" class="ln-c" stroke-width="2"/><circle cx="12" cy="6.5" r="2.2" class="ln-c" stroke-width="2"/><circle cx="17" cy="9" r="2.2" class="ln-c" stroke-width="2"/><path d="M8 17c0-3 2-5 4-5s4 2 4 5-2 4-4 4-4-1-4-4z" class="ln-c" stroke-width="2"/></svg></span>
+            Animal welfare
+          </span>
+        </div>
+        <p class="note">Every donation goes to a registered Australian charity you name. These are the kinds of causes it can support.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== WHAT MAKES THIS DIFFERENT ===================== -->
+<section class="diff" id="diff">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 560 560"><path fill="var(--sh-3)" d="M420 80c62 52 100 142 82 224-18 82-90 152-172 176-82 24-174 0-224-62-50-62-58-162-20-242 38-81 122-138 204-146 56-4 78 2 130 50z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 340 340"><path fill="var(--sh-2)" d="M264 66c38 36 52 100 36 152-16 53-62 90-114 98-52 9-110-12-138-58-28-47-20-122 20-162 40-41 104-56 156-38 22 7 28 10 40 6z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="sect-head reveal">
+      <span class="eyebrow">What makes this different</span>
+      <h2>Built around relevance and giving.</h2>
+    </div>
+    <div class="difflist reveal">
+      <div class="row2">
+        <span class="glyph" aria-hidden="true">
+          <svg width="42" height="42" viewBox="0 0 48 48" fill="none"><rect x="10" y="9" width="24" height="30" rx="4" class="fl-tint"/><path d="M13 7h15l7 7v23a3 3 0 0 1-3 3H13a3 3 0 0 1-3-3V10a3 3 0 0 1 3-3z" class="ln" stroke-width="2.4"/><path d="M28 7v7h7" class="ln" stroke-width="2.4"/><path d="M16 30l4 4 9-10" class="ln-c" stroke-width="2.8"/></svg>
+        </span>
+        <div>
+          <h3>Qualified by requirement</h3>
+          <p>Access is earned, not bought. A vendor states the specific reason a conversation is worth your time, or it never reaches you.</p>
+        </div>
+        <span class="idx" aria-hidden="true">01</span>
+      </div>
+      <div class="row2">
+        <span class="glyph" aria-hidden="true">
+          <svg width="42" height="42" viewBox="0 0 48 48" fill="none"><path d="M24 41C13 33 7 26 7 18a8 8 0 0 1 17-3 8 8 0 0 1 17 3c0 8-6 15-17 23z" class="fl-tint"/><path d="M24 40C14 33 8 26 8 18a8 8 0 0 1 16-3 8 8 0 0 1 16 3c0 8-6 15-16 22z" class="ln-c" stroke-width="2.4"/><path d="M24 16v12M19 21h10" class="ln-c" stroke-width="2.4"/></svg>
+        </span>
+        <div>
+          <h3>A deliberately big gift</h3>
+          <p>$1,000 a meeting is set high on purpose, so the giving means something, not a token gesture.</p>
+        </div>
+        <span class="idx" aria-hidden="true">02</span>
+      </div>
+      <div class="row2">
+        <span class="glyph" aria-hidden="true">
+          <svg width="42" height="42" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="16" class="fl-tint"/><circle cx="24" cy="24" r="16" class="ln" stroke-width="2.4"/><circle cx="24" cy="24" r="8" class="ln" stroke-width="2.4"/><circle cx="24" cy="24" r="2.8" fill="var(--ink)"/></svg>
+        </span>
+        <div>
+          <h3>No fine print</h3>
+          <p>The full money flow is on this page. No vague claims, nothing buried in terms.</p>
+        </div>
+        <span class="idx" aria-hidden="true">03</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== WHO THIS IS FOR ===================== -->
+<section class="whofor" id="who-for">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 600 600"><path fill="var(--sh-2)" d="M450 92c66 56 104 152 86 244-18 92-98 168-192 196-94 28-200 4-258-66-58-70-66-180-24-272 42-93 138-160 232-168 64-6 90 10 156 66z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 340 340"><path fill="var(--sh-3)" d="M264 66c38 36 52 100 36 152-16 53-62 90-114 98-52 9-110-12-138-58-28-47-20-122 20-162 40-41 104-56 156-38 22 7 28 10 40 6z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="whofor-grid reveal">
+      <div class="whofor-art" aria-hidden="true">
+<!-- ART:whofor START -->
+<svg width="280" height="221" viewBox="0 0 380 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A reserved seat at a small table: a senior presence, no face.">
+  <defs>
+    <filter id="whofor-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="5" dy="8" stdDeviation="10" flood-color="#1B1D22" flood-opacity="0.14"/>
+    </filter>
+    <radialGradient id="whofor-thresh" cx="0.5" cy="0.3" r="0.7">
+      <stop offset="0" stop-color="#1B1D22" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#1B1D22" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- threshold of light (the place held open) -->
+  <path d="M150 18 H230 V250 H150 Z" fill="url(#whofor-thresh)"/>
+  <ellipse cx="190" cy="266" rx="128" ry="14" fill="#1B1D22" fill-opacity="0.07"/>
+
+  <!-- the quiet connecting path: an arc drawing the seat to the table -->
+  <path d="M118 196 C 150 214 230 214 262 196" fill="none" stroke="#1B1D22" stroke-opacity="0.22" stroke-width="2" stroke-linecap="round" stroke-dasharray="0.5 7"/>
+
+  <!-- the table (depth + primary) -->
+  <rect x="208" y="150" width="118" height="12" rx="6" fill="#1B1D22" fill-opacity="0.10"/>
+  <rect x="204" y="142" width="118" height="12" rx="6" fill="#FFFFFF" stroke="#1B1D22" stroke-width="2.6"/>
+  <path d="M222 154 V236 M306 154 V236" fill="none" stroke="#1B1D22" stroke-width="2.6" stroke-linecap="round"/>
+  <!-- place setting: plate + the single clay whisper as a folded napkin marker -->
+  <ellipse cx="263" cy="148" rx="26" ry="6.5" fill="#1B1D22" fill-opacity="0.08"/>
+  <ellipse cx="263" cy="135" rx="22" ry="7" fill="#FFFFFF" stroke="#1B1D22" stroke-width="2.2"/>
+  <ellipse cx="263" cy="135" rx="12" ry="3.6" fill="none" stroke="#4C4E55" stroke-width="1.4"/>
+  <path d="M295 130 v12" stroke="#4C4E55" stroke-width="1.4" stroke-linecap="round"/>
+  <path d="M230 130 v12" stroke="#4C4E55" stroke-width="1.4" stroke-linecap="round"/>
+  <path d="M260 122 c -6 -8 4 -14 6 -6" fill="none" stroke="#8A6C36" stroke-width="2.2" stroke-linecap="round"/>
+
+  <!-- the reserved chair (empty, dignified, no figure) -->
+  <g filter="url(#whofor-soft)">
+    <!-- seat depth -->
+    <path d="M84 198 h74 v16 h-74 z" fill="#1B1D22" fill-opacity="0.12"/>
+  </g>
+  <!-- chair back -->
+  <path d="M92 88 q4 -14 18 -14 h36 q14 0 18 14 v104 h-72 z" fill="#FFFFFF" stroke="#1B1D22" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M110 96 v86 M128 96 v86 M146 96 v86" fill="none" stroke="#4C4E55" stroke-width="1.4" stroke-linecap="round"/>
+  <!-- seat -->
+  <path d="M80 188 h96 a6 6 0 0 1 6 6 v8 a6 6 0 0 1 -6 6 H80 a6 6 0 0 1 -6 -6 v-8 a6 6 0 0 1 6 -6 z" fill="#FFFFFF" stroke="#1B1D22" stroke-width="2.6"/>
+  <!-- legs -->
+  <path d="M88 208 V256 M168 208 V256 M96 210 l-6 46 M160 210 l6 46" fill="none" stroke="#1B1D22" stroke-width="2.6" stroke-linecap="round"/>
+</svg>
+<!-- ART:whofor END -->
+      </div>
+      <div class="sh-text">
+        <span class="eyebrow mint">Who this is for</span>
+        <h2>Built for senior leaders.</h2>
+        <p class="lede">Invite only, and curated on purpose. We are starting with senior leaders in Australia whose time is genuinely in demand, and who would value a few relevant conversations that also fund a cause they choose.</p>
+      </div>
+    </div>
+    <div class="standardrow reveal">
+      <div class="std">
+        <span class="std-ic" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="18" r="9" class="fl-tint"/><circle cx="24" cy="18" r="8" class="ln" stroke-width="2.4"/><path d="M11 39c1-8 7-13 13-13s12 5 13 13" class="ln" stroke-width="2.4"/></svg>
+        </span>
+        <span class="std-k">The executive</span>
+        <p>Director, executive or equivalent, where your attention is the scarce thing. You set the topics, and nothing outside them reaches you.</p>
+      </div>
+      <div class="std">
+        <span class="std-ic" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 48 48" fill="none"><path d="M24 7l5 11 12 1-9 8 3 12-11-6-11 6 3-12-9-8 12-1z" class="fl-tint"/><path d="M24 9l4.5 9.5L39 19l-7.5 7 2 11-9.5-5-9.5 5 2-11L9 19l10.5-.5z" class="ln-c" stroke-width="2.4"/></svg>
+        </span>
+        <span class="std-k">The bar for vendors</span>
+        <p>A specific initiative, genuine intent, no hard sell. Held to that standard before they can ask. <a class="inl" href="/vendors">The vendor page &rarr;</a></p>
+      </div>
+      <div class="std">
+        <span class="std-ic" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 48 48" fill="none"><path d="M24 7c8 0 14 6 14 15 0 11-14 19-14 19S10 33 10 22c0-9 6-15 14-15z" class="fl-tint"/><path d="M24 7c8 0 14 6 14 15 0 11-14 19-14 19S10 33 10 22c0-9 6-15 14-15z" class="ln" stroke-width="2.4"/><circle cx="24" cy="21" r="5" class="ln-c" stroke-width="2.4"/></svg>
+        </span>
+        <span class="std-k">Where we start</span>
+        <p>Australia first, with a small founding cohort, so the first members shape how it works.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== YOU STAY IN CONTROL ===================== -->
+<section class="control" id="control">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 520 520"><path fill="var(--sh-3)" d="M392 78c58 48 92 132 76 208-16 76-82 142-160 166-78 24-166 2-214-56-48-58-56-152-20-228 36-77 116-132 194-140 52-4 66 2 124 50z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 340 340"><path fill="var(--sh-2)" d="M264 66c38 36 52 100 36 152-16 53-62 90-114 98-52 9-110-12-138-58-28-47-20-122 20-162 40-41 104-56 156-38 22 7 28 10 40 6z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="sect-head reveal">
+      <span class="eyebrow">What to expect</span>
+      <h2>You stay in control, always.</h2>
+    </div>
+    <div class="control-list reveal">
+      <div class="ctl">
+        <span class="glyph" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 48 48" fill="none"><rect x="10" y="9" width="24" height="30" rx="4" class="fl-tint"/><path d="M13 7h15l7 7v23a3 3 0 0 1-3 3H13a3 3 0 0 1-3-3V10a3 3 0 0 1 3-3z" class="ln" stroke-width="2.4"/><path d="M28 7v7h7" class="ln" stroke-width="2.4"/><path d="M16 30l4 4 9-10" class="ln-c" stroke-width="2.8"/></svg>
+        </span>
+        <p><strong>Every request states its reason.</strong> You see the specific initiative before anything happens.</p>
+      </div>
+      <div class="ctl">
+        <span class="glyph" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="16" class="fl-tint"/><circle cx="24" cy="24" r="16" class="ln" stroke-width="2.4"/><path d="M16 24.5l5.5 5.5L33 18" class="ln-c" stroke-width="2.8"/></svg>
+        </span>
+        <p><strong>You approve or decline each one.</strong> Nothing is automatic, and a no needs no explanation.</p>
+      </div>
+      <div class="ctl">
+        <span class="glyph" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 48 48" fill="none"><path d="M10 12h20a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H18l-8 6V17a5 5 0 0 1 0-5z" class="fl-tint"/><path d="M10 12h18a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H17l-7 6V17a5 5 0 0 1 0-5z" class="ln" stroke-width="2.4"/><path d="M27 22h9a4 4 0 0 1 4 4v7a4 4 0 0 1-4 4l4 5-7-5h-6a4 4 0 0 1-4-4" class="ln-m" stroke-width="2.4"/></svg>
+        </span>
+        <p><strong>One short conversation, on your terms.</strong> No hard sell, and no obligation to meet again.</p>
+      </div>
+      <div class="ctl">
+        <span class="glyph" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 48 48" fill="none"><path d="M24 7l13 5v9c0 10-6 16-13 20-7-4-13-10-13-20v-9z" class="fl-tint"/><path d="M24 7l13 5v9c0 10-6 16-13 20-7-4-13-10-13-20v-9z" class="ln" stroke-width="2.4"/><path d="M18 24l4 4 8-9" class="ln-c" stroke-width="2.8"/></svg>
+        </span>
+        <p><strong>Your details are never sold or shared.</strong> You can step away at any time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOUNDING MEMBER ===================== -->
+<section class="founding-sec" id="apply">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 560 560"><path fill="var(--sh-2)" d="M420 80c62 52 100 142 82 226-18 84-92 156-176 180-84 24-176-2-226-66-50-64-56-166-18-246 38-81 124-138 208-144 56-4 68 4 130 50z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 380 380"><path fill="var(--sh-3)" d="M296 74c42 40 58 112 40 170-18 59-70 100-128 108-58 9-122-14-152-66-30-52-22-136 22-178 44-43 114-58 172-38 24 8 30 12 46-6z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="founding reveal">
+      <span class="medal" aria-hidden="true">
+<!-- ART:founding START -->
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A ribbon medal cradling a heart: the founding cohort mark.">
+  <defs>
+    <linearGradient id="founding-disc" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#22242b"/>
+      <stop offset="1" stop-color="#16181d"/>
+    </linearGradient>
+    <filter id="founding-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="3" dy="6" stdDeviation="7" flood-color="#1B1D22" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <!-- ribbon tails (depth + primary), implied light top-left -->
+  <path d="M78 104 L 52 178 L 78 166 L 90 188 L 110 130 Z" fill="#1B1D22" fill-opacity="0.12"/>
+  <path d="M74 100 L 48 174 L 74 162 L 86 184 L 106 126 Z" fill="#FFFFFF" stroke="#1B1D22" stroke-width="2.4" stroke-linejoin="round"/>
+  <path d="M122 104 L 148 178 L 122 166 L 110 188 L 90 130 Z" fill="#1B1D22" fill-opacity="0.12"/>
+  <path d="M126 100 L 152 174 L 126 162 L 114 184 L 94 126 Z" fill="#FFFFFF" stroke="#1B1D22" stroke-width="2.4" stroke-linejoin="round"/>
+  <!-- medal disc with depth ring (the single champagne accent: the giving mark) -->
+  <circle cx="100" cy="74" r="58" fill="#1B1D22" fill-opacity="0.10"/>
+  <g filter="url(#founding-soft)">
+    <circle cx="100" cy="72" r="54" fill="url(#founding-disc)"/>
+  </g>
+  <circle cx="100" cy="72" r="44" fill="none" stroke="#C9A86B" stroke-opacity="0.40" stroke-width="1.4"/>
+  <!-- cradled heart: the single gold whisper -->
+  <path d="M100 92 C 88 80 72 84 72 67 C 72 56 84 52 91 60 C 95 65 98 70 100 74 C 102 70 105 65 109 60 C 116 52 128 56 128 67 C 128 84 112 80 100 92 Z"
+        fill="none" stroke="#C9A86B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<!-- ART:founding END -->
+      </span>
+      <span class="eyebrow mint">The first cohort</span>
+      <h2>Join as a founding member.</h2>
+      <p>We are starting small on purpose. Founding members help shape how this works, for the executives who join and the causes they support.</p>
+      <a class="btn" href="#apply">Request your place</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FROM THE FOUNDER (deep-forest immersive beat) ===================== -->
+<section class="founder-sec">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 480 480"><path fill="rgba(236,231,218,.05)" d="M360 76c54 46 84 126 68 196-16 70-78 130-152 152-74 22-156 0-202-56-46-56-52-146-16-220 36-75 116-126 190-132 50-4 58 14 112 60z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 320 320"><path fill="rgba(236,231,218,.035)" d="M248 64c36 34 50 96 34 146-16 50-60 86-110 92-50 6-104-14-130-58-26-44-18-114 20-150 38-37 98-50 148-32 20 7 26 10 38 2z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="founder reveal">
+      <span class="eyebrow light">From the founder</span>
+      <blockquote>I kept seeing senior people buried in irrelevant outreach, and vendors with something genuine to say unable to get through honestly. TheBigIntro fixes both at once, and turns every meeting into <span class="hl">$1,000 for a cause the executive chooses.</span></blockquote>
+      <div class="sig-row">
+        <div class="ava" aria-hidden="true">IH</div>
+        <div>
+          <div class="sig-name">Isobel Hardwick</div>
+          <div class="sig-role">Founder</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section class="faq" id="faq">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 500 500"><path fill="var(--sh-3)" d="M380 82c54 46 78 128 60 198-18 70-78 124-150 142-72 18-156-4-198-62-42-58-40-152 6-208 46-57 130-86 202-66 38 11 50 16 80-4z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 300 300"><path fill="var(--sh-2)" d="M232 60c34 32 46 90 32 142-14 50-56 86-106 92-50 6-104-14-128-58-24-44-16-114 22-150 38-37 96-50 144-32 18 7 24 10 36 8z"/></svg>
+  </div>
+  <div class="wrap-narrow">
+    <div class="sect-head reveal">
+      <span class="eyebrow">Questions</span>
+      <h2>Good things to ask.</h2>
+    </div>
+    <div class="faqlist reveal">
+      <details open>
+        <summary>Is this just a sales meeting in disguise?<span class="i" aria-hidden="true">+</span></summary>
+        <p>No. A vendor cannot reach you without stating a specific, relevant reason, and the conversation is about your priorities, not a hard sell.</p>
+      </details>
+      <details>
+        <summary>Which charities can I choose?<span class="i" aria-hidden="true">+</span></summary>
+        <p>Any registered charity you choose. You name it, and that is exactly where your $1,000 goes.</p>
+      </details>
+      <details>
+        <summary>What does it cost an executive?<span class="i" aria-hidden="true">+</span></summary>
+        <p>Nothing. It is free for executives. Vendors pay, and that is what funds the donation to your charity.</p>
+      </details>
+      <details>
+        <summary>Why founding members?<span class="i" aria-hidden="true">+</span></summary>
+        <p>We are starting deliberately small so the first members shape how this works.</p>
+      </details>
+      <details>
+        <summary>How much of my time is this?<span class="i" aria-hidden="true">+</span></summary>
+        <p>One short, focused conversation. You only take the ones you choose.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CLOSING CTA (deep-forest confident final band) ===================== -->
+<section class="closing">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 720 720"><path fill="var(--sh-3)" d="M540 100c78 64 122 172 102 270-20 98-102 184-202 216-100 32-216 8-280-66-64-74-76-196-32-296 44-100 146-170 246-178 68-6 88 0 166 54z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 440 440"><path fill="var(--sh-clay-soft)" d="M340 82c50 44 72 122 54 188-18 67-72 116-134 126-62 11-132-14-162-68-30-55-22-142 22-186 44-45 116-62 178-42 28 9 34 12 42-18z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="closecard reveal">
+      <span class="closemark" aria-hidden="true">
+<!-- ART:closing START -->
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A gift parcel cradling a heart.">
+  <defs>
+    <radialGradient id="closing-halo" cx="0.5" cy="0.46" r="0.5">
+      <stop offset="0" stop-color="#ECE7DA" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#ECE7DA" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="100" cy="100" r="86" fill="url(#closing-halo)"/>
+  <!-- connecting path -->
+  <path d="M58 150 C 80 168 120 168 142 150" fill="none" stroke="#ECE7DA" stroke-opacity="0.24" stroke-width="2" stroke-linecap="round" stroke-dasharray="0.5 7"/>
+  <circle cx="58" cy="150" r="4" fill="#ECE7DA" fill-opacity="0.34"/>
+  <circle cx="142" cy="150" r="4" fill="#ECE7DA" fill-opacity="0.34"/>
+  <!-- depth shape behind the parcel -->
+  <rect x="53" y="89" width="94" height="60" rx="13" fill="#ECE7DA" fill-opacity="0.07"/>
+  <!-- the giving mark: gift parcel, ivory warm-white line on midnight -->
+  <rect x="50" y="86" width="94" height="60" rx="13" fill="none" stroke="#ECE7DA" stroke-width="2.8"/>
+  <path d="M50 110 H144" fill="none" stroke="#ECE7DA" stroke-width="2.4"/>
+  <path d="M97 86 V146" fill="none" stroke="#ECE7DA" stroke-width="2.4"/>
+  <!-- ribbon bow -->
+  <path d="M97 82 C 87 64 64 69 64 81 C 64 91 82 91 97 87 C 112 91 130 91 130 81 C 130 69 107 64 97 82 Z"
+        fill="none" stroke="#ECE7DA" stroke-width="2.6" stroke-linejoin="round"/>
+  <!-- cradled heart: the single gold whisper -->
+  <path d="M97 64 C 93 56 82 58 82 67 C 82 73 90 78 97 83 C 104 78 112 73 112 67 C 112 58 101 56 97 64 Z"
+        fill="none" stroke="#C9A86B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<!-- ART:closing END -->
+      </span>
+      <span class="eyebrow">The invitation</span>
+      <h2>Fewer meetings, real giving.</h2>
+      <p>Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives $1,000 each time.</p>
+      <a class="btn" href="#apply">Apply as a founding executive</a>
+      <p class="closing-sub">Free for executives. Invite only. One short call to start.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="wrap">
+    <div class="fcols">
+      <div class="fbrand">
+        <a href="#" class="logo" aria-label="TheBigIntro home">
+          <span class="mark" aria-hidden="true">B</span>
+          The<span class="big">Big</span>Intro
+        </a>
+        <p class="fstmt">Fewer, more relevant meetings for senior leaders. Each one sends $1,000 to a charity they choose.</p>
+        <p class="fmeta">Australia first, invite only.</p>
+      </div>
+      <div>
+        <strong>Explore</strong>
+        <a href="#how">How it works</a>
+        <a href="#who-for">For executives</a>
+        <a href="#money">Where money goes</a>
+        <a href="#faq">Questions</a>
+      </div>
+      <div>
+        <strong>Vendors</strong>
+        <a href="/vendors">For vendors</a>
+        <a href="/about">About</a>
+      </div>
+      <div>
+        <strong>Legal</strong>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+    <div class="fnote">
+      <span>TheBigIntro &middot; relevant senior meetings that fund real giving</span>
+      <span>Australia first &middot; invite only</span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

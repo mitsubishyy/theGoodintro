@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TheBigIntro — colour identities (away from QuotaClub)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: Inter, system-ui, sans-serif;
+    background: #e9e9ea;
+    color: #1a1a1a;
+    line-height: 1.6;
+    padding: 40px 20px 80px;
+  }
+  .head {
+    max-width: 1100px;
+    margin: 0 auto 36px;
+  }
+  .head h1 {
+    font-family: Fraunces, Georgia, serif;
+    font-size: 1.9rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .head p { color: #555; max-width: 70ch; margin-top: 8px; font-size: 0.96rem; }
+  .head .vs { margin-top: 14px; font-size: 0.86rem; color: #777; }
+  .grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    gap: 26px;
+  }
+  .card {
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 18px 40px rgba(0,0,0,.10);
+  }
+  .swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+  }
+  .sw {
+    flex: 1 1 0;
+    min-width: 90px;
+    padding: 14px 14px 12px;
+    font-size: 0.72rem;
+    font-family: "Space Grotesk", monospace;
+    letter-spacing: 0.02em;
+  }
+  .sw b { display: block; font-size: 0.7rem; opacity: .65; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
+  .demo { padding: 54px clamp(28px, 5vw, 64px) 58px; }
+  .eyebrow {
+    font-family: "Space Grotesk", monospace;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+  .demo h2 {
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin: 14px 0 18px;
+    max-width: 16ch;
+  }
+  .demo .lede { font-size: 1.08rem; max-width: 44ch; margin-bottom: 26px; }
+  .row { display: flex; flex-wrap: wrap; gap: 28px; align-items: center; }
+  .btn {
+    display: inline-block;
+    padding: 15px 30px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.98rem;
+    text-decoration: none;
+  }
+  .btn.sq { border-radius: 6px; }
+  .num {
+    font-size: clamp(2.6rem, 7vw, 4.4rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .num small { font-size: 0.9rem; font-weight: 500; letter-spacing: 0; display:block; opacity:.7; margin-top:6px; }
+  .tag {
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 8px 22px;
+    margin: 0;
+    letter-spacing: .04em;
+  }
+  .qc {
+    background: #f7f2e9; color: #1f1b14; border: 1px dashed #c9bba0;
+  }
+  .qc .eyebrow { color: #a84f2e; }
+  .qc .btn { background: #a84f2e; color: #fff; }
+  .qc .num { color: #a84f2e; }
+  .qc .lede { color: #4a4238; }
+
+  /* A — Editorial Ink + Vermillion */
+  .A { background: #f7f6f3; color: #15151a; }
+  .A .eyebrow { color: #5a5a5e; }
+  .A h2 { color: #111114; }
+  .A .lede { color: #46464b; }
+  .A .key { color: #e0381b; }
+  .A .btn { background: #15151a; color: #f7f6f3; }
+  .A .num { color: #e0381b; }
+
+  /* B — Philanthropic Forest */
+  .B { background: #f3f2ec; color: #18241d; }
+  .B .eyebrow { color: #1f5d45; }
+  .B h2 { color: #15211b; }
+  .B .lede { color: #45504a; }
+  .B .key { color: #1f5d45; }
+  .B .btn { background: #1f5d45; color: #f3f2ec; }
+  .B .num { color: #1f5d45; }
+  .B .num .key { color: #c9603a; }
+
+  /* C — Cool Slate + Signal */
+  .C { background: #f3f5f7; color: #1a1f2b; }
+  .C .eyebrow { color: #5d6577; }
+  .C h2 { color: #14181f; }
+  .C .lede { color: #424a59; }
+  .C .key { color: #1f6feb; }
+  .C .btn { background: #1f6feb; color: #fff; }
+  .C .num { color: #1f6feb; }
+
+  /* D — Members' Charcoal + Brass */
+  .D { background: #1c1c1f; color: #ece9e3; }
+  .D .eyebrow { color: #c79a4b; }
+  .D h2 { color: #f6f4ef; }
+  .D .lede { color: #b4b0a8; }
+  .D .key { color: #d8ad58; }
+  .D .btn { background: #d8ad58; color: #1c1c1f; }
+  .D .num { color: #d8ad58; }
+  .D.card { box-shadow: 0 1px 2px rgba(0,0,0,.3), 0 18px 50px rgba(0,0,0,.4); }
+
+  .label {
+    font-family: "Space Grotesk", monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 16px 24px 0;
+    color: #888;
+  }
+  .label span { color: #1a1a1a; }
+  @media (max-width: 620px){ .sw{ flex: 1 1 45%; } }
+</style>
+</head>
+<body>
+  <div class="head">
+    <h1>TheBigIntro — four colour identities, deliberately away from QuotaClub</h1>
+    <p>Same headline, lede, button and $1,000 in every block, so you judge the colour, not the words. The top block is QuotaClub's actual palette, shown only as the thing each option must <em>not</em> resemble.</p>
+    <p class="vs">QuotaClub fingerprint to break from: warm cream canvas + terracotta + sage green + brown ink.</p>
+  </div>
+
+  <div class="grid">
+
+    <div class="card qc demo" style="border-radius:18px;">
+      <p class="eyebrow">Reference only · do not copy</p>
+      <h2>Meetings that fund what matters.</h2>
+      <p class="lede">You take a handful of conversations worth your time. Each one sends $1,000 to a charity you choose.</p>
+      <div class="row">
+        <a class="btn" href="#">Apply as a founding executive</a>
+        <div class="num">$1,000<small>to your chosen charity, per meeting</small></div>
+      </div>
+      <div class="swatches" style="margin-top:34px;">
+        <div class="sw" style="background:#f7f2e9;color:#1f1b14;"><b>QC cream</b>#f7f2e9</div>
+        <div class="sw" style="background:#a84f2e;color:#fff;"><b>QC terracotta</b>#a84f2e</div>
+        <div class="sw" style="background:#8fa77d;color:#1f1b14;"><b>QC sage</b>#8fa77d</div>
+        <div class="sw" style="background:#1f1b14;color:#f7f2e9;"><b>QC ink</b>#1f1b14</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Option <span>A — Editorial Ink + Vermillion</span> · one bold red, no green, crisp not cream</div>
+      <div class="A demo">
+        <p class="eyebrow">A founding edition</p>
+        <h2>Meetings that fund <span class="key">what matters</span>.</h2>
+        <p class="lede">You take a handful of conversations worth your time. Each one sends $1,000 to a charity you choose.</p>
+        <div class="row">
+          <a class="btn sq" href="#">Apply as a founding executive</a>
+          <div class="num">$1,000<small>to your chosen charity, per meeting</small></div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw" style="background:#f7f6f3;color:#15151a;"><b>Paper</b>#f7f6f3</div>
+        <div class="sw" style="background:#ffffff;color:#15151a;border-right:1px solid #eee;"><b>Card</b>#ffffff</div>
+        <div class="sw" style="background:#15151a;color:#f7f6f3;"><b>Ink</b>#15151a</div>
+        <div class="sw" style="background:#e0381b;color:#fff;"><b>Vermillion</b>#e0381b</div>
+        <div class="sw" style="background:#46464b;color:#fff;"><b>Body</b>#46464b</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Option <span>B — Philanthropic Forest</span> · deep green as the brand, tiny warm clay</div>
+      <div class="B demo">
+        <p class="eyebrow">A founding edition</p>
+        <h2>Meetings that fund <span class="key">what matters</span>.</h2>
+        <p class="lede">You take a handful of conversations worth your time. Each one sends $1,000 to a charity you choose.</p>
+        <div class="row">
+          <a class="btn" href="#">Apply as a founding executive</a>
+          <div class="num">$1,000<small>to your chosen charity, per meeting</small></div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw" style="background:#f3f2ec;color:#18241d;"><b>Bone</b>#f3f2ec</div>
+        <div class="sw" style="background:#ffffff;color:#18241d;border-right:1px solid #eee;"><b>Card</b>#ffffff</div>
+        <div class="sw" style="background:#1f5d45;color:#f3f2ec;"><b>Forest</b>#1f5d45</div>
+        <div class="sw" style="background:#c9603a;color:#fff;"><b>Clay (micro)</b>#c9603a</div>
+        <div class="sw" style="background:#15211b;color:#f3f2ec;"><b>Ink</b>#15211b</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Option <span>C — Cool Slate + Signal</span> · cool not warm, one modern accent</div>
+      <div class="C demo">
+        <p class="eyebrow">A founding edition</p>
+        <h2>Meetings that fund <span class="key">what matters</span>.</h2>
+        <p class="lede">You take a handful of conversations worth your time. Each one sends $1,000 to a charity you choose.</p>
+        <div class="row">
+          <a class="btn sq" href="#">Apply as a founding executive</a>
+          <div class="num">$1,000<small>to your chosen charity, per meeting</small></div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw" style="background:#f3f5f7;color:#1a1f2b;"><b>Slate paper</b>#f3f5f7</div>
+        <div class="sw" style="background:#ffffff;color:#1a1f2b;border-right:1px solid #eee;"><b>Card</b>#ffffff</div>
+        <div class="sw" style="background:#1a1f2b;color:#f3f5f7;"><b>Ink</b>#1a1f2b</div>
+        <div class="sw" style="background:#1f6feb;color:#fff;"><b>Signal</b>#1f6feb</div>
+        <div class="sw" style="background:#424a59;color:#fff;"><b>Body</b>#424a59</div>
+      </div>
+    </div>
+
+    <div class="card D">
+      <div class="label" style="color:#7a7a7a;">Option <span style="color:#e8e5df;">D — Members' Charcoal + Brass</span> · dark, exclusive, breaks the light-only rule</div>
+      <div class="D demo">
+        <p class="eyebrow">A founding edition</p>
+        <h2>Meetings that fund <span class="key">what matters</span>.</h2>
+        <p class="lede">You take a handful of conversations worth your time. Each one sends $1,000 to a charity you choose.</p>
+        <div class="row">
+          <a class="btn" href="#">Apply as a founding executive</a>
+          <div class="num">$1,000<small>to your chosen charity, per meeting</small></div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw" style="background:#1c1c1f;color:#ece9e3;border-right:1px solid #333;"><b>Charcoal</b>#1c1c1f</div>
+        <div class="sw" style="background:#26262a;color:#ece9e3;"><b>Raised</b>#26262a</div>
+        <div class="sw" style="background:#d8ad58;color:#1c1c1f;"><b>Brass</b>#d8ad58</div>
+        <div class="sw" style="background:#ece9e3;color:#1c1c1f;"><b>Bone text</b>#ece9e3</div>
+        <div class="sw" style="background:#b4b0a8;color:#1c1c1f;"><b>Muted</b>#b4b0a8</div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

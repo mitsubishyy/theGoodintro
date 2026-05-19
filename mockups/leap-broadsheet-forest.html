@@ -1,0 +1,872 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TheBigIntro / Meetings that fund what matters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f3f2ec;          /* bone canvas, warm not yellow */
+    --paper:#FFFFFF;
+    --ink:#15211b;          /* deep forest ink, text only */
+    --body:#45504a;
+    --muted:#5c6560;
+    --coral:#1f5d45;        /* forest, primary brand */
+    --coral-d:#1f5d45;      /* forest, the primary editorial accent */
+    --mint:#1f5d45;
+    --mint-d:#1f5d45;
+    --tint-mint:#e8efe9;    /* gentle forest wash */
+    --rule:#15211b;         /* hairlines are ink at low alpha */
+    --hair:#d6dad0;         /* soft forest-tinted hairline */
+    --hair-soft:#e2e5dc;
+    --espresso:#15281e;     /* the single deep forest panel */
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+  body{
+    background:var(--bg);color:var(--body);
+    font-family:'Newsreader',Georgia,serif;
+    font-size:19px;line-height:1.62;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    font-optical-sizing:auto;
+  }
+  ::selection{background:rgba(31,93,69,.16)}
+
+  h1,h2,h3,.display{
+    font-family:'Fraunces',Georgia,serif;color:var(--ink);
+    font-weight:600;line-height:1.04;letter-spacing:-.012em;
+    font-optical-sizing:auto;
+  }
+  h2{font-size:clamp(2rem,4.4vw,3.4rem);font-weight:600}
+  h3{font-size:1.36rem;font-weight:600;line-height:1.18;letter-spacing:-.005em}
+  p{max-width:64ch}
+  strong{color:var(--ink);font-weight:600}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:0 56px}
+  .col-narrow{max-width:760px}
+
+  /* ---- editorial primitives ---- */
+  .dateline{
+    font-family:'Newsreader',serif;
+    font-size:.74rem;font-weight:600;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--coral-d);
+    display:flex;align-items:center;gap:14px;
+  }
+  .dateline::after{
+    content:"";flex:0 0 34px;height:1px;background:var(--coral-d);opacity:.7;
+  }
+  .dateline.center{justify-content:center}
+  .dateline.center::before{
+    content:"";flex:0 0 34px;height:1px;background:var(--coral-d);opacity:.7;
+  }
+  .kicker-rule{height:1px;background:var(--hair);width:100%}
+  .rule-thick{height:2px;background:var(--ink)}
+  .rmark{color:var(--coral-d);font-style:italic;font-family:'Fraunces',serif}
+
+  .lede{
+    font-family:'Newsreader',serif;
+    font-size:clamp(1.18rem,1.7vw,1.42rem);
+    line-height:1.5;color:var(--ink);max-width:34ch;font-weight:400;
+  }
+  .body-lg{font-size:1.12rem;line-height:1.6}
+
+  a.cta{
+    display:inline-flex;align-items:center;gap:12px;
+    background:var(--coral-d);color:var(--bg);
+    text-decoration:none;font-family:'Fraunces',serif;font-weight:500;
+    font-size:1.02rem;letter-spacing:.005em;
+    padding:17px 34px;border-radius:2px;
+    border:1px solid var(--coral-d);
+    transition:background .18s ease,color .18s ease,transform .18s ease;
+  }
+  a.cta:hover{background:#16402f;border-color:#16402f;color:var(--bg);transform:translateY(-1px)}
+  a.cta .arr{font-family:'Newsreader',serif}
+  a.inl{
+    color:var(--coral-d);text-decoration:none;font-weight:500;
+    font-family:'Newsreader',serif;
+    border-bottom:1px solid rgba(31,93,69,.45);padding-bottom:1px;
+  }
+  a.inl:hover{border-bottom-color:var(--coral-d)}
+
+  :focus-visible{outline:2px solid var(--coral-d);outline-offset:3px}
+
+  /* ---- masthead ---- */
+  .masthead-rule{height:6px;background:var(--ink)}
+  .masthead{
+    border-bottom:1px solid var(--hair);
+  }
+  .mast-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 0;gap:24px;
+  }
+  .brand{
+    font-family:'Fraunces',serif;font-weight:600;
+    font-size:1.5rem;color:var(--ink);text-decoration:none;
+    letter-spacing:-.015em;display:flex;align-items:baseline;gap:1px;
+  }
+  .brand i{color:var(--coral-d);font-style:italic;font-weight:500}
+  .mast-nav{display:flex;align-items:center;gap:34px}
+  .mast-nav a{
+    color:var(--ink);text-decoration:none;
+    font-family:'Newsreader',serif;font-size:.96rem;font-weight:500;
+  }
+  .mast-nav a:not(.cta):hover{color:var(--coral-d)}
+  .mast-nav .cta{padding:11px 22px;font-size:.92rem}
+  .mast-meta{
+    font-family:'Newsreader',serif;font-size:.72rem;
+    letter-spacing:.22em;text-transform:uppercase;color:var(--muted);
+    display:flex;justify-content:space-between;
+    padding:9px 0;border-bottom:1px solid var(--hair);
+  }
+  .mast-meta span:nth-child(2){letter-spacing:.16em}
+
+  /* ---- hero ---- */
+  .hero{padding:74px 0 0}
+  .hero-grid{
+    display:grid;grid-template-columns:1fr;gap:0;
+  }
+  .hero-tags{
+    display:flex;flex-wrap:wrap;gap:0;
+    border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
+    margin-bottom:52px;
+  }
+  .hero-tags .t{
+    font-family:'Newsreader',serif;font-size:.72rem;font-weight:600;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--ink);
+    padding:13px 30px 13px 0;margin-right:30px;
+    border-right:1px solid var(--hair);
+    display:flex;align-items:center;gap:9px;
+  }
+  .hero-tags .t:last-child{border-right:0;margin-right:0;padding-right:0}
+  .hero-tags .t .dot{width:5px;height:5px;background:var(--coral-d);border-radius:50%;flex:0 0 5px}
+  .hero h1{
+    font-family:'Fraunces',serif;font-weight:600;
+    font-size:clamp(3rem,8.6vw,7.4rem);
+    line-height:.98;letter-spacing:-.028em;color:var(--ink);
+    max-width:14ch;
+  }
+  .hero h1 .rmark{font-size:.92em}
+  .hero-lower{
+    display:grid;grid-template-columns:1.55fr 1fr;gap:0;
+    margin-top:54px;border-top:2px solid var(--ink);
+  }
+  .hero-lead-col{padding:40px 56px 56px 0;border-right:1px solid var(--hair)}
+  .hero-lead-col .lede{max-width:30ch;margin-bottom:34px}
+  .hero-actions{display:flex;align-items:center;gap:30px;flex-wrap:wrap}
+  .hero-side{padding:40px 0 56px 56px;display:flex;flex-direction:column;justify-content:space-between}
+  .hero-side .trust{
+    font-family:'Newsreader',serif;font-style:italic;
+    font-size:1.04rem;color:var(--body);max-width:30ch;line-height:1.5;
+  }
+  .hero-side .filed{
+    font-family:'Newsreader',serif;font-size:.72rem;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--muted);margin-top:30px;
+    padding-top:18px;border-top:1px solid var(--hair);
+  }
+
+  /* ---- generic section ---- */
+  section{padding:96px 0}
+  .sec-bordered{border-top:1px solid var(--hair)}
+  .sec-head{margin-bottom:54px}
+  .sec-head h2{margin-top:22px;max-width:18ch}
+  .sec-head .lede{margin-top:26px}
+
+  /* ---- why / manifesto-style intro ---- */
+  .why-grid{
+    display:grid;grid-template-columns:0.9fr 1.4fr;gap:64px;align-items:start;
+  }
+  .why-grid h2{font-size:clamp(2.2rem,4.2vw,3.2rem);max-width:13ch}
+  .why-body{
+    font-family:'Newsreader',serif;
+    font-size:clamp(1.16rem,1.7vw,1.42rem);line-height:1.56;color:var(--ink);
+    max-width:46ch;
+  }
+  .why-body .lead-word{
+    font-family:'Fraunces',serif;font-weight:600;
+  }
+
+  /* ---- how it works: columned editorial blocks ---- */
+  .steps{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    border-top:2px solid var(--ink);border-bottom:1px solid var(--hair);
+  }
+  .step{
+    padding:42px 40px 48px 0;border-right:1px solid var(--hair);
+  }
+  .step:last-child{border-right:0;padding-right:0}
+  .step:not(:first-child){padding-left:40px}
+  .step .num{
+    font-family:'Fraunces',serif;font-weight:500;font-style:italic;
+    font-size:2.4rem;color:var(--coral-d);line-height:1;
+    display:block;margin-bottom:26px;
+  }
+  .step h3{margin-bottom:14px;max-width:14ch}
+  .step p{font-size:1.04rem;color:var(--body);max-width:34ch}
+  .loopline{
+    margin-top:46px;
+    font-family:'Fraunces',serif;font-style:italic;font-weight:400;
+    font-size:clamp(1.25rem,2.4vw,1.85rem);line-height:1.4;color:var(--ink);
+    max-width:30ch;
+  }
+
+  /* ---- money: editorial ledger ---- */
+  .money-grid{
+    display:grid;grid-template-columns:0.95fr 1.4fr;gap:64px;align-items:start;
+  }
+  .bignum{
+    font-family:'Fraunces',serif;font-weight:600;
+    font-size:clamp(4.2rem,11vw,8.2rem);line-height:.86;
+    color:var(--coral-d);letter-spacing:-.03em;
+  }
+  .bignum .cap{
+    display:block;font-family:'Newsreader',serif;font-style:italic;
+    font-size:1.02rem;color:var(--body);letter-spacing:0;margin-top:18px;
+    max-width:24ch;
+  }
+  .ledger{border-top:2px solid var(--ink)}
+  .ledger .r{
+    display:flex;justify-content:space-between;gap:30px;
+    padding:22px 0;border-bottom:1px solid var(--hair);
+    align-items:baseline;
+  }
+  .ledger .k{
+    font-family:'Fraunces',serif;font-weight:600;font-size:1.12rem;
+    color:var(--ink);flex:1;
+  }
+  .ledger .v{
+    font-family:'Newsreader',serif;font-style:italic;font-size:1.04rem;
+    color:var(--body);text-align:right;flex:0 0 auto;max-width:18ch;
+  }
+  .money-note{
+    margin-top:34px;font-family:'Newsreader',serif;font-size:1.08rem;
+    color:var(--body);max-width:50ch;line-height:1.58;
+  }
+  .giveflow{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    margin-top:68px;border-top:1px solid var(--hair);
+  }
+  .gf{
+    padding:30px 34px 30px 0;border-right:1px solid var(--hair);
+  }
+  .gf:last-child{border-right:0;padding-right:0}
+  .gf:not(:first-child){padding-left:34px}
+  .gf-k{
+    display:block;font-family:'Newsreader',serif;font-size:.72rem;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--coral-d);
+    margin-bottom:12px;
+  }
+  .gf-v{font-family:'Fraunces',serif;font-weight:500;font-size:1.12rem;color:var(--ink);line-height:1.3}
+
+  /* ---- causes band: forest tint, restrained ---- */
+  .causes-sec{background:var(--tint-mint);border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+  .causes{
+    display:flex;flex-wrap:wrap;
+    border-top:1px solid var(--hair);margin-top:46px;
+  }
+  .cause{
+    font-family:'Fraunces',serif;font-weight:500;font-size:1.16rem;
+    color:var(--ink);
+    padding:24px 38px 24px 0;margin-right:38px;
+    border-bottom:1px solid var(--hair);
+    display:flex;align-items:center;gap:13px;flex:1 1 280px;
+  }
+  .cause .idx{
+    font-family:'Newsreader',serif;font-style:italic;font-size:.92rem;
+    color:var(--mint-d);flex:0 0 auto;
+  }
+  .note{
+    margin-top:30px;font-family:'Newsreader',serif;font-style:italic;
+    font-size:1rem;color:var(--muted);max-width:54ch;
+  }
+
+  /* ---- difference: editorial entries ---- */
+  .difflist{border-top:2px solid var(--ink)}
+  .row2{
+    display:grid;grid-template-columns:1fr 2fr;gap:54px;
+    padding:42px 0;border-bottom:1px solid var(--hair);align-items:start;
+  }
+  .row2 .lab{
+    font-family:'Newsreader',serif;font-size:.74rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--coral-d);padding-top:6px;
+  }
+  .row2 h3{margin-bottom:12px}
+  .row2 p{font-size:1.08rem;color:var(--body);max-width:54ch}
+
+  /* ---- who this is for ---- */
+  .standardrow{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    border-top:2px solid var(--ink);margin-top:50px;
+  }
+  .std{padding:38px 36px 42px 0;border-right:1px solid var(--hair)}
+  .std:last-child{border-right:0;padding-right:0}
+  .std:not(:first-child){padding-left:36px}
+  .std-k{
+    display:block;font-family:'Fraunces',serif;font-weight:600;
+    font-size:1.2rem;color:var(--ink);margin-bottom:16px;
+    padding-bottom:14px;border-bottom:1px solid #c9603a;
+  }
+  .std p{font-size:1.04rem;color:var(--body);max-width:36ch}
+
+  /* ---- control ---- */
+  .control-list{
+    display:grid;grid-template-columns:1fr 1fr;
+    border-top:2px solid var(--ink);margin-top:50px;
+  }
+  .ctl{
+    padding:34px 44px 34px 0;border-bottom:1px solid var(--hair);
+    display:flex;gap:22px;align-items:baseline;
+  }
+  .ctl:nth-child(odd){border-right:1px solid var(--hair)}
+  .ctl:nth-child(even){padding-left:44px}
+  .ctl .mk{
+    font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+    font-size:1.5rem;color:var(--coral-d);flex:0 0 auto;line-height:1;
+  }
+  .ctl p{font-size:1.06rem;color:var(--body);max-width:42ch}
+
+  /* ---- founding: pull-quote feel ---- */
+  .founding{
+    border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);
+    padding:74px 0;text-align:center;
+  }
+  .founding h2{
+    margin:24px auto 22px;max-width:18ch;
+    font-size:clamp(2.2rem,5vw,3.6rem);
+  }
+  .founding p{
+    font-family:'Newsreader',serif;font-size:1.18rem;line-height:1.55;
+    color:var(--body);max-width:48ch;margin:0 auto 38px;
+  }
+
+  /* ---- founder: the single dark moment ---- */
+  .founder-sec{background:var(--espresso)}
+  .founder{
+    display:grid;grid-template-columns:auto 1fr;gap:46px;align-items:start;
+    max-width:920px;
+  }
+  .ava{
+    width:84px;height:84px;border-radius:50%;flex:0 0 84px;
+    border:1px solid rgba(243,242,236,.28);
+    display:grid;place-items:center;
+    font-family:'Fraunces',serif;font-weight:500;font-style:italic;
+    font-size:1.7rem;color:#d98a64;
+  }
+  .founder .dateline{color:#7fb89e}
+  .founder .dateline::after{background:#7fb89e;opacity:.5}
+  .founder-quote{
+    font-family:'Fraunces',serif;font-style:italic;font-weight:400;
+    font-size:clamp(1.3rem,2.6vw,2rem);line-height:1.42;
+    color:#f3f2ec;max-width:30ch;margin-top:18px;
+  }
+  .sig{
+    font-family:'Newsreader',serif;font-size:.8rem;letter-spacing:.18em;
+    text-transform:uppercase;color:#aeb8b1;margin-top:30px;
+  }
+
+  /* ---- FAQ ---- */
+  .faq{border-top:2px solid var(--ink)}
+  details{border-bottom:1px solid var(--hair)}
+  summary{
+    list-style:none;cursor:pointer;
+    display:flex;justify-content:space-between;gap:30px;align-items:baseline;
+    padding:30px 0;
+    font-family:'Fraunces',serif;font-weight:600;font-size:1.32rem;
+    color:var(--ink);line-height:1.25;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary .i{
+    font-family:'Newsreader',serif;color:var(--coral-d);
+    font-size:1.7rem;line-height:1;flex:0 0 auto;
+    transition:transform .22s ease;
+  }
+  @media (prefers-reduced-motion: reduce){summary .i{transition:none}}
+  details[open] summary .i{transform:rotate(45deg)}
+  details p{
+    font-family:'Newsreader',serif;font-size:1.1rem;color:var(--body);
+    max-width:60ch;padding:0 60px 34px 0;line-height:1.6;
+  }
+
+  /* ---- closing ---- */
+  .closing{border-top:2px solid var(--ink)}
+  .closecard{text-align:center;max-width:760px;margin:0 auto}
+  .closecard h2{
+    margin:24px auto 22px;max-width:14ch;
+    font-size:clamp(2.4rem,5.4vw,4rem);
+  }
+  .closecard p{
+    font-family:'Newsreader',serif;font-size:1.18rem;line-height:1.55;
+    color:var(--body);max-width:46ch;margin:0 auto 36px;
+  }
+  .closing-sub{
+    font-family:'Newsreader',serif;font-style:italic;font-size:1rem;
+    color:var(--muted);margin-top:30px;
+  }
+
+  /* ---- footer ---- */
+  footer{background:var(--bg);border-top:6px solid var(--ink);padding:64px 0 48px}
+  .fcols{
+    display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;
+    padding-bottom:44px;border-bottom:1px solid var(--hair);
+  }
+  .fbrand{
+    font-family:'Fraunces',serif;font-weight:600;font-size:1.5rem;
+    color:var(--ink);text-decoration:none;letter-spacing:-.015em;
+  }
+  .fbrand i{color:var(--coral-d);font-style:italic;font-weight:500}
+  .fcols .blurb{
+    margin-top:18px;font-family:'Newsreader',serif;font-style:italic;
+    font-size:1rem;color:var(--body);max-width:30ch;line-height:1.5;
+  }
+  .fcols strong{
+    display:block;font-family:'Newsreader',serif;font-weight:600;
+    font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--coral-d);margin-bottom:18px;
+  }
+  footer a:not(.fbrand){
+    color:var(--ink);text-decoration:none;display:block;
+    margin:11px 0;font-family:'Newsreader',serif;font-size:1rem;
+  }
+  footer a:not(.fbrand):hover{color:var(--coral-d)}
+  .fnote{
+    margin-top:34px;font-family:'Newsreader',serif;font-size:.82rem;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;
+  }
+
+  /* ---- reveal: motion-safe, never the only thing making content visible ---- */
+  .reveal{opacity:1}
+  @media (prefers-reduced-motion: no-preference){
+    @supports (animation-timeline: view()){
+      .reveal{
+        opacity:0;transform:translateY(20px);
+        animation:rise both;
+        animation-timeline:view();
+        animation-range:entry 0% cover 24%;
+      }
+    }
+  }
+  @keyframes rise{to{opacity:1;transform:none}}
+
+  /* ---- responsive ---- */
+  @media (max-width:1080px){
+    .wrap{padding:0 40px}
+    .hero-lower{grid-template-columns:1fr}
+    .hero-lead-col{border-right:0;border-bottom:1px solid var(--hair);padding:36px 0 40px}
+    .hero-side{padding:36px 0 0}
+    .why-grid,.money-grid{grid-template-columns:1fr;gap:36px}
+    .why-grid h2,.sec-head h2{max-width:20ch}
+  }
+  @media (max-width:760px){
+    .wrap{padding:0 26px}
+    body{font-size:18px}
+    section{padding:64px 0}
+    .hero{padding:48px 0 0}
+    .hero h1{font-size:clamp(2.7rem,12vw,4rem);max-width:100%}
+    .hero-tags{margin-bottom:38px}
+    .hero-tags .t{
+      flex:1 1 100%;border-right:0;margin-right:0;padding:12px 0;
+      border-bottom:1px solid var(--hair);
+    }
+    .hero-tags .t:last-child{border-bottom:0}
+    .mast-nav a:not(.cta){display:none}
+    .mast-meta{font-size:.62rem;letter-spacing:.12em}
+    .mast-meta span:nth-child(3){display:none}
+    .steps,.standardrow,.giveflow{grid-template-columns:1fr}
+    .step,.gf,.std{
+      border-right:0;border-bottom:1px solid var(--hair);
+      padding:34px 0 !important;
+    }
+    .step:last-child,.gf:last-child,.std:last-child{border-bottom:0}
+    .control-list{grid-template-columns:1fr}
+    .ctl{
+      border-right:0 !important;padding:28px 0 !important;
+    }
+    .row2{grid-template-columns:1fr;gap:14px;padding:34px 0}
+    .founder{grid-template-columns:1fr;gap:24px}
+    .ava{width:68px;height:68px;flex:0 0 68px}
+    summary{font-size:1.16rem;padding:24px 0}
+    details p{padding:0 0 28px 0}
+    .fcols{grid-template-columns:1fr 1fr;gap:34px}
+    .fnote{flex-direction:column}
+    .cause{flex:1 1 100%;margin-right:0;padding:20px 0}
+  }
+  @media (max-width:420px){
+    .fcols{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead-rule"></div>
+<div class="masthead">
+  <div class="wrap">
+    <div class="mast-meta">
+      <span>Vol. I &nbsp;·&nbsp; The Founding Edition</span>
+      <span>Australia</span>
+      <span>Invite only</span>
+    </div>
+    <div class="mast-inner">
+      <a href="#" class="brand">The<i>Big</i>Intro</a>
+      <nav class="mast-nav" aria-label="Primary">
+        <a href="#how">How it works</a>
+        <a href="#who-for">For executives</a>
+        <a href="/vendors">For vendors</a>
+        <a href="#apply" class="cta">Apply <span class="arr">&rarr;</span></a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-tags reveal">
+      <span class="t"><span class="dot"></span>Invite only</span>
+      <span class="t"><span class="dot"></span>Australia first</span>
+      <span class="t"><span class="dot"></span>Funds charity</span>
+    </div>
+    <h1 class="reveal">Meetings that fund <span class="rmark">what matters</span>.</h1>
+    <div class="hero-lower">
+      <div class="hero-lead-col reveal">
+        <p class="lede">You take a handful of conversations worth your time. Each one
+          sends $1,000 to a charity you choose.</p>
+        <div class="hero-actions">
+          <a class="cta" href="#apply">Apply as a founding executive</a>
+          <a class="inl" href="/vendors">Are you a vendor? &rarr;</a>
+        </div>
+      </div>
+      <div class="hero-side reveal">
+        <p class="trust">No cold pitches. No hard sells. Every meeting funds a cause
+          that matters to you.</p>
+        <p class="filed">Filed for senior leaders &nbsp;·&nbsp; The Founding Cohort</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="sec-bordered" id="why" style="border-top:none">
+  <div class="wrap">
+    <div class="why-grid reveal">
+      <div>
+        <span class="dateline">Why this exists</span>
+        <h2 style="margin-top:22px">Your calendar is full of pitches that go nowhere.</h2>
+      </div>
+      <p class="why-body">
+        <span class="lead-word">What if</span> the few conversations worth having also did some good?
+        That is the whole idea. Fewer, more relevant meetings, each one
+        sending <span class="rmark" style="font-size:1.04em">$1,000</span> to a cause you care about.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="sec-bordered" id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="dateline">How it works</span>
+      <h2>Three steps, for executives.</h2>
+    </div>
+    <div class="steps reveal">
+      <div class="step">
+        <span class="num">01</span>
+        <h3>You decide what&rsquo;s relevant</h3>
+        <p>Tell us the priorities you want to talk about. Nothing outside
+          that ever reaches you.</p>
+      </div>
+      <div class="step">
+        <span class="num">02</span>
+        <h3>You get qualified requests</h3>
+        <p>A vendor must state the specific initiative or problem before
+          they can ask. You see the reason, and you decide.</p>
+      </div>
+      <div class="step">
+        <span class="num">03</span>
+        <h3>One focused conversation</h3>
+        <p>You have one focused conversation, and $1,000 goes to the
+          charity you choose.</p>
+      </div>
+    </div>
+    <p class="loopline reveal">A vendor states a specific need, you approve only what fits, you
+      have one short conversation, and $1,000 goes to your chosen charity.</p>
+  </div>
+</section>
+
+<section class="sec-bordered" id="money">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="dateline">Where the money goes</span>
+      <h2>Full transparency.</h2>
+    </div>
+    <div class="money-grid reveal">
+      <div>
+        <div class="bignum">$1,000
+          <span class="cap">The full meeting gift, to your chosen registered charity.</span>
+        </div>
+      </div>
+      <div>
+        <div class="ledger">
+          <div class="r">
+            <span class="k">To your chosen charity, per meeting</span>
+            <span class="v">the full meeting gift</span>
+          </div>
+          <div class="r">
+            <span class="k">Platform admin fee</span>
+            <span class="v">paid by the vendor, never you</span>
+          </div>
+          <div class="r">
+            <span class="k">What it costs you</span>
+            <span class="v">nothing, ever</span>
+          </div>
+        </div>
+        <p class="money-note">Every dollar of the gift reaches the charity. The platform covers
+          its costs through a clearly named admin fee paid by the vendor,
+          never taken from the donation.</p>
+      </div>
+    </div>
+    <div class="giveflow reveal">
+      <div class="gf">
+        <span class="gf-k">After the meeting</span>
+        <span class="gf-v">the donation is sent to your chosen registered charity</span>
+      </div>
+      <div class="gf">
+        <span class="gf-k">You get confirmation</span>
+        <span class="gf-v">in writing, every time</span>
+      </div>
+      <div class="gf">
+        <span class="gf-k">The admin fee</span>
+        <span class="gf-v">is the vendor&rsquo;s, billed separately</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="causes-sec">
+  <div class="wrap">
+    <div class="sec-head reveal" style="margin-bottom:0">
+      <span class="dateline">Causes you could choose</span>
+      <h2>Real causes, your call.</h2>
+    </div>
+    <div class="causes reveal">
+      <span class="cause"><span class="idx">i.</span>Health and medical research</span>
+      <span class="cause"><span class="idx">ii.</span>Education and young people</span>
+      <span class="cause"><span class="idx">iii.</span>Environment and climate</span>
+      <span class="cause"><span class="idx">iv.</span>Community and crisis relief</span>
+      <span class="cause"><span class="idx">v.</span>Animal welfare</span>
+    </div>
+    <p class="note">Every donation goes to a registered Australian charity you name.
+      These are the kinds of causes it can support.</p>
+  </div>
+</section>
+
+<section class="sec-bordered" id="diff">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="dateline">What makes this different</span>
+      <h2>Built around relevance and giving.</h2>
+    </div>
+    <div class="difflist reveal">
+      <div class="row2">
+        <div class="lab">Qualified by requirement</div>
+        <div>
+          <h3>Access is earned, not bought</h3>
+          <p>A vendor states the specific reason a conversation is worth your time,
+            or it never reaches you.</p>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="lab">A deliberately big gift</div>
+        <div>
+          <h3>The giving means something</h3>
+          <p>$1,000 a meeting is set high on purpose, so the giving means
+            something, not a token gesture.</p>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="lab">No fine print</div>
+        <div>
+          <h3>The full money flow is on this page</h3>
+          <p>No vague claims, nothing buried in terms.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec-bordered" id="who-for">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="dateline">Who this is for</span>
+      <h2>Built for senior leaders.</h2>
+      <p class="lede" style="max-width:46ch">Invite only, and curated on purpose. We are starting with senior
+        leaders in Australia whose time is genuinely in demand, and who
+        would value a few relevant conversations that also fund a cause
+        they choose.</p>
+    </div>
+    <div class="standardrow reveal">
+      <div class="std">
+        <span class="std-k">The executive</span>
+        <p>Director, executive or equivalent, where your attention is the
+          scarce thing. You set the topics, and nothing outside them
+          reaches you.</p>
+      </div>
+      <div class="std">
+        <span class="std-k">The bar for vendors</span>
+        <p>A specific initiative, genuine intent, no hard sell. Held to
+          that standard before they can ask. <a class="inl" href="/vendors">The vendor page &rarr;</a></p>
+      </div>
+      <div class="std">
+        <span class="std-k">Where we start</span>
+        <p>Australia first, with a small founding cohort, so the first
+          members shape how it works.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec-bordered" id="control">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="dateline">What to expect</span>
+      <h2>You stay in control, always.</h2>
+    </div>
+    <div class="control-list reveal">
+      <div class="ctl">
+        <span class="mk">&sect;</span>
+        <p><strong>Every request states its reason.</strong> You see the
+          specific initiative before anything happens.</p>
+      </div>
+      <div class="ctl">
+        <span class="mk">&sect;</span>
+        <p><strong>You approve or decline each one.</strong> Nothing is
+          automatic, and a no needs no explanation.</p>
+      </div>
+      <div class="ctl">
+        <span class="mk">&sect;</span>
+        <p><strong>One short conversation, on your terms.</strong> No hard
+          sell, and no obligation to meet again.</p>
+      </div>
+      <div class="ctl">
+        <span class="mk">&sect;</span>
+        <p><strong>Your details are never sold or shared.</strong> You can
+          step away at any time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec-bordered" id="apply">
+  <div class="wrap">
+    <div class="founding reveal">
+      <span class="dateline center">The first cohort</span>
+      <h2>Join as a founding member.</h2>
+      <p>We are starting small on purpose. Founding members help shape
+        how this works, for the executives who join and the causes they
+        support.</p>
+      <a class="cta" href="#apply">Request your place</a>
+    </div>
+  </div>
+</section>
+
+<section class="founder-sec">
+  <div class="wrap">
+    <div class="founder reveal">
+      <div class="ava">IH</div>
+      <div>
+        <span class="dateline">From the founder</span>
+        <p class="founder-quote">I kept seeing senior people buried in irrelevant outreach, and
+          vendors with something genuine to say unable to get through
+          honestly. TheBigIntro fixes both at once, and turns every
+          meeting into $1,000 for a cause the executive chooses.</p>
+        <div class="sig">Isobel Hardwick, founder</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec-bordered">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="dateline">Questions</span>
+      <h2>Good things to ask.</h2>
+    </div>
+    <div class="faq reveal">
+      <details open>
+        <summary>Is this just a sales meeting in disguise?<span class="i">+</span></summary>
+        <p>No. A vendor cannot reach you without stating a specific,
+          relevant reason, and the conversation is about your priorities,
+          not a hard sell.</p>
+      </details>
+      <details>
+        <summary>Which charities can I choose?<span class="i">+</span></summary>
+        <p>Any registered charity you choose. You name it, and that is
+          exactly where your $1,000 goes.</p>
+      </details>
+      <details>
+        <summary>What does it cost an executive?<span class="i">+</span></summary>
+        <p>Nothing. It is free for executives. Vendors pay, and that is
+          what funds the donation to your charity.</p>
+      </details>
+      <details>
+        <summary>Why founding members?<span class="i">+</span></summary>
+        <p>We are starting deliberately small so the first members shape
+          how this works.</p>
+      </details>
+      <details>
+        <summary>How much of my time is this?<span class="i">+</span></summary>
+        <p>One short, focused conversation. You only take the ones you
+          choose.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="closing">
+  <div class="wrap">
+    <div class="closecard reveal">
+      <span class="dateline center">The invitation</span>
+      <h2>Fewer meetings, real giving.</h2>
+      <p>Apply as a founding executive. You decide what is relevant, you
+        take only the conversations you want, and the charity you choose
+        receives $1,000 each time.</p>
+      <a class="cta" href="#apply">Apply as a founding executive</a>
+      <p class="closing-sub">Free for executives. Invite only. One short call to start.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fcols">
+      <div>
+        <a href="#" class="fbrand">The<i>Big</i>Intro</a>
+        <p class="blurb">Relevant senior meetings that fund real giving. Australia first, invite only.</p>
+      </div>
+      <div>
+        <strong>The model</strong>
+        <a href="#how">How it works</a>
+        <a href="#who-for">For executives</a>
+        <a href="/vendors">For vendors</a>
+      </div>
+      <div>
+        <strong>The company</strong>
+        <a href="/about">About</a>
+        <a href="#apply">Apply</a>
+      </div>
+      <div>
+        <strong>Legal</strong>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+    <div class="fnote">
+      <span>TheBigIntro &nbsp;·&nbsp; Relevant senior meetings that fund real giving</span>
+      <span>The Founding Edition</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

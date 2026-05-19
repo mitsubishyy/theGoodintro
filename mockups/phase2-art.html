@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TheBigIntro — Illustration System (reference sheet)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F2EC; --bg-deep:#ECEEE6; --surface:#FFFFFF;
+    --ink:#15211B; --body:#45504A; --soft:#5C6560;
+    --forest:#1F5D45; --forest-d:#184A37; --deepest:#15281E;
+    --clay:#C9603A; --espresso:#15281E;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--body);
+    font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;padding:64px clamp(20px,5vw,72px) 120px;
+  }
+  .doc-head{max-width:760px;margin:0 auto 72px}
+  .doc-head .kicker{
+    font-size:.74rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--forest-d);display:flex;align-items:center;gap:10px;margin-bottom:18px;
+  }
+  .doc-head .kicker::before{content:"";width:26px;height:2px;background:var(--forest-d);border-radius:2px}
+  .doc-head h1{
+    font-family:'Fraunces',Georgia,serif;color:var(--ink);font-weight:600;
+    font-size:clamp(1.9rem,3.4vw,2.7rem);line-height:1.12;letter-spacing:-.015em;margin-bottom:18px;
+  }
+  .doc-head p{color:var(--body);font-size:1.02rem;max-width:62ch}
+  .sheet{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:64px}
+  .piece{
+    background:var(--surface);border:1px solid rgba(214,218,208,.85);border-radius:24px;
+    padding:clamp(28px,4vw,52px);
+    box-shadow:0 2px 4px rgba(21,40,30,.04),0 22px 50px -24px rgba(31,93,69,.22);
+  }
+  .piece-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:14px;margin-bottom:34px;
+    padding-bottom:20px;border-bottom:1px solid rgba(214,218,208,.7)}
+  .piece-head .id{
+    font-family:'Fraunces',serif;font-weight:600;color:var(--forest-d);
+    font-size:1.32rem;letter-spacing:-.01em;
+  }
+  .piece-head .vb{
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.78rem;
+    color:var(--soft);background:var(--bg-deep);padding:4px 10px;border-radius:7px;
+  }
+  .piece-head .desc{color:var(--body);font-size:.95rem;flex:1 1 280px;min-width:240px}
+  .stage{display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start}
+  .frame{
+    background:var(--bg);border-radius:18px;padding:clamp(20px,3vw,38px);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .frame.dark{background:var(--deepest)}
+  .frame svg{display:block;height:auto}
+  .frame .cap{display:none}
+  .note{
+    flex:1 1 220px;min-width:200px;color:var(--soft);font-size:.88rem;line-height:1.65;
+    align-self:center;
+  }
+  .note b{color:var(--ink);font-weight:600;font-family:'Fraunces',serif}
+  .swatch-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .sw{display:flex;align-items:center;gap:7px;font-size:.74rem;color:var(--soft)}
+  .sw i{width:14px;height:14px;border-radius:4px;border:1px solid rgba(0,0,0,.06);display:block}
+  .trio-note{margin:0 auto;max-width:1180px;color:var(--soft);font-size:.85rem;
+    text-align:center;margin-top:-44px;margin-bottom:-20px}
+</style>
+</head>
+<body>
+
+<div class="doc-head">
+  <div class="kicker">TheBigIntro — visual system</div>
+  <h1>The illustration system</h1>
+  <p>A commissioned, editorial geometric-organic set. Two stroke weights only (1.4 hairline, 2.6 primary), forest palette with a single clay whisper per piece, implied light from top-left, real layered depth behind key forms. A recurring cohesion motif runs through every piece: a soft connecting path and a gift cradling a heart. No faces, no sparkle. Each block below carries machine-readable <code>ART:name</code> markers so the SVG can be lifted verbatim into the live page.</p>
+  <div class="swatch-row">
+    <span class="sw"><i style="background:#1F5D45"></i>forest #1F5D45</span>
+    <span class="sw"><i style="background:#184A37"></i>deep #184A37</span>
+    <span class="sw"><i style="background:#15281E"></i>deepest #15281E</span>
+    <span class="sw"><i style="background:#F3F2EC"></i>bone #F3F2EC</span>
+    <span class="sw"><i style="background:#FFFFFF"></i>white</span>
+    <span class="sw"><i style="background:#15211B"></i>ink #15211B</span>
+    <span class="sw"><i style="background:#C9603A"></i>clay #C9603A (whisper)</span>
+  </div>
+</div>
+
+<div class="sheet">
+
+  <!-- ============================================================ -->
+  <!-- 1. HERO -->
+  <!-- ============================================================ -->
+  <section class="piece">
+    <div class="piece-head">
+      <span class="id">1 · hero</span>
+      <span class="vb">viewBox 0 0 560 620</span>
+      <span class="desc">The centrepiece flow vignette. Top to bottom: a qualified request arrives, the executive approves it, one focused conversation, then $1,000 reaches a named cause. Replaces the whole <code>.vig-stage</code> (intended ~520px wide, aspect 1:1.12).</span>
+    </div>
+    <div class="stage">
+      <div class="frame">
+<!-- ART:hero START -->
+<svg width="520" height="576" viewBox="0 0 560 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A qualified request arrives, the executive approves it, one focused conversation, and one thousand dollars reaches a named cause.">
+  <defs>
+    <linearGradient id="hero-glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1F5D45" stop-opacity="0.16"/>
+      <stop offset="0.55" stop-color="#1F5D45" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#1F5D45" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="hero-halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#1F5D45" stop-opacity="0.20"/>
+      <stop offset="0.6" stop-color="#1F5D45" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#1F5D45" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hero-gift" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#EEF3ED"/>
+    </linearGradient>
+    <linearGradient id="hero-seal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1F5D45"/>
+      <stop offset="1" stop-color="#184A37"/>
+    </linearGradient>
+    <filter id="hero-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="5" dy="9" stdDeviation="11" flood-color="#1F5D45" flood-opacity="0.22"/>
+    </filter>
+    <filter id="hero-soft-lg" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="7" dy="13" stdDeviation="16" flood-color="#1F5D45" flood-opacity="0.26"/>
+    </filter>
+    <clipPath id="hero-gift-clip"><rect x="300" y="430" width="232" height="156" rx="20"/></clipPath>
+  </defs>
+
+  <!-- ambient halo -->
+  <ellipse cx="296" cy="300" rx="276" ry="300" fill="url(#hero-halo)"/>
+
+  <!-- the quiet connecting path: one continuous spine through all four beats -->
+  <path d="M178 152 C 300 176, 372 196, 408 250"
+        fill="none" stroke="#1F5D45" stroke-opacity="0.34" stroke-width="2.2"
+        stroke-linecap="round" stroke-dasharray="0.5 8"/>
+  <path d="M408 300 C 372 374, 250 374, 168 416"
+        fill="none" stroke="#1F5D45" stroke-opacity="0.34" stroke-width="2.2"
+        stroke-linecap="round" stroke-dasharray="0.5 8"/>
+  <path d="M186 470 C 280 520, 348 514, 392 506"
+        fill="none" stroke="#1F5D45" stroke-opacity="0.34" stroke-width="2.2"
+        stroke-linecap="round" stroke-dasharray="0.5 8"/>
+  <!-- path nodes -->
+  <circle cx="178" cy="152" r="4.5" fill="#1F5D45" fill-opacity="0.4"/>
+  <circle cx="408" cy="275" r="4.5" fill="#1F5D45" fill-opacity="0.4"/>
+  <circle cx="168" cy="416" r="4.5" fill="#1F5D45" fill-opacity="0.4"/>
+  <circle cx="392" cy="506" r="4.5" fill="#1F5D45" fill-opacity="0.4"/>
+
+  <!-- ===== BEAT 1 — qualified request arriving ===== -->
+  <g filter="url(#hero-soft)">
+    <rect x="40" y="44" width="316" height="180" rx="20" fill="#FFFFFF"/>
+  </g>
+  <rect x="40" y="44" width="316" height="180" rx="20" fill="none" stroke="#1F5D45" stroke-opacity="0.14" stroke-width="1.4"/>
+  <!-- depth shape behind the card head -->
+  <rect x="56" y="60" width="284" height="46" rx="12" fill="#1F5D45" fill-opacity="0.10"/>
+  <!-- qualified tag -->
+  <rect x="68" y="72" width="138" height="24" rx="12" fill="#1F5D45" fill-opacity="0.16"/>
+  <path d="M82 84 l5 5 9.5-11" fill="none" stroke="#184A37" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="102" y="88.5" font-family="Inter, sans-serif" font-size="11" font-weight="700" letter-spacing="1.4" fill="#184A37">QUALIFIED</text>
+  <!-- document avatar -->
+  <rect x="68" y="124" width="44" height="44" rx="11" fill="#1F5D45" fill-opacity="0.10"/>
+  <path d="M82 134 h12 l8 8 v18 a2 2 0 0 1 -2 2 h-16 a2 2 0 0 1 -2 -2 v-24 a2 2 0 0 1 2 -2 z"
+        fill="#FFFFFF" stroke="#15211B" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M94 134 v8 h8" fill="none" stroke="#15211B" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M86 150 h12 M86 156 h8" fill="none" stroke="#15211B" stroke-width="1.4" stroke-linecap="round"/>
+  <!-- stated need lines -->
+  <rect x="128" y="128" width="150" height="9" rx="4.5" fill="#15211B" fill-opacity="0.14"/>
+  <rect x="128" y="146" width="200" height="8" rx="4" fill="#1F5D45" fill-opacity="0.16"/>
+  <rect x="128" y="162" width="138" height="8" rx="4" fill="#1F5D45" fill-opacity="0.16"/>
+  <rect x="128" y="178" width="174" height="8" rx="4" fill="#1F5D45" fill-opacity="0.16"/>
+
+  <!-- ===== BEAT 2 — the executive approving ===== -->
+  <g filter="url(#hero-soft-lg)">
+    <rect x="356" y="222" width="186" height="108" rx="20" fill="#FFFFFF"/>
+  </g>
+  <rect x="356" y="222" width="186" height="108" rx="20" fill="none" stroke="#1F5D45" stroke-opacity="0.14" stroke-width="1.4"/>
+  <!-- approve seal: depth disc behind -->
+  <circle cx="404" cy="276" r="29" fill="#15281E" fill-opacity="0.16"/>
+  <circle cx="402" cy="274" r="26" fill="url(#hero-seal)"/>
+  <path d="M390 274.5 l9 9 17-19" fill="none" stroke="#FFFFFF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="442" y="258" width="78" height="11" rx="5.5" fill="#15211B" fill-opacity="0.16"/>
+  <rect x="442" y="278" width="62" height="9" rx="4.5" fill="#1F5D45" fill-opacity="0.18"/>
+
+  <!-- ===== BEAT 3 — one focused conversation ===== -->
+  <g filter="url(#hero-soft)">
+    <rect x="58" y="356" width="244" height="148" rx="20" fill="#FFFFFF"/>
+  </g>
+  <rect x="58" y="356" width="244" height="148" rx="20" fill="none" stroke="#1F5D45" stroke-opacity="0.14" stroke-width="1.4"/>
+  <!-- header label -->
+  <rect x="80" y="376" width="118" height="10" rx="5" fill="#15211B" fill-opacity="0.16"/>
+  <!-- speech form A (incoming, light) with depth -->
+  <path d="M84 408 h96 a13 13 0 0 1 13 13 v18 a13 13 0 0 1 -13 13 h-58 l-22 17 v-17 a13 13 0 0 1 -16 -13 v-18 a13 13 0 0 1 16 -13 z"
+        fill="#1F5D45" fill-opacity="0.10"/>
+  <path d="M88 404 h94 a13 13 0 0 1 13 13 v18 a13 13 0 0 1 -13 13 h-58 l-22 17 v-18 a13 13 0 0 1 -14 -12 v-18 a13 13 0 0 1 14 -13 z"
+        fill="#FFFFFF" stroke="#15211B" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M104 422 h62 M104 433 h40" fill="none" stroke="#15211B" stroke-width="1.4" stroke-linecap="round"/>
+  <!-- speech form B (reply, forest) -->
+  <path d="M196 444 h70 a13 13 0 0 1 13 13 v14 a13 13 0 0 1 -13 13 h-6 l8 14 -18 -14 h-54 a13 13 0 0 1 -13 -13 v-14 a13 13 0 0 1 13 -13 z"
+        fill="#184A37"/>
+  <path d="M210 462 h46 M210 472 h30" fill="none" stroke="#FFFFFF" stroke-opacity="0.85" stroke-width="1.4" stroke-linecap="round"/>
+
+  <!-- ===== BEAT 4 — $1,000 reaching a named cause (focal moment) ===== -->
+  <g filter="url(#hero-soft-lg)">
+    <rect x="300" y="430" width="232" height="156" rx="20" fill="url(#hero-gift)"/>
+  </g>
+  <g clip-path="url(#hero-gift-clip)">
+    <circle cx="540" cy="600" r="120" fill="url(#hero-glow)"/>
+  </g>
+  <rect x="300" y="430" width="232" height="156" rx="20" fill="none" stroke="#1F5D45" stroke-opacity="0.16" stroke-width="1.4"/>
+
+  <!-- eyebrow -->
+  <rect x="324" y="452" width="14" height="2.6" rx="1.3" fill="#184A37"/>
+  <text x="346" y="456.5" font-family="Inter, sans-serif" font-size="10.5" font-weight="700" letter-spacing="1.6" fill="#184A37">SENT TO YOUR CAUSE</text>
+
+  <!-- THE focal numeral -->
+  <text x="322" y="516" font-family="Fraunces, Georgia, serif" font-size="60" font-weight="600" letter-spacing="-2" fill="#1F5D45">$1,000</text>
+
+  <!-- the recurring giving mark: a gift cradling a heart -->
+  <g transform="translate(452 470)">
+    <!-- depth parcel -->
+    <rect x="-29" y="6" width="58" height="40" rx="9" fill="#15281E" fill-opacity="0.14"/>
+    <!-- parcel body -->
+    <rect x="-31" y="2" width="58" height="40" rx="9" fill="#FFFFFF" stroke="#184A37" stroke-width="2.6"/>
+    <path d="M-31 16 H27" fill="none" stroke="#184A37" stroke-width="2.2"/>
+    <path d="M-2 2 V42" fill="none" stroke="#184A37" stroke-width="2.2"/>
+    <!-- ribbon bow cradling the heart -->
+    <path d="M-2 -1 C -9 -13 -22 -10 -22 -3 C -22 3 -12 3 -2 1 C 8 3 18 3 18 -3 C 18 -10 5 -13 -2 -1 Z"
+          fill="#FFFFFF" stroke="#184A37" stroke-width="2.4" stroke-linejoin="round"/>
+    <!-- the cradled heart: the single clay whisper -->
+    <path d="M-2 -14 C -5 -19 -12 -17.5 -12 -12 C -12 -8.4 -6.5 -5.4 -2 -2.6 C 2.5 -5.4 8 -8.4 8 -12 C 8 -17.5 1 -19 -2 -14 Z"
+          fill="none" stroke="#C9603A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- named-cause line -->
+  <g transform="translate(322 548)">
+    <rect x="0" y="-13" width="22" height="22" rx="7" fill="#1F5D45" fill-opacity="0.12"/>
+    <path d="M11 4 C 7 1 4 -1.4 4 -4.4 A 3.3 3.3 0 0 1 11 -6 A 3.3 3.3 0 0 1 18 -4.4 C 18 -1.4 15 1 11 4 Z"
+          fill="none" stroke="#184A37" stroke-width="1.8" stroke-linejoin="round"/>
+    <text x="34" y="4.5" font-family="Fraunces, Georgia, serif" font-size="14.5" font-weight="500" fill="#15211B">to a charity you name</text>
+  </g>
+</svg>
+<!-- ART:hero END -->
+      </div>
+      <div class="note">
+        <b>Drop-in.</b> Replaces the whole <code>.vig-stage</code> markup. One continuous dashed spine threads the four beats; nodes mark each. The seal disc (linear forest gradient) is the only solid forest mass, balancing the white cards. <code>$1,000</code> is the optical centre, Fraunces 60. The giving mark — parcel + ribbon bow cradling a clay heart — is the single clay whisper and the cohesion motif echoed by <code>founding</code> and <code>closing</code>.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 2-4. STEP TRIO -->
+  <!-- ============================================================ -->
+  <p class="trio-note">step1–step3 read as one cohesive trio: shared 128 frame, shared depth-card behind, shared corner connector node, one clay whisper each.</p>
+
+  <section class="piece">
+    <div class="piece-head">
+      <span class="id">2 · step1</span>
+      <span class="vb">viewBox 0 0 128 128</span>
+      <span class="desc">"You decide what's relevant" — a refined preferences/criteria form being set, with a confirmed criterion.</span>
+    </div>
+    <div class="stage">
+      <div class="frame">
+<!-- ART:step1 START -->
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="You decide what is relevant: a criteria form being set.">
+  <defs>
+    <filter id="step1-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="2.5" dy="4" stdDeviation="5" flood-color="#1F5D45" flood-opacity="0.20"/>
+    </filter>
+  </defs>
+  <!-- shared cohesion connector node + path stub (top-left light, bottom-right exit) -->
+  <path d="M96 104 C 108 100 114 92 116 80" fill="none" stroke="#1F5D45" stroke-opacity="0.28" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="0.5 6"/>
+  <!-- depth card -->
+  <rect x="30" y="26" width="64" height="80" rx="12" fill="#1F5D45" fill-opacity="0.12"/>
+  <!-- form card -->
+  <g filter="url(#step1-soft)">
+    <rect x="24" y="20" width="64" height="80" rx="12" fill="#FFFFFF"/>
+  </g>
+  <rect x="24" y="20" width="64" height="80" rx="12" fill="none" stroke="#15211B" stroke-width="2.6"/>
+  <!-- criterion rows: a toggled-on row, then unset rows -->
+  <rect x="34" y="34" width="14" height="9" rx="4.5" fill="#184A37"/>
+  <circle cx="43.5" cy="38.5" r="3.4" fill="#FFFFFF"/>
+  <rect x="54" y="35" width="26" height="7" rx="3.5" fill="#15211B" fill-opacity="0.16"/>
+
+  <rect x="34" y="52" width="14" height="9" rx="4.5" fill="none" stroke="#15211B" stroke-width="1.4"/>
+  <circle cx="38.5" cy="56.5" r="3" fill="#15211B" fill-opacity="0.16"/>
+  <rect x="54" y="53" width="32" height="7" rx="3.5" fill="#15211B" fill-opacity="0.12"/>
+
+  <rect x="34" y="70" width="14" height="9" rx="4.5" fill="none" stroke="#15211B" stroke-width="1.4"/>
+  <circle cx="38.5" cy="74.5" r="3" fill="#15211B" fill-opacity="0.16"/>
+  <rect x="54" y="71" width="24" height="7" rx="3.5" fill="#15211B" fill-opacity="0.12"/>
+  <!-- confirm chip with clay whisper underline -->
+  <rect x="34" y="86" width="44" height="8" rx="4" fill="#1F5D45" fill-opacity="0.16"/>
+  <path d="M34 99 h20" stroke="#C9603A" stroke-width="2.4" stroke-linecap="round"/>
+</svg>
+<!-- ART:step1 END -->
+      </div>
+      <div class="note"><b>Set criteria.</b> One toggle is on (forest), others unset (ink hairline). The clay underline marks the chosen line. Connector node exits bottom-right toward step2.</div>
+    </div>
+  </section>
+
+  <section class="piece">
+    <div class="piece-head">
+      <span class="id">3 · step2</span>
+      <span class="vb">viewBox 0 0 128 128</span>
+      <span class="desc">"You get qualified requests" — a request document that carries its stated reason, with a forest check.</span>
+    </div>
+    <div class="stage">
+      <div class="frame">
+<!-- ART:step2 START -->
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="You get qualified requests: a request carrying its stated reason, checked.">
+  <defs>
+    <filter id="step2-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="2.5" dy="4" stdDeviation="5" flood-color="#1F5D45" flood-opacity="0.20"/>
+    </filter>
+    <linearGradient id="step2-seal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1F5D45"/>
+      <stop offset="1" stop-color="#184A37"/>
+    </linearGradient>
+  </defs>
+  <!-- shared cohesion connector: enters top-left, exits bottom-right -->
+  <path d="M12 48 C 4 40 4 30 12 22" fill="none" stroke="#1F5D45" stroke-opacity="0.28" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="0.5 6"/>
+  <path d="M96 104 C 108 100 114 92 116 80" fill="none" stroke="#1F5D45" stroke-opacity="0.28" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="0.5 6"/>
+  <!-- depth card -->
+  <rect x="32" y="26" width="58" height="78" rx="11" fill="#1F5D45" fill-opacity="0.12"/>
+  <!-- request document -->
+  <g filter="url(#step2-soft)">
+    <path d="M26 20 h34 l16 16 v52 a6 6 0 0 1 -6 6 H26 a6 6 0 0 1 -6 -6 V26 a6 6 0 0 1 6 -6 z" fill="#FFFFFF"/>
+  </g>
+  <path d="M26 20 h34 l16 16 v52 a6 6 0 0 1 -6 6 H26 a6 6 0 0 1 -6 -6 V26 a6 6 0 0 1 6 -6 z" fill="none" stroke="#15211B" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M60 20 v16 h16" fill="none" stroke="#15211B" stroke-width="2.6" stroke-linejoin="round"/>
+  <!-- the stated reason: a highlighted line band, then body lines -->
+  <rect x="30" y="44" width="40" height="9" rx="4.5" fill="#1F5D45" fill-opacity="0.18"/>
+  <path d="M32 70 h30 M32 78 h26" fill="none" stroke="#15211B" stroke-width="1.4" stroke-linecap="round"/>
+  <!-- approve seal with check -->
+  <circle cx="78" cy="86" r="20" fill="#15281E" fill-opacity="0.14"/>
+  <circle cx="76" cy="84" r="18" fill="url(#step2-seal)"/>
+  <path d="M67 84 l6 6 11-13" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- clay whisper: a single dot marking the qualified reason -->
+  <circle cx="32" cy="48.5" r="2.4" fill="#C9603A"/>
+</svg>
+<!-- ART:step2 END -->
+      </div>
+      <div class="note"><b>Qualified request.</b> Same depth-card recipe and corner connectors as the trio. The forest band is the stated reason; the gradient seal + check is the same approve mark used in the hero. Clay dot flags the reason.</div>
+    </div>
+  </section>
+
+  <section class="piece">
+    <div class="piece-head">
+      <span class="id">4 · step3</span>
+      <span class="vb">viewBox 0 0 128 128</span>
+      <span class="desc">"One focused conversation" — two refined, calm speech forms (one light incoming, one forest reply).</span>
+    </div>
+    <div class="stage">
+      <div class="frame">
+<!-- ART:step3 START -->
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="One focused conversation: two calm speech forms.">
+  <defs>
+    <filter id="step3-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="2.5" dy="4" stdDeviation="5" flood-color="#1F5D45" flood-opacity="0.20"/>
+    </filter>
+  </defs>
+  <!-- shared cohesion connector: enters top-left -->
+  <path d="M12 48 C 4 40 4 30 12 22" fill="none" stroke="#1F5D45" stroke-opacity="0.28" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="0.5 6"/>
+  <!-- depth shape behind the pair (the shared trio recipe) -->
+  <rect x="30" y="30" width="74" height="46" rx="14" fill="#1F5D45" fill-opacity="0.12"/>
+  <!-- speech form A — incoming, white, top-left light -->
+  <g filter="url(#step3-soft)">
+    <path d="M30 24 h44 a14 14 0 0 1 14 14 v14 a14 14 0 0 1 -14 14 H50 l-16 13 v-13 a14 14 0 0 1 -4 -14 V38 a14 14 0 0 1 0 -14 z" fill="#FFFFFF"/>
+  </g>
+  <path d="M30 24 h44 a14 14 0 0 1 14 14 v14 a14 14 0 0 1 -14 14 H50 l-16 13 v-14 a14 14 0 0 1 -4 -13 V38 a14 14 0 0 1 0 -14 z" fill="none" stroke="#15211B" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M42 41 h28 M42 50 h18" fill="none" stroke="#15211B" stroke-width="1.4" stroke-linecap="round"/>
+  <!-- speech form B — calm forest reply, lower-right -->
+  <path d="M70 70 h28 a13 13 0 0 1 13 13 v10 a13 13 0 0 1 -13 13 h-2 l6 12 -14 -12 h-18 a13 13 0 0 1 -13 -13 v-10 a13 13 0 0 1 13 -13 z" fill="#184A37"/>
+  <path d="M76 86 h22 M76 95 h14" fill="none" stroke="#FFFFFF" stroke-opacity="0.85" stroke-width="1.4" stroke-linecap="round"/>
+  <!-- clay whisper: the single point of connection between the two -->
+  <circle cx="64" cy="64" r="2.6" fill="#C9603A"/>
+</svg>
+<!-- ART:step3 END -->
+      </div>
+      <div class="note"><b>One conversation.</b> Two distinct speech forms (never overlapping circles): white incoming with ink hairline, calm forest reply. The clay dot is the meeting point. Connector enters from step2.</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 5. CAUSES -->
+  <!-- ============================================================ -->
+  <section class="piece">
+    <div class="piece-head">
+      <span class="id">5 · causes</span>
+      <span class="vb">viewBox 0 0 380 300</span>
+      <span class="desc">A gift / $1,000 reaching cupped open hands — warm and emotional but restrained. Spot illustration for the "Real causes, your call." band (rendered ~260px).</span>
+    </div>
+    <div class="stage">
+      <div class="frame">
+<!-- ART:causes START -->
+<svg width="304" height="240" viewBox="0 0 380 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A gift of one thousand dollars lowered into cupped open hands.">
+  <defs>
+    <filter id="causes-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="5" dy="8" stdDeviation="10" flood-color="#1F5D45" flood-opacity="0.20"/>
+    </filter>
+    <linearGradient id="causes-parcel" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#EEF3ED"/>
+    </linearGradient>
+    <radialGradient id="causes-halo" cx="0.5" cy="0.42" r="0.55">
+      <stop offset="0" stop-color="#1F5D45" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#1F5D45" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="190" cy="150" rx="150" ry="140" fill="url(#causes-halo)"/>
+  <!-- ground shadow -->
+  <ellipse cx="190" cy="276" rx="120" ry="15" fill="#1F5D45" fill-opacity="0.10"/>
+
+  <!-- the quiet connecting path: gift descending into hands -->
+  <path d="M190 96 C 190 118 190 132 190 150" fill="none" stroke="#1F5D45" stroke-opacity="0.30" stroke-width="2" stroke-linecap="round" stroke-dasharray="0.5 7"/>
+
+  <!-- cupped open hands (depth layer behind) -->
+  <path d="M92 196 C 86 176 96 162 112 168 C 120 150 144 150 152 168 L 200 168 C 232 168 264 184 276 210 C 286 232 268 256 230 256 C 178 256 96 234 92 196 Z"
+        fill="#1F5D45" fill-opacity="0.16"/>
+  <!-- hands primary form -->
+  <path d="M86 192 C 80 172 90 158 106 164 C 114 146 138 146 146 164 L 196 164 C 228 164 260 180 272 206 C 282 228 264 252 226 252 C 174 252 90 230 86 192 Z"
+        fill="#FFFFFF" stroke="#184A37" stroke-width="2.6" stroke-linejoin="round"/>
+  <!-- finger / palm definition (hairline) -->
+  <path d="M146 164 C 150 184 168 198 196 200 M122 168 C 124 188 138 204 162 210 M226 198 C 234 200 250 200 262 196" fill="none" stroke="#184A37" stroke-width="1.4" stroke-linecap="round"/>
+
+  <!-- the gift parcel cradling a heart -->
+  <g transform="translate(190 96)">
+    <!-- depth -->
+    <rect x="-43" y="6" width="86" height="62" rx="12" fill="#15281E" fill-opacity="0.12"/>
+    <g filter="url(#causes-soft)">
+      <rect x="-46" y="0" width="86" height="62" rx="12" fill="url(#causes-parcel)"/>
+    </g>
+    <rect x="-46" y="0" width="86" height="62" rx="12" fill="none" stroke="#184A37" stroke-width="2.6"/>
+    <path d="M-46 22 H40" fill="none" stroke="#184A37" stroke-width="2.2"/>
+    <path d="M-3 0 V62" fill="none" stroke="#184A37" stroke-width="2.2"/>
+    <!-- ribbon bow cradling the heart -->
+    <path d="M-3 -3 C -12 -19 -32 -15 -32 -5 C -32 4 -16 4 -3 1 C 10 4 26 4 26 -5 C 26 -15 6 -19 -3 -3 Z"
+          fill="#FFFFFF" stroke="#184A37" stroke-width="2.4" stroke-linejoin="round"/>
+    <!-- $1,000 on the parcel face -->
+    <text x="-3" y="40" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="22" font-weight="600" letter-spacing="-0.6" fill="#1F5D45">$1,000</text>
+  </g>
+  <!-- the cradled heart: single clay whisper -->
+  <path d="M187 70 C 183 62 172 64 172 73 C 172 79 180 84 187 89 C 194 84 202 79 202 73 C 202 64 191 62 187 70 Z"
+        fill="none" stroke="#C9603A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<!-- ART:causes END -->
+      </div>
+      <div class="note"><b>Gift to a cause.</b> The parcel descends along the dashed spine into cupped hands (one darker-forest depth shape behind the hands, ink-hairline palm lines). <code>$1,000</code> sits on the parcel face in Fraunces; the clay heart is cradled above the bow — the same giving mark as hero.</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 6. WHOFOR -->
+  <!-- ============================================================ -->
+  <section class="piece">
+    <div class="piece-head">
+      <span class="id">6 · whofor</span>
+      <span class="vb">viewBox 0 0 380 300</span>
+      <span class="desc">"A seat at the table" — a senior presence with no face: an empty reserved chair drawn up to a small table with a place setting and a threshold of light. Dignified. (rendered ~220px).</span>
+    </div>
+    <div class="stage">
+      <div class="frame">
+<!-- ART:whofor START -->
+<svg width="280" height="221" viewBox="0 0 380 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A reserved seat at a small table: a senior presence, no face.">
+  <defs>
+    <filter id="whofor-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="5" dy="8" stdDeviation="10" flood-color="#1F5D45" flood-opacity="0.18"/>
+    </filter>
+    <radialGradient id="whofor-thresh" cx="0.5" cy="0.3" r="0.7">
+      <stop offset="0" stop-color="#1F5D45" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#1F5D45" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- threshold of light (the place held open) -->
+  <path d="M150 18 H230 V250 H150 Z" fill="url(#whofor-thresh)"/>
+  <ellipse cx="190" cy="266" rx="128" ry="14" fill="#1F5D45" fill-opacity="0.10"/>
+
+  <!-- the quiet connecting path: an arc drawing the seat to the table -->
+  <path d="M118 196 C 150 214 230 214 262 196" fill="none" stroke="#1F5D45" stroke-opacity="0.28" stroke-width="2" stroke-linecap="round" stroke-dasharray="0.5 7"/>
+
+  <!-- the table (depth + primary) -->
+  <rect x="208" y="150" width="118" height="12" rx="6" fill="#1F5D45" fill-opacity="0.16"/>
+  <rect x="204" y="142" width="118" height="12" rx="6" fill="#FFFFFF" stroke="#184A37" stroke-width="2.6"/>
+  <path d="M222 154 V236 M306 154 V236" fill="none" stroke="#184A37" stroke-width="2.6" stroke-linecap="round"/>
+  <!-- place setting: plate + the single clay whisper as a folded napkin marker -->
+  <ellipse cx="263" cy="148" rx="26" ry="6.5" fill="#1F5D45" fill-opacity="0.12"/>
+  <ellipse cx="263" cy="135" rx="22" ry="7" fill="#FFFFFF" stroke="#184A37" stroke-width="2.2"/>
+  <ellipse cx="263" cy="135" rx="12" ry="3.6" fill="none" stroke="#184A37" stroke-width="1.4"/>
+  <path d="M295 130 v12" stroke="#184A37" stroke-width="1.4" stroke-linecap="round"/>
+  <path d="M230 130 v12" stroke="#184A37" stroke-width="1.4" stroke-linecap="round"/>
+  <path d="M260 122 c -6 -8 4 -14 6 -6" fill="none" stroke="#C9603A" stroke-width="2.2" stroke-linecap="round"/>
+
+  <!-- the reserved chair (empty, dignified, no figure) -->
+  <g filter="url(#whofor-soft)">
+    <!-- seat depth -->
+    <path d="M84 198 h74 v16 h-74 z" fill="#1F5D45" fill-opacity="0.18"/>
+  </g>
+  <!-- chair back -->
+  <path d="M92 88 q4 -14 18 -14 h36 q14 0 18 14 v104 h-72 z" fill="#FFFFFF" stroke="#184A37" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M110 96 v86 M128 96 v86 M146 96 v86" fill="none" stroke="#184A37" stroke-width="1.4" stroke-linecap="round"/>
+  <!-- seat -->
+  <path d="M80 188 h96 a6 6 0 0 1 6 6 v8 a6 6 0 0 1 -6 6 H80 a6 6 0 0 1 -6 -6 v-8 a6 6 0 0 1 6 -6 z" fill="#FFFFFF" stroke="#184A37" stroke-width="2.6"/>
+  <!-- legs -->
+  <path d="M88 208 V256 M168 208 V256 M96 210 l-6 46 M160 210 l6 46" fill="none" stroke="#184A37" stroke-width="2.6" stroke-linecap="round"/>
+</svg>
+<!-- ART:whofor END -->
+      </div>
+      <div class="note"><b>A seat held open.</b> No face, no figure — an empty reserved chair drawn up to a set place inside a soft threshold of light. The dashed arc draws the seat to the table (cohesion path). The clay napkin fold is the single whisper. Dignified, senior, calm.</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 7. FOUNDING (works on bone AND deep forest) -->
+  <!-- ============================================================ -->
+  <section class="piece">
+    <div class="piece-head">
+      <span class="id">7 · founding</span>
+      <span class="vb">viewBox 0 0 200 200</span>
+      <span class="desc">A ribbon-medal cradling a heart: first cohort + giving. Crisp, never a sparkle. Shown on bone and on deep forest (#15281E) — the dark variant uses bone/white strokes plus clay. (rendered ~76px).</span>
+    </div>
+    <div class="stage">
+      <div class="frame">
+<!-- ART:founding START -->
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A ribbon medal cradling a heart: the founding cohort mark.">
+  <defs>
+    <linearGradient id="founding-disc" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#1F5D45"/>
+      <stop offset="1" stop-color="#184A37"/>
+    </linearGradient>
+    <filter id="founding-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="3" dy="6" stdDeviation="7" flood-color="#1F5D45" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <!-- ribbon tails (depth + primary), implied light top-left -->
+  <path d="M78 104 L 52 178 L 78 166 L 90 188 L 110 130 Z" fill="#15281E" fill-opacity="0.16"/>
+  <path d="M74 100 L 48 174 L 74 162 L 86 184 L 106 126 Z" fill="#FFFFFF" stroke="#184A37" stroke-width="2.4" stroke-linejoin="round"/>
+  <path d="M122 104 L 148 178 L 122 166 L 110 188 L 90 130 Z" fill="#15281E" fill-opacity="0.16"/>
+  <path d="M126 100 L 152 174 L 126 162 L 114 184 L 94 126 Z" fill="#FFFFFF" stroke="#184A37" stroke-width="2.4" stroke-linejoin="round"/>
+  <!-- medal disc with depth ring -->
+  <circle cx="100" cy="74" r="58" fill="#15281E" fill-opacity="0.12"/>
+  <g filter="url(#founding-soft)">
+    <circle cx="100" cy="72" r="54" fill="url(#founding-disc)"/>
+  </g>
+  <circle cx="100" cy="72" r="44" fill="none" stroke="#FFFFFF" stroke-opacity="0.30" stroke-width="1.4"/>
+  <!-- cradled heart: the single clay whisper -->
+  <path d="M100 92 C 88 80 72 84 72 67 C 72 56 84 52 91 60 C 95 65 98 70 100 74 C 102 70 105 65 109 60 C 116 52 128 56 128 67 C 128 84 112 80 100 92 Z"
+        fill="none" stroke="#C9603A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<!-- ART:founding END -->
+      </div>
+      <div class="frame dark">
+<!-- ART:founding-dark START -->
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A ribbon medal cradling a heart, on deep forest.">
+  <defs>
+    <radialGradient id="founding-dark-disc" cx="0.4" cy="0.35" r="0.75">
+      <stop offset="0" stop-color="#2A6E54"/>
+      <stop offset="1" stop-color="#184A37"/>
+    </radialGradient>
+  </defs>
+  <!-- ribbon tails: bone strokes that read on dark -->
+  <path d="M74 100 L 48 174 L 74 162 L 86 184 L 106 126 Z" fill="#1F5D45" stroke="#F3F2EC" stroke-width="2.4" stroke-linejoin="round"/>
+  <path d="M126 100 L 152 174 L 126 162 L 114 184 L 94 126 Z" fill="#1F5D45" stroke="#F3F2EC" stroke-width="2.4" stroke-linejoin="round"/>
+  <!-- medal disc -->
+  <circle cx="100" cy="72" r="54" fill="url(#founding-dark-disc)" stroke="#F3F2EC" stroke-width="2.4"/>
+  <circle cx="100" cy="72" r="44" fill="none" stroke="#F3F2EC" stroke-opacity="0.35" stroke-width="1.4"/>
+  <!-- cradled heart: clay whisper still reads on dark -->
+  <path d="M100 92 C 88 80 72 84 72 67 C 72 56 84 52 91 60 C 95 65 98 70 100 74 C 102 70 105 65 109 60 C 116 52 128 56 128 67 C 128 84 112 80 100 92 Z"
+        fill="none" stroke="#C9603A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<!-- ART:founding-dark END -->
+      </div>
+      <div class="note"><b>Founding mark.</b> A ribbon medal (not a sparkle) cradling the recurring clay heart. On bone: forest gradient disc with soft elevation. On deep forest: bone/white strokes, lighter forest disc, clay heart still reads. Crisp first-cohort + giving signal.</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 8. CLOSING (works on bone AND deep forest) -->
+  <!-- ============================================================ -->
+  <section class="piece">
+    <div class="piece-head">
+      <span class="id">8 · closing</span>
+      <span class="vb">viewBox 0 0 200 200</span>
+      <span class="desc">A gift-to-cause closing mark echoing the hero giving mark, for the final CTA. Shown on bone and on deep forest. (rendered ~68px).</span>
+    </div>
+    <div class="stage">
+      <div class="frame">
+<!-- ART:closing START -->
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A gift parcel cradling a heart, reaching a cause: the closing mark.">
+  <defs>
+    <radialGradient id="closing-halo" cx="0.5" cy="0.46" r="0.5">
+      <stop offset="0" stop-color="#1F5D45" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#1F5D45" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="closing-parcel" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#EEF3ED"/>
+    </linearGradient>
+    <filter id="closing-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="3" dy="6" stdDeviation="8" flood-color="#1F5D45" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <circle cx="100" cy="100" r="86" fill="url(#closing-halo)"/>
+  <!-- the quiet connecting path: an arc beneath the gift, reaching out -->
+  <path d="M58 150 C 80 168 120 168 142 150" fill="none" stroke="#1F5D45" stroke-opacity="0.30" stroke-width="2" stroke-linecap="round" stroke-dasharray="0.5 7"/>
+  <circle cx="58" cy="150" r="4" fill="#1F5D45" fill-opacity="0.4"/>
+  <circle cx="142" cy="150" r="4" fill="#1F5D45" fill-opacity="0.4"/>
+  <!-- gift parcel: depth + primary -->
+  <rect x="55" y="92" width="94" height="60" rx="13" fill="#15281E" fill-opacity="0.13"/>
+  <g filter="url(#closing-soft)">
+    <rect x="50" y="86" width="94" height="60" rx="13" fill="url(#closing-parcel)"/>
+  </g>
+  <rect x="50" y="86" width="94" height="60" rx="13" fill="none" stroke="#184A37" stroke-width="2.8"/>
+  <path d="M50 110 H144" fill="none" stroke="#184A37" stroke-width="2.4"/>
+  <path d="M97 86 V146" fill="none" stroke="#184A37" stroke-width="2.4"/>
+  <!-- ribbon bow cradling the heart -->
+  <path d="M97 82 C 87 64 64 69 64 81 C 64 91 82 91 97 87 C 112 91 130 91 130 81 C 130 69 107 64 97 82 Z"
+        fill="#FFFFFF" stroke="#184A37" stroke-width="2.6" stroke-linejoin="round"/>
+  <!-- cradled heart: single clay whisper -->
+  <path d="M97 64 C 93 56 82 58 82 67 C 82 73 90 78 97 83 C 104 78 112 73 112 67 C 112 58 101 56 97 64 Z"
+        fill="none" stroke="#C9603A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<!-- ART:closing END -->
+      </div>
+      <div class="frame dark">
+<!-- ART:closing-dark START -->
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A gift parcel cradling a heart, on deep forest.">
+  <defs>
+    <radialGradient id="closing-dark-halo" cx="0.5" cy="0.46" r="0.5">
+      <stop offset="0" stop-color="#3A8568" stop-opacity="0.30"/>
+      <stop offset="1" stop-color="#3A8568" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="100" cy="100" r="86" fill="url(#closing-dark-halo)"/>
+  <!-- connecting path in bone -->
+  <path d="M58 150 C 80 168 120 168 142 150" fill="none" stroke="#F3F2EC" stroke-opacity="0.35" stroke-width="2" stroke-linecap="round" stroke-dasharray="0.5 7"/>
+  <circle cx="58" cy="150" r="4" fill="#F3F2EC" fill-opacity="0.5"/>
+  <circle cx="142" cy="150" r="4" fill="#F3F2EC" fill-opacity="0.5"/>
+  <!-- gift parcel: lighter forest fill, bone strokes -->
+  <rect x="50" y="86" width="94" height="60" rx="13" fill="#1F5D45" stroke="#F3F2EC" stroke-width="2.8"/>
+  <path d="M50 110 H144" fill="none" stroke="#F3F2EC" stroke-width="2.4"/>
+  <path d="M97 86 V146" fill="none" stroke="#F3F2EC" stroke-width="2.4"/>
+  <!-- ribbon bow -->
+  <path d="M97 82 C 87 64 64 69 64 81 C 64 91 82 91 97 87 C 112 91 130 91 130 81 C 130 69 107 64 97 82 Z"
+        fill="#1F5D45" stroke="#F3F2EC" stroke-width="2.6" stroke-linejoin="round"/>
+  <!-- cradled heart: clay still reads on dark -->
+  <path d="M97 64 C 93 56 82 58 82 67 C 82 73 90 78 97 83 C 104 78 112 73 112 67 C 112 58 101 56 97 64 Z"
+        fill="none" stroke="#C9603A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<!-- ART:closing-dark END -->
+      </div>
+      <div class="note"><b>Closing mark.</b> The hero giving mark distilled: parcel + ribbon bow + clay heart, on a soft reaching arc with end nodes (the cohesion path). Bone variant for soft-tint CTA, deep-forest variant (bone strokes, clay heart) if the band ever goes dark.</div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TheBigIntro — Warm Manifesto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Philanthropic Forest. Bone canvas, never yellow. Deep forest ink for text only. */
+    --bg:#f3f2ec;          /* bone canvas */
+    --bg-deep:#eceee6;     /* slightly deeper forest-tinted bone wash */
+    --surface:#FFFFFF;
+    --ink:#15211b;         /* deep forest ink: headlines + key text ONLY */
+    --body:#45504a;        /* body text */
+    --soft:#5c6560;        /* muted captions (AA on bone) */
+    --coral:#1f5d45;       /* forest = primary accent */
+    --coral-d:#184a37;     /* forest darker: AA text/buttons */
+    --coral-ink:#184a37;   /* deepest forest for fine text on tint */
+    --mint:#1f5d45;        /* secondary maps to forest */
+    --mint-d:#184a37;
+    --mint-ink:#184a37;
+    --tint-coral:#e6efe8;  /* soft forest/bone tint panel */
+    --tint-mint:#e6efe8;   /* soft forest/bone tint panel */
+    --line:#d6dad0;        /* forest-tinted hairline */
+    --espresso:#15281e;    /* the single dark forest panel */
+    --shape-coral:rgba(31,93,69,.16);
+    --shape-coral-soft:rgba(31,93,69,.10);
+    --shape-mint:rgba(31,93,69,.14);
+    --shape-mint-soft:rgba(31,93,69,.09);
+    --shape-clay-soft:rgba(201,96,58,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--body);
+    font-family:'Inter',system-ui,sans-serif;font-size:17px;line-height:1.7;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  h1,h2,h3,h4{
+    font-family:'Fraunces',Georgia,serif;color:var(--ink);
+    font-weight:600;line-height:1.06;letter-spacing:-.012em;
+  }
+  h1{font-size:clamp(2.9rem,7.4vw,6.4rem);font-weight:600;line-height:1.0}
+  h2{font-size:clamp(2.1rem,4.6vw,3.9rem);font-weight:600;line-height:1.08}
+  h3{font-size:clamp(1.3rem,2.4vw,1.7rem);font-weight:600;line-height:1.15}
+  p{max-width:62ch}
+  em,.serif-i{font-family:'Fraunces',serif;font-style:italic;font-weight:500}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 clamp(22px,5vw,56px);position:relative}
+  .wrap-narrow{max-width:880px;margin:0 auto;padding:0 clamp(22px,5vw,56px);position:relative}
+
+  section{padding:clamp(72px,11vw,148px) 0;position:relative;overflow:hidden}
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:'Inter',sans-serif;font-size:.74rem;font-weight:700;
+    letter-spacing:.22em;text-transform:uppercase;color:var(--coral-ink);
+  }
+  .eyebrow::before{
+    content:"";width:26px;height:2px;border-radius:2px;
+    background:var(--coral-d);display:inline-block;
+  }
+  .eyebrow.mint{color:var(--mint-ink)}
+  .eyebrow.mint::before{background:var(--mint-d)}
+  .eyebrow.light{color:#9cc3b1}
+  .eyebrow.light::before{background:#9cc3b1}
+
+  .lede{font-size:clamp(1.18rem,1.9vw,1.42rem);line-height:1.62;max-width:34ch;color:var(--body)}
+
+  /* ---- Soft organic compositional shapes ---- */
+  .blob{position:absolute;pointer-events:none;z-index:0;filter:blur(.5px)}
+  .blob svg{display:block;width:100%;height:100%}
+
+  /* ---- Buttons ---- */
+  .btn{
+    display:inline-flex;align-items:center;gap:12px;
+    background:var(--coral-d);color:#fff;text-decoration:none;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:1.02rem;
+    padding:18px 34px;border-radius:999px;letter-spacing:.005em;
+    box-shadow:0 14px 30px -12px rgba(24,74,55,.55);
+    transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
+  }
+  .btn:hover{background:#16402f;transform:translateY(-2px);
+    box-shadow:0 20px 40px -14px rgba(24,74,55,.62)}
+  .btn .arr{font-family:'Fraunces',serif}
+  .inl{
+    font-family:'Inter',sans-serif;font-weight:600;text-decoration:none;
+    color:var(--coral-d);border-bottom:1.5px solid rgba(24,74,55,.35);
+    padding-bottom:2px;transition:border-color .15s,color .15s;
+  }
+  .inl:hover{color:#16402f;border-color:var(--coral-d)}
+
+  /* ---- Nav ---- */
+  .topline{height:4px;background:linear-gradient(90deg,var(--coral),var(--coral-d))}
+  nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:28px 0;position:relative;z-index:5;
+  }
+  .logo{
+    font-family:'Fraunces',serif;font-weight:600;font-size:1.42rem;
+    color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:11px;
+    letter-spacing:-.01em;
+  }
+  .logo .big{color:var(--coral-d)}
+  .logo svg{flex-shrink:0}
+  .nlinks{display:flex;gap:34px;align-items:center}
+  .nlinks a:not(.btn){
+    color:var(--body);text-decoration:none;font-weight:500;font-size:.97rem;
+    transition:color .15s;
+  }
+  .nlinks a:not(.btn):hover{color:var(--ink)}
+  .nlinks .btn{padding:13px 26px;font-size:.95rem}
+
+  /* ---- HERO ---- */
+  .hero{padding:clamp(40px,7vw,90px) 0 clamp(80px,12vw,150px)}
+  .hero .blob-1{width:min(58vw,720px);height:min(58vw,720px);
+    right:-16vw;top:-14vw}
+  .hero .blob-2{width:min(40vw,460px);height:min(40vw,460px);
+    left:-14vw;bottom:-12vw}
+  .hero-inner{position:relative;z-index:2;max-width:21ch}
+  .chips{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:34px}
+  .chip{
+    display:inline-flex;align-items:center;gap:9px;font-size:.8rem;
+    font-weight:600;padding:9px 17px 9px 14px;border-radius:999px;
+    background:rgba(255,255,255,.7);border:1px solid var(--line);
+    color:var(--ink);backdrop-filter:blur(2px);
+  }
+  .hero h1{max-width:18ch;margin-bottom:30px}
+  .hero h1 .mk{
+    color:var(--coral-d);font-style:italic;font-weight:500;
+    position:relative;white-space:nowrap;
+  }
+  .hero h1 .mk::after{
+    content:"";position:absolute;left:-.06em;right:-.06em;bottom:.04em;
+    height:.42em;background:var(--shape-coral-soft);border-radius:.3em;
+    z-index:-1;
+  }
+  .hero .lede{max-width:30ch;font-size:clamp(1.22rem,2.1vw,1.55rem);color:var(--ink);
+    font-family:'Fraunces',serif;font-weight:400;line-height:1.5}
+  .cta{display:flex;gap:24px;align-items:center;flex-wrap:wrap;margin-top:40px}
+  .trust{margin-top:28px;font-size:.96rem;color:var(--soft);max-width:44ch}
+
+  /* ---- Section: Why (manifesto pull) ---- */
+  .manifesto{background:var(--bg-deep)}
+  .manifesto .blob-a{width:min(48vw,560px);height:min(48vw,560px);
+    left:-16vw;top:-10vw}
+  .manifesto .blob-b{width:min(34vw,400px);height:min(34vw,400px);
+    right:-12vw;bottom:-14vw}
+  .manifesto .wrap-narrow{z-index:2}
+  .manifesto .eyebrow{margin-bottom:30px}
+  .pull{
+    font-family:'Fraunces',serif;font-weight:500;
+    font-size:clamp(2rem,4.6vw,3.7rem);line-height:1.14;
+    color:var(--ink);max-width:18ch;letter-spacing:-.012em;
+  }
+  .pull .accent{color:var(--coral-d);font-style:italic}
+  .manifesto .body-after{
+    margin-top:38px;font-size:clamp(1.1rem,1.7vw,1.3rem);
+    max-width:50ch;line-height:1.66;
+  }
+
+  /* ---- How it works: numbered narrative beats ---- */
+  .how .blob-a{width:min(40vw,500px);height:min(40vw,500px);
+    right:-15vw;top:8%}
+  .sect-head{max-width:46ch;margin-bottom:clamp(48px,7vw,84px);position:relative;z-index:2}
+  .sect-head .eyebrow{margin-bottom:22px}
+  .sect-head h2{max-width:16ch}
+  .beats{display:flex;flex-direction:column;gap:0;position:relative;z-index:2}
+  .beat{
+    display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1.6fr);
+    gap:clamp(28px,6vw,80px);align-items:start;
+    padding:clamp(40px,5.5vw,64px) 0;border-top:1px solid var(--line);
+  }
+  .beat:first-child{border-top:0;padding-top:0}
+  .beat-n{
+    font-family:'Fraunces',serif;font-weight:500;font-style:italic;
+    font-size:clamp(3.4rem,8vw,6rem);line-height:.9;color:var(--coral-d);
+    display:flex;align-items:flex-start;gap:18px;
+  }
+  .beat-n .ico{margin-top:.5rem}
+  .beat-c h3{margin-bottom:14px;font-size:clamp(1.5rem,2.8vw,2.1rem)}
+  .beat-c p{font-size:1.12rem;max-width:46ch}
+  .loopline{
+    position:relative;z-index:2;margin-top:clamp(48px,6vw,72px);
+    font-family:'Fraunces',serif;font-style:italic;font-weight:400;
+    font-size:clamp(1.3rem,2.6vw,1.95rem);line-height:1.42;
+    color:var(--ink);max-width:30ch;padding-left:28px;
+    border-left:3px solid var(--coral);
+  }
+
+  /* ---- Money: emotional centrepiece ---- */
+  .money{background:var(--tint-coral)}
+  .money .blob-a{width:min(56vw,680px);height:min(56vw,680px);
+    left:-20vw;bottom:-22vw}
+  .money .blob-b{width:min(30vw,360px);height:min(30vw,360px);
+    right:-10vw;top:-8vw}
+  .money .wrap{z-index:2}
+  .money .sect-head{margin-bottom:clamp(40px,6vw,64px)}
+  .bigmoment{
+    display:flex;flex-wrap:wrap;align-items:center;
+    gap:clamp(28px,5vw,60px);margin-bottom:14px;
+  }
+  .bignum{
+    font-family:'Fraunces',serif;font-weight:600;
+    font-size:clamp(5rem,18vw,12rem);line-height:.84;color:var(--coral-d);
+    letter-spacing:-.03em;display:flex;align-items:flex-start;gap:clamp(14px,3vw,30px);
+  }
+  .bignum .heart{margin-top:.12em}
+  .bigmoment .saying{
+    font-family:'Fraunces',serif;font-style:italic;font-weight:400;
+    font-size:clamp(1.4rem,2.8vw,2.1rem);line-height:1.34;
+    color:var(--ink);max-width:16ch;
+  }
+  .mlines{
+    margin-top:clamp(36px,5vw,52px);max-width:760px;
+    background:rgba(255,255,255,.66);border:1px solid var(--line);
+    border-radius:26px;padding:8px clamp(22px,4vw,40px);
+    backdrop-filter:blur(2px);
+  }
+  .mlines .r{
+    display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;
+    padding:22px 0;border-bottom:1px solid var(--line);
+  }
+  .mlines .r:last-child{border-bottom:0}
+  .mlines .k{font-family:'Fraunces',serif;font-weight:600;color:var(--ink);
+    font-size:1.14rem}
+  .mlines .v{color:var(--body);font-size:1.04rem}
+  .money .body-after{margin-top:34px;font-size:1.14rem;max-width:54ch;line-height:1.64}
+  .giveflow{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,3vw,28px);
+    margin-top:clamp(40px,6vw,60px);
+  }
+  .gf{
+    background:rgba(255,255,255,.7);border:1px solid var(--line);
+    border-radius:22px;padding:30px 28px;
+  }
+  .gf-k{
+    display:block;font-family:'Fraunces',serif;font-weight:600;
+    color:var(--ink);font-size:1.12rem;margin-bottom:8px;
+  }
+  .gf-v{display:block;color:var(--body);font-size:1rem;line-height:1.55}
+
+  /* ---- Causes band ---- */
+  .causes-sec .blob-a{width:min(36vw,440px);height:min(36vw,440px);
+    right:-13vw;bottom:-16vw}
+  .causes{display:flex;flex-wrap:wrap;gap:16px;position:relative;z-index:2;
+    margin-top:8px}
+  .cause{
+    display:inline-flex;align-items:center;gap:13px;
+    font-family:'Inter',sans-serif;font-weight:600;color:var(--ink);
+    font-size:1.04rem;padding:16px 26px 16px 22px;border-radius:999px;
+    background:var(--surface);border:1px solid var(--line);
+  }
+  .note{position:relative;z-index:2;margin-top:30px;font-size:.95rem;
+    color:var(--soft);max-width:56ch}
+
+  /* ---- What makes this different ---- */
+  .diff{background:var(--bg-deep)}
+  .diff .blob-a{width:min(46vw,560px);height:min(46vw,560px);
+    left:-18vw;top:-8vw}
+  .difflist{display:flex;flex-direction:column;gap:0;position:relative;z-index:2}
+  .row2{
+    display:grid;grid-template-columns:auto minmax(0,1fr);
+    gap:clamp(22px,4vw,44px);align-items:start;
+    padding:clamp(34px,4.5vw,52px) 0;border-top:1px solid var(--line);
+  }
+  .row2:first-child{border-top:0;padding-top:0}
+  .row2 .glyph{
+    width:64px;height:64px;border-radius:20px;flex-shrink:0;
+    display:grid;place-items:center;background:var(--surface);
+    border:1px solid var(--line);
+  }
+  .row2 h3{margin-bottom:10px}
+  .row2 p{font-size:1.1rem;max-width:54ch}
+
+  /* ---- Who this is for ---- */
+  .whofor{background:var(--tint-mint)}
+  .whofor .blob-a{width:min(50vw,600px);height:min(50vw,600px);
+    right:-20vw;bottom:-20vw}
+  .whofor .blob-b{width:min(28vw,340px);height:min(28vw,340px);
+    left:-9vw;top:-6vw}
+  .whofor .wrap{z-index:2}
+  .whofor .sect-head .lede{max-width:48ch;margin-top:24px;color:var(--body)}
+  .standardrow{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3.5vw,34px);
+  }
+  .std{
+    background:rgba(255,255,255,.74);border:1px solid var(--line);
+    border-radius:24px;padding:clamp(28px,3.5vw,40px);
+  }
+  .std-k{
+    display:block;font-family:'Fraunces',serif;font-weight:600;
+    color:var(--ink);font-size:1.22rem;margin-bottom:14px;
+  }
+  .std p{font-size:1.02rem;color:var(--body)}
+
+  /* ---- You stay in control ---- */
+  .control .blob-a{width:min(42vw,520px);height:min(42vw,520px);
+    left:-17vw;bottom:-18vw}
+  .control-list{
+    display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,3vw,30px);
+    position:relative;z-index:2;
+  }
+  .ctl{
+    display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start;
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:22px;padding:clamp(26px,3vw,36px);
+  }
+  .ctl .glyph{
+    width:52px;height:52px;border-radius:16px;flex-shrink:0;
+    display:grid;place-items:center;background:var(--tint-coral);
+  }
+  .ctl p{font-size:1.04rem;max-width:42ch}
+  .ctl strong{color:var(--ink);font-family:'Fraunces',serif;font-weight:600;
+    display:block;margin-bottom:4px}
+
+  /* ---- Founding member ---- */
+  .founding-sec{background:var(--bg-deep)}
+  .founding-sec .blob-a{width:min(46vw,560px);height:min(46vw,560px);
+    right:-16vw;top:-10vw}
+  .founding-sec .blob-b{width:min(32vw,380px);height:min(32vw,380px);
+    left:-12vw;bottom:-14vw}
+  .founding{
+    position:relative;z-index:2;max-width:760px;margin:0 auto;text-align:center;
+  }
+  .founding .eyebrow{margin-bottom:24px}
+  .founding h2{max-width:14ch;margin:0 auto 22px}
+  .founding p{margin:0 auto 36px;max-width:44ch;font-size:1.18rem;
+    font-family:'Fraunces',serif;font-weight:400;line-height:1.55;color:var(--ink)}
+
+  /* ---- Founder note (the one dark moment) ---- */
+  .founder-sec{background:var(--espresso);color:rgba(255,255,255,.86)}
+  .founder-sec .blob-a{width:min(40vw,480px);height:min(40vw,480px);
+    right:-15vw;bottom:-18vw;opacity:.7}
+  .founder-sec .blob-b{width:min(26vw,320px);height:min(26vw,320px);
+    left:-10vw;top:-8vw;opacity:.6}
+  .founder{position:relative;z-index:2;max-width:900px;margin:0 auto}
+  .founder .eyebrow{color:#9cc3b1;margin-bottom:32px}
+  .founder .eyebrow::before{background:#9cc3b1}
+  .founder blockquote{
+    font-family:'Fraunces',serif;font-weight:400;font-style:normal;
+    font-size:clamp(1.6rem,3.6vw,2.8rem);line-height:1.32;
+    color:#f3f2ec;max-width:24ch;letter-spacing:-.01em;
+  }
+  .founder blockquote .hl{color:#8fbfa8;font-style:italic}
+  .sig-row{display:flex;align-items:center;gap:20px;margin-top:44px}
+  .ava{
+    width:62px;height:62px;border-radius:50%;flex-shrink:0;
+    background:var(--coral-d);display:grid;place-items:center;
+    font-family:'Fraunces',serif;font-weight:600;font-size:1.3rem;color:#fff;
+  }
+  .sig-name{font-family:'Fraunces',serif;font-weight:600;color:#fff;
+    font-size:1.12rem}
+  .sig-role{font-size:.95rem;color:rgba(255,255,255,.6)}
+
+  /* ---- FAQ ---- */
+  .faq .blob-a{width:min(40vw,500px);height:min(40vw,500px);
+    left:-16vw;top:6%}
+  .faq .wrap-narrow{z-index:2}
+  .faq .sect-head{margin-bottom:clamp(36px,5vw,56px)}
+  details{
+    border-top:1px solid var(--line);padding:8px 0;
+  }
+  details:last-of-type{border-bottom:1px solid var(--line)}
+  summary{
+    list-style:none;cursor:pointer;display:flex;justify-content:space-between;
+    gap:28px;align-items:center;font-family:'Fraunces',serif;color:var(--ink);
+    font-weight:600;font-size:clamp(1.15rem,2.1vw,1.5rem);line-height:1.25;
+    padding:28px 0;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary .i{
+    font-family:'Inter',sans-serif;color:var(--coral-d);font-size:1.9rem;
+    line-height:1;flex-shrink:0;transition:transform .22s ease;font-weight:400;
+  }
+  details[open] summary .i{transform:rotate(45deg)}
+  details p{padding:0 0 30px;font-size:1.08rem;max-width:60ch;color:var(--body)}
+
+  /* ---- Closing CTA ---- */
+  .closing{background:var(--tint-coral)}
+  .closing .blob-a{width:min(60vw,720px);height:min(60vw,720px);
+    right:-22vw;bottom:-26vw}
+  .closing .blob-b{width:min(36vw,440px);height:min(36vw,440px);
+    left:-14vw;top:-12vw}
+  .closecard{position:relative;z-index:2;max-width:780px;margin:0 auto;
+    text-align:center}
+  .closecard .eyebrow{margin-bottom:26px}
+  .closecard h2{
+    font-size:clamp(2.4rem,5.6vw,4.6rem);max-width:14ch;margin:0 auto 26px;
+  }
+  .closecard p{margin:0 auto 38px;max-width:46ch;font-size:1.2rem;
+    font-family:'Fraunces',serif;font-weight:400;line-height:1.55;color:var(--ink)}
+  .closing-sub{margin:28px auto 0;font-size:.96rem;color:var(--soft);
+    font-family:'Inter',sans-serif}
+
+  /* ---- Footer ---- */
+  footer{background:var(--bg-deep);color:var(--body);
+    padding:clamp(60px,8vw,84px) 0 48px;border-top:1px solid var(--line)}
+  .fcols{display:grid;grid-template-columns:2.2fr 1fr 1fr;gap:clamp(32px,5vw,56px)}
+  .fbrand p{margin-top:18px;max-width:34ch;font-size:.96rem;color:var(--soft)}
+  .fcols strong{
+    display:block;color:var(--ink);font-size:.76rem;letter-spacing:.16em;
+    text-transform:uppercase;margin-bottom:18px;font-family:'Inter',sans-serif;
+    font-weight:700;
+  }
+  footer a{color:var(--body);text-decoration:none;display:block;margin:11px 0;
+    font-size:.98rem;transition:color .15s}
+  footer a:hover{color:var(--coral-d)}
+  .fnote{
+    margin-top:clamp(40px,6vw,56px);padding-top:26px;
+    border-top:1px solid var(--line);font-size:.88rem;color:var(--soft);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;
+  }
+
+  /* line-illustration helpers */
+  .ln{fill:none;stroke:var(--ink);stroke-width:2.4;
+    stroke-linecap:round;stroke-linejoin:round}
+  .ln-c{fill:none;stroke:var(--coral-d);stroke-width:2.4;
+    stroke-linecap:round;stroke-linejoin:round}
+  .ln-m{fill:none;stroke:var(--mint-d);stroke-width:2.4;
+    stroke-linecap:round;stroke-linejoin:round}
+
+  /* ---- Scroll reveal (motion-safe, never the only thing showing content) ---- */
+  .reveal{opacity:1;transform:none}
+  @media (prefers-reduced-motion: no-preference){
+    @supports (animation-timeline: view()){
+      .reveal{
+        opacity:0;transform:translateY(26px);
+        animation:rise both;
+        animation-timeline:view();
+        animation-range:entry 0% cover 26%;
+      }
+      @keyframes rise{to{opacity:1;transform:none}}
+    }
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width:920px){
+    .nlinks a:not(.btn){display:none}
+    .beat{grid-template-columns:1fr;gap:14px}
+    .beat-n{font-size:clamp(3rem,14vw,4.4rem)}
+    .giveflow{grid-template-columns:1fr}
+    .standardrow{grid-template-columns:1fr}
+    .control-list{grid-template-columns:1fr}
+    .fcols{grid-template-columns:1fr;gap:36px}
+    .row2{grid-template-columns:1fr;gap:16px}
+  }
+  @media (max-width:520px){
+    .bigmoment{flex-direction:column;align-items:flex-start;gap:20px}
+    .cta{flex-direction:column;align-items:flex-start;gap:18px}
+    .btn{width:100%;justify-content:center}
+    .sig-row{flex-wrap:wrap}
+  }
+</style>
+</head>
+<body>
+<div class="topline"></div>
+
+<div class="wrap">
+  <nav>
+    <a href="#" class="logo" aria-label="TheBigIntro home">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M11 7a9 9 0 0 0 0 18" class="ln-c" stroke-width="2.6"/>
+        <path d="M21 7a9 9 0 0 1 0 18" class="ln-c" stroke-width="2.6"/>
+        <path d="M16 13.5c1.4-2 4.6-1.2 4.6 1.3 0 2.2-2.8 3.7-4.6 5.2-1.8-1.5-4.6-3-4.6-5.2 0-2.5 3.2-3.3 4.6-1.3z" fill="#c9603a"/>
+      </svg>
+      The<span class="big">Big</span>Intro
+    </a>
+    <div class="nlinks">
+      <a href="#how">How it works</a>
+      <a href="#who-for">For executives</a>
+      <a href="/vendors">For vendors</a>
+      <a class="btn" href="#apply">Apply</a>
+    </div>
+  </nav>
+</div>
+
+<!-- ===================== HERO ===================== -->
+<header class="hero">
+  <div class="blob blob-1" aria-hidden="true">
+    <svg viewBox="0 0 600 600"><path fill="var(--shape-coral)" d="M455 95c64 52 102 138 88 219-14 80-79 156-160 188-82 33-180 22-238-32-58-53-77-149-52-235 25-87 95-163 178-182 84-19 119-10 184 42z"/></svg>
+  </div>
+  <div class="blob blob-2" aria-hidden="true">
+    <svg viewBox="0 0 460 460"><path fill="var(--shape-mint-soft)" d="M360 92c50 47 70 132 50 200-21 69-82 118-152 130-71 12-150-12-186-72-36-61-28-158 22-214 50-57 138-79 206-58 30 9 38 13 60 14z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="hero-inner">
+      <div class="chips">
+        <span class="chip">
+          <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" class="ln-c" stroke-width="2.4"/><path d="M8.5 12.5l2.4 2.4 4.6-5.4" class="ln-c" stroke-width="2.4"/></svg>
+          Invite only
+        </span>
+        <span class="chip">
+          <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" class="ln-m" stroke-width="2.4"/><path d="M12 8v5M12 16h.01" class="ln-m" stroke-width="2.4"/></svg>
+          Australia first
+        </span>
+        <span class="chip">
+          <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19c-6-4-9-7.5-9-11a4.5 4.5 0 0 1 9-1 4.5 4.5 0 0 1 9 1c0 3.5-3 7-9 11z" class="ln-c" stroke-width="2.4"/></svg>
+          Funds charity
+        </span>
+      </div>
+      <h1>Meetings that fund <span class="mk">what matters</span>.</h1>
+      <p class="lede">You take a handful of conversations worth your time. Each one sends $1,000 to a charity you choose.</p>
+      <div class="cta">
+        <a class="btn" href="#apply">Apply as a founding executive</a>
+        <a class="inl" href="/vendors">Are you a vendor? <span class="arr">&rarr;</span></a>
+      </div>
+      <p class="trust">No cold pitches. No hard sells. Every meeting funds a cause that matters to you.</p>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== WHY THIS EXISTS ===================== -->
+<section class="manifesto" id="why">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 560 560"><path fill="var(--shape-coral-soft)" d="M420 78c62 50 100 140 84 222-16 81-86 152-168 178-82 25-176 4-228-56-52-61-62-163-26-244 36-82 118-142 200-150 56-6 76 0 138 50z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 400 400"><path fill="var(--shape-mint-soft)" d="M312 76c44 42 62 118 44 178-18 61-72 104-134 114-62 11-132-12-162-66-30-55-22-142 24-188 46-47 122-64 184-44 26 9 32 12 44 6z"/></svg>
+  </div>
+  <div class="wrap-narrow reveal">
+    <span class="eyebrow">Why this exists</span>
+    <p class="pull">Your calendar is full of <span class="accent">pitches that go nowhere.</span></p>
+    <p class="body-after">What if the few conversations worth having also did some good? That is the whole idea. Fewer, more relevant meetings, each one sending $1,000 to a cause you care about.</p>
+  </div>
+</section>
+
+<!-- ===================== HOW IT WORKS ===================== -->
+<section class="how" id="how">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 500 500"><path fill="var(--shape-mint-soft)" d="M380 84c54 46 78 130 60 200-18 70-78 124-150 142-72 18-158-4-200-62-42-58-40-152 6-208 46-57 132-86 204-66 38 11 50 16 80-6z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="sect-head reveal">
+      <span class="eyebrow">How it works</span>
+      <h2>Three steps, for executives.</h2>
+    </div>
+    <div class="beats">
+      <div class="beat reveal">
+        <div class="beat-n">
+          01
+          <span class="ico" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 64 64" fill="none"><path d="M14 14h26a8 8 0 0 1 8 8v12a8 8 0 0 1-8 8H26l-11 9V22a8 8 0 0 1 8-8z" class="ln" stroke-width="2.8"/><path d="M24 26h16M24 32h10" class="ln" stroke-width="2.8"/><circle cx="44" cy="44" r="3" fill="#1f5d45"/></svg>
+          </span>
+        </div>
+        <div class="beat-c">
+          <h3>You decide what&apos;s relevant</h3>
+          <p>Tell us the priorities you want to talk about. Nothing outside that ever reaches you.</p>
+        </div>
+      </div>
+      <div class="beat reveal">
+        <div class="beat-n">
+          02
+          <span class="ico" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 64 64" fill="none"><path d="M40 12H18a4 4 0 0 0-4 4v32a4 4 0 0 0 4 4h28a4 4 0 0 0 4-4V22z" class="ln" stroke-width="2.8"/><path d="M40 12v10h10" class="ln" stroke-width="2.8"/><path d="M23 38l5 5 10-11" class="ln-c" stroke-width="3"/></svg>
+          </span>
+        </div>
+        <div class="beat-c">
+          <h3>You get qualified requests</h3>
+          <p>A vendor must state the specific initiative or problem before they can ask. You see the reason, and you decide.</p>
+        </div>
+      </div>
+      <div class="beat reveal">
+        <div class="beat-n">
+          03
+          <span class="ico" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 64 64" fill="none"><path d="M13 16h24a6 6 0 0 1 6 6v12a6 6 0 0 1-6 6H22l-9 8V22a6 6 0 0 1 0-6z" class="ln" stroke-width="2.8"/><path d="M35 30h12a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5l5 6-9-6h-9a5 5 0 0 1-5-5" class="ln-m" stroke-width="2.8"/></svg>
+          </span>
+        </div>
+        <div class="beat-c">
+          <h3>One focused conversation</h3>
+          <p>You have one focused conversation, and $1,000 goes to the charity you choose.</p>
+        </div>
+      </div>
+    </div>
+    <p class="loopline reveal">A vendor states a specific need, you approve only what fits, you have one short conversation, and $1,000 goes to your chosen charity.</p>
+  </div>
+</section>
+
+<!-- ===================== WHERE THE MONEY GOES ===================== -->
+<section class="money" id="money">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 680 680"><path fill="var(--shape-coral)" d="M510 96c74 60 116 162 98 256-18 92-96 174-190 204-94 30-204 8-264-62-60-70-72-186-30-280 42-94 138-162 232-170 64-6 80 0 154 52z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 360 360"><path fill="var(--shape-mint-soft)" d="M280 70c40 38 56 106 40 160-16 55-64 94-120 102-56 9-118-12-146-60-28-49-20-128 22-170 42-43 110-58 166-40 24 8 30 11 38 8z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="sect-head reveal">
+      <span class="eyebrow">Where the money goes</span>
+      <h2>Full transparency.</h2>
+    </div>
+    <div class="reveal">
+      <div class="bigmoment">
+        <div class="bignum">
+          $1,000
+          <span class="heart" aria-hidden="true">
+            <svg width="78" height="78" viewBox="0 0 64 64" fill="none"><path d="M32 53C19 44 12 35 12 25a10 10 0 0 1 20-5 10 10 0 0 1 20 5c0 10-7 19-20 28z" class="ln-c" stroke-width="3"/><path d="M32 23v18M27 28a5 5 0 0 1 5-4 4 4 0 0 1 0 8 4 4 0 0 0 0 8 5 5 0 0 1-5-4" class="ln-c" stroke-width="2.6"/></svg>
+          </span>
+        </div>
+        <p class="saying">goes to the cause you choose, every single meeting.</p>
+      </div>
+      <div class="mlines">
+        <div class="r">
+          <span class="k">To your chosen charity, per meeting</span>
+          <span class="v">the full meeting gift</span>
+        </div>
+        <div class="r">
+          <span class="k">Platform admin fee</span>
+          <span class="v">paid by the vendor, never you</span>
+        </div>
+        <div class="r">
+          <span class="k">What it costs you</span>
+          <span class="v">nothing, ever</span>
+        </div>
+      </div>
+      <p class="body-after">Every dollar of the gift reaches the charity. The platform covers its costs through a clearly named admin fee paid by the vendor, never taken from the donation.</p>
+    </div>
+    <div class="giveflow reveal">
+      <div class="gf">
+        <span class="gf-k">After the meeting</span>
+        <span class="gf-v">the donation is sent to your chosen registered charity</span>
+      </div>
+      <div class="gf">
+        <span class="gf-k">You get confirmation</span>
+        <span class="gf-v">in writing, every time</span>
+      </div>
+      <div class="gf">
+        <span class="gf-k">The admin fee</span>
+        <span class="gf-v">is the vendor&apos;s, billed separately</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CAUSES BAND ===================== -->
+<section class="causes-sec" id="causes">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 440 440"><path fill="var(--shape-mint-soft)" d="M340 84c48 42 68 116 50 178-18 63-72 108-134 118-62 11-132-14-162-68-30-55-22-140 22-184 44-45 116-62 178-42 28 9 34 12 46-2z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="sect-head reveal">
+      <span class="eyebrow mint">Causes you could choose</span>
+      <h2>Real causes, your call.</h2>
+    </div>
+    <div class="causes reveal">
+      <span class="cause">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4h4v6h6v4h-6v6h-4v-6H4v-4h6z" class="ln-c" stroke-width="2.2"/></svg>
+        Health and medical research
+      </span>
+      <span class="cause">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4-9 4z" class="ln-m" stroke-width="2.2"/><path d="M7 9.5V15c0 1.5 5 3 5 3s5-1.5 5-3V9.5" class="ln-m" stroke-width="2.2"/></svg>
+        Education and young people
+      </span>
+      <span class="cause">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21c0-7 3-12 9-15-1 8-4 12-9 15z" class="ln-m" stroke-width="2.2"/><path d="M12 21c0-5-2-9-7-11 1 6 3 9 7 11z" class="ln-m" stroke-width="2.2"/></svg>
+        Environment and climate
+      </span>
+      <span class="cause">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20c-5-3.5-8-6.5-8-10a4 4 0 0 1 8-1 4 4 0 0 1 8 1c0 3.5-3 6.5-8 10z" class="ln-c" stroke-width="2.2"/></svg>
+        Community and crisis relief
+      </span>
+      <span class="cause">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="9" r="2.2" class="ln-c" stroke-width="2"/><circle cx="12" cy="6.5" r="2.2" class="ln-c" stroke-width="2"/><circle cx="17" cy="9" r="2.2" class="ln-c" stroke-width="2"/><path d="M8 17c0-3 2-5 4-5s4 2 4 5-2 4-4 4-4-1-4-4z" class="ln-c" stroke-width="2"/></svg>
+        Animal welfare
+      </span>
+    </div>
+    <p class="note">Every donation goes to a registered Australian charity you name. These are the kinds of causes it can support.</p>
+  </div>
+</section>
+
+<!-- ===================== WHAT MAKES THIS DIFFERENT ===================== -->
+<section class="diff" id="diff">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 560 560"><path fill="var(--shape-coral-soft)" d="M420 80c62 52 100 142 82 224-18 82-90 152-172 176-82 24-174 0-224-62-50-62-58-162-20-242 38-81 122-138 204-146 56-4 78 2 130 50z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="sect-head reveal">
+      <span class="eyebrow">What makes this different</span>
+      <h2>Built around relevance and giving.</h2>
+    </div>
+    <div class="difflist reveal">
+      <div class="row2">
+        <span class="glyph" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 48 48" fill="none"><path d="M24 39C14 32 9 26 9 19a7 7 0 0 1 15-3 7 7 0 0 1 15 3c0 7-5 13-15 20z" class="ln" stroke-width="2.4"/><path d="M19 23l4 4 7-8" class="ln-c" stroke-width="2.8"/></svg>
+        </span>
+        <div>
+          <h3>Qualified by requirement</h3>
+          <p>Access is earned, not bought. A vendor states the specific reason a conversation is worth your time, or it never reaches you.</p>
+        </div>
+      </div>
+      <div class="row2">
+        <span class="glyph" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 48 48" fill="none"><path d="M24 40C14 33 8 26 8 18a8 8 0 0 1 16-3 8 8 0 0 1 16 3c0 8-6 15-16 22z" class="ln-c" stroke-width="2.4"/><path d="M24 16v12M19 21h10" class="ln-c" stroke-width="2.4"/></svg>
+        </span>
+        <div>
+          <h3>A deliberately big gift</h3>
+          <p>$1,000 a meeting is set high on purpose, so the giving means something, not a token gesture.</p>
+        </div>
+      </div>
+      <div class="row2">
+        <span class="glyph" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="16" class="ln" stroke-width="2.4"/><circle cx="24" cy="24" r="8" class="ln" stroke-width="2.4"/><circle cx="24" cy="24" r="2.6" fill="#1f5d45"/></svg>
+        </span>
+        <div>
+          <h3>No fine print</h3>
+          <p>The full money flow is on this page. No vague claims, nothing buried in terms.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== WHO THIS IS FOR ===================== -->
+<section class="whofor" id="who-for">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 600 600"><path fill="var(--shape-mint)" d="M450 92c66 56 104 152 86 244-18 92-98 168-192 196-94 28-200 4-258-66-58-70-66-180-24-272 42-93 138-160 232-168 64-6 90 10 156 66z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 340 340"><path fill="var(--shape-coral-soft)" d="M264 66c38 36 52 100 36 152-16 53-62 90-114 98-52 9-110-12-138-58-28-47-20-122 20-162 40-41 104-56 156-38 22 7 28 10 40 6z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="sect-head reveal">
+      <span class="eyebrow mint">Who this is for</span>
+      <h2>Built for senior leaders.</h2>
+      <p class="lede">Invite only, and curated on purpose. We are starting with senior leaders in Australia whose time is genuinely in demand, and who would value a few relevant conversations that also fund a cause they choose.</p>
+    </div>
+    <div class="standardrow reveal">
+      <div class="std">
+        <span class="std-k">The executive</span>
+        <p>Director, executive or equivalent, where your attention is the scarce thing. You set the topics, and nothing outside them reaches you.</p>
+      </div>
+      <div class="std">
+        <span class="std-k">The bar for vendors</span>
+        <p>A specific initiative, genuine intent, no hard sell. Held to that standard before they can ask. <a class="inl" href="/vendors">The vendor page &rarr;</a></p>
+      </div>
+      <div class="std">
+        <span class="std-k">Where we start</span>
+        <p>Australia first, with a small founding cohort, so the first members shape how it works.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== YOU STAY IN CONTROL ===================== -->
+<section class="control" id="control">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 520 520"><path fill="var(--shape-coral-soft)" d="M392 78c58 48 92 132 76 208-16 76-82 142-160 166-78 24-166 2-214-56-48-58-56-152-20-228 36-77 116-132 194-140 52-4 66 2 124 50z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="sect-head reveal">
+      <span class="eyebrow">What to expect</span>
+      <h2>You stay in control, always.</h2>
+    </div>
+    <div class="control-list reveal">
+      <div class="ctl">
+        <span class="glyph" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 48 48" fill="none"><path d="M24 39C14 32 9 26 9 19a7 7 0 0 1 15-3 7 7 0 0 1 15 3c0 7-5 13-15 20z" class="ln" stroke-width="2.4"/><path d="M19 23l4 4 7-8" class="ln-c" stroke-width="2.8"/></svg>
+        </span>
+        <p><strong>Every request states its reason.</strong> You see the specific initiative before anything happens.</p>
+      </div>
+      <div class="ctl">
+        <span class="glyph" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 48 48" fill="none"><path d="M30 8H14a3 3 0 0 0-3 3v26a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V15z" class="ln" stroke-width="2.4"/><path d="M30 8v7h7" class="ln" stroke-width="2.4"/><path d="M17 28l4 4 9-10" class="ln-c" stroke-width="2.8"/></svg>
+        </span>
+        <p><strong>You approve or decline each one.</strong> Nothing is automatic, and a no needs no explanation.</p>
+      </div>
+      <div class="ctl">
+        <span class="glyph" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 48 48" fill="none"><path d="M10 12h18a5 5 0 0 1 5 5v9a5 5 0 0 1-5 5H17l-7 6V17a5 5 0 0 1 0-5z" class="ln" stroke-width="2.4"/><path d="M27 23h9a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4l4 5-7-5h-6a4 4 0 0 1-4-4" class="ln-m" stroke-width="2.4"/></svg>
+        </span>
+        <p><strong>One short conversation, on your terms.</strong> No hard sell, and no obligation to meet again.</p>
+      </div>
+      <div class="ctl">
+        <span class="glyph" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="16" class="ln" stroke-width="2.4"/><circle cx="24" cy="24" r="8" class="ln" stroke-width="2.4"/><circle cx="24" cy="24" r="2.6" fill="#1f5d45"/></svg>
+        </span>
+        <p><strong>Your details are never sold or shared.</strong> You can step away at any time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOUNDING MEMBER ===================== -->
+<section class="founding-sec" id="apply">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 560 560"><path fill="var(--shape-mint)" d="M420 80c62 52 100 142 82 226-18 84-92 156-176 180-84 24-176-2-226-66-50-64-56-166-18-246 38-81 124-138 208-144 56-4 68 4 130 50z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 380 380"><path fill="var(--shape-coral-soft)" d="M296 74c42 40 58 112 40 170-18 59-70 100-128 108-58 9-122-14-152-66-30-52-22-136 22-178 44-43 114-58 172-38 24 8 30 12 46-6z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="founding reveal">
+      <span class="eyebrow mint">The first cohort</span>
+      <h2>Join as a founding member.</h2>
+      <p>We are starting small on purpose. Founding members help shape how this works, for the executives who join and the causes they support.</p>
+      <a class="btn" href="#apply">Request your place</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FROM THE FOUNDER (the one dark moment) ===================== -->
+<section class="founder-sec">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 480 480"><path fill="var(--shape-coral-soft)" d="M360 76c54 46 84 126 68 196-16 70-78 130-152 152-74 22-156 0-202-56-46-56-52-146-16-220 36-75 116-126 190-132 50-4 58 14 112 60z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 320 320"><path fill="var(--shape-mint-soft)" d="M248 64c36 34 50 96 34 146-16 50-60 86-110 92-50 6-104-14-130-58-26-44-18-114 20-150 38-37 98-50 148-32 20 7 26 10 38 2z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="founder reveal">
+      <span class="eyebrow light">From the founder</span>
+      <blockquote>I kept seeing senior people buried in irrelevant outreach, and vendors with something genuine to say unable to get through honestly. TheBigIntro fixes both at once, and turns every meeting into <span class="hl">$1,000 for a cause the executive chooses.</span></blockquote>
+      <div class="sig-row">
+        <div class="ava" aria-hidden="true">IH</div>
+        <div>
+          <div class="sig-name">Isobel Hardwick</div>
+          <div class="sig-role">Founder</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section class="faq" id="faq">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 500 500"><path fill="var(--shape-coral-soft)" d="M380 82c54 46 78 128 60 198-18 70-78 124-150 142-72 18-156-4-198-62-42-58-40-152 6-208 46-57 130-86 202-66 38 11 50 16 80-4z"/></svg>
+  </div>
+  <div class="wrap-narrow">
+    <div class="sect-head reveal">
+      <span class="eyebrow">Questions</span>
+      <h2>Good things to ask.</h2>
+    </div>
+    <div class="reveal">
+      <details open>
+        <summary>Is this just a sales meeting in disguise?<span class="i" aria-hidden="true">+</span></summary>
+        <p>No. A vendor cannot reach you without stating a specific, relevant reason, and the conversation is about your priorities, not a hard sell.</p>
+      </details>
+      <details>
+        <summary>Which charities can I choose?<span class="i" aria-hidden="true">+</span></summary>
+        <p>Any registered charity you choose. You name it, and that is exactly where your $1,000 goes.</p>
+      </details>
+      <details>
+        <summary>What does it cost an executive?<span class="i" aria-hidden="true">+</span></summary>
+        <p>Nothing. It is free for executives. Vendors pay, and that is what funds the donation to your charity.</p>
+      </details>
+      <details>
+        <summary>Why founding members?<span class="i" aria-hidden="true">+</span></summary>
+        <p>We are starting deliberately small so the first members shape how this works.</p>
+      </details>
+      <details>
+        <summary>How much of my time is this?<span class="i" aria-hidden="true">+</span></summary>
+        <p>One short, focused conversation. You only take the ones you choose.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CLOSING CTA ===================== -->
+<section class="closing">
+  <div class="blob blob-a" aria-hidden="true">
+    <svg viewBox="0 0 720 720"><path fill="var(--shape-coral)" d="M540 100c78 64 122 172 102 270-20 98-102 184-202 216-100 32-216 8-280-66-64-74-76-196-32-296 44-100 146-170 246-178 68-6 88 0 166 54z"/></svg>
+  </div>
+  <div class="blob blob-b" aria-hidden="true">
+    <svg viewBox="0 0 440 440"><path fill="var(--shape-mint-soft)" d="M340 82c50 44 72 122 54 188-18 67-72 116-134 126-62 11-132-14-162-68-30-55-22-142 22-186 44-45 116-62 178-42 28 9 34 12 42-18z"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="closecard reveal">
+      <span class="eyebrow">The invitation</span>
+      <h2>Fewer meetings, real giving.</h2>
+      <p>Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives $1,000 each time.</p>
+      <a class="btn" href="#apply">Apply as a founding executive</a>
+      <p class="closing-sub">Free for executives. Invite only. One short call to start.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="wrap">
+    <div class="fcols">
+      <div class="fbrand">
+        <a href="#" class="logo" aria-label="TheBigIntro home">
+          <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path d="M11 7a9 9 0 0 0 0 18" class="ln-c" stroke-width="2.6"/>
+            <path d="M21 7a9 9 0 0 1 0 18" class="ln-c" stroke-width="2.6"/>
+            <path d="M16 13.5c1.4-2 4.6-1.2 4.6 1.3 0 2.2-2.8 3.7-4.6 5.2-1.8-1.5-4.6-3-4.6-5.2 0-2.5 3.2-3.3 4.6-1.3z" fill="#c9603a"/>
+          </svg>
+          The<span class="big">Big</span>Intro
+        </a>
+        <p>Fewer, more relevant meetings for senior leaders. Each one sends $1,000 to a charity they choose. Australia first, invite only.</p>
+      </div>
+      <div>
+        <strong>Explore</strong>
+        <a href="#how">How it works</a>
+        <a href="#who-for">For executives</a>
+        <a href="/vendors">For vendors</a>
+        <a href="/about">About</a>
+      </div>
+      <div>
+        <strong>Legal</strong>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+    <div class="fnote">
+      <span>TheBigIntro &middot; relevant senior meetings that fund real giving</span>
+      <span>Australia first &middot; invite only</span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

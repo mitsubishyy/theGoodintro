@@ -1,18 +1,17 @@
 import Link from "next/link";
 import { CALENDLY_URL } from "@/lib/config";
-import { LogoMark } from "./icons";
+import { Wordmark } from "./wordmark";
 
 export function Footer() {
   return (
     <footer>
       <div className="wrap">
         <div className="fcols">
-          <div>
-            <Link href="/" className="logo">
-              <LogoMark />
-              The<span>Big</span>Intro
+          <div className="fbrand">
+            <Link href="/" className="logo" aria-label="theBigintro home">
+              <Wordmark />
             </Link>
-            <p style={{ marginTop: 14, maxWidth: "34ch", fontSize: "0.94rem" }}>
+            <p>
               Relevant senior meetings that fund real giving. Australia first,
               invite only.
             </p>

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TheBigIntro — logo directions (Forest)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#f3f2ec; --card:#ffffff; --ink:#15211b; --body:#45504a;
+    --forest:#1f5d45; --forest-d:#184a37; --clay:#c9603a; --line:#d6dad0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:Inter,system-ui,sans-serif;background:#e7e7e3;color:var(--ink);line-height:1.6;padding:36px 18px 80px}
+  .head{max-width:1080px;margin:0 auto 30px}
+  .head h1{font-family:Fraunces,serif;font-weight:600;font-size:1.8rem;letter-spacing:-.02em}
+  .head p{color:#5a5f57;max-width:74ch;margin-top:8px;font-size:.95rem}
+  .grid{max-width:1080px;margin:0 auto;display:grid;gap:22px}
+  .opt{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .opt .tag{font-family:Inter;font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8a8f86;padding:14px 22px 0}
+  .opt .tag b{color:var(--ink)}
+  .opt .desc{padding:2px 22px 14px;font-size:.9rem;color:var(--body);max-width:70ch}
+  .nav{display:flex;align-items:center;justify-content:space-between;background:var(--bg);padding:20px 26px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .nlinks{display:flex;gap:24px;align-items:center;font-size:.9rem;color:var(--body)}
+  .nlinks .btn{background:var(--forest);color:#fff;padding:10px 20px;border-radius:999px;font-weight:600;font-size:.85rem}
+  .big{display:flex;align-items:center;gap:40px;flex-wrap:wrap;padding:34px 26px;background:var(--card)}
+  .big .scale{transform:scale(1.9);transform-origin:left center;margin:18px 60px 18px 14px}
+
+  /* shared logo type */
+  .lg{font-family:Fraunces,serif;font-weight:600;font-size:1.4rem;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:11px;letter-spacing:-.01em;white-space:nowrap}
+  .lg .f{color:var(--forest)}
+
+  /* A: serif wordmark, Big in forest, no symbol */
+  .A .lg{font-family:Fraunces,serif;font-weight:600}
+  /* B: modern grotesk wordmark, tight, Big in forest, no symbol */
+  .B .lg{font-family:Inter,sans-serif;font-weight:700;letter-spacing:-.03em;font-size:1.32rem}
+  /* C: lowercase monogram tile + serif wordmark */
+  .mono{width:34px;height:34px;border-radius:9px;background:var(--forest);color:#fff;display:grid;place-items:center;font-family:Inter,sans-serif;font-weight:700;font-size:.82rem;letter-spacing:-.02em}
+  /* D: circle serif B mark + wordmark */
+  .bmark{width:34px;height:34px;border-radius:50%;background:var(--forest);color:#fff;display:grid;place-items:center;font-family:Fraunces,serif;font-weight:600;font-size:1.12rem;padding-bottom:2px}
+  /* E: intro/connection mark (two nodes joined) + wordmark */
+  .conn{flex-shrink:0}
+  /* F: wordmark with forest underline device */
+  .F .lg{position:relative;flex-direction:column;align-items:flex-start;gap:5px}
+  .F .lg .rule{display:block;height:3px;width:62%;background:var(--forest);border-radius:2px}
+</style>
+</head>
+<body>
+  <div class="head">
+    <h1>Logo directions for TheBigIntro, in the Forest palette</h1>
+    <p>Each shown in a real nav bar (true size) and enlarged. None reuse the arcs-and-heart mark or the lowercase wordmark you rejected. All professional and senior, no sparkle or cute motifs. Pick one, or say "A wordmark but with E's mark", etc.</p>
+  </div>
+
+  <div class="grid">
+
+    <!-- A -->
+    <div class="opt A">
+      <div class="tag">Option <b>A</b> — Serif wordmark, no symbol</div>
+      <p class="desc">Pure Fraunces wordmark, "Big" in forest. Editorial, calm, the most publication-like. Favicon would be a forest "B".</p>
+      <div class="nav">
+        <a class="lg" href="#">The<span class="f">Big</span>Intro</a>
+        <div class="nlinks">How it works<span>For executives</span><span class="btn">Apply</span></div>
+      </div>
+      <div class="big"><div class="scale"><a class="lg" href="#">The<span class="f">Big</span>Intro</a></div></div>
+    </div>
+
+    <!-- B -->
+    <div class="opt B">
+      <div class="tag">Option <b>B</b> — Modern grotesk wordmark, no symbol</div>
+      <p class="desc">Tight Inter wordmark, "Big" in forest. Cleaner and more corporate/tech than A, still senior. Pairs well if we want the nav to feel contemporary.</p>
+      <div class="nav">
+        <a class="lg" href="#">The<span class="f">Big</span>Intro</a>
+        <div class="nlinks">How it works<span>For executives</span><span class="btn">Apply</span></div>
+      </div>
+      <div class="big"><div class="scale"><a class="lg" href="#">The<span class="f">Big</span>Intro</a></div></div>
+    </div>
+
+    <!-- C -->
+    <div class="opt C">
+      <div class="tag">Option <b>C</b> — Monogram tile + wordmark</div>
+      <p class="desc">A forest rounded tile reading "tbi" beside the serif wordmark. Scales perfectly to a favicon/app icon and gives a reusable brand mark without an illustration.</p>
+      <div class="nav">
+        <a class="lg" href="#"><span class="mono">tbi</span>The<span class="f">Big</span>Intro</a>
+        <div class="nlinks">How it works<span>For executives</span><span class="btn">Apply</span></div>
+      </div>
+      <div class="big"><div class="scale"><a class="lg" href="#"><span class="mono">tbi</span>The<span class="f">Big</span>Intro</a></div></div>
+    </div>
+
+    <!-- D -->
+    <div class="opt D">
+      <div class="tag">Option <b>D</b> — Serif "B" coin + wordmark</div>
+      <p class="desc">A forest circle holding a serif "B" beside the wordmark. Confident and recognisable, reads as an established institution. Strong favicon.</p>
+      <div class="nav">
+        <a class="lg" href="#"><span class="bmark">B</span>The<span class="f">Big</span>Intro</a>
+        <div class="nlinks">How it works<span>For executives</span><span class="btn">Apply</span></div>
+      </div>
+      <div class="big"><div class="scale"><a class="lg" href="#"><span class="bmark">B</span>The<span class="f">Big</span>Intro</a></div></div>
+    </div>
+
+    <!-- E -->
+    <div class="opt E">
+      <div class="tag">Option <b>E</b> — Connection mark + wordmark</div>
+      <p class="desc">A minimal "introduction" mark: two nodes joined by a line, meaning two people brought together. On-concept, not the rejected arcs-and-heart, not a sparkle. Quiet and meaningful.</p>
+      <div class="nav">
+        <a class="lg" href="#">
+          <svg class="conn" width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
+            <line x1="9" y1="15" x2="21" y2="15" stroke="#1f5d45" stroke-width="2.4" stroke-linecap="round"/>
+            <circle cx="9" cy="15" r="4.4" fill="#1f5d45"/>
+            <circle cx="21" cy="15" r="4.4" fill="none" stroke="#c9603a" stroke-width="2.4"/>
+          </svg>
+          The<span class="f">Big</span>Intro
+        </a>
+        <div class="nlinks">How it works<span>For executives</span><span class="btn">Apply</span></div>
+      </div>
+      <div class="big"><div class="scale"><a class="lg" href="#">
+        <svg class="conn" width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
+          <line x1="9" y1="15" x2="21" y2="15" stroke="#1f5d45" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="9" cy="15" r="4.4" fill="#1f5d45"/>
+          <circle cx="21" cy="15" r="4.4" fill="none" stroke="#c9603a" stroke-width="2.4"/>
+        </svg>
+        The<span class="f">Big</span>Intro
+      </a></div></div>
+    </div>
+
+    <!-- F -->
+    <div class="opt F">
+      <div class="tag">Option <b>F</b> — Wordmark with a forest underline device</div>
+      <p class="desc">Serif wordmark with a short forest rule beneath it as a simple, ownable brand device. No symbol, but more distinctive than a plain wordmark.</p>
+      <div class="nav">
+        <a class="lg" href="#">The<span class="f">Big</span>Intro<span class="rule"></span></a>
+        <div class="nlinks">How it works<span>For executives</span><span class="btn">Apply</span></div>
+      </div>
+      <div class="big"><div class="scale"><a class="lg" href="#">The<span class="f">Big</span>Intro<span class="rule"></span></a></div></div>
+    </div>
+
+  </div>
+</body>
+</html>

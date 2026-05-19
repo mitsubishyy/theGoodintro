@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TheBigIntro — feminine colour identities (B pinned as benchmark)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: Inter, system-ui, sans-serif;
+    background: #e9e9ea;
+    color: #1a1a1a;
+    line-height: 1.6;
+    padding: 40px 20px 80px;
+  }
+  .head { max-width: 1100px; margin: 0 auto 36px; }
+  .head h1 { font-family: Fraunces, Georgia, serif; font-size: 1.9rem; font-weight: 600; letter-spacing: -0.02em; }
+  .head p { color: #555; max-width: 74ch; margin-top: 8px; font-size: 0.96rem; }
+  .grid { max-width: 1100px; margin: 0 auto; display: grid; gap: 26px; }
+  .card { border-radius: 18px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 18px 40px rgba(0,0,0,.10); }
+  .swatches { display: flex; flex-wrap: wrap; gap: 0; }
+  .sw { flex: 1 1 0; min-width: 90px; padding: 14px 14px 12px; font-size: 0.72rem; font-family: "Space Grotesk", monospace; letter-spacing: 0.02em; }
+  .sw b { display: block; font-size: 0.7rem; opacity: .65; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
+  .demo { padding: 54px clamp(28px, 5vw, 64px) 58px; }
+  .eyebrow { font-family: "Space Grotesk", monospace; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; }
+  .demo h2 { font-family: Fraunces, Georgia, serif; font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1.05; letter-spacing: -0.02em; margin: 14px 0 18px; max-width: 16ch; }
+  .demo .lede { font-size: 1.08rem; max-width: 44ch; margin-bottom: 26px; }
+  .row { display: flex; flex-wrap: wrap; gap: 28px; align-items: center; }
+  .btn { display: inline-block; padding: 15px 30px; border-radius: 999px; font-weight: 600; font-size: 0.98rem; text-decoration: none; }
+  .num { font-size: clamp(2.6rem, 7vw, 4.4rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+  .num small { font-size: 0.9rem; font-weight: 500; letter-spacing: 0; display:block; opacity:.7; margin-top:6px; }
+  .label { font-family: "Space Grotesk", monospace; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; padding: 16px 24px 0; color: #888; }
+  .label span { color: #1a1a1a; }
+  .bench { outline: 3px solid #1f5d45; outline-offset: 3px; }
+  @media (max-width: 620px){ .sw{ flex: 1 1 45%; } }
+
+  /* B — Philanthropic Forest (BENCHMARK, the one you liked) */
+  .B { background: #f3f2ec; color: #18241d; }
+  .B .eyebrow { color: #1f5d45; }
+  .B h2 { color: #15211b; }
+  .B .lede { color: #45504a; }
+  .B .key { color: #1f5d45; }
+  .B .btn { background: #1f5d45; color: #f3f2ec; }
+  .B .num { color: #1f5d45; }
+  .B .num .key { color: #c9603a; }
+
+  /* G1 — Deep Wine + Blush */
+  .G1 { background: #fbeff1; color: #2c151f; }
+  .G1 .eyebrow { color: #9d2a52; }
+  .G1 h2 { color: #2c151f; }
+  .G1 .lede { color: #5e414b; }
+  .G1 .key { color: #b8315e; }
+  .G1 .btn { background: #7d1f3f; color: #fbeff1; }
+  .G1 .num { color: #b8315e; }
+
+  /* G2 — Plum & Petal (mirrors B's structure: deep dominant + neutral + tiny accent) */
+  .G2 { background: #faf1f4; color: #251019; }
+  .G2 .eyebrow { color: #6a2a4d; }
+  .G2 h2 { color: #251019; }
+  .G2 .lede { color: #5c4750; }
+  .G2 .key { color: #6a2a4d; }
+  .G2 .btn { background: #6a2a4d; color: #faf1f4; }
+  .G2 .num { color: #6a2a4d; }
+  .G2 .num .key { color: #c98a3c; }
+
+  /* G3 — Dusty Rose (muted, grown-up) */
+  .G3 { background: #f5eaec; color: #221a1d; }
+  .G3 .eyebrow { color: #8f3f53; }
+  .G3 h2 { color: #221a1d; }
+  .G3 .lede { color: #5a4a4f; }
+  .G3 .key { color: #a23a55; }
+  .G3 .btn { background: #8a3a4d; color: #f5eaec; }
+  .G3 .num { color: #a23a55; }
+
+  /* G4 — Lilac & Orchid (breaks the no-purple rule, flagged) */
+  .G4 { background: #f3f0f8; color: #1e1a26; }
+  .G4 .eyebrow { color: #6a44a8; }
+  .G4 h2 { color: #1e1a26; }
+  .G4 .lede { color: #4c4558; }
+  .G4 .key { color: #7e4bc4; }
+  .G4 .btn { background: #5f3aa0; color: #f3f0f8; }
+  .G4 .num { color: #7e4bc4; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <h1>Feminine identities for reference, with Option B pinned as the benchmark</h1>
+    <p>The forest block at the top is the one you liked, so you can compare each feminine option directly against it. Same headline, lede, button and $1,000 everywhere so you judge only the colour. All still deliberately away from QuotaClub's warm-cream + terracotta + sage. These lean refined editorial-feminine rather than bright, so they hold up to a senior executive audience.</p>
+  </div>
+
+  <div class="grid">
+
+    <div class="card bench">
+      <div class="label">Benchmark <span>B — Philanthropic Forest</span> · the one you said you love</div>
+      <div class="B demo">
+        <p class="eyebrow">A founding edition</p>
+        <h2>Meetings that fund <span class="key">what matters</span>.</h2>
+        <p class="lede">You take a handful of conversations worth your time. Each one sends $1,000 to a charity you choose.</p>
+        <div class="row">
+          <a class="btn" href="#">Apply as a founding executive</a>
+          <div class="num">$1,000<small>to your chosen charity, per meeting</small></div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw" style="background:#f3f2ec;color:#18241d;"><b>Bone</b>#f3f2ec</div>
+        <div class="sw" style="background:#ffffff;color:#18241d;border-right:1px solid #eee;"><b>Card</b>#ffffff</div>
+        <div class="sw" style="background:#1f5d45;color:#f3f2ec;"><b>Forest</b>#1f5d45</div>
+        <div class="sw" style="background:#c9603a;color:#fff;"><b>Clay (micro)</b>#c9603a</div>
+        <div class="sw" style="background:#15211b;color:#f3f2ec;"><b>Ink</b>#15211b</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Option <span>G1 — Deep Wine + Blush</span> · soft blush canvas, deep wine, raspberry key</div>
+      <div class="G1 demo">
+        <p class="eyebrow">A founding edition</p>
+        <h2>Meetings that fund <span class="key">what matters</span>.</h2>
+        <p class="lede">You take a handful of conversations worth your time. Each one sends $1,000 to a charity you choose.</p>
+        <div class="row">
+          <a class="btn" href="#">Apply as a founding executive</a>
+          <div class="num">$1,000<small>to your chosen charity, per meeting</small></div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw" style="background:#fbeff1;color:#2c151f;"><b>Blush</b>#fbeff1</div>
+        <div class="sw" style="background:#ffffff;color:#2c151f;border-right:1px solid #eee;"><b>Card</b>#ffffff</div>
+        <div class="sw" style="background:#7d1f3f;color:#fbeff1;"><b>Wine</b>#7d1f3f</div>
+        <div class="sw" style="background:#b8315e;color:#fff;"><b>Raspberry key</b>#b8315e</div>
+        <div class="sw" style="background:#2c151f;color:#fbeff1;"><b>Ink</b>#2c151f</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Option <span>G2 — Plum &amp; Petal</span> · mirrors B exactly, just plum instead of forest</div>
+      <div class="G2 demo">
+        <p class="eyebrow">A founding edition</p>
+        <h2>Meetings that fund <span class="key">what matters</span>.</h2>
+        <p class="lede">You take a handful of conversations worth your time. Each one sends $1,000 to a charity you choose.</p>
+        <div class="row">
+          <a class="btn" href="#">Apply as a founding executive</a>
+          <div class="num">$1,000<small>to your chosen charity, per meeting</small></div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw" style="background:#faf1f4;color:#251019;"><b>Petal</b>#faf1f4</div>
+        <div class="sw" style="background:#ffffff;color:#251019;border-right:1px solid #eee;"><b>Card</b>#ffffff</div>
+        <div class="sw" style="background:#6a2a4d;color:#faf1f4;"><b>Plum</b>#6a2a4d</div>
+        <div class="sw" style="background:#c98a3c;color:#1a1a1a;"><b>Gold (micro)</b>#c98a3c</div>
+        <div class="sw" style="background:#251019;color:#faf1f4;"><b>Ink</b>#251019</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Option <span>G3 — Dusty Rose</span> · muted, soft, grown-up, no green</div>
+      <div class="G3 demo">
+        <p class="eyebrow">A founding edition</p>
+        <h2>Meetings that fund <span class="key">what matters</span>.</h2>
+        <p class="lede">You take a handful of conversations worth your time. Each one sends $1,000 to a charity you choose.</p>
+        <div class="row">
+          <a class="btn" href="#">Apply as a founding executive</a>
+          <div class="num">$1,000<small>to your chosen charity, per meeting</small></div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw" style="background:#f5eaec;color:#221a1d;"><b>Rose paper</b>#f5eaec</div>
+        <div class="sw" style="background:#ffffff;color:#221a1d;border-right:1px solid #eee;"><b>Card</b>#ffffff</div>
+        <div class="sw" style="background:#8a3a4d;color:#f5eaec;"><b>Dusty rose</b>#8a3a4d</div>
+        <div class="sw" style="background:#a23a55;color:#fff;"><b>Key</b>#a23a55</div>
+        <div class="sw" style="background:#221a1d;color:#f5eaec;"><b>Ink</b>#221a1d</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Option <span>G4 — Lilac &amp; Orchid</span> · prettiest, but breaks the no-purple rule (flagged)</div>
+      <div class="G4 demo">
+        <p class="eyebrow">A founding edition</p>
+        <h2>Meetings that fund <span class="key">what matters</span>.</h2>
+        <p class="lede">You take a handful of conversations worth your time. Each one sends $1,000 to a charity you choose.</p>
+        <div class="row">
+          <a class="btn" href="#">Apply as a founding executive</a>
+          <div class="num">$1,000<small>to your chosen charity, per meeting</small></div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw" style="background:#f3f0f8;color:#1e1a26;"><b>Lilac white</b>#f3f0f8</div>
+        <div class="sw" style="background:#ffffff;color:#1e1a26;border-right:1px solid #eee;"><b>Card</b>#ffffff</div>
+        <div class="sw" style="background:#5f3aa0;color:#f3f0f8;"><b>Orchid</b>#5f3aa0</div>
+        <div class="sw" style="background:#7e4bc4;color:#fff;"><b>Key</b>#7e4bc4</div>
+        <div class="sw" style="background:#1e1a26;color:#f3f0f8;"><b>Ink</b>#1e1a26</div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

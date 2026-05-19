@@ -15,7 +15,7 @@ export function LogoMark() {
       <path d="M21 5a13 13 0 0 1 0 22" className="ln" strokeWidth="2.6" />
       <path
         d="M16 23c-3.6-2.6-6-4.8-6-7.6A3.1 3.1 0 0 1 16 13.4 3.1 3.1 0 0 1 22 15.4c0 2.8-2.4 5-6 7.6z"
-        fill="#DD6450"
+        fill="var(--forest)"
       />
     </svg>
   );

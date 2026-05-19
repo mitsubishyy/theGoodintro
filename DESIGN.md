@@ -1,92 +1,127 @@
 # TheBigIntro — Design System
 
-Locked 2026-05-17 (fresh & friendly direction). Mirrored by the live app
-in `app/globals.css`. This superseded an earlier crimson/Bricolage
-exploration; that history is in the other `mockups/*.html` files.
+Locked 2026-05-18 (Warm Manifesto / Philanthropic Forest). Mirrored by
+the live app in `app/globals.css` and `mockups/leap-manifesto-v2.html`
+(the live app is scaled up ~12% from that mockup and is the canonical
+reference). This superseded the earlier "fresh & friendly" coral + mint
+direction, which read too close to the QuotaClub palette; that history,
+and an earlier crimson/Bricolage exploration, live in `mockups/*.html`.
 
-Maturity pass 2026-05-17 (now locked): distinctive arcs-and-heart logo,
-a semantically accurate and mutually distinct icon set (the sparkle /
-"magic" motif is retired permanently), soft warm elevation tokens, a
-motion-safe scroll reveal, a composed hero vignette in place of
-scattered floating icons, real cause-area content in place of the
-"LOGO" placeholder strip, and a varied section rhythm (numbered steps,
-editorial difference list, airier section headers). The live app is now
-the canonical reference; the `mockups/*.html` files are history only.
+The leap (2026-05-18): a deliberate break from QuotaClub. New colour
+identity (deep forest as the single brand colour on a bone canvas, with
+clay as a rare micro-accent), Fraunces display type, an emotional
+letter/manifesto layout with soft organic forest/clay shapes, large
+numbered narrative beats, a $1,000 centrepiece, the founder voice on the
+one dark moment (now deep forest, not espresso brown), and a plain
+wordmark logo. The sparkle / "magic" motif remains retired permanently.
 
 ## The direction
 
-Light, airy and optimistic. It should feel like a good thing, friendly
-but credible, with generous white space doing most of the work and colour
-used sparingly. Custom refined line illustrations carry meaning.
+Warm, human and credible. It reads like a heartfelt letter from a
+founder who means it, not a SaaS feature grid. Generous space, soft
+organic shapes as compositional anchors, an editorial serif voice, and
+one confident brand colour doing the work. Senior and trustworthy, never
+twee or cartoonish.
 
 ## Hard rules (do not break)
 
 1. Light and warm. No dark page or section backgrounds. The single
-   deliberate exception is the "From the founder" panel, which is espresso
-   (`#211C1A`) for a personal moment.
-2. Never blue or yellow as a background. Deep ink (`#1F2638`) is text only.
-3. Two soft fun colours only: coral and mint, used subtly (small accents,
-   gentle section tints, illustration strokes), never loud blocks.
-4. No purple. No second loud bold colour.
+   deliberate exception is the "From the founder" panel, which is deep
+   forest (`#15281E`) for a personal moment.
+2. Never blue or yellow as a background. Deep forest ink (`#15211B`) is
+   text only. Must not resemble the QuotaClub palette (warm cream +
+   terracotta + sage): the canvas is a neutral bone, never warm cream.
+3. One brand colour only: deep forest (`#1F5D45`). Clay (`#C9603A`) is a
+   rare micro-accent, never a button, block, or large surface. Soft
+   forest/clay shape tints are low opacity, never loud blocks.
+4. No purple. No second bold colour. Forest leads, nothing competes.
 5. Nothing may resemble QuotaClub or reuse any MeetMagic or Employment Hero
    language, slogan, acronym, or illustration style.
 6. No em dashes or en dashes in prose. En dashes only in numeric ranges.
 7. No timer, countdown, or time-pressure language anywhere in copy.
-8. Depth comes only from the soft warm elevation tokens (`--sh-1`,
-   `--sh-2`). No hard, dark, or coloured drop shadows; no flat 1px-only
-   cards now that elevation exists.
-9. Motion is opt-in and motion-safe: scroll reveal lives behind
-   `prefers-reduced-motion: no-preference` and `@supports
-   (animation-timeline: view())`, so reduced-motion users and
-   unsupported browsers always see fully visible content. No parallax,
-   autoplay, or attention-grabbing motion.
+8. Depth comes from the soft warm elevation tokens (`--sh-1`, `--sh-2`),
+   plus a permitted subtle bone-paper grain and layered forest/clay
+   shapes for figure/ground craft. No hard, dark, or off-palette
+   coloured shadows; no flat 1px-only cards.
+9. Motion is opt-in and motion-safe. Scroll reveal is JS-driven
+   (IntersectionObserver) and lives behind `prefers-reduced-motion:
+   no-preference`; content is always in the DOM and fully visible if JS
+   is absent or reduced-motion is set. Subtle entrance, stagger, hero
+   choreography, a single `$1,000` count-up, gentle nav condense, and
+   very low-amplitude ambient shape drift are allowed. No parallax that
+   moves content, no autoplay video, no attention-grabbing motion.
 10. No sparkle, starburst, or "magic" motif anywhere (icon, logo, or
     illustration). It is generic and reads as the forbidden MeetMagic
     association.
 
 ## Type
 
-- Display and headings: Plus Jakarta Sans, weights 600 to 800.
+- Display, headings, wordmark, key serif voice: Fraunces (optical size,
+  weights 400 to 700, with italics for the editorial voice).
 - Body and UI: Inter.
 - Self-hosted via next/font (no runtime font network calls).
+- Scale is the live app's (mockup `leap-manifesto-v2.html` + ~12%).
+  Headlines must flow across the column, never one word per line.
 
 ## Colour
 
 | Token | Use | Value |
 |---|---|---|
-| bg | Page background | #FCFBF8 |
-| surface | Cards | #FFFFFF |
-| ink | Headline and key text | #1F2638 |
-| body | Body text | #5C6170 |
-| coral | Primary accent (buttons, links, key word) | #F2897B |
-| coral-d | Accessible coral for text and buttons | #DD6450 |
-| mint | Secondary accent | #4FB493 |
-| mint-d | Accessible mint for text and buttons | #2F9676 |
-| tint-coral | Gentle section wash | #FDF0EC |
-| tint-mint | Gentle section wash and footer | #ECF6F1 |
-| line | Hairlines and card borders | #ECE6DE |
-| espresso | The single dark moment: founder panel | #211C1A |
-| --sh-1 | Resting elevation (cards, pills, FAQ, chips) | soft warm, ~0.05 alpha |
-| --sh-2 | Raised elevation (hover, ledger, founding, hero card) | soft warm, ~0.09 alpha |
+| bg | Bone page canvas | #F3F2EC |
+| bg-deep | Deeper bone wash (alternating sections) | #ECEEE6 |
+| surface | Cards and chips | #FFFFFF |
+| ink | Headline and key text (deep forest) | #15211B |
+| body | Body text | #45504A |
+| soft | Muted captions (AA on bone) | #5C6560 |
+| forest | The single brand colour: buttons, key word, $1,000, eyebrows, rules | #1F5D45 |
+| forest-d | Accessible forest for text and buttons | #184A37 |
+| forest-h | Button hover | #16402F |
+| clay | Rare micro-accent only (never a button or block) | #C9603A |
+| tint | Gentle section wash | #E6EFE8 |
+| line | Hairlines and borders | #D6DAD0 |
+| espresso | The single dark moment: founder panel (deep forest) | #15281E |
+| shape-* | Low-opacity forest/clay organic shapes | rgba forest/clay |
 
-Coral leads, mint supports. The `$1,000` and the key hero word are coral.
-No green or red is used as a bold block. Sections alternate plain bg, soft
-coral and soft mint tints. The footer is a soft mint tint, not dark.
+Forest leads and nothing competes. The `$1,000` and the key hero phrase
+are forest. Clay appears only as a whisper. Sections alternate bone,
+deeper bone, and soft forest tint. The footer is deeper bone, not dark.
 
 ## Logo
 
-Mark is two open arcs facing each other embracing a solid coral heart:
-"two sides brought together, giving". It is not a speech bubble and must
-not duplicate any content icon. Wordmark is "TheBigIntro" with "Big" in
-accessible coral. Mark and wordmark are one lockup with a fixed gap.
+Plain wordmark, no symbol (a richer mark comes later). Reads
+"theBigintro": lowercase, with a capital "B" and "Big" in accessible
+forest. Set in Fraunces. No pictorial mark, no arcs-and-heart, no
+lowercase-with-period treatment (both rejected). Favicon is a forest
+tile with a serif "B".
 
-## Illustrations
+## Illustrations & visual tier
 
-Refined line art: thin consistent stroke, no fills, no cartoon faces, one
-small coral or mint accent per icon. Components live in
-`app/_components/icons.tsx`. They are deliberately editorial, not childish.
+Relaxed 2026-05-18 (owner sign-off) so the site can reach world-class
+visual quality. The old "thin stroke, no fills, no imagery" rule made
+that unreachable; it is replaced by a layered crafted system. The
+brand-safety constraints (forest + clay only, no sparkle/magic, no
+QuotaClub resemblance, senior-credible, light/warm, no dashes) stay
+fully intact. What is now allowed:
 
-Two non-negotiables for the icon set:
+- Filled and layered forest/clay illustration, two stroke weights, soft
+  forest tints behind line work for depth. Still editorial, never
+  childish, never cartoon faces.
+- A subtle bone-paper grain over the canvas, very low opacity.
+- 3 to 4 medium "spot illustrations" as section anchors (a request
+  arriving, the one conversation, a gift reaching a cause).
+- The hero focal visual: a composed, elevated flow vignette (request in
+  → qualified → one conversation → `$1,000` out). This was always in the
+  spec and must actually be wired into the build.
+- `$1,000` rendered as a designed typographic centrepiece with a crafted
+  giving mark, not body-scale text beside a hairline heart.
+
+Photography is permitted only as a later, separately and explicitly
+signed-off phase, and only as tightly art-directed, forest-duotoned
+imagery of real people/causes to an Acumen / charity:water editorial
+bar. Never generic stock, never QuotaClub-style warm lifestyle imagery,
+never reuse of the /about or Instagram image pool.
+
+Two non-negotiables for the icon set still hold:
 
 1. Semantically accurate. The glyph must read as the thing it labels
    (a conversation is two speech bubbles, not overlapping circles; a
