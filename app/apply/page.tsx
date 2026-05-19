@@ -1,33 +1,35 @@
 import type { Metadata } from "next";
 import ApplyForm from "./apply-form";
 
+const APPLY_DESC =
+  "A short, honest set of questions for senior leaders to pressure-test theGoodintro: qualified vendor meetings where every meeting funds a charity the executive chooses.";
+
 export const metadata: Metadata = {
-  title: "Help shape TheBigIntro. Founding research.",
-  description:
-    "A short, honest set of questions for senior leaders to pressure-test TheBigIntro: qualified vendor meetings where every meeting funds a charity the executive chooses.",
+  title: "Help shape theGoodintro.",
+  description: APPLY_DESC,
   robots: { index: false, follow: false },
+  openGraph: { title: "Help shape theGoodintro.", description: APPLY_DESC },
+  twitter: { title: "Help shape theGoodintro.", description: APPLY_DESC },
 };
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
-      <span className="h-px w-6" style={{ background: "var(--border-strong)" }} />
-      {children}
-    </div>
-  );
-}
+// Rendered per request so the bare header/footer (no nav on the survey)
+// resolves server-side instead of flashing the full chrome.
+export const dynamic = "force-dynamic";
 
 export default function ApplyPage() {
   return (
     <>
-      {/* ── Intro / why I'm asking ────────────────────────────────── */}
+      {/* ── Intro ─────────────────────────────────────────────────── */}
       <section
         className="relative overflow-hidden"
         style={{ background: "var(--cream-7)" }}
       >
-        <div className="mx-auto max-w-3xl px-6 pt-16 pb-14 md:pt-20 md:pb-16">
-          <SectionLabel>Founding research · Invite only</SectionLabel>
-          <h1 className="mt-6 text-4xl sm:text-5xl md:text-6xl font-semibold tracking-[-0.03em] leading-[1.05]">
+        <div className="mx-auto max-w-3xl px-6 pt-14 pb-14 md:pt-16 md:pb-16">
+          <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+            Takes about 4 minutes
+          </div>
+
+          <h1 className="mt-5 text-4xl sm:text-5xl md:text-6xl font-semibold tracking-[-0.03em] leading-[1.05]">
             Help me get this{" "}
             <span className="serif-italic">right</span>.
           </h1>
@@ -40,9 +42,9 @@ export default function ApplyPage() {
               the full meeting fee goes to a charity the executive chooses.
             </p>
             <p>
-              The aim is simple. Make vendor outreach respectful of a leader&apos;s
-              time, and turn the few conversations worth having into real
-              donations to causes they care about.
+              The aim is simple. Make vendor outreach respectful of a
+              leader&apos;s time, and turn the few conversations worth having
+              into real donations to causes you care about.
             </p>
             <p>
               I&apos;m still in the validation stage. That is exactly why I am
@@ -50,26 +52,6 @@ export default function ApplyPage() {
               model holds up before any of it is built. There are no wrong
               answers here, and a sharp no is as useful to me as a yes.
             </p>
-          </div>
-
-          <div className="mt-8 rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 md:p-6">
-            <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground mb-3">
-              What your answers do
-            </div>
-            <ul className="space-y-2.5 text-sm text-muted-foreground leading-relaxed">
-              <li>
-                Decide whether this is worth building at all, and in what
-                shape.
-              </li>
-              <li>
-                Set the charity amount, the format, and the rules that would
-                make it worth a leader&apos;s time.
-              </li>
-              <li>
-                Stay private. They shape the product and nothing else, as set
-                out at the end of this form.
-              </li>
-            </ul>
           </div>
         </div>
       </section>
