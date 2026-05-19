@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -29,9 +31,14 @@ import {
   IconX,
 } from "./_components/icons";
 import { HeroIllustration } from "./_components/illustrations";
-import { CALENDLY_URL } from "@/lib/config";
+import { MetricCard } from "./_components/ui";
+import { LogoMarquee } from "./_components/LogoMarquee";
+import { CALENDLY_URL, DGR_CHARITY_EXAMPLES } from "@/lib/config";
 
 export default function Home() {
+  const hasGivingPhoto = existsSync(
+    path.join(process.cwd(), "public", "giving.jpg"),
+  );
   return (
     <>
       {/* ── Hero — split with illustration, trust badges ───────── */}
@@ -92,8 +99,8 @@ export default function Home() {
               {/* Trust badges — Employment Hero move */}
               <div className="reveal reveal-5 mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
                 <TrustBadge stars={5} label="Founding cohort 2026" sub="Invite only · Australia" />
-                <TrustBadge label="ABN 00 000 000 000" sub="Australian-registered" mono />
-                <TrustBadge label="ACNC-verified charities" sub="Every donation to a registered cause" />
+                <TrustBadge label="Registration in progress" sub="TheBigIntro Pty Ltd, Australia" mono />
+                <TrustBadge label="DGR-endorsed charities" sub="Deductible gift recipient causes only" />
               </div>
             </div>
             <div className="lg:col-span-5">
@@ -112,20 +119,16 @@ export default function Home() {
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-10">
           <p className="text-center text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground mb-6">
-            In conversation with Australian charity partners
+            Examples of DGR-endorsed Australian charities
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-5">
-            <LogoText>Beyond Blue</LogoText>
-            <LogoText serif>The Smith Family</LogoText>
-            <LogoText>OzHarvest</LogoText>
-            <LogoText serif>UNSW Foundation</LogoText>
-            <LogoText>RFDS</LogoText>
-            <LogoText serif>Cancer Council</LogoText>
-          </div>
+          <LogoMarquee
+            items={DGR_CHARITY_EXAMPLES}
+            ariaLabel="Example DGR-endorsed Australian charities"
+          />
           <p className="mt-6 text-center text-xs text-muted-foreground italic max-w-2xl mx-auto">
-            Placeholder list. Charity selections are made by each executive
-            from any ACNC-registered organisation. Founding partners to be
-            named with their permission.
+            Illustrative only. These are not partners. Each executive chooses
+            their own charity from any organisation holding deductible gift
+            recipient (DGR) endorsement in Australia.
           </p>
         </div>
       </section>
@@ -146,25 +149,25 @@ export default function Home() {
             </h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <BigMetric
-              big="$1,000"
-              k="To charity per meeting"
+            <MetricCard
+              value="$1,000"
+              label="To charity per meeting"
               note="The full gift, never reduced for platform costs"
             />
-            <BigMetric
-              big="100%"
-              k="Of the gift reaches the charity"
+            <MetricCard
+              value="100%"
+              label="Of the gift reaches the charity"
               note="Admin fee is billed separately to the vendor"
             />
-            <BigMetric
-              big="$0"
-              k="Cost to executives"
+            <MetricCard
+              value="$0"
+              label="Cost to executives"
               note="Free to join. Free to decline. Always."
             />
-            <BigMetric
-              big="ACNC"
-              k="Registered charities only"
-              note="Every donation goes to a verified Australian cause"
+            <MetricCard
+              value="DGR"
+              label="Endorsed charities only"
+              note="Every gift goes to a deductible gift recipient charity, verifiable on the public register"
             />
           </div>
         </div>
@@ -213,7 +216,7 @@ export default function Home() {
                 n="03"
                 icon={HeartHandshake}
                 title="One short, focused meeting funds a real cause"
-                body="A scheduled conversation, on your terms. $1,000 lands in your chosen charity within 14 days, with written confirmation. You can step away at any point — your details are never sold or shared."
+                body="A scheduled conversation, on your terms. $1,000 lands in your chosen charity within 14 days, with written confirmation. You can step away at any point, and your details are never sold or shared."
               />
             </div>
           </div>
@@ -245,7 +248,7 @@ export default function Home() {
               tag="For executives"
               title="Conversations worth your time."
               points={[
-                "Set the topics you'll take a meeting on — nothing else reaches you",
+                "Set the topics you will take a meeting on, and nothing else reaches you",
                 "See the stated reason before anything is scheduled",
                 "Decline freely with no penalty or follow-up",
                 "$1,000 to a charity you choose, every meeting that happens",
@@ -261,7 +264,7 @@ export default function Home() {
               points={[
                 "Pre-qualified senior audience that opted in to your category",
                 "Goodwill that lasts: $1,000 to charity every meeting you book",
-                "Pricing transparent on the page — no surprise fees",
+                "Pricing transparent on the page, with no surprise fees",
                 "Reach people who never reply to cold email",
                 "Founding vendor cohort: shape how this works",
               ]}
@@ -278,26 +281,35 @@ export default function Home() {
       <section style={{ background: "var(--card)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-6 relative aspect-[4/3] rounded-3xl overflow-hidden">
-              <Image
-                src="https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?auto=format&fit=crop&w=1200&q=80"
-                alt="A small group of community volunteers preparing meals — placeholder photography to be replaced with founding-cohort charity partner imagery."
-                fill
-                sizes="(min-width: 1024px) 50vw, 100vw"
-                className="object-cover"
-                priority={false}
-              />
-              <div
-                className="absolute bottom-4 left-4 right-4 rounded-2xl px-5 py-4 backdrop-blur-md"
-                style={{ background: "rgba(20, 16, 14, 0.65)", color: "var(--cream-1)" }}
-              >
-                <div className="text-[10px] font-mono uppercase tracking-[0.18em] opacity-70">
-                  Placeholder imagery
+            <div
+              className="lg:col-span-6 relative aspect-[4/3] rounded-3xl overflow-hidden border"
+              style={{ borderColor: "var(--border)" }}
+            >
+              {hasGivingPhoto ? (
+                <Image
+                  src="/giving.jpg"
+                  alt="Charity work funded through TheBigIntro meetings."
+                  fill
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="object-cover"
+                  priority={false}
+                />
+              ) : (
+                <div
+                  className="absolute inset-0 grid place-items-center text-center px-8"
+                  style={{ background: "var(--mint-tint)" }}
+                >
+                  <div className="absolute inset-0 dotgrid opacity-40" aria-hidden />
+                  <div className="relative">
+                    <div className="display-serif text-6xl md:text-7xl leading-none text-primary">
+                      $1,000
+                    </div>
+                    <div className="mt-4 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                      Real charity imagery added at launch
+                    </div>
+                  </div>
                 </div>
-                <div className="text-sm mt-1">
-                  Real charity partner photos go here at launch.
-                </div>
-              </div>
+              )}
             </div>
             <div className="lg:col-span-6">
               <SectionLabel>The giving promise</SectionLabel>
@@ -307,27 +319,34 @@ export default function Home() {
               </h2>
               <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
                 The donation is paid from the vendor to TheBigIntro, then on
-                to the executive's chosen ACNC-registered charity within{" "}
+                to the executive's chosen DGR-endorsed charity within{" "}
                 <span className="font-medium text-foreground">14 days</span>{" "}
                 of the meeting. The charity confirms receipt directly to the
                 executive in writing. No part of the donation is taken to
-                cover platform costs — running the platform is funded by a
+                cover platform costs. Running the platform is funded by a
                 separate admin fee billed to the vendor on a clearly named
                 line item.
               </p>
               <div className="mt-8 space-y-4">
                 <GivingRow k="Donation amount" v="$1,000 per meeting" />
                 <GivingRow k="Payment to charity" v="Within 14 days of the meeting" />
-                <GivingRow k="Charity choice" v="Any ACNC-registered Australian charity" />
+                <GivingRow k="Charity choice" v="Any DGR-endorsed Australian charity" />
                 <GivingRow k="Written confirmation" v="Sent direct from charity to executive" />
-                <GivingRow k="Tax treatment" v="Donation treated as a vendor business expense" />
+                <GivingRow k="Tax treatment" v="DGR receipt issued to the vendor" />
               </div>
+              <Link
+                href="/impact"
+                className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium hover:text-primary transition-colors"
+              >
+                See the public impact dashboard
+                <ArrowUpRight className="size-4" />
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Founding-member spotlight (placeholder) ─────────── */}
+      {/* ── Founding-member spotlight (honest preview, no fabricated quote) ── */}
       <section
         className="border-y"
         style={{ background: "var(--stone-tint)", borderColor: "var(--border)" }}
@@ -337,49 +356,57 @@ export default function Home() {
             <div className="lg:col-span-5">
               <SectionLabel>Founding member spotlight</SectionLabel>
               <h2 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">
-                A first-cohort{" "}
-                <span className="serif-italic">CFO's experience</span>.
+                Real stories,{" "}
+                <span className="serif-italic">once they are real</span>.
               </h2>
               <p className="mt-5 text-muted-foreground leading-relaxed">
-                Placeholder — to be replaced with a real first-cohort
-                interview once we have permission to publish. The pattern
-                below is what each member spotlight will look like.
+                We will not publish a quote we wrote ourselves. When founding
+                executives agree to be named, each spotlight will appear here
+                with their meetings taken, the total they have directed, and
+                the charity they chose. This is the shape it will take.
               </p>
             </div>
             <div className="lg:col-span-7">
               <figure
-                className="rounded-3xl border p-8 md:p-10"
-                style={{ background: "var(--card)", borderColor: "var(--border)" }}
+                className="rounded-3xl border border-dashed p-8 md:p-10"
+                style={{ background: "var(--card)", borderColor: "var(--border-strong)" }}
               >
-                <Quote className="size-7 text-muted-foreground/40" />
-                <blockquote className="mt-4 text-xl md:text-2xl font-medium leading-snug tracking-tight">
-                  "I get four hundred cold pitches a week. Three of those a
-                  quarter are actually worth thirty minutes of my time.
-                  TheBigIntro makes those three find me, and the rest are
-                  filtered out before they touch my inbox. The fact that
-                  every conversation also sends a thousand dollars to UNSW
-                  Engineering Foundation is the reason I'll keep doing it."
-                </blockquote>
+                <Quote className="size-7 text-muted-foreground/30" />
+                <div className="mt-5 space-y-3" aria-hidden>
+                  <div
+                    className="h-3.5 rounded-full"
+                    style={{ background: "var(--accent)", width: "92%" }}
+                  />
+                  <div
+                    className="h-3.5 rounded-full"
+                    style={{ background: "var(--accent)", width: "85%" }}
+                  />
+                  <div
+                    className="h-3.5 rounded-full"
+                    style={{ background: "var(--accent)", width: "68%" }}
+                  />
+                </div>
                 <figcaption className="mt-8 flex items-center gap-4">
                   <div
-                    className="size-12 rounded-full grid place-items-center font-semibold text-primary-foreground"
-                    style={{ background: "var(--ill-tan-deep)" }}
+                    className="size-12 rounded-full grid place-items-center text-muted-foreground"
+                    style={{ background: "var(--accent)" }}
+                    aria-hidden
                   >
-                    SC
+                    <ShieldCheck className="size-5" />
                   </div>
                   <div>
                     <div className="text-sm font-medium">
-                      Sarah Chen <span className="text-muted-foreground">(placeholder)</span>
+                      A founding executive
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      CFO · ASX-listed retailer · Sydney
+                      Named with their permission, after launch
                     </div>
                   </div>
                 </figcaption>
                 <div className="mt-6 flex flex-wrap gap-2 pt-6 border-t" style={{ borderColor: "var(--border)" }}>
-                  <SpotPill label="Meetings taken" v="5" />
-                  <SpotPill label="Total directed" v="$5,000" />
-                  <SpotPill label="Charity" v="UNSW Engineering Foundation" />
+                  <SpotPill label="Meetings taken" v="To come" />
+                  <SpotPill label="Total directed" v="To come" />
+                  <SpotPill label="Charity" v="Their choice" />
                 </div>
               </figure>
             </div>
@@ -411,7 +438,7 @@ export default function Home() {
               <CauseRow icon={IconSapling} label="Environment & climate" />
               <CauseRow icon={IconHandshake} label="Community & crisis relief" />
               <CauseRow icon={IconPaw} label="Animal welfare" />
-              <CauseRow icon={IconHeartCircle} label="Or any ACNC-registered charity" />
+              <CauseRow icon={IconHeartCircle} label="Or any DGR-endorsed charity" />
             </div>
           </div>
         </div>
@@ -430,7 +457,7 @@ export default function Home() {
               <span className="serif-italic">vs.</span> TheBigIntro.
             </h2>
             <p className="mt-5 text-lg text-muted-foreground leading-relaxed">
-              Same goal — reach a senior leader. Two completely different
+              Same goal, reaching a senior leader. Two completely different
               experiences for both sides. The difference comes from one
               requirement: a stated, specific reason before a meeting can be
               requested.
@@ -579,13 +606,15 @@ export default function Home() {
                 interests, not theirs.
               </Faq>
               <Faq q="Which charities can I choose? Are there restrictions?">
-                Any organisation listed on the ACNC (Australian Charities
-                and Not-for-profits Commission) register. You can change
-                your nominated charity at any time, and you can nominate a
-                different charity for each individual meeting. We do not
-                allow donations to entities outside the ACNC register so
-                that every gift is verifiable, tax-receiptable to the payer,
-                and traceable to a registered Australian cause.
+                Any Australian charity that holds deductible gift recipient
+                (DGR) endorsement. DGR is the Australian Taxation Office
+                status that lets a charity issue a tax-deductible receipt to
+                the giver, so every meeting produces a receipt the vendor can
+                claim. You can change your nominated charity at any time, and
+                you can nominate a different one for each individual meeting.
+                Restricting gifts to DGR-endorsed charities keeps every
+                donation verifiable on the public register and traceable to a
+                recognised Australian cause.
               </Faq>
               <Faq q="How is the $1,000 actually paid? Who holds the money?">
                 Vendors are invoiced for the donation plus a separately
@@ -598,27 +627,26 @@ export default function Home() {
                 donation is not.
               </Faq>
               <Faq q="Is the donation tax-deductible?">
-                Yes — the donation is made by the vendor, and ACNC-registered
-                charities with deductible gift recipient (DGR) status will
-                issue a tax-deductible receipt to the vendor. The executive
-                does not claim a tax deduction because the executive does
-                not pay the donation. For non-DGR charities, the gift is
-                still made in full but is not tax-deductible to the vendor
-                — vendors will see DGR status flagged on every charity
-                before they confirm.
+                Yes. The donation is made by the vendor, and because every
+                nominated charity holds deductible gift recipient (DGR)
+                endorsement, the charity issues a tax-deductible receipt
+                directly to the vendor. The executive does not claim a
+                deduction, because the executive does not pay the donation.
+                DGR status is shown and is verifiable on the public register
+                before any meeting is confirmed.
               </Faq>
               <Faq q="What if a meeting doesn't go well? Can the donation be reversed?">
                 Once the meeting takes place, the donation is committed and
                 is paid to the charity within 14 days regardless of the
-                outcome of the conversation. That is deliberate — it stops
+                outcome of the conversation. That is deliberate. It stops
                 vendors from gaming the system, and it stops anyone
-                including TheBigIntro from having an incentive to mediate
+                including TheBigIntro, from having an incentive to mediate
                 the donation. If a vendor behaves badly in the meeting (hard
                 sells, ignores your stated priorities, follows up without
                 permission) we remove them from the platform.
               </Faq>
               <Faq q="What does it actually cost an executive?">
-                Nothing — joining, declining requests, taking meetings, and
+                Nothing. Joining, declining requests, taking meetings, and
                 leaving are all free. Vendors fund the platform and the
                 donation. Your nominated charity gets the full $1,000 from
                 every meeting you take. There is no future paid tier, no
@@ -627,8 +655,8 @@ export default function Home() {
                 grandfathered in permanently.
               </Faq>
               <Faq q="Why founding members? What does it actually mean?">
-                We're starting with a deliberately small first cohort —
-                roughly 50 executives in Australia — so the model can be
+                We're starting with a deliberately small first cohort,
+                roughly 50 executives in Australia, so the model can be
                 refined against real feedback before scaling. Founding
                 members get direct input on how requests are qualified,
                 which categories of conversation are allowed, and which
@@ -646,11 +674,11 @@ export default function Home() {
                 rejections, who behave badly in meetings, or whose stated
                 reason doesn't match what actually happens in the
                 conversation lose platform access. We don't pretend this
-                replaces human judgement — it raises the floor.
+                replaces human judgement. It raises the floor.
               </Faq>
               <Faq q="How much of my time is this, realistically?">
-                One short, focused meeting per request you accept — 30 to 45
-                minutes, depending on what you've agreed to. There is no
+                One short, focused meeting per request you accept, typically
+                30 to 45 minutes depending on what you have agreed to. There is no
                 meeting prep, no follow-up homework, no obligation to
                 continue the conversation after the call ends. You only
                 take the meetings you actually want, and you only see the
@@ -663,7 +691,7 @@ export default function Home() {
                 operator with a long background on the sending side of B2B
                 sales. There is no outside funding yet and the platform is
                 in pre-launch validation. We are deliberately small, on
-                purpose, while the model is proven — there is more on the{" "}
+                purpose, while the model is proven. There is more on the{" "}
                 <Link
                   href="/about"
                   className="underline underline-offset-4 hover:text-primary"
@@ -756,42 +784,6 @@ function TrustBadge({
         <div className={"text-xs font-semibold " + (mono ? "font-mono tracking-[0.1em] uppercase" : "")}>{label}</div>
         <div className="text-[10px] text-muted-foreground mt-0.5">{sub}</div>
       </div>
-    </div>
-  );
-}
-
-function LogoText({ children, serif }: { children: React.ReactNode; serif?: boolean }) {
-  return (
-    <span
-      className={
-        "text-base md:text-lg font-semibold tracking-tight text-foreground/55 hover:text-foreground/85 transition-colors " +
-        (serif ? "font-serif italic" : "")
-      }
-    >
-      {children}
-    </span>
-  );
-}
-
-function BigMetric({
-  big,
-  k,
-  note,
-}: {
-  big: string;
-  k: string;
-  note: string;
-}) {
-  return (
-    <div
-      className="rounded-2xl border p-6 md:p-8"
-      style={{ background: "var(--card)", borderColor: "var(--border)" }}
-    >
-      <div className="display-serif text-5xl md:text-6xl text-foreground leading-none">
-        {big}
-      </div>
-      <div className="mt-4 text-sm font-semibold">{k}</div>
-      <div className="mt-2 text-xs text-muted-foreground leading-relaxed">{note}</div>
     </div>
   );
 }

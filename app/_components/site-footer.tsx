@@ -35,6 +35,9 @@ export default function SiteFooter() {
               <li><Link href="/how-it-works" className="hover:text-foreground transition-colors text-muted-foreground">How it works</Link></li>
               <li><Link href="/executives" className="hover:text-foreground transition-colors text-muted-foreground">For executives</Link></li>
               <li><Link href="/vendors" className="hover:text-foreground transition-colors text-muted-foreground">For vendors</Link></li>
+              <li><Link href="/pricing" className="hover:text-foreground transition-colors text-muted-foreground">Pricing</Link></li>
+              <li><Link href="/charities" className="hover:text-foreground transition-colors text-muted-foreground">Charities</Link></li>
+              <li><Link href="/impact" className="hover:text-foreground transition-colors text-muted-foreground">Impact</Link></li>
               <li><Link href="/about" className="hover:text-foreground transition-colors text-muted-foreground">About</Link></li>
               <li><Link href="/opportunity" className="hover:text-foreground transition-colors text-muted-foreground">Partner with us</Link></li>
             </ul>

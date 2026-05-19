@@ -45,6 +45,9 @@ export default function SiteHeader() {
               <Link href="/vendors" className="hover:text-foreground transition-colors">
                 For vendors
               </Link>
+              <Link href="/pricing" className="hover:text-foreground transition-colors">
+                Pricing
+              </Link>
               <Link href="/about" className="hover:text-foreground transition-colors">
                 About
               </Link>

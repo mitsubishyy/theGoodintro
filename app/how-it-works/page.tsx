@@ -58,7 +58,7 @@ export default function HowItWorks() {
               n="03"
               icon={HeartHandshake}
               title="The conversation funds a cause"
-              body="One focused conversation happens, and $1,000 goes to the leader's chosen registered charity."
+              body="One focused conversation happens, and $1,000 goes to the leader's chosen DGR-endorsed charity."
             />
           </div>
           <p className="mt-12 text-center text-base text-muted-foreground italic max-w-3xl mx-auto">
@@ -121,7 +121,7 @@ export default function HowItWorks() {
           <SectionHead
             label="Choosing the charity"
             title="The leader decides, every time."
-            lede="The executive directs where the donation goes, to their chosen registered charity. It is their conversation and their cause. At launch we are Australia first, so the giving stays local and verifiable while the model is proven."
+            lede="The executive directs where the donation goes, to their chosen DGR-endorsed charity. It is their conversation and their cause. At launch we are Australia first, so the giving stays local and verifiable while the model is proven."
           />
         </div>
       </section>
@@ -139,11 +139,37 @@ export default function HowItWorks() {
             <div className="lg:col-span-8">
               <Faq q="Who pays for the meeting?" open>
                 The vendor. It is free for executives. The vendor funds both
-                the charity gift and the separate admin fee.
+                the charity gift and the separate, clearly named admin fee.
               </Faq>
               <Faq q="Can a leader decline a request?">
                 Always. Seeing the stated reason first means declining is
-                easy and normal. There is no penalty and no obligation.
+                easy and normal. There is no penalty, no follow-up, and no
+                obligation.
+              </Faq>
+              <Faq q="Will executives be flooded with requests?">
+                No. We hold a deliberate 3:1 balance, at least three
+                executives for every vendor admitted, so no leader is ever
+                the whole room and no vendor is bidding against a crowd.
+              </Faq>
+              <Faq q="How is the $1,000 actually paid?">
+                The vendor is invoiced for the donation plus a separately
+                named admin fee when a meeting is confirmed. The donation is
+                held separately from platform revenue and paid to the chosen
+                charity within 14 days of the meeting. The charity confirms
+                receipt to the executive in writing.
+              </Faq>
+              <Faq q="Is the donation tax-deductible?">
+                Yes. Every nominated charity holds deductible gift recipient
+                (DGR) endorsement, so the charity issues a tax-deductible
+                receipt directly to the vendor who paid it. DGR status is
+                verifiable on the public register before any meeting is
+                confirmed.
+              </Faq>
+              <Faq q="What stops a vendor gaming this?">
+                The donation is committed once the meeting happens,
+                regardless of outcome, so there is nothing to claw back.
+                Requests must match a stated reason, meetings are reviewed
+                against it, and vendors who misuse access are removed.
               </Faq>
               <Faq q="Why Australia first?">
                 Starting in one market keeps the charity giving verifiable

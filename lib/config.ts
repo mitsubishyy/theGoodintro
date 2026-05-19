@@ -13,3 +13,21 @@ export const CALENDLY_URL = "mailto:hello@thebigintro.com";
 
 // TODO(lachlan): replace with Isobel's real LinkedIn URL.
 export const FOUNDER_LINKEDIN = "https://www.linkedin.com/in/isobel-hardwick/";
+
+// Public registers used for verification links across the site.
+export const ACNC_REGISTER_URL = "https://www.acnc.gov.au/charity/charities";
+export const ABN_LOOKUP_URL = "https://abr.business.gov.au/";
+
+// Illustrative only. Well-known DGR-endorsed Australian charities shown as
+// examples; these are NOT partners. An executive may nominate any
+// DGR-endorsed Australian charity. Links go to each charity's own site;
+// any charity can be checked on the ACNC register and ABN Lookup.
+export const DGR_CHARITY_EXAMPLES = [
+  { name: "Beyond Blue", href: "https://www.beyondblue.org.au", serif: false },
+  { name: "The Smith Family", href: "https://www.thesmithfamily.com.au", serif: true },
+  { name: "OzHarvest", href: "https://www.ozharvest.org", serif: false },
+  { name: "Royal Flying Doctor Service", href: "https://www.flyingdoctor.org.au", serif: true },
+  { name: "Cancer Council Australia", href: "https://www.cancer.org.au", serif: false },
+  { name: "Australian Red Cross", href: "https://www.redcross.org.au", serif: true },
+  { name: "The Fred Hollows Foundation", href: "https://www.hollows.org", serif: false },
+];

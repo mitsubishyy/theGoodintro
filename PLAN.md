@@ -103,5 +103,46 @@ Remaining follow-ups, non-blocking:
 
 - Accounts, authentication, profiles.
 - Meeting requests, booking engine, payments.
-- The public per-exec impact dashboard. It remains a v1 platform feature for
-  later and is not built or faked here.
+- ~~The public per-exec impact dashboard.~~ Superseded 2026-05-19, see
+  section 9.
+
+## 9. Credibility overhaul (2026-05-19)
+
+Goal: make the site credible enough that scaled executive outreach (paused
+pending a custom-domain sender) lands when it resumes. Decisions made:
+
+1. **DGR, not ACNC.** The charity choice is restricted to deductible gift
+   recipient (DGR) endorsed Australian charities, spelled out on first use.
+   This supersedes decision 7.4 ("your chosen registered charity"). Reason:
+   only DGR endorsement guarantees the vendor a tax-deductible receipt; it is
+   a stronger, verifiable claim for a finance audience. ACNC is retained only
+   as the name of the public verification register, not the eligibility bar.
+2. **The 3:1 rule.** Confirmed meaning: at least three executives per vendor
+   seat, deliberately, so executives are not flooded and vendors are not in a
+   bidding war. Presented on `/executives` (inbox protection), `/vendors`
+   (genuine access), `/how-it-works`, and `/pricing`.
+3. **New pages**, each with its own cream variant, wired into footer and
+   sitemap: `/pricing` (`--cream-8`), `/charities` (`--cream-9`), `/impact`
+   (`--cream-10`). Nav adds Pricing only; Charities and Impact are footer plus
+   contextual links to keep the nav lean for a conservative audience.
+4. **Pricing disclosure.** Executives free. Vendors pay the $1,000 gift
+   (100% to charity) plus a separate, clearly named platform fee. The annual
+   membership figure is deliberately not published while in validation; the
+   site shows only "+ platform fee" and quotes it on the call.
+5. **Impact dashboard, honestly.** Built at `/impact` as an explicitly
+   labelled sample preview, with a truthful "live total is $0" status. It is
+   not faked: no real figures are presented as real. This is the v1 feature
+   brought forward in preview form, replacing the section 8 exclusion.
+6. **Honest placeholders.** Fabricated "Sarah Chen" testimonial replaced with
+   an unnamed preview card. ABN placeholder replaced with "Registration in
+   progress". Homepage Unsplash stock replaced with an on-brand panel; founder
+   and giving photos load from `public/founder.jpg` / `public/giving.jpg`
+   when supplied, with graceful fallbacks until then.
+7. **Graphics.** Homepage hero plus the how-it-works and opportunity
+   illustrations redesigned for sharper craft within the locked style. New
+   `PricingIllustration`. New reusable `LogoMarquee` (rightward, reduced-motion
+   safe) and `MetricCard` primitive.
+
+Remaining real-world inputs (non-blocking, sensible placeholders in place):
+real booking link, real ABN, founder photo, confirmation of the DGR example
+charity set.

@@ -1,8 +1,18 @@
 import type { Metadata } from "next";
+import { existsSync } from "node:fs";
+import path from "node:path";
+import Image from "next/image";
+import Link from "next/link";
 import { Quote } from "lucide-react";
-import { CALENDLY_URL, FOUNDER_LINKEDIN } from "@/lib/config";
+import {
+  CALENDLY_URL,
+  FOUNDER_LINKEDIN,
+  ACNC_REGISTER_URL,
+  ABN_LOOKUP_URL,
+} from "@/lib/config";
 import {
   SectionHead,
+  ComparisonRow,
   ClosingCta,
   PrimaryCta,
   SecondaryCta,
@@ -24,6 +34,9 @@ export const metadata: Metadata = {
 };
 
 export default function About() {
+  const hasFounderPhoto = existsSync(
+    path.join(process.cwd(), "public", "founder.jpg"),
+  );
   return (
     <>
       {/* Split hero with illustration */}
@@ -66,16 +79,27 @@ export default function About() {
           >
             <div className="md:col-span-4">
               <div
-                className="aspect-square rounded-2xl overflow-hidden border grid place-items-center"
+                className="relative aspect-square rounded-2xl overflow-hidden border grid place-items-center"
                 style={{ background: "var(--card)", borderColor: "var(--border)" }}
               >
-                <div
-                  className="size-32 rounded-full grid place-items-center font-semibold text-4xl text-primary-foreground"
-                  style={{ background: "var(--primary)" }}
-                  aria-label="Isobel Hardwick"
-                >
-                  IH
-                </div>
+                {hasFounderPhoto ? (
+                  <Image
+                    src="/founder.jpg"
+                    alt="Isobel Hardwick, founder of TheBigIntro"
+                    fill
+                    sizes="(min-width: 768px) 33vw, 100vw"
+                    className="object-cover"
+                    priority={false}
+                  />
+                ) : (
+                  <div
+                    className="size-32 rounded-full grid place-items-center font-semibold text-4xl text-primary-foreground"
+                    style={{ background: "var(--primary)" }}
+                    aria-label="Isobel Hardwick"
+                  >
+                    IH
+                  </div>
+                )}
               </div>
               <div className="mt-6 flex flex-col gap-2">
                 <a
@@ -120,6 +144,12 @@ export default function About() {
                 conversation here sends{" "}
                 <span className="serif-italic">$1,000</span> to a cause the
                 leader chooses. That is the whole point.
+              </p>
+              <p className="mt-5 text-lg md:text-xl leading-relaxed">
+                We are starting in Australia, on purpose. One market keeps
+                every gift local, verifiable, and easy to stand behind while
+                the model is proven with a small founding group. I would
+                rather earn a reputation slowly than borrow one.
               </p>
             </div>
           </div>
@@ -175,6 +205,97 @@ export default function About() {
               <FactRow icon={IconHeartCircle} k="Where we start" v="Australia first" />
               <FactRow icon={IconHandshake} k="First cohort" v="Invite only" />
               <FactRow icon={IconIntro} k="Model" v="$1,000 per meeting to a charity the leader chooses" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Why Australia first ──────────────────────────────────── */}
+      <section
+        className="border-y"
+        style={{ background: "var(--card)", borderColor: "var(--border)" }}
+      >
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <div className="grid lg:grid-cols-12 gap-12 items-start">
+            <div className="lg:col-span-5">
+              <SectionHead
+                label="Why Australia first"
+                title="One market, done properly."
+              />
+            </div>
+            <div className="lg:col-span-7">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Starting in one country keeps the giving local and every
+                charity checkable on a public Australian register. It keeps
+                the founding cohort close enough to shape the model in
+                person, and it means we never have to wave away a hard
+                question with talk of scale. Expansion comes after the model
+                has earned it here, not before.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── How we keep this honest ──────────────────────────────── */}
+      <section
+        className="border-y overflow-hidden relative"
+        style={{ background: "var(--stone-tint)", borderColor: "var(--border)" }}
+      >
+        <div className="absolute inset-0 dotgrid opacity-40" aria-hidden />
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <div className="grid lg:grid-cols-12 gap-12 items-start">
+            <div className="lg:col-span-5">
+              <SectionHead
+                label="How we keep this honest"
+                title="Checkable, not just stated."
+                lede="Trust on a finance-facing site has to be verifiable. Here is what that means in practice, with the receipts."
+              />
+            </div>
+            <div className="lg:col-span-7">
+              <ul className="space-y-3 text-sm md:text-base">
+                <ComparisonRow text="The $1,000 gift is never reduced for our costs; the platform fee is its own named line" />
+                <ComparisonRow text="Every nominated charity holds deductible gift recipient (DGR) endorsement" />
+                <ComparisonRow text="The charity confirms receipt of the full amount directly to the executive in writing" />
+                <ComparisonRow text="Your details are never sold, traded, or published" />
+                <ComparisonRow text="No invented testimonials, no inflated numbers, no funding we do not have" />
+              </ul>
+              <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm font-medium">
+                <Link
+                  href="/charities"
+                  className="inline-flex items-center gap-1.5 hover:text-primary transition-colors"
+                >
+                  How the giving works <span aria-hidden>→</span>
+                </Link>
+                <Link
+                  href="/privacy"
+                  className="inline-flex items-center gap-1.5 hover:text-primary transition-colors"
+                >
+                  Our privacy stance <span aria-hidden>→</span>
+                </Link>
+                <Link
+                  href="/impact"
+                  className="inline-flex items-center gap-1.5 hover:text-primary transition-colors"
+                >
+                  Public impact <span aria-hidden>→</span>
+                </Link>
+                <a
+                  href={ACNC_REGISTER_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 hover:text-primary transition-colors"
+                >
+                  ACNC register <span aria-hidden>↗</span>
+                </a>
+                <a
+                  href={ABN_LOOKUP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 hover:text-primary transition-colors"
+                >
+                  ABN Lookup <span aria-hidden>↗</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>
