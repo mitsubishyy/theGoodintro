@@ -230,24 +230,24 @@ body {
 /* Auto-scrolling logo marquee. Rightward, pauses on hover, and falls back
    to a static wrapped row when reduced motion is requested. */
 .marquee {
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   /* vertical room so a magnified chip is never clipped */
   padding-block: 1.75rem;
   -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
   mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
-  cursor: grab;
-  touch-action: pan-y;
-  user-select: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior-x: contain;
 }
-.marquee.is-dragging {
-  cursor: grabbing;
+.marquee::-webkit-scrollbar {
+  display: none;
 }
 .marquee-track {
   display: flex;
   align-items: center;
   gap: 2.75rem;
   width: max-content;
-  will-change: transform;
 }
 .marquee-item {
   display: inline-flex;
