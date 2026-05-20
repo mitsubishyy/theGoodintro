@@ -7,10 +7,9 @@ export default function Brand({ className }: BrandProps) {
     <span
       className={className}
       style={{
-        fontFamily: "var(--font-fraunces), Georgia, 'Times New Roman', serif",
-        fontWeight: 500,
+        fontFamily: "var(--font-playfair), Georgia, 'Times New Roman', serif",
+        fontWeight: 600,
         letterSpacing: "0",
-        fontVariationSettings: '"opsz" 144, "SOFT" 0, "WONK" 0',
       }}
     >
       the

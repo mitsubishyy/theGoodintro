@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import { Fraunces, Inter, JetBrains_Mono, Playfair_Display } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { SITE_URL, SITE_DESCRIPTION } from "@/lib/config";
@@ -11,6 +11,12 @@ const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
   axes: ["opsz", "SOFT", "WONK"],
+  display: "swap",
+});
+
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
   display: "swap",
 });
 
@@ -52,7 +58,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${inter.variable} ${mono.variable}`}
+      className={`${fraunces.variable} ${playfair.variable} ${inter.variable} ${mono.variable}`}
     >
       <body suppressHydrationWarning className="text-foreground bg-background antialiased">
         <SiteHeader />
