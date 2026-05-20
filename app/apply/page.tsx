@@ -57,6 +57,12 @@ export default function ApplyPage() {
                 leaders your time for the meeting. The charity donations are
                 paid by the vendors.
               </p>
+              <p>
+                I&apos;m Issy. After years on the vendor side, I watched good
+                outreach drown in noise and good leaders miss the few tools
+                that could actually help because the inbox became unusable.
+                The Good Intro is my attempt to fix both.
+              </p>
             </div>
           </div>
         </div>
