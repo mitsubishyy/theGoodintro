@@ -19,7 +19,7 @@ Trust line: No cold pitches. No hard sells. Every meeting funds a cause that mat
 
 Eyebrow: Why this exists
 H2: Your calendar is full of pitches that go nowhere.
-Lede: What if the few conversations worth having also did some good? That is the whole idea. Fewer, more relevant meetings, each one sending $1,000 to a cause you care about.
+Lede: What if the few conversations worth having also did some Good? That is the whole idea. Fewer, more relevant meetings, each one sending $1,000 to a cause you care about.
 
 ## How it works
 

@@ -18,6 +18,7 @@ import {
   IconHeartCircle,
 } from "../_components/icons";
 import { VendorsIllustration } from "../_components/illustrations";
+import Good from "../_components/good";
 
 export const metadata: Metadata = {
   title: "For vendors. theGoodintro.",
@@ -63,7 +64,7 @@ export default function Vendors() {
             <VendorCard
               icon={IconHeartCircle}
               title="Goodwill that lasts"
-              body="Every meeting sends $1,000 to the leader's chosen charity. You are remembered as the introduction that did some good."
+              body={<>Every meeting sends $1,000 to the leader&apos;s chosen charity. You are remembered as the introduction that did some <Good />.</>}
             />
           </div>
         </div>
@@ -267,7 +268,7 @@ function VendorCard({
 }: {
   icon: React.ComponentType<{ className?: string; size?: number }>;
   title: string;
-  body: string;
+  body: React.ReactNode;
   lucide?: boolean;
 }) {
   return (

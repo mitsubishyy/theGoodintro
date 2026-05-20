@@ -13,6 +13,7 @@ import { HeroIllustration } from "./_components/illustrations";
 import { MetricCard } from "./_components/ui";
 import { LogoMarquee } from "./_components/LogoMarquee";
 import { CALENDLY_URL, DGR_CHARITY_EXAMPLES } from "@/lib/config";
+import Good from "./_components/good";
 
 export default function Home() {
   return (
@@ -336,9 +337,9 @@ export default function Home() {
                 <Quote className="size-8 text-muted-foreground/40" />
                 <p className="mt-4 text-2xl md:text-3xl font-semibold tracking-tight leading-tight">
                   I kept seeing senior people buried in irrelevant outreach,
-                  and good people with something genuine to say unable to get
-                  through honestly. theGoodintro fixes that, and turns every
-                  meeting into{" "}
+                  and <Good /> people with something genuine to say unable to
+                  get through honestly. theGoodintro fixes that, and turns
+                  every meeting into{" "}
                   <span className="serif-italic">$1,000</span> for a cause
                   you choose.
                 </p>

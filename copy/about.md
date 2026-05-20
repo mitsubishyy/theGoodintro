@@ -15,7 +15,7 @@ CTA: Start a conversation
 Eyebrow: From the founder
 (Avatar initials: IH)
 
-I spent a long time on the sending side of sales, watching good people fail to reach leaders who might actually have wanted to talk, and watching leaders drown in noise from people who did not. The fix was never another clever subject line. It was a rule: earn the conversation by being relevant, and make the conversation worth something beyond the deal.
+I spent a long time on the sending side of sales, watching Good people fail to reach leaders who might actually have wanted to talk, and watching leaders drown in noise from people who did not. The fix was never another clever subject line. It was a rule: earn the conversation by being relevant, and make the conversation worth something beyond the deal.
 
 theGoodintro is that rule, built into a place. Every conversation here sends $1,000 to a cause the leader chooses. That is the whole point.
 

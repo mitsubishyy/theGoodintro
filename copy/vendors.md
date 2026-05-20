@@ -18,7 +18,7 @@ H2: A room you cannot cold-email into.
 
 - A vetted senior audience — Leaders who opted in and set their own priorities. Not a scraped list, and not someone screening on their behalf.
 - A qualified introduction — You state the specific initiative. It reaches the leader only when it genuinely fits what they asked to hear about.
-- Goodwill that lasts — Every meeting sends $1,000 to the leader's chosen charity. You are remembered as the introduction that did some good.
+- Goodwill that lasts — Every meeting sends $1,000 to the leader's chosen charity. You are remembered as the introduction that did some Good.
 
 ## Who this is for
 

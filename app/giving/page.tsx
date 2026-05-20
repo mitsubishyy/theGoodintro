@@ -19,6 +19,7 @@ import {
   IconNetwork,
   IconGift,
 } from "../_components/icons";
+import Good from "../_components/good";
 import {
   DGR_CHARITY_EXAMPLES,
   ACNC_REGISTER_URL,
@@ -293,7 +294,7 @@ export default function Giving() {
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                   The national register of registered charities. Confirm a
-                  charity is genuine and in good standing.
+                  charity is genuine and in <Good /> standing.
                 </p>
                 <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium group-hover:text-primary transition-colors">
                   Open the register

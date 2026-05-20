@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import ApplyForm from "./apply-form";
+import Brand from "../_components/brand";
+import Good from "../_components/good";
 
 const APPLY_DESC =
-  "A short, honest set of questions for senior leaders to pressure-test The Good Intro: qualified vendor meetings where every meeting funds a charity the executive chooses.";
+  "A short, honest set of questions for senior leaders to pressure-test theGoodintro: qualified vendor meetings where every meeting funds a charity the executive chooses.";
 
 export const metadata: Metadata = {
-  title: "Help shape The Good Intro.",
+  title: "Help shape theGoodintro.",
   description: APPLY_DESC,
   robots: { index: false, follow: false },
-  openGraph: { title: "Help shape The Good Intro.", description: APPLY_DESC },
-  twitter: { title: "Help shape The Good Intro.", description: APPLY_DESC },
+  openGraph: { title: "Help shape theGoodintro.", description: APPLY_DESC },
+  twitter: { title: "Help shape theGoodintro.", description: APPLY_DESC },
 };
 
 // Rendered per request so the bare header/footer (no nav on the survey)
@@ -45,7 +47,7 @@ export default function ApplyPage() {
             </div>
             <div className="mt-4 space-y-5 text-lg text-muted-foreground leading-relaxed">
               <p>
-                The Good Intro is an invite-only network where senior leaders
+                <Brand /> is an invite-only network where senior leaders
                 take a small number of genuinely relevant SaaS vendor conversations,
                 and 100% of every meeting fee goes to a charity you choose. You
                 are never pitched without a specific, stated reason, and you
@@ -77,7 +79,7 @@ export default function ApplyPage() {
               <div className="shrink-0">
                 <Image
                   src="/issy.jpg"
-                  alt="Issy Hardwick, founder of The Good Intro"
+                  alt="Issy Hardwick, founder of theGoodintro"
                   width={128}
                   height={160}
                   className="rounded-xl object-cover object-top"
@@ -87,14 +89,14 @@ export default function ApplyPage() {
               </div>
               <div className="flex-1">
                 <p className="text-lg text-foreground leading-relaxed">
-                  I watched good outreach get drowned in mass AI noise and
-                  good leaders become exhausted from being pitched in the
+                  I watched <Good /> outreach get drowned in mass AI noise and{" "}
+                  <Good /> leaders become exhausted from being pitched in the
                   middle of the day. Leaders can no longer rely on their
-                  inbox and are wary of answering unknown phone calls. The
-                  Good Intro is my attempt to fix both.
+                  inbox and are wary of answering unknown phone calls.{" "}
+                  <Brand /> is my attempt to fix both.
                 </p>
                 <p className="mt-4 text-sm text-muted-foreground">
-                  Issy Hardwick · Founder, The Good Intro
+                  Issy Hardwick · Founder, <Brand />
                 </p>
               </div>
             </div>
