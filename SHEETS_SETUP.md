@@ -139,7 +139,7 @@ function copyHtml(firstName, answers) {
 '</td></tr>',
 '<tr><td style="padding:36px 32px 8px;">',
 '<h1 style="margin:0;font-family:Georgia,\'Times New Roman\',serif;font-size:26px;line-height:1.3;font-weight:normal;color:#1A1813;">Thank you, ' + esc(firstName) + '.</h1>',
-'<p style="margin:14px 0 0;font-size:15px;line-height:1.6;color:#6F675B;">Thanks for taking the time to help a stranger shape something <span style="color:#1F7A52;font-weight:600;font-family:Georgia,\'Times New Roman\',serif;letter-spacing:0.01em;">Good</span>. If you ticked Yes on the last question, I\'ll be in touch soon. Looking forward to saying hi properly.</p>',
+'<p style="margin:14px 0 0;font-size:15px;line-height:1.6;color:#6F675B;">Thanks for taking the time to help a stranger shape something <span style="color:#1F7A52;font-family:Georgia,\'Times New Roman\',serif;letter-spacing:0.01em;">Good</span>. If you ticked Yes on the last question, I\'ll be in touch soon. Looking forward to saying hi properly.</p>',
 '</td></tr>',
 '<tr><td style="padding:22px 32px 0;">',
 '<p style="margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:0.16em;color:#1F7A52;">What you shared</p>',
