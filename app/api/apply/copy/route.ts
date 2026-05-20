@@ -4,9 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
   POST /api/apply/copy
 
   A respondent finished the survey and asked for a copy of their answers.
-  We can't email it yet (no email provider wired), so we record the
-  request to the same private Google Sheet (wantsCopy + copyEmail
-  columns) so it can be followed up. Same env as /api/apply.
+  We forward the request to the Apps Script webhook, which:
+   (a) updates the wantsCopy + copyEmail cells on their original row in
+       the private Google Sheet, and
+   (b) emails the respondent a polished HTML copy of their answers via
+       Gmail (MailApp). Same env as /api/apply.
 */
 
 export const runtime = "nodejs";

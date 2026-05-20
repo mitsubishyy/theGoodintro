@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
   const webhook = process.env.SHEETS_WEBHOOK_URL;
 
   if (!webhook) {
-    // Not wired yet: don't lose the lead silently in dev — log it.
+    // Not wired yet: don't lose the lead silently in dev. Log it.
     console.log("[apply] SHEETS_WEBHOOK_URL not set. Submission:", record);
     return NextResponse.json({ ok: true });
   }

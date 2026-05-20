@@ -21,10 +21,20 @@ You already deployed once. To apply a new version of this script:
    - The Web app URL stays the same, so nothing else needs changing.
    - No new permissions, so no re-authorisation prompt.
 
+> **Column set changed (2026-05).** The survey was reworked: several
+> fields were removed (`conflictOfInterest`, `meetingsPerYear`,
+> `alignMatters`, `mandatoryPutOff`, `biggestConcern`, `anythingElse`)
+> and new ones added (`charityTheme`, `vendorMustProvide`, `guidance`,
+> `utmContent`, plus `*Other` companions). Before submissions hit the
+> new schema, **clear the sheet** (delete all rows including the
+> header) so the script writes a fresh header row on the next
+> submission. Otherwise existing rows will be misaligned with the new
+> columns.
+
 ## First-time setup
 
 1. At <https://sheets.new> (signed in as **isobelh874@gmail.com**) create a
-   blank spreadsheet, name it e.g. `theGoodintro — Research`. Leave it empty.
+   blank spreadsheet, name it e.g. `The Good Intro - Research`. Leave it empty.
 2. **Extensions → Apps Script**, delete the sample, paste the script, **Save**.
 3. **Deploy → New deployment** → gear → **Web app** →
    **Execute as: Me**, **Who has access: Anyone** → **Deploy**.
@@ -37,15 +47,18 @@ You already deployed once. To apply a new version of this script:
 ## The script
 
 ```javascript
-// theGoodintro /apply -> Google Sheet + Gmail
+// The Good Intro /apply -> Google Sheet + Gmail
 var NOTIFY_EMAIL = "isobelh874@gmail.com";
 
 var HEADERS = [
   "submittedAt","fullName","title","company","charityAmount",
-  "conflictOfInterest","conflictDetail","beyondCharity","beyondCharityOther",
-  "needToSee","meetingsPerYear","alignMatters","questionnaireWilling",
-  "shareWithVendor","mandatoryPutOff","wouldRefer","biggestConcern","anythingElse",
-  "joinWhenReady","utmSource","utmMedium","utmCampaign",
+  "charityTheme","charityThemeOther",
+  "beyondCharity","beyondCharityOther",
+  "vendorMustProvide","vendorMustProvideOther",
+  "needToSee","needToSeeOther",
+  "questionnaireWilling","shareWithVendor",
+  "guidance","wouldRefer","joinWhenReady",
+  "utmSource","utmMedium","utmCampaign","utmContent",
   "wantsCopy","copyEmail"
 ];
 
@@ -54,20 +67,19 @@ var LABELS = [
   ["title","Title"],
   ["company","Company"],
   ["charityAmount","Charity amount worth their time"],
-  ["conflictOfInterest","Charity a conflict of interest?"],
-  ["conflictDetail","Conflict detail"],
+  ["charityTheme","Cause(s) close to them"],
+  ["charityThemeOther","Cause (specific)"],
   ["beyondCharity","What else would make it worth it"],
   ["beyondCharityOther","Other (what else)"],
-  ["needToSee","What they'd need to see"],
-  ["meetingsPerYear","Meetings per year"],
-  ["alignMatters","Values vendor relevance"],
-  ["questionnaireWilling","Would do the 5-min questionnaire"],
-  ["shareWithVendor","OK to share answers with the vendor"],
-  ["mandatoryPutOff","Mandatory questionnaire a dealbreaker"],
+  ["vendorMustProvide","What a vendor must provide to judge relevance"],
+  ["vendorMustProvideOther","Vendor must provide (other)"],
+  ["needToSee","What they'd need to see on the platform"],
+  ["needToSeeOther","Need to see (other)"],
+  ["questionnaireWilling","Would do the 5-min priorities step"],
+  ["shareWithVendor","OK to share priorities with the vendor"],
+  ["guidance","Guidance for building it"],
   ["wouldRefer","Would refer a peer"],
-  ["biggestConcern","Biggest concern"],
-  ["anythingElse","Anything else"],
-  ["joinWhenReady","Would join when ready"],
+  ["joinWhenReady","Would join when the platform is ready"],
   ["utmSource","Source"]
 ];
 
@@ -87,13 +99,13 @@ function fmt(obj) {
   return lines.join("\n");
 }
 
-// Brand wordmark with "Good" in emerald (brighter tone for dark header).
+// Brand wordmark: "The" and "Intro" in body colour, "Good" in emerald.
 function wordmark(onDark) {
   var g = onDark ? "#43B27D" : "#1F7A52";
   var c = onDark ? "#F6F2E9" : "#1A1813";
-  return 'the<span style="color:' + g + ';">Good</span>intro'
-    .replace(/the/, '<span style="color:' + c + ';">the</span>')
-    .replace(/intro/, '<span style="color:' + c + ';">intro</span>');
+  return '<span style="color:' + c + ';">The </span>' +
+         '<span style="color:' + g + ';">Good</span>' +
+         '<span style="color:' + c + ';"> Intro</span>';
 }
 
 function answerRows(obj) {
@@ -142,7 +154,7 @@ function copyHtml(firstName, answers) {
 '<div style="margin-top:8px;font-family:Georgia,\'Times New Roman\',serif;font-size:16px;">' + wordmark(false) + '</div>',
 '</td></tr>',
 '<tr><td style="padding:20px 32px 28px;"><div style="border-top:1px solid #E6DFD2;padding-top:14px;">',
-'<p style="margin:0;font-size:12px;line-height:1.6;color:#9A9183;">You are receiving this because you asked for a copy on the theGoodintro survey. Invite only, Australia first.</p>',
+'<p style="margin:0;font-size:12px;line-height:1.6;color:#9A9183;">You are receiving this because you asked for a copy of your answers on The Good Intro. Invite only, Australia first.</p>',
 '</div></td></tr>',
 '</table></td></tr></table></body></html>'
   ].join("");
@@ -191,19 +203,19 @@ function doPost(e) {
         var first = String(answers.fullName || "").trim().split(" ")[0] || "there";
         MailApp.sendEmail({
           to: data.copyEmail,
-          subject: "Your answers - the Good intro",
+          subject: "Your answers, The Good Intro",
           htmlBody: copyHtml(first, answers),
           body:
             "Thank you for taking the time. Here is a copy of what you shared:\n\n" +
             fmt(answers) +
-            "\n\nYour responses are private and never sold or made public.\n\n— Issy Hardwick, theGoodintro"
+            "\n\nYour responses are private and never sold or made public.\n\nIssy Hardwick\nFounder, The Good Intro"
         });
       }
     } else {
       sheet.appendRow(HEADERS.map(function (k) { return data[k] != null ? data[k] : ""; }));
       MailApp.sendEmail({
         to: NOTIFY_EMAIL,
-        subject: "New theGoodintro response: " + (data.fullName || "") +
+        subject: "New The Good Intro response: " + (data.fullName || "") +
                  " (" + (data.company || "") + ")",
         body: fmt(data) + "\n\nSubmitted: " + (data.submittedAt || "")
       });
@@ -224,6 +236,6 @@ function doPost(e) {
 
 ## Notes
 
-- Consumer Gmail sends ~100 emails/day via Apps Script — ample for validation.
+- Consumer Gmail sends ~100 emails/day via Apps Script, ample for validation.
 - The form has a honeypot + per-IP rate limit against basic spam.
 - To stop collecting, remove the `SHEETS_WEBHOOK_URL` env var in Vercel.
