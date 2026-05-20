@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, ChevronDown, Check, X } from "lucide-react";
+import Brand from "../_components/brand";
+import Good from "../_components/good";
 
 /* ────────────────────────────────────────────────────────────────
    Field primitives
@@ -207,14 +209,6 @@ function MultiSelectDropdown({
   );
 }
 
-function Brand() {
-  return (
-    <>
-      The <span style={{ color: "var(--primary)" }}>Good</span> Intro
-    </>
-  );
-}
-
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
@@ -386,7 +380,7 @@ export default function ApplyForm() {
 
     if (!consent)
       return setError(
-        "Please confirm you're happy for your answers to be used to shape The Good Intro.",
+        "Please confirm you're happy for your answers to be used to shape theGoodintro.",
       );
 
     setSubmitting(true);
@@ -479,9 +473,8 @@ export default function ApplyForm() {
           </h2>
           <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
             Thanks for taking the time to help a stranger shape something{" "}
-            <span style={{ color: "var(--primary)", fontWeight: 600 }}>good</span>
-            . If you ticked Yes on the last question, I&apos;ll be in touch
-            soon. Looking forward to it.
+            <Good />. If you ticked Yes on the last question, I&apos;ll be in
+            touch soon. Looking forward to saying hi properly.
           </p>
 
           {/* Share */}
@@ -505,7 +498,7 @@ export default function ApplyForm() {
                 onClick={() => {
                   if (typeof navigator !== "undefined" && navigator.share) {
                     navigator
-                      .share({ title: "The Good Intro", url: shareUrl })
+                      .share({ title: "theGoodintro", url: shareUrl })
                       .catch(() => {});
                   } else {
                     copyShareLink();
@@ -662,7 +655,7 @@ export default function ApplyForm() {
             />
           </Field>
 
-          <Field label="Is there a cause that sits close to you that you would want supported on The Good Intro?">
+          <Field label="Is there a cause that sits close to you that you would want supported on theGoodintro?">
             <MultiSelectDropdown
               placeholder="Select all that apply"
               options={CHARITY_THEMES}
