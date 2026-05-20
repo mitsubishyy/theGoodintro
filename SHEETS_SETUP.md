@@ -4,11 +4,18 @@ The survey at `/apply` posts to `/api/apply` (same origin), which forwards
 each submission **server-side** to a Google Apps Script Web App. That script:
 
 1. appends a row to a private Google Sheet you own,
-2. emails **you** (`isobelh874@gmail.com`) the answers on every submission,
+2. emails **you** (`issy@thegoodintros.com`) the answers on every submission,
 3. emails the **respondent** a polished copy of their answers when they ask.
 
 No third-party email service, no database. Everything runs free inside the
-Google account that owns the sheet.
+Google Workspace account that owns the sheet.
+
+> **Send pipeline:** the script uses `GmailApp.sendEmail` (not `MailApp`).
+> MailApp routes via the Apps Script service pipeline, which on a brand-new
+> Workspace domain got silently dropped at Gmail's edge for external
+> recipients. GmailApp routes through the user's real Gmail send pipeline,
+> same as a manual compose, which delivers reliably. If you ever rewrite this
+> script, keep it on GmailApp.
 
 ## If you are updating an existing setup
 
@@ -36,8 +43,8 @@ You already deployed once. To apply a new version of this script:
 
 ## First-time setup
 
-1. At <https://sheets.new> (signed in as **isobelh874@gmail.com**) create a
-   blank spreadsheet, name it e.g. `The Good Intro - Research`. Leave it empty.
+1. At <https://sheets.new> (signed in as **issy@thegoodintros.com**) create a
+   blank spreadsheet, name it e.g. `theGoodintro Research`. Leave it empty.
 2. **Extensions → Apps Script**, delete the sample, paste the script, **Save**.
 3. **Deploy → New deployment** → gear → **Web app** →
    **Execute as: Me**, **Who has access: Anyone** → **Deploy**.
@@ -50,8 +57,8 @@ You already deployed once. To apply a new version of this script:
 ## The script
 
 ```javascript
-// The Good Intro /apply -> Google Sheet + Gmail
-var NOTIFY_EMAIL = "isobelh874@gmail.com";
+// theGoodintro /apply -> Google Sheet + Gmail
+var NOTIFY_EMAIL = "issy@thegoodintros.com";
 
 var HEADERS = [
   "submittedAt","fullName","title","company","charityAmount",
@@ -182,8 +189,9 @@ function doPost(e) {
       sheet.setFrozenRows(1);
     }
     if (data.type === "copyRequest") {
-      // One row per person: find their submission row and fill in the
-      // wantsCopy / copyEmail cells in place (do NOT add a new row).
+      // One row per person: match the latest row by fullName+company and
+      // overwrite wantsCopy / copyEmail in place. Never append a new row
+      // here, even if no match is found.
       var wcCol = HEADERS.indexOf("wantsCopy") + 1;
       var ceCol = HEADERS.indexOf("copyEmail") + 1;
       var fnCol = HEADERS.indexOf("fullName") + 1;
@@ -191,48 +199,44 @@ function doPost(e) {
       var nameV = String(data.fullName || "");
       var compV = String(data.company || "");
       var last = sheet.getLastRow();
-      var updated = false;
       if (last >= 2) {
         var vals = sheet.getRange(2, 1, last - 1, HEADERS.length).getValues();
         for (var r = vals.length - 1; r >= 0; r--) {
           if (String(vals[r][fnCol - 1]) === nameV &&
-              String(vals[r][coCol - 1]) === compV &&
-              String(vals[r][wcCol - 1]).trim() === "") {
+              String(vals[r][coCol - 1]) === compV) {
             sheet.getRange(r + 2, wcCol).setValue("Yes");
             sheet.getRange(r + 2, ceCol).setValue(data.copyEmail || "");
-            updated = true;
             break;
           }
         }
-      }
-      if (!updated) {
-        sheet.appendRow(HEADERS.map(function (k) { return data[k] != null ? data[k] : ""; }));
       }
       var answers = {};
       try { answers = JSON.parse(data.answersJson || "{}"); } catch (x) {}
       if (data.copyEmail) {
         var first = String(answers.fullName || "").trim().split(" ")[0] || "there";
-        MailApp.sendEmail({
-          to: data.copyEmail,
-          subject: "Your answers, The Good Intro",
-          htmlBody: copyHtml(first, answers),
-          body:
-            "Thanks for taking the time to help a stranger shape something good. " +
+        GmailApp.sendEmail(
+          data.copyEmail,
+          "Your answers, The Good Intro",
+          "Thanks for taking the time to help a stranger shape something good. " +
             "If you ticked Yes on the last question, I'll be in touch soon. " +
             "Looking forward to saying hi properly.\n\n" +
             "Your answers:\n\n" +
             fmt(answers) +
-            "\n\nYour responses are private and never sold or made public.\n\nIssy Hardwick\nFounder, The Good Intro"
-        });
+            "\n\nYour responses are private and never sold or made public.\n\nIssy Hardwick\nFounder, The Good Intro",
+          {
+            htmlBody: copyHtml(first, answers),
+            name: "Issy, The Good Intro"
+          }
+        );
       }
     } else {
       sheet.appendRow(HEADERS.map(function (k) { return data[k] != null ? data[k] : ""; }));
-      MailApp.sendEmail({
-        to: NOTIFY_EMAIL,
-        subject: "New The Good Intro response: " + (data.fullName || "") +
-                 " (" + (data.company || "") + ")",
-        body: fmt(data) + "\n\nSubmitted: " + (data.submittedAt || "")
-      });
+      GmailApp.sendEmail(
+        NOTIFY_EMAIL,
+        "New The Good Intro response: " + (data.fullName || "") +
+          " (" + (data.company || "") + ")",
+        fmt(data) + "\n\nSubmitted: " + (data.submittedAt || "")
+      );
     }
 
     return ContentService
@@ -262,6 +266,7 @@ function resetSheet() {
 
 ## Notes
 
-- Consumer Gmail sends ~100 emails/day via Apps Script, ample for validation.
+- Workspace Gmail sends ~1,500 emails/day via Apps Script (consumer Gmail
+  is ~100/day; Workspace gives headroom for the survey + future outreach).
 - The form has a honeypot + per-IP rate limit against basic spam.
 - To stop collecting, remove the `SHEETS_WEBHOOK_URL` env var in Vercel.
