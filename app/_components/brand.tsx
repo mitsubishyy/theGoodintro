@@ -10,7 +10,7 @@ export default function Brand({ className }: BrandProps) {
         style={{
           color: "var(--primary)",
           fontFamily: "Georgia, 'Times New Roman', serif",
-          fontWeight: 400,
+          fontWeight: 700,
           letterSpacing: "0.01em",
         }}
       >
