@@ -1,5 +1,15 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, JetBrains_Mono, Playfair_Display } from "next/font/google";
+import {
+  Fraunces,
+  Inter,
+  JetBrains_Mono,
+  Playfair_Display,
+  EB_Garamond,
+  Cormorant_Garamond,
+  Libre_Caslon_Text,
+  Crimson_Pro,
+  Source_Serif_4,
+} from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { SITE_URL, SITE_DESCRIPTION } from "@/lib/config";
@@ -16,6 +26,38 @@ const fraunces = Fraunces({
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const ebGaramond = EB_Garamond({
+  variable: "--font-eb-garamond",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const libreCaslon = Libre_Caslon_Text({
+  variable: "--font-libre-caslon",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+});
+
+const crimsonPro = Crimson_Pro({
+  variable: "--font-crimson-pro",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const sourceSerif = Source_Serif_4({
+  variable: "--font-source-serif",
   subsets: ["latin"],
   display: "swap",
 });
@@ -58,7 +100,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${playfair.variable} ${inter.variable} ${mono.variable}`}
+      className={`${fraunces.variable} ${playfair.variable} ${ebGaramond.variable} ${cormorant.variable} ${libreCaslon.variable} ${crimsonPro.variable} ${sourceSerif.variable} ${inter.variable} ${mono.variable}`}
     >
       <body suppressHydrationWarning className="text-foreground bg-background antialiased">
         <SiteHeader />
