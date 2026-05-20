@@ -21,7 +21,16 @@ export default function OpengraphImage() {
       >
         <div style={{ fontSize: 36, fontWeight: 700, display: "flex" }}>
           <span>the</span>
-          <span style={{ color: "#1f7a47" }}>Good</span>
+          <span
+            style={{
+              color: "#1f7a47",
+              fontFamily: "Georgia, 'Times New Roman', serif",
+              fontWeight: 400,
+              letterSpacing: "0.01em",
+            }}
+          >
+            Good
+          </span>
           <span>intro</span>
         </div>
         <div style={{ fontSize: 64, fontWeight: 700, marginTop: 24 }}>
