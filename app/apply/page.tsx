@@ -87,10 +87,11 @@ export default function ApplyPage() {
               </div>
               <div className="flex-1">
                 <p className="text-lg text-foreground leading-relaxed">
-                  I&apos;m Issy. After years on the vendor side, I watched
-                  good outreach drown in noise and good leaders miss the few
-                  tools that could actually help because the inbox became
-                  unusable. The Good Intro is my attempt to fix both.
+                  I watched good outreach get drowned in mass AI noise and
+                  good leaders become exhausted from being pitched in the
+                  middle of the day. Leaders can no longer rely on their
+                  inbox and are wary of answering unknown phone calls. The
+                  Good Intro is my attempt to fix both.
                 </p>
                 <p className="mt-4 text-sm text-muted-foreground">
                   Issy Hardwick · Founder, The Good Intro
