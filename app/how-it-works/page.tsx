@@ -30,7 +30,7 @@ import {
 } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "How it works. TheBigIntro.",
+  title: "How it works. theGoodintro.",
   description:
     "The whole model in the open: how a relevant conversation becomes a $1,000 gift, why it works better than cold outreach, and who is building it.",
 };
@@ -188,7 +188,7 @@ export default function HowItWorks() {
                 className="text-[10px] font-mono uppercase tracking-[0.18em] mb-3"
                 style={{ color: "var(--primary)" }}
               >
-                TheBigIntro
+                theGoodintro
               </div>
               <h3 className="text-xl font-semibold tracking-tight mb-6">
                 A qualified, paid-for introduction.
@@ -224,7 +224,7 @@ export default function HowItWorks() {
                 {hasFounderPhoto ? (
                   <Image
                     src="/founder.jpg"
-                    alt="Isobel Hardwick, founder of TheBigIntro"
+                    alt="Isobel Hardwick, founder of theGoodintro"
                     fill
                     sizes="(min-width: 768px) 33vw, 100vw"
                     className="object-cover"
@@ -255,7 +255,7 @@ export default function HowItWorks() {
                   className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   <IconMail size={16} />
-                  hello@thebigintro.com
+                  hello@thegoodintro.com
                 </a>
               </div>
             </div>
@@ -267,7 +267,7 @@ export default function HowItWorks() {
                 Isobel Hardwick
               </h2>
               <div className="mt-2 text-sm text-muted-foreground">
-                Founder · TheBigIntro · Australia
+                Founder · theGoodintro · Australia
               </div>
               <Quote className="mt-8 size-7 text-muted-foreground/40" />
               <p className="mt-4 text-lg md:text-xl leading-relaxed">
@@ -279,7 +279,7 @@ export default function HowItWorks() {
                 conversation worth something beyond the deal.
               </p>
               <p className="mt-5 text-lg md:text-xl leading-relaxed">
-                TheBigIntro is that rule, built into a place. Every
+                theGoodintro is that rule, built into a place. Every
                 conversation here sends{" "}
                 <span className="serif-italic">$1,000</span> to a cause the
                 leader chooses. That is the whole point.

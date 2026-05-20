@@ -10,7 +10,7 @@ import {
 import { PricingIllustration } from "../_components/illustrations";
 
 export const metadata: Metadata = {
-  title: "Pricing. TheBigIntro.",
+  title: "Pricing. theGoodintro.",
   description:
     "Executives pay nothing, ever. Vendors pay $1,000 per meeting straight to the chosen charity, plus a separate, clearly named platform fee. The gift and the fee never blend.",
 };

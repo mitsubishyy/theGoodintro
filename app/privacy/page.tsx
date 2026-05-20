@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { SectionLabel } from "../_components/ui";
 
 export const metadata: Metadata = {
-  title: "Privacy. TheBigIntro.",
-  description: "How TheBigIntro handles information during the early phase.",
+  title: "Privacy. theGoodintro.",
+  description: "How theGoodintro handles information during the early phase.",
 };
 
 // TODO: have this reviewed before public launch once data collection
@@ -25,7 +25,7 @@ export default function Privacy() {
             The short version
           </h2>
           <p className="text-muted-foreground">
-            TheBigIntro is at an early, invite-only stage. This site exists to
+            theGoodintro is at an early, invite-only stage. This site exists to
             explain the idea and let interested people start a conversation.
             We collect as little as possible and we do not sell anything to
             anyone.
@@ -50,7 +50,7 @@ export default function Privacy() {
             How we use it
           </h2>
           <p className="text-muted-foreground">
-            Only to talk with you about TheBigIntro and to improve this site.
+            Only to talk with you about theGoodintro and to improve this site.
             We do not share your details with vendors, executives or third
             parties for marketing.
           </p>

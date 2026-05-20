@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { SectionLabel } from "../_components/ui";
 
 export const metadata: Metadata = {
-  title: "Terms. TheBigIntro.",
-  description: "The terms for using this early TheBigIntro site.",
+  title: "Terms. theGoodintro.",
+  description: "The terms for using this early theGoodintro site.",
 };
 
 // TODO: replace with full platform terms before any paid meetings run.
@@ -24,7 +24,7 @@ export default function Terms() {
             About this site
           </h2>
           <p className="text-muted-foreground">
-            This is an early information site for TheBigIntro. It describes
+            This is an early information site for theGoodintro. It describes
             an idea that is still being shaped with a small founding group.
             Nothing here is an offer, a contract, or a guarantee of a
             meeting, a donation amount, or availability.
@@ -50,7 +50,7 @@ export default function Terms() {
           </h2>
           <p className="text-muted-foreground">
             Please use the site lawfully and do not attempt to disrupt it.
-            The name, wording and design are the property of TheBigIntro.
+            The name, wording and design are the property of theGoodintro.
             Booking a call simply starts a conversation and creates no
             obligation on either side.
           </p>

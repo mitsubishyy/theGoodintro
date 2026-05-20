@@ -20,7 +20,7 @@ import {
 import { VendorsIllustration } from "../_components/illustrations";
 
 export const metadata: Metadata = {
-  title: "For vendors. TheBigIntro.",
+  title: "For vendors. theGoodintro.",
   description:
     "A qualified introduction to a vetted, hard-to-reach senior audience. Every meeting you book sends $1,000 to the leader's chosen charity. Australia first, invite only.",
 };

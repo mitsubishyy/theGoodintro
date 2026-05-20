@@ -27,4 +27,4 @@ Tagline under logo: Relevant senior meetings that fund real giving. Australia fi
 - Terms → /terms
 - Contact → Calendly link
 
-Foot note: TheBigIntro · relevant senior meetings that fund real giving
+Foot note: theGoodintro · relevant senior meetings that fund real giving

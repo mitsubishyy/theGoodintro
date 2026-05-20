@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
 import { CALENDLY_URL } from "@/lib/config";
+import Brand from "./brand";
 
 const EXPLORE = [
   { href: "/how-it-works", label: "How it works" },
@@ -26,7 +27,7 @@ export default function SiteFooter() {
         <div className="grid lg:grid-cols-3 gap-12 mb-16">
           <div>
             <Link href="/" className="text-base font-semibold tracking-tight">
-              The<span style={{ color: "var(--primary)" }}>Big</span>Intro
+              <Brand />
             </Link>
             <p className="mt-4 text-sm text-muted-foreground max-w-xs leading-relaxed">
               Relevant senior meetings that fund real giving. Australia
@@ -72,7 +73,7 @@ export default function SiteFooter() {
         </div>
         <div className="border-t border-border pt-6 flex flex-wrap items-center justify-between gap-4 text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
           <span>EST · 2026 · Australia</span>
-          <span>© TheBigIntro</span>
+          <span>© theGoodintro</span>
         </div>
       </div>
     </footer>

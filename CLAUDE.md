@@ -1,11 +1,11 @@
-# TheBigIntro — Claude Code Onboarding
+# theGoodintro — Claude Code Onboarding
 
 This file is loaded by Claude Code on every session. Keep it tight. Update it
 when conventions change.
 
 ## What this is
 
-A validation marketing site for TheBigIntro: an Australian-first, invite-only
+A validation marketing site for theGoodintro: an Australian-first, invite-only
 marketplace where senior executives take qualified meetings and every meeting
 sends $1,000 to a charity the executive chooses. Pre-platform — this site
 exists to validate demand from both sides via booked calls.
@@ -22,7 +22,7 @@ without explicit user instruction.
 |---|---|
 | **Reference site** | Employment Hero (white + warm cream + bold accent + multi-color illustrations + sharp grid) |
 | **Target audience** | 50yo listed-company CFO/COO. Conservative. Data-driven. Sceptical of anything "cute". |
-| **Position statement** | TheBigIntro is the AlphaSights for charity-funded executive introductions. |
+| **Position statement** | theGoodintro is the AlphaSights for charity-funded executive introductions. |
 | **Voice** | Confident concierge. Warm but selective. Premium hospitality without gushing. |
 
 Resolution of the tension between these: **Employment Hero's composition at
@@ -188,7 +188,7 @@ next.config.ts            — Unsplash whitelisted; security headers + CSP
 These are marked `TODO(lachlan)` in code where applicable:
 
 1. **Calendly URL** in [`lib/config.ts`](lib/config.ts) — currently
-   `mailto:hello@thebigintro.com`. Replace with the dedicated Calendly event
+   `mailto:hello@thegoodintro.com`. Replace with the dedicated Calendly event
    when created.
 2. **Founder LinkedIn** in [`lib/config.ts`](lib/config.ts) — currently
    `linkedin.com/in/isobel-hardwick/`. Replace with the real handle.
@@ -205,16 +205,16 @@ These are marked `TODO(lachlan)` in code where applicable:
    placeholders (Beyond Blue, OzHarvest, RFDS, etc.). Swap to real SVG logos
    once partnerships are confirmed.
 7. **ABN / ACNC verification badges** in hero — currently placeholder text.
-   Replace with real verification once TheBigIntro Pty Ltd is incorporated and
+   Replace with real verification once theGoodintro Pty Ltd is incorporated and
    registered.
 
 ## Deploy
 
-- Repo: [github.com/mitsubishyy/thebigintro](https://github.com/mitsubishyy/thebigintro) (private)
+- Repo: [github.com/mitsubishyy/thegoodintro](https://github.com/mitsubishyy/thegoodintro) (private)
 - Production branch: `main`
 - `git push origin main` triggers Vercel auto-deploy
 - After deploy, run `npm run indexnow` to ping IndexNow with the changed URLs.
-- Custom domain (when live): `thebigintro.com`
+- Custom domain (when live): `thegoodintro.com`
 
 ## Commands
 

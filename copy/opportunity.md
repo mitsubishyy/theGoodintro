@@ -1,13 +1,13 @@
 # The opportunity (/opportunity)
 
-Page title: Partner with me. TheBigIntro.
-Meta description: TheBigIntro is early. A marketplace where senior leaders take only relevant meetings and every one sends $1,000 to a charity they choose. I am looking for one person to build it into a company.
+Page title: Partner with me. theGoodintro.
+Meta description: theGoodintro is early. A marketplace where senior leaders take only relevant meetings and every one sends $1,000 to a charity they choose. I am looking for one person to build it into a company.
 
 ## Hero
 
 Eyebrow: The opportunity
 H1: Build this with **me**.
-Lede: TheBigIntro is early. A marketplace where senior leaders take only the meetings worth their time, and every one sends $1,000 to a charity they choose. The idea is on the page. I am looking for one person to build it into a company.
+Lede: theGoodintro is early. A marketplace where senior leaders take only the meetings worth their time, and every one sends $1,000 to a charity they choose. The idea is on the page. I am looking for one person to build it into a company.
 CTA: Start a conversation
 Trust: Honest about the stage. No funding claimed, no team yet. A clear model and the will to build it.
 
@@ -15,7 +15,7 @@ Trust: Honest about the stage. No funding claimed, no team yet. A clear model an
 
 Eyebrow: Why this is worth building
 H2: Two broken sides, one fix.
-Lede: Senior leaders ignore most outreach because almost none of it is relevant. Vendors spend heavily to reach them and mostly fail. Neither side has a reason to make the exchange worth anything beyond the deal. TheBigIntro changes the incentive: a meeting happens only when it is genuinely relevant, and when it does, real money goes to a cause the leader chose.
+Lede: Senior leaders ignore most outreach because almost none of it is relevant. Vendors spend heavily to reach them and mostly fail. Neither side has a reason to make the exchange worth anything beyond the deal. theGoodintro changes the incentive: a meeting happens only when it is genuinely relevant, and when it does, real money goes to a cause the leader chose.
 
 ## The model
 

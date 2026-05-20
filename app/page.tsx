@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -315,24 +316,28 @@ export default function Home() {
             className="relative rounded-3xl overflow-hidden p-10 md:p-16 border"
             style={{ background: "var(--cream-2)", borderColor: "var(--border)" }}
           >
-            <div className="grid md:grid-cols-12 gap-10 items-start">
-              <div className="md:col-span-3">
-                <div
-                  className="size-20 rounded-full grid place-items-center font-semibold text-xl text-primary-foreground"
-                  style={{ background: "var(--primary)" }}
-                >
-                  IH
+            <div className="grid md:grid-cols-12 gap-10 md:gap-12 items-start">
+              <div className="md:col-span-4">
+                <div className="relative w-full aspect-[2/3] overflow-hidden rounded-2xl border" style={{ borderColor: "var(--border)" }}>
+                  <Image
+                    src="/issy.jpg"
+                    alt="Isobel Hardwick, founder of theGoodintro"
+                    fill
+                    sizes="(min-width: 768px) 33vw, 100vw"
+                    className="object-cover"
+                    priority={false}
+                  />
                 </div>
                 <div className="mt-6 text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
                   From the founder
                 </div>
               </div>
-              <div className="md:col-span-9">
+              <div className="md:col-span-8">
                 <Quote className="size-8 text-muted-foreground/40" />
                 <p className="mt-4 text-2xl md:text-3xl font-semibold tracking-tight leading-tight">
                   I kept seeing senior people buried in irrelevant outreach,
                   and good people with something genuine to say unable to get
-                  through honestly. TheBigIntro fixes that, and turns every
+                  through honestly. theGoodintro fixes that, and turns every
                   meeting into{" "}
                   <span className="serif-italic">$1,000</span> for a cause
                   you choose.

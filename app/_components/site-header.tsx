@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { CALENDLY_URL } from "@/lib/config";
+import Brand from "./brand";
 
 const NAV = [
   { href: "/how-it-works", label: "How it works" },
@@ -21,17 +22,7 @@ export default function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/70 backdrop-blur-xl">
       <div className="mx-auto max-w-7xl px-6 lg:px-10 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group">
-          <span className="text-base font-semibold tracking-tight">
-            {bare ? (
-              <>
-                the<span style={{ color: "var(--primary)" }}>Good</span>intro
-              </>
-            ) : (
-              <>
-                The<span style={{ color: "var(--primary)" }}>Big</span>Intro
-              </>
-            )}
-          </span>
+          <Brand className="text-base font-semibold tracking-tight" />
         </Link>
 
         {!bare && (

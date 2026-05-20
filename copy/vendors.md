@@ -1,6 +1,6 @@
 # For vendors (/vendors)
 
-Page title: For vendors. TheBigIntro.
+Page title: For vendors. theGoodintro.
 Meta description: A qualified introduction to a vetted, hard-to-reach senior audience. Every meeting you book sends $1,000 to the leader's chosen charity. Australia first, invite only.
 
 ## Hero

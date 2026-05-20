@@ -1,6 +1,6 @@
 # How it works (/how-it-works)
 
-Page title: How it works. TheBigIntro.
+Page title: How it works. theGoodintro.
 Meta description: The full model end to end: how relevant conversations are matched, how the $1,000 charity gift and separate named admin fee work, and how leaders choose where the giving goes.
 
 ## Hero

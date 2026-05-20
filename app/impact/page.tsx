@@ -11,7 +11,7 @@ import { LogoMarquee } from "../_components/LogoMarquee";
 import { DGR_CHARITY_EXAMPLES } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Impact. TheBigIntro.",
+  title: "Impact. theGoodintro.",
   description:
     "Every executive gets a public, shareable impact page showing how much they have directed to charity. This is a preview of what each page will show. No real figures exist yet.",
 };

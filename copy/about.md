@@ -1,13 +1,13 @@
 # About (/about)
 
-Page title: About. TheBigIntro.
-Meta description: Why Isobel Hardwick is building TheBigIntro: fix irrelevant outreach for senior leaders and turn every conversation into $1,000 for a cause that matters.
+Page title: About. theGoodintro.
+Meta description: Why Isobel Hardwick is building theGoodintro: fix irrelevant outreach for senior leaders and turn every conversation into $1,000 for a cause that matters.
 
 ## Hero
 
 Eyebrow: About
 H1: Built to fix **both sides**.
-Lede: Senior people are buried in irrelevant outreach. Vendors with genuine value cannot get through honestly. TheBigIntro fixes both at once, and turns every conversation into $1,000 for a cause the leader chooses.
+Lede: Senior people are buried in irrelevant outreach. Vendors with genuine value cannot get through honestly. theGoodintro fixes both at once, and turns every conversation into $1,000 for a cause the leader chooses.
 CTA: Start a conversation
 
 ## From the founder
@@ -17,7 +17,7 @@ Eyebrow: From the founder
 
 I spent a long time on the sending side of sales, watching good people fail to reach leaders who might actually have wanted to talk, and watching leaders drown in noise from people who did not. The fix was never another clever subject line. It was a rule: earn the conversation by being relevant, and make the conversation worth something beyond the deal.
 
-TheBigIntro is that rule, built into a place. Every conversation here sends $1,000 to a cause the leader chooses. That is the whole point.
+theGoodintro is that rule, built into a place. Every conversation here sends $1,000 to a cause the leader chooses. That is the whole point.
 
 Signature: Isobel Hardwick, founder
 
@@ -34,7 +34,7 @@ H2: Three things we will not compromise.
 
 Eyebrow: The first cohort
 H2: Help shape how this works.
-Founding members, executives and vendors alike, get a direct say in how TheBigIntro runs.
+Founding members, executives and vendors alike, get a direct say in how theGoodintro runs.
 CTA: Start a conversation
 
 ## Closing

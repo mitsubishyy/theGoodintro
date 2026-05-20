@@ -26,7 +26,7 @@ import {
 } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Giving. TheBigIntro.",
+  title: "Giving. theGoodintro.",
   description:
     "Exactly how the giving works: every meeting sends $1,000 to a deductible gift recipient (DGR) endorsed Australian charity the executive chooses, the terms it runs on, and how to verify all of it.",
 };
@@ -97,7 +97,7 @@ export default function Giving() {
             <FlowArrow />
             <FlowStep
               icon={IconNetwork}
-              label="TheBigIntro"
+              label="theGoodintro"
               detail="Holds the gift separately, takes nothing from it"
             />
             <FlowArrow />
@@ -363,7 +363,7 @@ export default function Giving() {
               <Faq q="Are the charities shown here your partners?">
                 No. The names shown are well-known examples to illustrate the
                 kind of organisation that qualifies. They have no affiliation
-                with TheBigIntro. The executive chooses, and it can be any
+                with theGoodintro. The executive chooses, and it can be any
                 DGR-endorsed Australian charity.
               </Faq>
               <Faq q="How do I know the money arrived?">

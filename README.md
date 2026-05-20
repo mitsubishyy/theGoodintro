@@ -1,4 +1,4 @@
-# TheBigIntro
+# theGoodintro
 
 Working concept brief. Previously codenamed "IntelleMeet". Started 2026-05-17.
 
@@ -23,7 +23,7 @@ Closest reference point is MeetMagic, but with three deliberate differences.
 
 A shareable page per executive showing cumulative donations directed through
 the platform, for example "Sarah has directed $14,000 to Beyond Blue via
-TheBigIntro meetings". Designed to be LinkedIn shareable.
+theGoodintro meetings". Designed to be LinkedIn shareable.
 
 This is a primary growth and retention lever, not a nice to have. It drives
 viral distribution and gives executives social proof plus an ongoing reason to

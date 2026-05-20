@@ -1,7 +1,7 @@
 # Terms (/terms)
 
-Page title: Terms. TheBigIntro.
-Meta description: The terms for using this early TheBigIntro site.
+Page title: Terms. theGoodintro.
+Meta description: The terms for using this early theGoodintro site.
 
 > TODO: replace with full platform terms before any paid meetings run.
 
@@ -11,7 +11,7 @@ Sub: Last updated 17 May 2026.
 
 ## About this site
 
-This is an early information site for TheBigIntro. It describes an idea that is still being shaped with a small founding group. Nothing here is an offer, a contract, or a guarantee of a meeting, a donation amount, or availability.
+This is an early information site for theGoodintro. It describes an idea that is still being shaped with a small founding group. Nothing here is an offer, a contract, or a guarantee of a meeting, a donation amount, or availability.
 
 ## What you can expect
 
@@ -19,7 +19,7 @@ The figures described, including the per-meeting charity gift and the separate a
 
 ## Using the site
 
-Please use the site lawfully and do not attempt to disrupt it. The name, wording and design are the property of TheBigIntro. Booking a call simply starts a conversation and creates no obligation on either side.
+Please use the site lawfully and do not attempt to disrupt it. The name, wording and design are the property of theGoodintro. Booking a call simply starts a conversation and creates no obligation on either side.
 
 ## Contact
 

@@ -1,4 +1,4 @@
-# TheBigIntro — Website Build Plan
+# theGoodintro — Website Build Plan
 
 Status: business plan agreed 2026-05-17. Design reset 2026-05-18: the
 previous visual identity, language rules, design system and homepage
@@ -69,9 +69,9 @@ Lean, validation appropriate. Every page is wired into the footer.
   IndexNow notify script reused from QuotaClub (activated once the domain is
   set).
 - Analytics: Vercel Analytics.
-- CallButton: links to a Calendly event. A dedicated TheBigIntro event is
+- CallButton: links to a Calendly event. A dedicated theGoodintro event is
   preferred over reusing the QuotaClub link.
-- Deploy: Vercel project connected to github.com/mitsubishyy/thebigintro,
+- Deploy: Vercel project connected to github.com/mitsubishyy/thegoodintro,
   custom domain once chosen.
 
 ## 6. Build sequence (post-reset)
@@ -86,7 +86,7 @@ Lean, validation appropriate. Every page is wired into the footer.
 
 ## 7. Decisions (resolved 2026-05-17)
 
-1. Domain: thebigintro.com. Build assumes this for metadata and IndexNow.
+1. Domain: thegoodintro.com. Build assumes this for metadata and IndexNow.
    Registration to be confirmed by Issy before deploy.
 2. Calendly: stubbed for launch. CallButton renders with a placeholder href
    and a visible TODO marker until Issy supplies the real event link.
@@ -96,7 +96,7 @@ Lean, validation appropriate. Every page is wired into the footer.
    yet.
 
 Remaining follow-ups, non-blocking:
-- Confirm thebigintro.com registration before the Vercel domain step.
+- Confirm thegoodintro.com registration before the Vercel domain step.
 - Supply the real Calendly link to replace the stub before public launch.
 
 ## 8. Explicitly out of scope for this site

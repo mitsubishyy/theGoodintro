@@ -1,13 +1,13 @@
 # For executives (/executives)
 
-Page title: For executives. TheBigIntro.
+Page title: For executives. theGoodintro.
 Meta description: Free for senior leaders. You decide what is relevant, take only the conversations worth your time, and $1,000 goes to a charity you choose every meeting.
 
 ## Hero
 
 Eyebrow: For executives · Invite only
 H1: Conversations worth **your time**.
-Lede: You are senior enough that your calendar is a target. TheBigIntro turns the few conversations worth having into $1,000 for a cause you choose.
+Lede: You are senior enough that your calendar is a target. theGoodintro turns the few conversations worth having into $1,000 for a cause you choose.
 CTA: Apply as a founding executive
 Trust: Free to join. No cold pitches. You stay in control of every request.
 

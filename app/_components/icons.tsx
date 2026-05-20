@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────────────────
-   Custom outline icon set for TheBigIntro.
+   Custom outline icon set for theGoodintro.
    24×24 viewBox, currentColor stroke, 1.6px stroke weight, rounded
    line caps and joins. Designed to read consistently in icon badges
    and small ui contexts.
@@ -135,7 +135,7 @@ export function IconColdInbox({ className, size = 22 }: IconProps) {
   );
 }
 
-/* TheBigIntro — interlocking circles (introduction) */
+/* theGoodintro — interlocking circles (introduction) */
 export function IconIntro({ className, size = 22 }: IconProps) {
   return (
     <svg width={size} height={size} {...baseProps} className={className}>

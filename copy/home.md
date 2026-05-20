@@ -1,6 +1,6 @@
 # Home (/)
 
-Page title: TheBigIntro. Meetings that fund what matters.
+Page title: theGoodintro. Meetings that fund what matters.
 
 ## Hero
 
@@ -107,7 +107,7 @@ CTA: Request your place
 ## From the founder
 
 Eyebrow: From the founder
-I kept seeing senior people buried in irrelevant outreach, and vendors with something genuine to say unable to get through honestly. TheBigIntro fixes both at once, and turns every meeting into $1,000 for a cause the executive chooses.
+I kept seeing senior people buried in irrelevant outreach, and vendors with something genuine to say unable to get through honestly. theGoodintro fixes both at once, and turns every meeting into $1,000 for a cause the executive chooses.
 Signature: Isobel Hardwick, founder
 (Avatar initials: IH)
 

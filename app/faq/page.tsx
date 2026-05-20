@@ -3,7 +3,7 @@ import Link from "next/link";
 import { PageHero, SectionHead, Faq, ClosingCta } from "../_components/ui";
 
 export const metadata: Metadata = {
-  title: "FAQ. TheBigIntro.",
+  title: "FAQ. theGoodintro.",
   description:
     "The questions executives and CFOs actually ask: is this a sales trap, which charities qualify, how the money is handled, what it costs, and who is behind it.",
 };
@@ -105,7 +105,7 @@ export default function FAQ() {
                 executives are charged. If that ever changed, the founding
                 cohort is grandfathered in permanently.
               </Faq>
-              <Faq q="How does TheBigIntro verify a vendor is genuine?">
+              <Faq q="How does theGoodintro verify a vendor is genuine?">
                 Vendors apply, are interviewed, and are vetted before they can
                 request a meeting. Every request is reviewed against your
                 stated priorities; requests that do not fit are rejected
@@ -121,7 +121,7 @@ export default function FAQ() {
                 opted into. For a typical founding executive that is two to
                 four meetings a quarter.
               </Faq>
-              <Faq q="Who is behind TheBigIntro?">
+              <Faq q="Who is behind theGoodintro?">
                 It is being built by Isobel Hardwick, an Australian operator
                 with a long background on the sending side of B2B sales.
                 There is no outside funding yet and the platform is in

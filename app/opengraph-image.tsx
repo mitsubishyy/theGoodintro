@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "TheBigIntro. Meetings that fund what matters.";
+export const alt = "theGoodintro. Meetings that fund what matters.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -19,7 +19,11 @@ export default function OpengraphImage() {
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ fontSize: 36, fontWeight: 700 }}>TheBigIntro</div>
+        <div style={{ fontSize: 36, fontWeight: 700, display: "flex" }}>
+          <span>the</span>
+          <span style={{ color: "#1f7a47" }}>Good</span>
+          <span>intro</span>
+        </div>
         <div style={{ fontSize: 64, fontWeight: 700, marginTop: 24 }}>
           Meetings that fund what matters.
         </div>
