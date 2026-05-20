@@ -48,7 +48,7 @@ export default function ApplyPage() {
                 take a small number of genuinely relevant vendor conversations,
                 and 100% of every meeting fee goes to a charity you choose. You
                 are never pitched without a specific, stated reason, and you
-                approve every request before you accept the meeting.
+                decide which ones become meetings.
               </p>
               <p>
                 The concept is to make vendor outreach respectful and to turn
