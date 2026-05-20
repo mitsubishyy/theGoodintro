@@ -42,13 +42,22 @@ export default function ApplyPage() {
               />
               This is the concept
             </div>
-            <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-              The Good Intro is an invite-only network where senior leaders take
-              a small number of genuinely relevant vendor conversations, and
-              100% of every meeting fee goes to a charity you choose. You are
-              never pitched without a specific, stated reason, and you approve
-              every request before it reaches you.
-            </p>
+            <div className="mt-4 space-y-5 text-lg text-muted-foreground leading-relaxed">
+              <p>
+                The Good Intro is an invite-only network where senior leaders
+                take a small number of genuinely relevant vendor conversations,
+                and 100% of every meeting fee goes to a charity you choose. You
+                are never pitched without a specific, stated reason, and you
+                approve every request before you accept the meeting.
+              </p>
+              <p>
+                The concept is to make vendor outreach respectful and to turn
+                the few conversations worth having into real donations to
+                causes you care about. It only costs executives and senior
+                leaders their time for the meeting. The charity donations are
+                paid by the vendors.
+              </p>
+            </div>
           </div>
         </div>
       </section>
