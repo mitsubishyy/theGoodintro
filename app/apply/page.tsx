@@ -53,8 +53,8 @@ export default function ApplyPage() {
               <p>
                 The concept is to make vendor outreach respectful and to turn
                 the few conversations worth having into real donations to
-                causes you care about. It only costs executives and senior
-                leaders their time for the meeting. The charity donations are
+                causes you care about. It only costs you and other senior
+                leaders your time for the meeting. The charity donations are
                 paid by the vendors.
               </p>
             </div>
