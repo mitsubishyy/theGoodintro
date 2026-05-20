@@ -246,6 +246,18 @@ function doPost(e) {
     lock.releaseLock();
   }
 }
+
+// Run once after pasting a new HEADERS array (Apps Script editor:
+// Run > resetSheet). Clears every row in the sheet and writes a
+// fresh header row matching the current HEADERS. Destructive --
+// you lose previous responses, so only run it when you're OK with
+// that (typical case: schema changed and the old rows are stale).
+function resetSheet() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  sheet.clear();
+  sheet.appendRow(HEADERS);
+  sheet.setFrozenRows(1);
+}
 ```
 
 ## Notes
