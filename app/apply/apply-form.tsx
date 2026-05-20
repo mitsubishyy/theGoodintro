@@ -478,8 +478,9 @@ export default function ApplyForm() {
             <span className="serif-italic">This genuinely helps.</span>
           </h2>
           <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-            Your answers go straight into shaping how <Brand /> works.
-            Nothing you shared is sold or made public.
+            I know your time is valuable, so I really appreciate you taking
+            the time to help out a stranger. If you ticked Yes on the last
+            question, I look forward to becoming acquainted with you.
           </p>
 
           {/* Share */}

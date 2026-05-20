@@ -19,7 +19,9 @@ You already deployed once. To apply a new version of this script:
 3. **Deploy → Manage deployments** → click the **pencil (Edit)** on your
    deployment → **Version: New version** → **Deploy**.
    - The Web app URL stays the same, so nothing else needs changing.
-   - No new permissions, so no re-authorisation prompt.
+   - First redeploy after this update prompts for one new permission
+     (UrlFetchApp, used to fetch the founder portrait from the site
+     for the inline email signature). Click Allow.
 
 > **Column set changed (2026-05).** The survey was reworked: several
 > fields were removed (`conflictOfInterest`, `meetingsPerYear`,
@@ -137,7 +139,7 @@ function copyHtml(firstName, answers) {
 '</td></tr>',
 '<tr><td style="padding:36px 32px 8px;">',
 '<h1 style="margin:0;font-family:Georgia,\'Times New Roman\',serif;font-size:26px;line-height:1.3;font-weight:normal;color:#1A1813;">Thank you, ' + esc(firstName) + '.</h1>',
-'<p style="margin:14px 0 0;font-size:15px;line-height:1.6;color:#6F675B;">Here is a copy of what you shared. Your time on this genuinely shapes what gets built.</p>',
+'<p style="margin:14px 0 0;font-size:15px;line-height:1.6;color:#6F675B;">I know your time is valuable, so I really appreciate you taking the time to help out a stranger. If you ticked Yes on the last question, I look forward to becoming acquainted with you.</p>',
 '</td></tr>',
 '<tr><td style="padding:22px 32px 0;">',
 '<p style="margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:0.16em;color:#1F7A52;">What you shared</p>',
@@ -150,8 +152,16 @@ function copyHtml(firstName, answers) {
 '</td></tr>',
 '<tr><td style="padding:26px 32px 6px;">',
 '<p style="margin:0 0 16px;font-family:Georgia,\'Times New Roman\',serif;font-size:17px;color:#1A1813;">Best,</p>',
-'<div style="font-size:14px;line-height:1.4;color:#1A1813;"><strong>Issy Hardwick</strong><span style="color:#1F7A52;padding:0 6px;">|</span>Founder</div>',
-'<div style="margin-top:8px;font-family:Georgia,\'Times New Roman\',serif;font-size:16px;">' + wordmark(false) + '</div>',
+'<table role="presentation" cellpadding="0" cellspacing="0"><tr>',
+'<td style="vertical-align:middle;padding-right:14px;">',
+'<div style="font-size:14px;line-height:1.4;color:#1A1813;"><strong>Issy Hardwick</strong></div>',
+'<div style="font-size:13px;line-height:1.4;color:#6F675B;">Founder</div>',
+'<div style="margin-top:4px;font-family:Georgia,\'Times New Roman\',serif;font-size:15px;">' + wordmark(false) + '</div>',
+'</td>',
+'<td style="vertical-align:middle;">',
+'<img src="cid:issy" alt="Issy Hardwick" width="64" height="64" style="display:block;width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:50% 0%;border:1px solid #E6DFD2;" />',
+'</td>',
+'</tr></table>',
 '</td></tr>',
 '<tr><td style="padding:20px 32px 28px;"><div style="border-top:1px solid #E6DFD2;padding-top:14px;">',
 '<p style="margin:0;font-size:12px;line-height:1.6;color:#9A9183;">You are receiving this because you asked for a copy of your answers on The Good Intro. Invite only, Australia first.</p>',
@@ -201,15 +211,27 @@ function doPost(e) {
       try { answers = JSON.parse(data.answersJson || "{}"); } catch (x) {}
       if (data.copyEmail) {
         var first = String(answers.fullName || "").trim().split(" ")[0] || "there";
-        MailApp.sendEmail({
+        var mailOptions = {
           to: data.copyEmail,
           subject: "Your answers, The Good Intro",
           htmlBody: copyHtml(first, answers),
           body:
-            "Thank you for taking the time. Here is a copy of what you shared:\n\n" +
+            "Thank you for taking the time.\n\n" +
+            "I know your time is valuable, so I really appreciate you taking " +
+            "the time to help out a stranger. If you ticked Yes on the last " +
+            "question, I look forward to becoming acquainted with you.\n\n" +
+            "Your answers:\n\n" +
             fmt(answers) +
             "\n\nYour responses are private and never sold or made public.\n\nIssy Hardwick\nFounder, The Good Intro"
-        });
+        };
+        try {
+          var portrait = UrlFetchApp.fetch("https://thegoodintro.vercel.app/issy.jpg")
+            .getBlob().setName("issy.jpg");
+          mailOptions.inlineImages = { issy: portrait };
+        } catch (imgErr) {
+          // Image fetch failed; send the email without the inline photo.
+        }
+        MailApp.sendEmail(mailOptions);
       }
     } else {
       sheet.appendRow(HEADERS.map(function (k) { return data[k] != null ? data[k] : ""; }));
