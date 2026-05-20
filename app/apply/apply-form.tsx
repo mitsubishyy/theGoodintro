@@ -478,9 +478,10 @@ export default function ApplyForm() {
             <span className="serif-italic">This genuinely helps.</span>
           </h2>
           <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-            I know your time is valuable, so I really appreciate you taking
-            the time to help out a stranger. If you ticked Yes on the last
-            question, I look forward to becoming acquainted with you.
+            Thanks for taking the time to help a stranger shape something{" "}
+            <span style={{ color: "var(--primary)", fontWeight: 600 }}>good</span>
+            . If you ticked Yes on the last question, I&apos;ll be in touch
+            soon. Looking forward to it.
           </p>
 
           {/* Share */}
