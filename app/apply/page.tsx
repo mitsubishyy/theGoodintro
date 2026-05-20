@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import ApplyForm from "./apply-form";
 import Brand from "../_components/brand";
-import Good from "../_components/good";
 
 const APPLY_DESC =
   "A short, honest set of questions for senior leaders to pressure-test theGoodintro: qualified vendor meetings where every meeting funds a charity the executive chooses.";
@@ -89,8 +88,8 @@ export default function ApplyPage() {
               </div>
               <div className="flex-1">
                 <p className="text-lg text-foreground leading-relaxed">
-                  I watched <Good /> outreach get drowned in mass AI noise and{" "}
-                  <Good /> leaders become exhausted from being pitched in the
+                  I watched good outreach get drowned in mass AI noise and
+                  good leaders become exhausted from being pitched in the
                   middle of the day. Leaders can no longer rely on their
                   inbox and are wary of answering unknown phone calls.{" "}
                   <Brand /> is my attempt to fix both.

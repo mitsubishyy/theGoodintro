@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, ChevronDown, Check, X } from "lucide-react";
 import Brand from "../_components/brand";
-import Good from "../_components/good";
 
 /* ────────────────────────────────────────────────────────────────
    Field primitives
@@ -472,8 +471,8 @@ export default function ApplyForm() {
             <span className="serif-italic">This genuinely helps.</span>
           </h2>
           <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-            Thanks for taking the time to help a stranger shape something{" "}
-            <Good />. If you ticked Yes on the last question, I&apos;ll be in
+            Thanks for taking the time to help a stranger shape something
+            good. If you ticked Yes on the last question, I&apos;ll be in
             touch soon. Looking forward to saying hi properly.
           </p>
 

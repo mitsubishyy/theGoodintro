@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero, SectionHead, Faq, ClosingCta } from "../_components/ui";
-import Good from "../_components/good";
 
 export const metadata: Metadata = {
   title: "FAQ. theGoodintro.",
@@ -29,7 +28,7 @@ export default function FAQ() {
             <div className="lg:col-span-4">
               <SectionHead
                 label="Questions"
-                title={<><Good /> things to ask.</>}
+                title="Good things to ask."
                 lede="Grouped by what leaders raise first. The model only works if you genuinely want to be here, so these are answered around your interests."
               />
             </div>

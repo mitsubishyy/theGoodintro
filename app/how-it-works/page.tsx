@@ -22,7 +22,6 @@ import {
   IconMail,
 } from "../_components/icons";
 import { HowItWorksIllustration } from "../_components/illustrations";
-import Good from "../_components/good";
 import {
   CALENDLY_URL,
   FOUNDER_LINKEDIN,
@@ -273,7 +272,7 @@ export default function HowItWorks() {
               <Quote className="mt-8 size-7 text-muted-foreground/40" />
               <p className="mt-4 text-lg md:text-xl leading-relaxed">
                 I spent a long time on the sending side of sales, watching{" "}
-                <Good /> people fail to reach leaders who might actually have
+                good people fail to reach leaders who might actually have
                 wanted to talk, and watching leaders drown in noise from
                 people who did not. The fix was never another clever subject
                 line. It was a rule: earn the conversation by being relevant,
