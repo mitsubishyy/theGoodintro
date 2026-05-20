@@ -29,7 +29,7 @@ export function PrimaryCta({
   return (
     <a
       href={href}
-      className="group inline-flex items-center gap-2 rounded-full bg-foreground text-background px-6 py-3.5 text-sm font-medium hover:bg-primary transition-colors"
+      className="group inline-flex items-center gap-2 rounded-full bg-foreground text-background px-6 py-3.5 text-sm font-medium hover:bg-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
     >
       {children}
       <ArrowRight className="size-4 group-hover:translate-x-0.5 transition-transform" />
@@ -47,7 +47,7 @@ export function SecondaryCta({
   return (
     <Link
       href={href}
-      className="group inline-flex items-center gap-2 rounded-full border border-border bg-card hover:bg-accent px-6 py-3.5 text-sm font-medium transition-colors"
+      className="group inline-flex items-center gap-2 rounded-full border border-border bg-card hover:bg-accent px-6 py-3.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
     >
       {children}
       <ArrowUpRight className="size-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -248,9 +248,13 @@ export function MoneyRow({
 export function MoneyBlock({
   lede,
   rows,
+  bigNumber = "The gift",
+  bigLabel = "Real, in full, every time",
 }: {
   lede: string;
   rows: { k: string; v: string }[];
+  bigNumber?: string;
+  bigLabel?: string;
 }) {
   return (
     <>
@@ -259,11 +263,11 @@ export function MoneyBlock({
       </p>
       <div className="mt-12 grid lg:grid-cols-5 gap-10 items-center">
         <div className="lg:col-span-2 relative">
-          <div className="display-serif text-[clamp(5rem,14vw,11rem)] leading-none text-primary">
-            $1,000
+          <div className="display-serif text-[clamp(3.5rem,10vw,7.5rem)] leading-[1.05] text-primary">
+            {bigNumber}
           </div>
           <div className="mt-4 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
-            Per meeting · to your chosen charity
+            {bigLabel}
           </div>
         </div>
         <div

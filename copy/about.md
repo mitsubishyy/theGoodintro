@@ -1,13 +1,13 @@
 # About (/about)
 
 Page title: About. theGoodintro.
-Meta description: Why Isobel Hardwick is building theGoodintro: fix irrelevant outreach for senior leaders and turn every conversation into $1,000 for a cause that matters.
+Meta description: Why Isobel Hardwick is building theGoodintro: fix irrelevant outreach for senior leaders and turn every conversation into a real gift for a cause that matters.
 
 ## Hero
 
 Eyebrow: About
 H1: Built to fix **both sides**.
-Lede: Senior people are buried in irrelevant outreach. Vendors with genuine value cannot get through honestly. theGoodintro fixes both at once, and turns every conversation into $1,000 for a cause the leader chooses.
+Lede: Senior people are buried in irrelevant outreach. Vendors with genuine value cannot get through honestly. theGoodintro fixes both at once, and turns every conversation into a real gift for a cause the leader chooses.
 CTA: Start a conversation
 
 ## From the founder
@@ -17,7 +17,7 @@ Eyebrow: From the founder
 
 I spent a long time on the sending side of sales, watching Good people fail to reach leaders who might actually have wanted to talk, and watching leaders drown in noise from people who did not. The fix was never another clever subject line. It was a rule: earn the conversation by being relevant, and make the conversation worth something beyond the deal.
 
-theGoodintro is that rule, built into a place. Every conversation here sends $1,000 to a cause the leader chooses. That is the whole point.
+theGoodintro is that rule, built into a place. Every conversation here sends a real gift to a cause the leader chooses. That is the whole point.
 
 Signature: Isobel Hardwick, founder
 
@@ -41,6 +41,6 @@ CTA: Start a conversation
 
 Eyebrow: The invitation
 H2: A few better conversations.
-Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives $1,000 each time.
+Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives a real gift each time.
 CTA: Apply as a founding executive
 Sub: Free for executives. Invite only. One short call to start.

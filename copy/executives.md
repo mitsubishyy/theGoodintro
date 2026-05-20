@@ -1,13 +1,13 @@
 # For executives (/executives)
 
 Page title: For executives. theGoodintro.
-Meta description: Free for senior leaders. You decide what is relevant, take only the conversations worth your time, and $1,000 goes to a charity you choose every meeting.
+Meta description: Free for senior leaders. You decide what is relevant, take only the conversations worth your time, and a real gift goes to a charity you choose every meeting.
 
 ## Hero
 
 Eyebrow: For executives · Invite only
 H1: Conversations worth **your time**.
-Lede: You are senior enough that your calendar is a target. theGoodintro turns the few conversations worth having into $1,000 for a cause you choose.
+Lede: You are senior enough that your calendar is a target. theGoodintro turns the conversations worth having into real giving for a cause you choose.
 CTA: Apply as a founding executive
 Trust: Free to join. No cold pitches. You stay in control of every request.
 
@@ -23,9 +23,9 @@ Step 02 — You get qualified requests
 A vendor must state the specific initiative or problem before they can ask. You see the reason and decide. No obligation.
 
 Step 03 — One focused conversation
-You have one focused conversation, and $1,000 goes to your chosen registered charity.
+You have one focused conversation, and a real gift goes to your chosen registered charity.
 
-Loop line: A vendor states a specific need, you approve only what fits, you have one short conversation, and $1,000 goes to your chosen charity.
+Loop line: A vendor states a specific need, you approve only what fits, you have one short conversation, and a real gift goes to your chosen charity.
 
 ## The honest answer
 
@@ -38,7 +38,7 @@ Lede: No. A vendor cannot reach you without stating a specific, relevant reason,
 Eyebrow: What your time is worth
 H2: Full transparency.
 
-Big number: $1,000
+Big number: The gift
 
 - To your chosen charity, per meeting — the full meeting gift
 - Platform admin fee — paid by the vendor, never you
@@ -62,6 +62,6 @@ CTA: Apply as a founding executive
 
 Eyebrow: The invitation
 H2: Conversations worth your time.
-Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives $1,000 each time.
+Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives a real gift each time.
 CTA: Apply as a founding executive
 Sub: Free for executives. Invite only. One short call to start.

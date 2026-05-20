@@ -32,7 +32,7 @@ export default function Home() {
               <p className="reveal reveal-2 mt-7 max-w-xl text-lg md:text-xl text-muted-foreground leading-relaxed">
                 A handful of relevant conversations, on your terms. Each one
                 sends{" "}
-                <span className="font-medium text-foreground">$1,000</span> to
+                <span className="font-medium text-foreground">a real gift</span> to
                 an Australian charity{" "}
                 <span className="font-medium text-foreground">you</span>{" "}
                 choose. No cold pitches, no hard sells, no obligation to take
@@ -79,16 +79,16 @@ export default function Home() {
         className="border-y"
         style={{ background: "var(--card)", borderColor: "var(--border)" }}
       >
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-10">
-          <p className="text-center text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground mb-6">
-            Where the $1,000 can go
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 md:py-24">
+          <p className="text-center text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground mb-10">
+            Where your gift can go
           </p>
           <LogoMarquee
             items={DGR_CHARITY_EXAMPLES}
             ariaLabel="Example Australian charities"
           />
           <p className="mt-6 text-center text-xs text-muted-foreground italic">
-            Illustrative Australian charities. You choose your own.
+            Illustrative Australian charities, all DGR-endorsed for tax-deductible giving. You choose your own.
           </p>
         </div>
       </section>
@@ -110,9 +110,9 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <MetricCard
-              value="$1,000"
-              label="To your chosen charity"
-              note="The full gift, every meeting you take"
+              value="Real"
+              label="Gift to your chosen charity"
+              note="Every meeting, in full, confirmed in writing"
             />
             <MetricCard
               value="100%"
@@ -143,7 +143,7 @@ export default function Home() {
                 anything reaches you, a vendor has to state, specifically, why
                 a conversation is relevant. You choose which ones happen,
                 decline the rest with no follow-up, and every meeting you take
-                sends $1,000 to a charity you choose.
+                sends a real gift to a charity you choose.
               </p>
               <div className="mt-8">
                 <Link
@@ -172,7 +172,7 @@ export default function Home() {
                 n="03"
                 icon={HeartHandshake}
                 title="One short meeting funds a real cause"
-                body="A scheduled conversation, on your terms. $1,000 reaches your chosen charity within 14 days, confirmed in writing. You can step away at any point, and your details are never sold or shared."
+                body="A scheduled conversation, on your terms. A real gift reaches your chosen charity within 14 days, confirmed in writing. You can step away at any point, and your details are never sold or shared."
               />
             </div>
           </div>
@@ -194,7 +194,7 @@ export default function Home() {
               </h2>
               <p className="mt-5 text-lg text-muted-foreground leading-relaxed">
                 For every vendor we admit, there are at least three
-                executives. Your inbox is not a marketplace where everyone
+                executives. Your inbox is not an auction where everyone
                 chases the same few names. Requests stay scarce, relevant, and
                 easy to decline.
               </p>
@@ -235,7 +235,7 @@ export default function Home() {
               relevant reason, and the conversation is about your priorities,
               not a pitch. If one is not useful, you simply do not take the
               next. The model only works if executives genuinely want to be
-              here, so it is built around your interests, not the vendor's.
+              here, so it is built around your interests, not the vendor&apos;s.
             </p>
           </div>
         </div>
@@ -338,8 +338,8 @@ export default function Home() {
                   I kept seeing senior people buried in irrelevant outreach,
                   and good people with something genuine to say unable to
                   get through honestly. theGoodintro fixes that, and turns
-                  every meeting into{" "}
-                  <span className="serif-italic">$1,000</span> for a cause
+                  every meeting into a{" "}
+                  <span className="serif-italic">real</span> gift for a cause
                   you choose.
                 </p>
                 <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
@@ -371,7 +371,7 @@ export default function Home() {
           <p className="mt-6 text-lg text-muted-foreground max-w-xl mx-auto">
             Apply as a founding executive. You decide what is relevant, take
             only the conversations you want, and the charity you choose
-            receives $1,000 each time.
+            receives a real gift each time.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
             <a

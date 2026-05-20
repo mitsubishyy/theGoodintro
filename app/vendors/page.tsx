@@ -1,6 +1,5 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { BadgeCheck, Heart, HeartHandshake, Lock } from "lucide-react";
+import { BadgeCheck, Heart, HeartHandshake } from "lucide-react";
 import {
   PageHero,
   SectionHead,
@@ -10,20 +9,19 @@ import {
   ClosingCta,
 } from "../_components/ui";
 import {
-  IconBriefcase,
-  IconNetwork,
-  IconGift,
   IconHandshake,
   IconIntro,
   IconHeartCircle,
 } from "../_components/icons";
 import { VendorsIllustration } from "../_components/illustrations";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "For vendors. theGoodintro.",
   description:
-    "A qualified introduction to a vetted, hard-to-reach senior audience. Every meeting you book sends $1,000 to the leader's chosen charity. Australia first, invite only.",
-};
+    "A qualified introduction to a vetted, hard-to-reach senior audience. Every meeting you book sends a real gift to the leader's chosen charity. Australia first, invite only.",
+  path: "/vendors",
+});
 
 export default function Vendors() {
   return (
@@ -33,7 +31,7 @@ export default function Vendors() {
         title="Reach leaders"
         italicWord="honestly"
         lede="A genuinely qualified introduction to a vetted, hard-to-reach senior audience. Earned by being relevant, not by buying a list and sending more cold email."
-        primaryCta="Book a call"
+        primaryCta="Apply as a founding vendor"
         pill="Founding vendor applications open"
         bg="var(--cream-4)"
         illustration={<VendorsIllustration className="w-full h-auto" />}
@@ -63,7 +61,7 @@ export default function Vendors() {
             <VendorCard
               icon={IconHeartCircle}
               title="Goodwill that lasts"
-              body={<>Every meeting sends $1,000 to the leader&apos;s chosen charity. You are remembered as the introduction that did some good.</>}
+              body={<>Every meeting sends a real gift to the leader&apos;s chosen charity. You are remembered as the introduction that did some good.</>}
             />
           </div>
         </div>
@@ -99,7 +97,7 @@ export default function Vendors() {
       {/* ── What is expected ─────────────────────────────────────── */}
       <section
         className="border-y"
-        style={{ background: "var(--stone-tint)", borderColor: "var(--border)" }}
+        style={{ background: "var(--mint-tint)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead
@@ -205,7 +203,7 @@ export default function Vendors() {
                 reason leaders take these meetings at all.
               </Faq>
               <Faq q="What exactly do I pay?">
-                Per held meeting you pay the $1,000 charity gift, which goes
+                Per held meeting you pay the charity gift, which goes
                 in full to the charity the leader chooses, plus a separate
                 platform fee on its own clearly named line. The gift is never
                 reduced to cover our costs. There is also a platform
@@ -218,7 +216,7 @@ export default function Vendors() {
                 </Link>
                 .
               </Faq>
-              <Faq q="Is the $1,000 tax-deductible to us?">
+              <Faq q="Is the charity gift tax-deductible to us?">
                 Yes. Every nominated charity holds deductible gift recipient
                 (DGR) endorsement, so the charity issues a tax-deductible
                 receipt directly to you, the vendor. DGR status is shown and
@@ -251,8 +249,8 @@ export default function Vendors() {
         eyebrow="The invitation"
         title="Be the introduction"
         italicWord="worth taking."
-        lede="Reach senior leaders by being relevant, and fund a real gift while you do it. Every meeting you book sends $1,000 to the leader's chosen charity."
-        primaryCta="Book a call"
+        lede="Reach senior leaders by being relevant, and fund a real gift while you do it. Every meeting you book sends a real gift to the leader's chosen charity."
+        primaryCta="Apply as a founding vendor"
         sub="One short call to start · You fund the giving"
       />
     </>

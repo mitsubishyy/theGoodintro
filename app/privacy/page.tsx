@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
 import { SectionLabel } from "../_components/ui";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Privacy. theGoodintro.",
   description: "How theGoodintro handles information during the early phase.",
-};
+  path: "/privacy",
+});
 
 // TODO: have this reviewed before public launch once data collection
 // (forms, Calendly, analytics) is finalised.

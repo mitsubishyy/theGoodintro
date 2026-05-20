@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import {
   PageHero,
   SectionHead,
@@ -24,12 +23,14 @@ import {
   ACNC_REGISTER_URL,
   ABN_LOOKUP_URL,
 } from "@/lib/config";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Giving. theGoodintro.",
   description:
-    "Exactly how the giving works: every meeting sends $1,000 to a deductible gift recipient (DGR) endorsed Australian charity the executive chooses, the terms it runs on, and how to verify all of it.",
-};
+    "Exactly how the giving works: every meeting sends a real gift to a deductible gift recipient (DGR) endorsed Australian charity the executive chooses, the terms it runs on, and how to verify all of it.",
+  path: "/giving",
+});
 
 const CAUSES = [
   { icon: IconStethoscope, label: "Health & medical research" },
@@ -41,9 +42,9 @@ const CAUSES = [
 ];
 
 const TERMS = [
-  "The gift is $1,000 per meeting that is actually held, paid by the vendor, never by the executive.",
+  "A real gift is sent for every meeting that is actually held, paid by the vendor, never by the executive.",
   "Once a meeting takes place the donation is committed and is paid within 14 days, regardless of the commercial outcome of the conversation.",
-  "The full $1,000 reaches the charity. No part of it is taken to cover platform costs; the platform fee is a separate, clearly named line billed to the vendor.",
+  "The full gift reaches the charity. No part of it is taken to cover platform costs; the platform fee is a separate, clearly named line billed to the vendor.",
   "Funds are held separately from platform revenue between invoice and payment to the charity.",
   "Only deductible gift recipient (DGR) endorsed Australian charities are eligible, so the vendor receives a tax-deductible receipt and every gift is publicly verifiable.",
   "The charity confirms receipt of the full amount directly to the executive, in writing.",
@@ -58,7 +59,7 @@ export default function Giving() {
         eyebrow="Giving"
         title="Where the gift"
         italicWord="actually lands"
-        lede="Every meeting sends $1,000 to a charity the executive chooses. This page is the whole of it: how the money moves, the terms it runs on, and how anyone can verify it independently."
+        lede="Every meeting sends a real gift to a charity the executive chooses. This page is the whole of it: how the money moves, the terms it runs on, and how anyone can verify it independently."
         primaryCta="Apply as a founding executive"
         secondaryLabel="See how it works"
         secondaryHref="/how-it-works"
@@ -81,7 +82,7 @@ export default function Giving() {
             <MoneyBlock
               lede="The charity figure stays whole on purpose. Running costs are recovered through a separately named platform fee, so the two numbers never get blended."
               rows={[
-                { k: "To the chosen DGR-endorsed charity, per meeting", v: "the full $1,000" },
+                { k: "To the chosen DGR-endorsed charity, per meeting", v: "the full gift" },
                 { k: "Taken from the donation for costs", v: "nothing" },
                 { k: "Paid to the charity", v: "within 14 days" },
                 { k: "Confirmed to the executive", v: "in writing" },
@@ -92,7 +93,7 @@ export default function Giving() {
             <FlowStep
               icon={IconBriefcase}
               label="Vendor"
-              detail="Pays the $1,000 gift plus a separate, named platform fee"
+              detail="Pays the charity gift plus a separate, named platform fee"
             />
             <FlowArrow />
             <FlowStep
@@ -104,7 +105,7 @@ export default function Giving() {
             <FlowStep
               icon={IconGift}
               label="Chosen charity"
-              detail="Receives $1,000 in full, confirms in writing"
+              detail="Receives the full gift, confirms in writing"
               accent
             />
           </div>
@@ -210,7 +211,7 @@ export default function Giving() {
                 Confirmed in writing
               </div>
               <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed">
-                The charity confirms receipt of the full $1,000 directly to
+                The charity confirms receipt of the full gift directly to
                 you, within 14 days of the meeting.
               </p>
             </div>
@@ -221,7 +222,7 @@ export default function Giving() {
       {/* ── Causes ───────────────────────────────────────────────── */}
       <section
         className="border-y"
-        style={{ background: "var(--stone-tint)", borderColor: "var(--border)" }}
+        style={{ background: "var(--mint-tint)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-28">
           <SectionHead
@@ -367,7 +368,7 @@ export default function Giving() {
                 DGR-endorsed Australian charity.
               </Faq>
               <Faq q="How do I know the money arrived?">
-                The charity confirms receipt of the full $1,000 directly to
+                The charity confirms receipt of the full gift directly to
                 the executive, in writing, within 14 days of the meeting. The
                 donation is never reduced for platform costs.
               </Faq>
@@ -380,7 +381,7 @@ export default function Giving() {
         eyebrow="The invitation"
         title="Choose the cause,"
         italicWord="we fund it."
-        lede="Apply as a founding executive. Every meeting you take sends $1,000 to a DGR-endorsed charity you choose, confirmed to you in writing."
+        lede="Apply as a founding executive. Every meeting you take sends a real gift to a DGR-endorsed charity you choose, confirmed to you in writing."
         secondaryLabel="See the pricing"
         secondaryHref="/pricing"
       />

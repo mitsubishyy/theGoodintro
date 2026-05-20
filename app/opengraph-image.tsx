@@ -38,7 +38,7 @@ export default function OpengraphImage() {
         </div>
         <div style={{ fontSize: 28, marginTop: 24 }}>
           Senior leaders take a few relevant conversations. Each one sends
-          $1,000 to a charity they choose.
+          a real gift to a charity they choose.
         </div>
       </div>
     ),

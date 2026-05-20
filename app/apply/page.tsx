@@ -78,7 +78,7 @@ export default function ApplyPage() {
               <div className="shrink-0">
                 <Image
                   src="/issy.jpg"
-                  alt="Issy Hardwick, founder of theGoodintro"
+                  alt="Isobel Hardwick, founder of theGoodintro"
                   width={128}
                   height={160}
                   className="rounded-xl object-cover object-top"
@@ -95,7 +95,7 @@ export default function ApplyPage() {
                   <Brand /> is my attempt to fix both.
                 </p>
                 <p className="mt-4 text-sm text-muted-foreground">
-                  Issy Hardwick · Founder, <Brand />
+                  Isobel Hardwick · Founder, <Brand />
                 </p>
               </div>
             </div>

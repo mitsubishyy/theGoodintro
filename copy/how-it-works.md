@@ -1,7 +1,7 @@
 # How it works (/how-it-works)
 
 Page title: How it works. theGoodintro.
-Meta description: The full model end to end: how relevant conversations are matched, how the $1,000 charity gift and separate named admin fee work, and how leaders choose where the giving goes.
+Meta description: The full model end to end: how relevant conversations are matched, how the charity gift and separate named admin fee work, and how leaders choose where the giving goes.
 
 ## Hero
 
@@ -22,16 +22,16 @@ Step 02 — The vendor qualifies the ask
 A vendor states the specific initiative or problem. That context is shown to the leader, who decides freely. No obligation.
 
 Step 03 — The conversation funds a cause
-One focused conversation happens, and $1,000 goes to the leader's chosen registered charity.
+One focused conversation happens, and a real gift goes to the leader's chosen registered charity.
 
-Loop line: A vendor states a specific need, the leader approves only what fits, one short conversation happens, and $1,000 goes to their chosen charity.
+Loop line: A vendor states a specific need, the leader approves only what fits, one short conversation happens, and a real gift goes to their chosen charity.
 
 ## Where the money goes
 
 Eyebrow: Where the money goes
 H2: The money flow, exactly.
 
-Big number: $1,000
+Big number: The gift
 
 - To the chosen charity, per meeting — the full meeting gift
 - Platform admin fee — paid by the vendor, a separate named line
@@ -75,6 +75,6 @@ CTA: Start a conversation
 
 Eyebrow: The invitation
 H2: See it work for you.
-Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives $1,000 each time.
+Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives a real gift each time.
 CTA: Apply as a founding executive
 Sub: Free for executives. Invite only. One short call to start.

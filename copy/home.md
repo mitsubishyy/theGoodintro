@@ -8,7 +8,7 @@ Chips: Invite only · Australia first · Funds charity
 
 H1: Meetings that fund **what matters**.
 
-Lede: You take a handful of conversations worth your time. Each one sends $1,000 to a charity you choose.
+Lede: You take a handful of conversations worth your time. Each one sends a real gift to a charity you choose.
 
 Primary CTA: Apply as a founding executive
 Secondary link: Are you a vendor? → (/vendors)
@@ -19,7 +19,7 @@ Trust line: No cold pitches. No hard sells. Every meeting funds a cause that mat
 
 Eyebrow: Why this exists
 H2: Your calendar is full of pitches that go nowhere.
-Lede: What if the few conversations worth having also did some Good? That is the whole idea. Fewer, more relevant meetings, each one sending $1,000 to a cause you care about.
+Lede: What if the few conversations worth having also did some Good? That is the whole idea. Fewer, more relevant meetings, each one sending a real gift to a cause you care about.
 
 ## How it works
 
@@ -33,16 +33,16 @@ Step 02 — You get qualified requests
 A vendor must state the specific initiative or problem before they can ask. You see the reason, and you decide.
 
 Step 03 — One focused conversation
-You have one focused conversation, and $1,000 goes to the charity you choose.
+You have one focused conversation, and a real gift goes to the charity you choose.
 
-Loop line: A vendor states a specific need, you approve only what fits, you have one short conversation, and $1,000 goes to your chosen charity.
+Loop line: A vendor states a specific need, you approve only what fits, you have one short conversation, and a real gift goes to your chosen charity.
 
 ## Where the money goes
 
 Eyebrow: Where the money goes
 H2: Full transparency.
 
-Big number: $1,000
+Big number: The gift
 
 - To your chosen charity, per meeting — the full meeting gift
 - Platform admin fee — paid by the vendor, never you
@@ -74,7 +74,7 @@ Eyebrow: What makes this different
 H2: Built around relevance and giving.
 
 - Qualified by requirement — Access is earned, not bought. A vendor states the specific reason a conversation is worth your time, or it never reaches you.
-- A deliberately big gift — $1,000 a meeting is set high on purpose, so the giving means something, not a token gesture.
+- A deliberately big gift — the gift is set deliberately high on purpose, so the giving means something, not a token gesture.
 - No fine print — The full money flow is on this page. No vague claims, nothing buried in terms.
 
 ## Who this is for
@@ -107,7 +107,7 @@ CTA: Request your place
 ## From the founder
 
 Eyebrow: From the founder
-I kept seeing senior people buried in irrelevant outreach, and vendors with something genuine to say unable to get through honestly. theGoodintro fixes both at once, and turns every meeting into $1,000 for a cause the executive chooses.
+I kept seeing senior people buried in irrelevant outreach, and vendors with something genuine to say unable to get through honestly. theGoodintro fixes both at once, and turns every meeting into a real gift for a cause the executive chooses.
 Signature: Isobel Hardwick, founder
 (Avatar initials: IH)
 
@@ -120,7 +120,7 @@ H2: Good things to ask.
 No. A vendor cannot reach you without stating a specific, relevant reason, and the conversation is about your priorities, not a hard sell.
 
 **Which charities can I choose?**
-Any registered charity you choose. You name it, and that is exactly where your $1,000 goes.
+Any registered charity you choose. You name it, and that is exactly where your gift goes.
 
 **What does it cost an executive?**
 Nothing. It is free for executives. Vendors pay, and that is what funds the donation to your charity.
@@ -135,6 +135,6 @@ One short, focused conversation. You only take the ones you choose.
 
 Eyebrow: The invitation
 H2: Fewer meetings, real giving.
-Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives $1,000 each time.
+Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives a real gift each time.
 CTA: Apply as a founding executive
 Sub: Free for executives. Invite only. One short call to start.

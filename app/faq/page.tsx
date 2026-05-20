@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero, SectionHead, Faq, ClosingCta } from "../_components/ui";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "FAQ. theGoodintro.",
   description:
     "The questions executives and CFOs actually ask: is this a sales trap, which charities qualify, how the money is handled, what it costs, and who is behind it.",
-};
+  path: "/faq",
+});
 
 export default function FAQ() {
   return (
@@ -73,7 +74,7 @@ export default function FAQ() {
                 to DGR keeps every gift verifiable on the public register and
                 traceable to a recognised Australian cause.
               </Faq>
-              <Faq q="How is the $1,000 actually paid? Who holds the money?">
+              <Faq q="How is the charity gift actually paid? Who holds the money?">
                 Vendors are invoiced for the donation plus a separately named
                 platform fee at the point a meeting is confirmed. The
                 donation is held separately from platform revenue from invoice
@@ -142,7 +143,7 @@ export default function FAQ() {
       <ClosingCta
         title="Still have a"
         italicWord="question?"
-        lede="Apply as a founding executive and ask it on the call. You decide what is relevant, you take only the conversations you want, and the charity you choose receives $1,000 each time."
+        lede="Apply as a founding executive and ask it on the call. You decide what is relevant, you take only the conversations you want, and the charity you choose receives a real gift each time."
         secondaryLabel="See the giving"
         secondaryHref="/giving"
       />

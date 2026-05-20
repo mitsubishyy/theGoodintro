@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
 import { SectionLabel } from "../_components/ui";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Terms. theGoodintro.",
   description: "The terms for using this early theGoodintro site.",
-};
+  path: "/terms",
+});
 
 // TODO: replace with full platform terms before any paid meetings run.
 export default function Terms() {

@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import Image from "next/image";
@@ -28,12 +27,14 @@ import {
   ACNC_REGISTER_URL,
   ABN_LOOKUP_URL,
 } from "@/lib/config";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "How it works. theGoodintro.",
   description:
-    "The whole model in the open: how a relevant conversation becomes a $1,000 gift, why it works better than cold outreach, and who is building it.",
-};
+    "The whole model in the open: how a relevant conversation becomes a real gift, why it works better than cold outreach, and who is building it.",
+  path: "/how-it-works",
+});
 
 export default function HowItWorks() {
   const hasFounderPhoto = existsSync(
@@ -96,12 +97,12 @@ export default function HowItWorks() {
               n="03"
               icon={HeartHandshake}
               title="The conversation funds a cause"
-              body="One focused conversation happens, and $1,000 goes to the leader's chosen DGR-endorsed charity."
+              body="One focused conversation happens, and a real gift goes to the leader's chosen DGR-endorsed charity."
             />
           </div>
           <p className="mt-12 text-center text-base text-muted-foreground italic max-w-3xl mx-auto">
             A vendor states a specific need, the leader approves only what
-            fits, one short conversation happens, and $1,000 goes to their
+            fits, one short conversation happens, and a real gift goes to their
             chosen charity.
           </p>
         </div>
@@ -117,13 +118,13 @@ export default function HowItWorks() {
           <SectionHead
             label="The money, in short"
             title="The gift is never the revenue."
-            lede="The full $1,000 reaches the charity. Running costs are recovered through a separate, clearly named platform fee, so the two numbers never blend."
+            lede="The full gift reaches the charity. Running costs are recovered through a separate, clearly named platform fee, so the gift is never reduced for them."
           />
           <div className="mt-12">
             <MoneyBlock
               lede="Executives pay nothing. The vendor funds the gift and the platform on separate lines."
               rows={[
-                { k: "To the chosen DGR-endorsed charity", v: "the full $1,000" },
+                { k: "To the chosen DGR-endorsed charity", v: "the full gift" },
                 { k: "Taken from the donation for costs", v: "nothing" },
                 { k: "What an executive pays", v: "nothing, ever" },
               ]}
@@ -152,12 +153,9 @@ export default function HowItWorks() {
           <div className="mt-14 grid md:grid-cols-2 gap-4">
             <div
               className="rounded-2xl border p-8"
-              style={{ background: "var(--stone-tint)", borderColor: "var(--stone-soft)" }}
+              style={{ background: "var(--card)", borderColor: "var(--border)" }}
             >
-              <div
-                className="size-12 rounded-xl grid place-items-center mb-6"
-                style={{ background: "var(--stone-soft)", color: "var(--muted-foreground)" }}
-              >
+              <div className="size-12 rounded-xl bg-foreground/[0.04] grid place-items-center mb-6 text-muted-foreground">
                 <IconColdInbox size={22} />
               </div>
               <div className="text-[10px] font-mono uppercase tracking-[0.18em] mb-3 text-muted-foreground">
@@ -197,7 +195,7 @@ export default function HowItWorks() {
                 <ComparisonRow text="Qualified by stated, specific relevance" />
                 <ComparisonRow text="You approve or decline every request" />
                 <ComparisonRow text="One short conversation, on your terms" />
-                <ComparisonRow text="$1,000 to a charity you choose, every time" />
+                <ComparisonRow text="A real gift to a charity you choose, every time" />
                 <ComparisonRow text="No follow-up unless you invite it" />
               </ul>
             </div>
@@ -280,8 +278,8 @@ export default function HowItWorks() {
               </p>
               <p className="mt-5 text-lg md:text-xl leading-relaxed">
                 theGoodintro is that rule, built into a place. Every
-                conversation here sends{" "}
-                <span className="serif-italic">$1,000</span> to a cause the
+                conversation here sends a{" "}
+                <span className="serif-italic">real</span> gift to a cause the
                 leader chooses. That is the whole point.
               </p>
               <p className="mt-5 text-lg md:text-xl leading-relaxed">
@@ -342,7 +340,7 @@ export default function HowItWorks() {
             </div>
             <div className="lg:col-span-7">
               <ul className="space-y-3 text-sm md:text-base">
-                <ComparisonRow text="The $1,000 gift is never reduced for our costs; the platform fee is its own named line" />
+                <ComparisonRow text="The gift is never reduced for our costs; the platform fee is its own named line" />
                 <ComparisonRow text="Every nominated charity holds deductible gift recipient (DGR) endorsement" />
                 <ComparisonRow text="The charity confirms receipt of the full amount directly to the executive in writing" />
                 <ComparisonRow text="Your details are never sold, traded, or published" />
@@ -430,7 +428,7 @@ export default function HowItWorks() {
       <ClosingCta
         title="See it work"
         italicWord="for you."
-        lede="Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives $1,000 each time."
+        lede="Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives a real gift each time."
         secondaryLabel="For vendors"
         secondaryHref="/vendors"
       />

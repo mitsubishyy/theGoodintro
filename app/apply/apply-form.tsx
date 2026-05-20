@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ArrowRight, ChevronDown, Check, X } from "lucide-react";
 import Brand from "../_components/brand";
+import { SITE_URL } from "@/lib/config";
 
 /* ────────────────────────────────────────────────────────────────
    Field primitives
@@ -69,9 +71,9 @@ function Field({
 }
 
 const inputCls =
-  "w-full rounded-xl border border-border bg-card px-4 py-3 text-base text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors focus:border-primary";
+  "w-full rounded-xl border border-border bg-card px-4 py-3 text-base text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 focus-visible:ring-offset-background";
 const areaCls =
-  "w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-base text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors focus:border-primary resize-y min-h-[110px]";
+  "w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-base text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 focus-visible:ring-offset-background resize-y min-h-[110px]";
 
 function Pills({
   options,
@@ -217,13 +219,6 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function readUtm(key: string): string {
-  if (typeof window === "undefined") return "";
-  return (
-    new URLSearchParams(window.location.search).get(key)?.slice(0, 100) ?? ""
-  );
-}
-
 /* ── Answer option sets ─────────────────────────────────────────── */
 
 const CHARITY_THEMES = [
@@ -302,12 +297,13 @@ export default function ApplyForm() {
   // Privacy + meta
   const [consent, setConsent] = useState(false);
   const [website, setWebsite] = useState(""); // honeypot
-  const [utm, setUtm] = useState({
-    source: "",
-    medium: "",
-    campaign: "",
-    content: "",
-  });
+  const searchParams = useSearchParams();
+  const utm = {
+    source: searchParams.get("utm_source")?.slice(0, 100) ?? "",
+    medium: searchParams.get("utm_medium")?.slice(0, 100) ?? "",
+    campaign: searchParams.get("utm_campaign")?.slice(0, 100) ?? "",
+    content: searchParams.get("utm_content")?.slice(0, 100) ?? "",
+  };
 
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -316,7 +312,7 @@ export default function ApplyForm() {
 
   // Thank-you popup
   const [modalOpen, setModalOpen] = useState(true);
-  const [shareUrl, setShareUrl] = useState("");
+  const shareUrl = `${SITE_URL}/apply`;
   const [shareCopied, setShareCopied] = useState(false);
   const [wantsCopy, setWantsCopy] = useState("");
   const [copyEmail, setCopyEmail] = useState("");
@@ -326,16 +322,6 @@ export default function ApplyForm() {
   const [submitted, setSubmitted] = useState<Record<string, unknown> | null>(
     null,
   );
-
-  useEffect(() => {
-    setUtm({
-      source: readUtm("utm_source"),
-      medium: readUtm("utm_medium"),
-      campaign: readUtm("utm_campaign"),
-      content: readUtm("utm_content"),
-    });
-    setShareUrl(window.location.origin + "/apply");
-  }, []);
 
   async function sendCopyRequest() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(copyEmail.trim())) {

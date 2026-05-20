@@ -50,12 +50,12 @@ export function HeroIllustration({ className }: Props) {
       {/* flow arc from card to medallion */}
       <path d="M408 286 Q452 310 444 352" stroke="var(--ill-emerald-deep)" strokeWidth="2.4" strokeDasharray="2 7" strokeLinecap="round" fill="none" opacity="0.5" />
 
-      {/* $1,000 medallion */}
+      {/* gift medallion */}
       <g transform="translate(428, 384)">
         <circle r="52" fill="var(--ill-emerald-deep)" opacity="0.15" transform="translate(4 6)" />
         <circle r="52" fill="var(--ill-emerald)" />
-        <text textAnchor="middle" y="-3" fontFamily="serif" fontSize="22" fontWeight="700" fill="var(--ill-cream)">$1,000</text>
-        <text textAnchor="middle" y="17" fontFamily="sans-serif" fontSize="9" fontWeight="700" fill="var(--ill-cream)" opacity="0.85" letterSpacing="1.5">TO CHARITY</text>
+        <text textAnchor="middle" y="3" fontFamily="serif" fontSize="22" fontStyle="italic" fontWeight="700" fill="var(--ill-cream)">Gift</text>
+        <text textAnchor="middle" y="22" fontFamily="sans-serif" fontSize="9" fontWeight="700" fill="var(--ill-cream)" opacity="0.85" letterSpacing="1.5">TO CHARITY</text>
       </g>
 
       {/* heart cause badge */}
@@ -200,12 +200,12 @@ export function HowItWorksIllustration({ className }: Props) {
       </g>
       <text x="70" y="252" textAnchor="middle" fontFamily="sans-serif" fontSize="13" fontWeight="700" fill="var(--ill-ink)" letterSpacing="1">VENDOR</text>
 
-      {/* arc 1 with $1,000 */}
+      {/* arc 1 with the gift */}
       <path d="M120 168 Q186 116 252 168" stroke="var(--ill-emerald-deep)" strokeWidth="2.4" strokeDasharray="2 7" strokeLinecap="round" fill="none" opacity="0.55" />
       <path d="M245 160 l8 9 l9 -7" stroke="var(--ill-emerald-deep)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.55" />
       <g transform="translate(186, 102)">
-        <rect x="-35" y="-17" width="70" height="31" rx="15" fill="var(--ill-emerald)" />
-        <text textAnchor="middle" y="5" fontFamily="serif" fontSize="15" fontWeight="700" fill="var(--ill-cream)">$1,000</text>
+        <rect x="-32" y="-17" width="64" height="31" rx="15" fill="var(--ill-emerald)" />
+        <text textAnchor="middle" y="5" fontFamily="serif" fontSize="14" fontStyle="italic" fontWeight="700" fill="var(--ill-cream)">gift</text>
       </g>
 
       {/* node 2: hub */}
@@ -214,7 +214,7 @@ export function HowItWorksIllustration({ className }: Props) {
         <circle cx="0" cy="-10" r="13" fill="var(--ill-cream)" opacity="0.95" />
         <path d="M-13 8 Q0 -3 13 8 L13 20 L-13 20 Z" fill="var(--ill-cream)" opacity="0.95" />
       </g>
-      <text x="262" y="258" textAnchor="middle" fontFamily="sans-serif" fontSize="13" fontWeight="700" fill="var(--ill-ink)" letterSpacing="1">THEBIGINTRO</text>
+      <text x="262" y="258" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fontWeight="700" fill="var(--ill-ink)" letterSpacing="0.6">THEGOODINTRO</text>
 
       {/* arc 2 with 100% */}
       <path d="M324 168 Q390 116 456 168" stroke="var(--ill-emerald-deep)" strokeWidth="2.4" strokeDasharray="2 7" strokeLinecap="round" fill="none" opacity="0.55" />
@@ -285,7 +285,7 @@ export function PricingIllustration({ className }: Props) {
         <circle cx="50" cy="117" r="12" fill="var(--ill-emerald)" />
         <path d="M45 117 l4 4 l8 -9" stroke="var(--ill-cream)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
         <rect x="72" y="110" width="92" height="9" rx="4" fill="var(--ill-ink)" opacity="0.5" />
-        <text x="234" y="124" textAnchor="end" fontFamily="serif" fontSize="22" fontWeight="700" fill="var(--ill-emerald-deep)">$1,000</text>
+        <text x="234" y="124" textAnchor="end" fontFamily="serif" fontSize="20" fontStyle="italic" fontWeight="700" fill="var(--ill-emerald-deep)">The gift</text>
 
         {/* line 2: the platform fee, separate */}
         <rect x="24" y="156" width="232" height="44" rx="10" fill="var(--ill-tan-light)" opacity="0.55" />

@@ -13,10 +13,14 @@ const KEY = process.env.INDEXNOW_KEY;
 
 const ROUTES = [
   "",
-  "/executives",
-  "/vendors",
   "/how-it-works",
-  "/about",
+  "/vendors",
+  "/pricing",
+  "/giving",
+  "/impact",
+  "/faq",
+  "/opportunity",
+  "/apply",
   "/privacy",
   "/terms",
 ];

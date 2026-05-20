@@ -1,7 +1,7 @@
 # For vendors (/vendors)
 
 Page title: For vendors. theGoodintro.
-Meta description: A qualified introduction to a vetted, hard-to-reach senior audience. Every meeting you book sends $1,000 to the leader's chosen charity. Australia first, invite only.
+Meta description: A qualified introduction to a vetted, hard-to-reach senior audience. Every meeting you book sends a real gift to the leader's chosen charity. Australia first, invite only.
 
 ## Hero
 
@@ -9,7 +9,7 @@ Eyebrow: For vendors
 H1: Reach leaders **honestly**.
 Lede: A genuinely qualified introduction to a vetted, hard-to-reach senior audience. Earned by being relevant, not by buying a list and sending more cold email.
 CTA: Book a call
-Trust: You fund the giving. Every meeting you book sends $1,000 to the leader's chosen charity.
+Trust: You fund the giving. Every meeting you book sends a real gift to the leader's chosen charity.
 
 ## What you get
 
@@ -18,7 +18,7 @@ H2: A room you cannot cold-email into.
 
 - A vetted senior audience — Leaders who opted in and set their own priorities. Not a scraped list, and not someone screening on their behalf.
 - A qualified introduction — You state the specific initiative. It reaches the leader only when it genuinely fits what they asked to hear about.
-- Goodwill that lasts — Every meeting sends $1,000 to the leader's chosen charity. You are remembered as the introduction that did some Good.
+- Goodwill that lasts — Every meeting sends a real gift to the leader's chosen charity. You are remembered as the introduction that did some Good.
 
 ## Who this is for
 
@@ -40,7 +40,7 @@ Lede: Before a request reaches a leader you describe the specific initiative or 
 Eyebrow: What it costs, in full
 H2: Transparent pricing.
 
-Big number: $1,000
+Big number: The gift
 
 - To the leader's chosen charity, per meeting — the full meeting gift
 - Platform admin fee — billed to you, separately and clearly named
@@ -64,6 +64,6 @@ CTA: Book a call
 
 Eyebrow: The invitation
 H2: Be the introduction worth taking.
-Reach senior leaders by being relevant, and fund a real gift while you do it. Every meeting you book sends $1,000 to the leader's chosen charity.
+Reach senior leaders by being relevant, and fund a real gift while you do it. Every meeting you book sends a real gift to the leader's chosen charity.
 CTA: Book a call
 Sub: One short call to start. You fund the giving.

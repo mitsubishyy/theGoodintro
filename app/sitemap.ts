@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/faq",
     "/impact",
     "/opportunity",
+    "/apply",
     "/privacy",
     "/terms",
   ];

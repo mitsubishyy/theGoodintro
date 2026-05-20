@@ -1,0 +1,35 @@
+name: Notify IndexNow
+
+# Runs scripts/notify-indexnow.mjs after Vercel finishes deploying main.
+# Vercel posts a deployment_status to GitHub when a deploy succeeds; we
+# trigger on that event and only run for production deploys.
+#
+# Setup (one-time):
+#   1. Generate an IndexNow key (any random 8-128 char string).
+#   2. Save the key in GitHub repo settings under Secrets and variables
+#      > Actions > New repository secret named INDEXNOW_KEY.
+#   3. Create public/<INDEXNOW_KEY>.txt containing exactly the key, commit
+#      and push so it deploys to https://thegoodintro.com/<key>.txt.
+#   4. Push to main; deployment_status from Vercel will fire this workflow.
+
+on:
+  deployment_status:
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    if: github.event_name == 'workflow_dispatch' || (github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Production')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Submit URLs to IndexNow
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        run: node scripts/notify-indexnow.mjs

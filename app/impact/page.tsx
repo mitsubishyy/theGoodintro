@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Quote } from "lucide-react";
 import {
   PageHero,
@@ -9,12 +8,14 @@ import {
 } from "../_components/ui";
 import { LogoMarquee } from "../_components/LogoMarquee";
 import { DGR_CHARITY_EXAMPLES } from "@/lib/config";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Impact. theGoodintro.",
   description:
     "Every executive gets a public, shareable impact page showing how much they have directed to charity. This is a preview of what each page will show. No real figures exist yet.",
-};
+  path: "/impact",
+});
 
 export default function Impact() {
   return (
@@ -85,7 +86,7 @@ export default function Impact() {
               <MetricCard
                 value="$128k"
                 label="Directed to charity"
-                note="Sample. Sum of every $1,000 gift, in full"
+                note="Sample. Sum of every gift, in full"
               />
               <MetricCard
                 value="128"

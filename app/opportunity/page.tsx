@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { BadgeCheck, Heart, HeartHandshake, Target } from "lucide-react";
 import { CALENDLY_URL } from "@/lib/config";
+import { pageMetadata } from "@/lib/metadata";
 import {
   PageHero,
   SectionHead,
@@ -17,11 +17,12 @@ import {
 } from "../_components/icons";
 import { OpportunityIllustration } from "../_components/illustrations";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Partner with me. theGoodintro.",
   description:
-    "theGoodintro is early. A marketplace where senior leaders take only relevant meetings and every one sends $1,000 to a charity they choose. I am looking for one person to build it into a company.",
-};
+    "theGoodintro is early. An invite-only network where senior leaders take only relevant meetings and every one sends a real gift to a charity they choose. I am looking for one person to build it into a company.",
+  path: "/opportunity",
+});
 
 export default function Opportunity() {
   return (
@@ -30,7 +31,7 @@ export default function Opportunity() {
         eyebrow="The opportunity"
         title="Build this"
         italicWord="with me"
-        lede="theGoodintro is early. A marketplace where senior leaders take only the meetings worth their time, and every one sends $1,000 to a charity they choose. The idea is on the page. I am looking for one person to build it into a company."
+        lede="theGoodintro is early. An invite-only network where senior leaders take only the meetings worth their time, and every one sends a real gift to a charity they choose. The idea is on the page. I am looking for one person to build it into a company."
         primaryCta="Start a conversation"
         pill="Honest about the stage · Australia first"
         bg="var(--cream-6)"
@@ -63,8 +64,8 @@ export default function Opportunity() {
             />
             <OpCard
               icon={IconHeartCircle}
-              title="$1,000 a meeting to charity"
-              body="Every meeting sends $1,000 to the leader's chosen registered charity. A separate, clearly named admin fee covers the platform."
+              title="A real gift, every meeting"
+              body="Every meeting sends a real gift to the leader's chosen registered charity. A separate, clearly named admin fee covers the platform."
             />
             <OpCard
               icon={IconIntro}
@@ -96,7 +97,7 @@ export default function Opportunity() {
             <OpCard
               icon={Heart}
               title="Giving changes the story"
-              body="A $1,000 gift per meeting is a reason to take the call, and a story worth repeating. It compounds goodwill instead of spending it."
+              body="A real gift per meeting is a reason to take the call, and a story worth repeating. It compounds goodwill instead of spending it."
               lucide
             />
             <OpCard
@@ -142,7 +143,7 @@ export default function Opportunity() {
             <OpCard
               icon={IconBriefcase}
               title="You have done this"
-              body="You have built a marketplace or a two-sided business before and know where they break."
+              body="You have built a two-sided business or invite-only network before and know where they break."
             />
           </div>
           <p className="mt-10 text-center text-base text-muted-foreground italic max-w-3xl mx-auto">
@@ -161,15 +162,15 @@ export default function Opportunity() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div
             className="rounded-3xl border p-10 md:p-14 max-w-4xl mx-auto"
-            style={{ background: "var(--stone-tint)", borderColor: "var(--stone-soft)" }}
+            style={{ background: "var(--card)", borderColor: "var(--border)" }}
           >
             <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
               From the founder
             </div>
-            <h3 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">
+            <h2 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">
               I would rather build it well than{" "}
               <span className="serif-italic">alone</span>.
-            </h3>
+            </h2>
             <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
               I am Isobel Hardwick. I have spent a long time on the sending
               side of sales and I know exactly why this is needed. What I

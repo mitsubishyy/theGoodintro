@@ -1,13 +1,13 @@
 # The opportunity (/opportunity)
 
 Page title: Partner with me. theGoodintro.
-Meta description: theGoodintro is early. A marketplace where senior leaders take only relevant meetings and every one sends $1,000 to a charity they choose. I am looking for one person to build it into a company.
+Meta description: theGoodintro is early. An invite-only network where senior leaders take only relevant meetings and every one sends a real gift to a charity they choose. I am looking for one person to build it into a company.
 
 ## Hero
 
 Eyebrow: The opportunity
 H1: Build this with **me**.
-Lede: theGoodintro is early. A marketplace where senior leaders take only the meetings worth their time, and every one sends $1,000 to a charity they choose. The idea is on the page. I am looking for one person to build it into a company.
+Lede: theGoodintro is early. An invite-only network where senior leaders take only the meetings worth their time, and every one sends a real gift to a charity they choose. The idea is on the page. I am looking for one person to build it into a company.
 CTA: Start a conversation
 Trust: Honest about the stage. No funding claimed, no team yet. A clear model and the will to build it.
 
@@ -23,7 +23,7 @@ Eyebrow: The model
 H2: Simple, and hard to game.
 
 - Qualified by requirement — A vendor must state a specific initiative before a request reaches a leader. Relevance is the entry fee.
-- $1,000 a meeting to charity — Every meeting sends $1,000 to the leader's chosen registered charity. A separate, clearly named admin fee covers the platform.
+- A real gift, every meeting — Every meeting sends a real gift to the leader's chosen registered charity. A separate, clearly named admin fee covers the platform.
 - Free for the scarce side — Executives join free. Vendors pay, because access to a vetted, relevant audience is worth it.
 
 Loop line: The full flow, end to end, is on the how it works page (/how-it-works).
@@ -34,7 +34,7 @@ Eyebrow: Why it can work
 H2: The wedge.
 
 - Relevance changes who says yes — The one requirement is what makes a senior person willing to be here at all. It is the product, not a feature.
-- Giving changes the story — A $1,000 gift per meeting is a reason to take the call, and a story worth repeating. It compounds goodwill instead of spending it.
+- Giving changes the story — A real gift per meeting is a reason to take the call, and a story worth repeating. It compounds goodwill instead of spending it.
 - Australia first keeps it provable — Starting in one market keeps the giving verifiable and the quality high while the model is proven.
 
 ## Where it is today
@@ -50,7 +50,7 @@ H2: One person to build it with.
 
 - You open doors — You can reach senior leaders or vendors, and people take your introductions seriously.
 - You build product — You can take this from a page to a working platform, and ship without waiting to be told how.
-- You have done this — You have built a marketplace or a two-sided business before and know where they break.
+- You have done this — You have built a two-sided business or invite-only network before and know where they break.
 
 Loop line: You do not need all three. You need to complement what I bring, and care that the giving is real. This is a founding partner, shaping it from here, not a hire.
 
