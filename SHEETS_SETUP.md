@@ -19,9 +19,10 @@ You already deployed once. To apply a new version of this script:
 3. **Deploy → Manage deployments** → click the **pencil (Edit)** on your
    deployment → **Version: New version** → **Deploy**.
    - The Web app URL stays the same, so nothing else needs changing.
-   - First redeploy after this update prompts for one new permission
-     (UrlFetchApp, used to fetch the founder portrait from the site
-     for the inline email signature). Click Allow.
+   - No new permissions for this version. The founder portrait in the
+     email signature loads directly from the live site URL, so the
+     script does not need `UrlFetchApp` and you should not see a
+     re-auth prompt.
 
 > **Column set changed (2026-05).** The survey was reworked: several
 > fields were removed (`conflictOfInterest`, `meetingsPerYear`,
@@ -159,7 +160,7 @@ function copyHtml(firstName, answers) {
 '<div style="margin-top:4px;font-family:Georgia,\'Times New Roman\',serif;font-size:15px;">' + wordmark(false) + '</div>',
 '</td>',
 '<td style="vertical-align:middle;">',
-'<img src="cid:issy" alt="Issy Hardwick" width="64" height="64" style="display:block;width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:50% 0%;border:1px solid #E6DFD2;" />',
+'<img src="https://thegoodintro.vercel.app/issy.jpg" alt="Issy Hardwick" width="64" height="64" style="display:block;width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:50% 0%;border:1px solid #E6DFD2;" />',
 '</td>',
 '</tr></table>',
 '</td></tr>',
@@ -211,7 +212,7 @@ function doPost(e) {
       try { answers = JSON.parse(data.answersJson || "{}"); } catch (x) {}
       if (data.copyEmail) {
         var first = String(answers.fullName || "").trim().split(" ")[0] || "there";
-        var mailOptions = {
+        MailApp.sendEmail({
           to: data.copyEmail,
           subject: "Your answers, The Good Intro",
           htmlBody: copyHtml(first, answers),
@@ -222,15 +223,7 @@ function doPost(e) {
             "Your answers:\n\n" +
             fmt(answers) +
             "\n\nYour responses are private and never sold or made public.\n\nIssy Hardwick\nFounder, The Good Intro"
-        };
-        try {
-          var portrait = UrlFetchApp.fetch("https://thegoodintro.vercel.app/issy.jpg")
-            .getBlob().setName("issy.jpg");
-          mailOptions.inlineImages = { issy: portrait };
-        } catch (imgErr) {
-          // Image fetch failed; send the email without the inline photo.
-        }
-        MailApp.sendEmail(mailOptions);
+        });
       }
     } else {
       sheet.appendRow(HEADERS.map(function (k) { return data[k] != null ? data[k] : ""; }));
