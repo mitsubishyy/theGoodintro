@@ -1,53 +1,85 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight } from "lucide-react";
 import { CALENDLY_URL } from "@/lib/config";
-import Brand from "./brand";
 
 const NAV = [
   { href: "/how-it-works", label: "How it works" },
-  { href: "/vendors", label: "For vendors" },
-  { href: "/pricing", label: "Pricing" },
+  { href: "/vendors", label: "Vendors" },
   { href: "/giving", label: "Giving" },
-  { href: "/faq", label: "FAQ" },
+  { href: "/about", label: "About" },
 ];
 
 export default function SiteHeader() {
   const pathname = usePathname();
-  const bare = pathname === "/apply"; // survey: brand only, no nav
+  const bare = pathname === "/apply";
+
+  /**
+   * Reveal an emerald hairline below the nav once the page is scrolled.
+   * Class toggles on body so the rule lives in globals.css next to the nav.
+   */
+  useEffect(() => {
+    const onScroll = () => {
+      document.body.classList.toggle("hp-is-scrolled", window.scrollY > 24);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/70 backdrop-blur-xl">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 group">
-          <Brand className="text-base font-semibold tracking-tight" />
-        </Link>
+    <nav className="hp-topnav" aria-label="Primary">
+      <Link href="/" className="hp-brand">
+        <span className="hp-brand-mark" aria-hidden="true" />
+        <span>
+          the<span className="it">Good</span>intro
+        </span>
+      </Link>
 
-        {!bare && (
-          <>
-            <nav className="hidden md:flex items-center gap-7 text-sm text-muted-foreground">
-              {NAV.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="hover:text-foreground transition-colors"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
+      {!bare && (
+        <>
+          <div className="hp-nav-links">
+            {NAV.map((item) => (
+              <Link key={item.href} href={item.href}>
+                {item.label}
+              </Link>
+            ))}
+          </div>
+          <div className="hp-nav-actions">
             <a
-              href={CALENDLY_URL}
-              className="inline-flex items-center gap-1.5 rounded-full bg-foreground text-background text-sm font-medium pl-4 pr-3 py-2 hover:bg-primary transition-colors"
+              className="hp-nav-phone"
+              href="mailto:hello@thegoodintro.com"
+              aria-label="Contact us"
             >
-              Apply
-              <ArrowRight className="size-3.5" />
+              <svg viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path
+                  d="M3.2 1.8 H5.0 L6 4.4 L4.6 5.4 C5.2 7.1 6.6 8.4 8.4 9 L9.4 7.6 L12 8.6 V10.4 C12 11.0 11.5 11.5 10.9 11.5 C5.9 11.2 2.4 7.7 2.1 2.7 C2.1 2.1 2.6 1.6 3.2 1.8 Z"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                />
+              </svg>
             </a>
-          </>
-        )}
-      </div>
-    </header>
+            <a className="hp-nav-cta" href={CALENDLY_URL}>
+              Apply
+              <span className="arrow" aria-hidden="true">
+                <svg viewBox="0 0 10 10" fill="none">
+                  <path
+                    d="M2 8 L8 2 M3.5 2 H8 V6.5"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+            </a>
+          </div>
+        </>
+      )}
+    </nav>
   );
 }

@@ -103,14 +103,15 @@ export default function RootLayout({
       className={`${fraunces.variable} ${playfair.variable} ${ebGaramond.variable} ${cormorant.variable} ${libreCaslon.variable} ${crimsonPro.variable} ${sourceSerif.variable} ${inter.variable} ${mono.variable}`}
     >
       <body suppressHydrationWarning className="text-foreground bg-background antialiased">
-        <SiteHeader />
-
-        <main>
-          <PageTransition>{children}</PageTransition>
-        </main>
-
-        <SiteFooter />
-
+        <div className="hp-page-frame">
+          <div className="hp-page">
+            <SiteHeader />
+            <main>
+              <PageTransition>{children}</PageTransition>
+            </main>
+            <SiteFooter />
+          </div>
+        </div>
         <Analytics />
       </body>
     </html>
