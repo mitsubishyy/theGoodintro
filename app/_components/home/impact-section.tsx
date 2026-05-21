@@ -3,118 +3,103 @@
 import { useEffect, useRef } from "react";
 
 /**
- * "Our impact" — single-viewport section that auto-cycles through three
- * states when ≥60% of the section is in view:
+ * Pinned scroll-scrub impact section.
  *
- *   State 1 — $48,300 directed (warm white)
- *   State 2 — 42 introductions (oat, rises up over state 1)
- *   State 3 — Australian map with pin-drops (warm white, rises up over state 2)
+ * The outer .hp-impact-scroll is 300vh tall; the inner .hp-impact-pinned uses
+ * position: sticky to stay glued to the viewport across that runway. Scroll
+ * progress through the runway drives a single rAF-coalesced update that touches
+ * only transform + opacity on the animated elements — keeps the scrub silky.
  *
- * The full sequence is ~9s, time-driven (no scroll dependency). Reduced-motion
- * users get a static 2-column layout with all values shown immediately.
+ * Timeline (0–1 across the 300vh runway):
+ *   0.00 – 0.12  Stat 1 counter runs $0 → $48,300
+ *   0.20 – 0.40  Oat arch (1) rises behind stat 1
+ *   0.29 – 0.31  Stat 1 → Stat 2 cross-fade
+ *   0.40 – 0.52  Stat 2 counter runs 0 → 42
+ *   0.60 – 0.80  Warm-white arch (2) rises behind stat 2
+ *   0.69 – 0.71  Stat 2 → Stat 3 (map) cross-fade
+ *   0.80 – 1.00  Map outline visible + four pins drop in (staggered, scrubbable)
  *
- * The Australia outline is hand-traced from real geography — Cape York
- * Peninsula, Gulf of Carpentaria, Top End, Western Australia coastal bulge,
- * Great Australian Bight, south-east corner, and Tasmania as a separate
- * triangular island south of Victoria.
+ * Reduced motion: render final state with no scrub or scroll listener.
  */
 
 const CITIES = [
-  { id: "sydney", label: "Sydney", x: 878, y: 555, labelX: 895, labelY: 560, anchor: "start" as const },
-  { id: "melbourne", label: "Melbourne", x: 745, y: 655, labelX: 745, labelY: 700, anchor: "middle" as const },
-  { id: "brisbane", label: "Brisbane", x: 873, y: 470, labelX: 890, labelY: 475, anchor: "start" as const },
-  { id: "perth", label: "Perth", x: 118, y: 540, labelX: 105, labelY: 545, anchor: "end" as const },
+  { id: "sydney", label: "Sydney", x: 895, y: 553, labelX: 912, labelY: 558, anchor: "start" as const },
+  { id: "melbourne", label: "Melbourne", x: 758, y: 660, labelX: 758, labelY: 708, anchor: "middle" as const },
+  { id: "brisbane", label: "Brisbane", x: 935, y: 411, labelX: 952, labelY: 416, anchor: "start" as const },
+  { id: "perth", label: "Perth", x: 124, y: 511, labelX: 110, labelY: 516, anchor: "end" as const },
 ];
 
+const CITY_ORDER = ["sydney", "melbourne", "brisbane", "perth"] as const;
+
 export default function ImpactSection() {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const state1NumRef = useRef<HTMLParagraphElement | null>(null);
-  const state2NumRef = useRef<HTMLParagraphElement | null>(null);
-  const playedRef = useRef(false);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const num1Ref = useRef<HTMLParagraphElement | null>(null);
+  const num2Ref = useRef<HTMLParagraphElement | null>(null);
 
   useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
+    const container = scrollRef.current;
+    if (!container) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const state1 = section.querySelector<HTMLElement>('.hp-impact-state[data-state="1"]');
-    const state2 = section.querySelector<HTMLElement>('.hp-impact-state[data-state="2"]');
-    const state3 = section.querySelector<HTMLElement>('.hp-impact-state[data-state="3"]');
-    const cover2 = section.querySelector<SVGElement>(".hp-impact-cover-2");
-    const cover3 = section.querySelector<SVGElement>(".hp-impact-cover-3");
-    const auOutlines = section.querySelectorAll<SVGPathElement>(".hp-panel-map .au-outline");
-    const auBorders = section.querySelectorAll<SVGPathElement>(".hp-panel-map .au-state-border");
-    const pinWraps = section.querySelectorAll<SVGGElement>(".hp-panel-map .map-pin-wrap");
-    const labels = section.querySelectorAll<SVGTextElement>(".hp-panel-map .map-label");
+    const arch1 = container.querySelector<SVGElement>(".hp-impact-arch-1");
+    const arch2 = container.querySelector<SVGElement>(".hp-impact-arch-2");
+    const layer1 = container.querySelector<HTMLElement>('.hp-stage-layer[data-state="1"]');
+    const layer2 = container.querySelector<HTMLElement>('.hp-stage-layer[data-state="2"]');
+    const layer3 = container.querySelector<HTMLElement>('.hp-stage-layer[data-state="3"]');
+    const pinWraps = Array.from(
+      container.querySelectorAll<SVGGElement>(".map-pin-wrap")
+    );
+    const labels = Array.from(
+      container.querySelectorAll<SVGTextElement>(".map-label")
+    );
 
-    if (!state1 || !state2 || !state3) return;
+    if (!arch1 || !arch2 || !layer1 || !layer2 || !layer3) return;
 
-    const initDraw = (el: SVGPathElement) => {
-      try {
-        const len = el.getTotalLength();
-        if (!len) return;
-        el.style.strokeDasharray = String(len);
-        el.style.strokeDashoffset = String(len);
-        el.dataset.len = String(len);
-      } catch {
-        /* getTotalLength can throw if not yet rendered; ignore */
-      }
-    };
-    auOutlines.forEach(initDraw);
-    auBorders.forEach(initDraw);
+    pinWraps.forEach((w) => {
+      const m = (w.getAttribute("transform") || "").match(
+        /translate\(([-\d.]+)[ ,]+([-\d.]+)\)/
+      );
+      w.dataset.x = m ? m[1] : "0";
+      w.dataset.y = m ? m[2] : "0";
+    });
 
     const fmtDollar = (v: number) => "$" + v.toLocaleString("en-AU");
     const fmtInt = (v: number) => String(v);
-    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+    const clamp = (v: number, a: number, b: number) =>
+      Math.min(b, Math.max(a, v));
+    const smoothstep = (x: number, a: number, b: number) => {
+      const t = clamp((x - a) / (b - a), 0, 1);
+      return t * t * (3 - 2 * t);
+    };
     const easeOutBack = (t: number) => {
       const c = 1.70158 + 1;
       return 1 + c * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2);
     };
 
-    const setFinal = () => {
-      if (state1NumRef.current) state1NumRef.current.textContent = fmtDollar(48300);
-      if (state2NumRef.current) state2NumRef.current.textContent = fmtInt(42);
-      state1.classList.add("is-active");
-      state2.classList.add("is-active");
-      state3.classList.add("is-active");
-      cover2?.classList.add("is-down");
-      cover3?.classList.add("is-down");
-      auOutlines.forEach((el) => {
-        el.style.strokeDashoffset = "0";
-      });
-      auBorders.forEach((el) => {
-        el.style.strokeDashoffset = "0";
-      });
+    if (reduce) {
+      if (num1Ref.current) num1Ref.current.textContent = fmtDollar(48300);
+      if (num2Ref.current) num2Ref.current.textContent = fmtInt(42);
+      layer1.style.opacity = "1";
+      layer2.style.opacity = "1";
+      layer3.style.opacity = "1";
       pinWraps.forEach((w) => {
-        const x = w.dataset.x ?? "0";
-        const y = w.dataset.y ?? "0";
-        w.setAttribute("transform", `translate(${x}, ${y})`);
+        w.setAttribute("transform", `translate(${w.dataset.x}, ${w.dataset.y})`);
         const pin = w.querySelector<SVGGElement>(".map-pin");
         if (pin) pin.style.opacity = "1";
       });
       labels.forEach((l) => {
         l.style.opacity = "1";
       });
-    };
-
-    // Capture each pin's anchor position from its initial transform attribute.
-    pinWraps.forEach((wrap) => {
-      const m = (wrap.getAttribute("transform") || "").match(
-        /translate\(([-\d.]+)[ ,]+([-\d.]+)\)/
-      );
-      wrap.dataset.x = m ? m[1] : "0";
-      wrap.dataset.y = m ? m[2] : "0";
-    });
-
-    if (reduce) {
-      setFinal();
       return;
     }
 
-    // Initial pre-animation state.
-    if (state1NumRef.current) state1NumRef.current.textContent = fmtDollar(0);
-    if (state2NumRef.current) state2NumRef.current.textContent = fmtInt(0);
+    // Initial pre-scrub state.
+    arch1.style.transform = "translate3d(0, 100%, 0)";
+    arch2.style.transform = "translate3d(0, 100%, 0)";
+    layer1.style.opacity = "1";
+    layer2.style.opacity = "0";
+    layer3.style.opacity = "0";
     pinWraps.forEach((w) => {
       const x = w.dataset.x ?? "0";
       const y = parseFloat(w.dataset.y ?? "0");
@@ -126,349 +111,238 @@ export default function ImpactSection() {
       l.style.opacity = "0";
     });
 
-    // Re-init path lengths after layout settles (getTotalLength fails before).
-    requestAnimationFrame(() => {
-      [...auOutlines, ...auBorders].forEach((el) => {
-        if (!el.dataset.len || parseFloat(el.dataset.len) === 0) initDraw(el);
-      });
-    });
-    const onLoad = () => {
-      [...auOutlines, ...auBorders].forEach(initDraw);
+    let rafId = 0;
+    let lastP = -1;
+
+    const update = () => {
+      rafId = 0;
+      const rect = container.getBoundingClientRect();
+      const vh = window.innerHeight || 1;
+      const scrolled = -rect.top;
+      const max = rect.height - vh;
+      const p = max > 0 ? clamp(scrolled / max, 0, 1) : 0;
+
+      if (Math.abs(p - lastP) < 0.0008) return;
+      lastP = p;
+
+      // Counters scrub linearly (clamped) to a quick finish so the user
+      // spends most of the phase on the final value, not waiting for it.
+      const s1 = clamp(p / 0.12, 0, 1);
+      if (num1Ref.current)
+        num1Ref.current.textContent = fmtDollar(Math.round(48300 * s1));
+
+      const s2 = clamp((p - 0.4) / 0.12, 0, 1);
+      if (num2Ref.current)
+        num2Ref.current.textContent = fmtInt(Math.round(42 * s2));
+
+      // Arches rise — translate3d only, no width/height churn.
+      const a1 = clamp((p - 0.2) / 0.2, 0, 1);
+      arch1.style.transform = `translate3d(0, ${(1 - a1) * 100}%, 0)`;
+      const a2 = clamp((p - 0.6) / 0.2, 0, 1);
+      arch2.style.transform = `translate3d(0, ${(1 - a2) * 100}%, 0)`;
+
+      // Layer cross-fades happen at the moment each arch reaches the
+      // centred number (~50% rise), not at full cover — feels instant.
+      const fade12 = smoothstep(p, 0.29, 0.31);
+      const fade23 = smoothstep(p, 0.69, 0.71);
+      layer1.style.opacity = String(1 - fade12);
+      layer2.style.opacity = String(fade12 * (1 - fade23));
+      layer3.style.opacity = String(fade23);
+
+      // Pins each open their own scrub window inside 0.80–1.00.
+      for (let i = 0; i < CITY_ORDER.length; i++) {
+        const start = 0.8 + i * 0.04;
+        const end = start + 0.06;
+        const pt = clamp((p - start) / (end - start), 0, 1);
+        const eased = easeOutBack(pt);
+        const wrap = container.querySelector<SVGGElement>(
+          `.map-pin-wrap[data-pin="${CITY_ORDER[i]}"]`
+        );
+        if (!wrap) continue;
+        const tx = parseFloat(wrap.dataset.x ?? "0");
+        const ty = parseFloat(wrap.dataset.y ?? "0");
+        const yOff = (1 - eased) * -90;
+        wrap.setAttribute("transform", `translate(${tx}, ${ty + yOff})`);
+        const pin = wrap.querySelector<SVGGElement>(".map-pin");
+        if (pin) pin.style.opacity = String(Math.min(1, pt * 4));
+
+        const label = container.querySelector<SVGTextElement>(
+          `.map-label[data-label="${CITY_ORDER[i]}"]`
+        );
+        if (label) {
+          const lt = clamp((p - start - 0.02) / 0.03, 0, 1);
+          label.style.opacity = String(lt);
+        }
+      }
     };
+
+    const onScroll = () => {
+      if (!rafId) rafId = requestAnimationFrame(update);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    requestAnimationFrame(update);
+    const onLoad = () => update();
     window.addEventListener("load", onLoad);
 
-    const timeouts: number[] = [];
-
-    const animateCount = (
-      el: HTMLElement | null,
-      from: number,
-      to: number,
-      duration: number,
-      fmt: (v: number) => string
-    ) => {
-      if (!el) return;
-      const t0 = performance.now();
-      const tick = (now: number) => {
-        const t = Math.min(1, (now - t0) / duration);
-        const v = Math.round(from + (to - from) * easeOutCubic(t));
-        el.textContent = fmt(v);
-        if (t < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    };
-
-    const animateDraw = (elements: NodeListOf<SVGPathElement>, duration: number) => {
-      const t0 = performance.now();
-      const tick = (now: number) => {
-        const t = Math.min(1, (now - t0) / duration);
-        const eased = easeOutCubic(t);
-        elements.forEach((el) => {
-          const len = parseFloat(el.dataset.len || "0");
-          el.style.strokeDashoffset = String(len * (1 - eased));
-        });
-        if (t < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    };
-
-    const animatePin = (wrap: SVGGElement, duration: number) => {
-      const pin = wrap.querySelector<SVGGElement>(".map-pin");
-      const t0 = performance.now();
-      const targetX = parseFloat(wrap.dataset.x ?? "0");
-      const targetY = parseFloat(wrap.dataset.y ?? "0");
-      const tick = (now: number) => {
-        const t = Math.min(1, (now - t0) / duration);
-        const eased = easeOutBack(t);
-        const yOff = (1 - eased) * -90;
-        wrap.setAttribute("transform", `translate(${targetX}, ${targetY + yOff})`);
-        if (pin) pin.style.opacity = String(Math.min(1, t * 4));
-        if (t < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    };
-
-    const cityOrder = ["sydney", "melbourne", "brisbane", "perth"];
-
-    const playTimeline = () => {
-      animateCount(state1NumRef.current, 0, 48300, 1200, fmtDollar);
-
-      timeouts.push(
-        window.setTimeout(() => {
-          cover2?.classList.add("is-down");
-          state1.classList.remove("is-active");
-          state2.classList.add("is-active");
-        }, 2600)
-      );
-
-      timeouts.push(
-        window.setTimeout(() => {
-          animateCount(state2NumRef.current, 0, 42, 1200, fmtInt);
-        }, 3200)
-      );
-
-      timeouts.push(
-        window.setTimeout(() => {
-          cover3?.classList.add("is-down");
-          state2.classList.remove("is-active");
-          state3.classList.add("is-active");
-        }, 5800)
-      );
-
-      timeouts.push(
-        window.setTimeout(() => animateDraw(auOutlines, 800), 6400)
-      );
-      timeouts.push(
-        window.setTimeout(() => animateDraw(auBorders, 400), 7000)
-      );
-
-      cityOrder.forEach((city, i) => {
-        const wrap = section.querySelector<SVGGElement>(
-          `.map-pin-wrap[data-pin="${city}"]`
-        );
-        if (!wrap) return;
-        timeouts.push(
-          window.setTimeout(() => animatePin(wrap, 400), 7200 + i * 180)
-        );
-      });
-
-      cityOrder.forEach((city, i) => {
-        const label = section.querySelector<SVGTextElement>(
-          `.map-label[data-label="${city}"]`
-        );
-        if (!label) return;
-        timeouts.push(
-          window.setTimeout(() => {
-            label.style.transition = "opacity 400ms ease";
-            label.style.opacity = "1";
-          }, 8200 + i * 120)
-        );
-      });
-    };
-
-    const triggerOnce = () => {
-      if (playedRef.current) return;
-      playedRef.current = true;
-      io?.disconnect();
-      playTimeline();
-    };
-
-    // Fire only when section is genuinely centred (≥60% visible). Earlier
-    // threshold caused stats 1 & 2 to fly past before the user looked.
-    const io =
-      "IntersectionObserver" in window
-        ? new IntersectionObserver(
-            (entries) => {
-              for (const e of entries) {
-                if (e.isIntersecting && e.intersectionRatio >= 0.6) {
-                  triggerOnce();
-                  return;
-                }
-              }
-            },
-            { threshold: [0, 0.3, 0.6, 0.9] }
-          )
-        : null;
-
-    if (io) io.observe(section);
-
-    // Safety net for deep-link landings where the section is already past
-    // viewport top: require ≥60% visibility to auto-trigger.
-    const checkInitial = () => {
-      const rect = section.getBoundingClientRect();
-      const vh = window.innerHeight || 1;
-      const visible = Math.min(rect.bottom, vh) - Math.max(rect.top, 0);
-      if (visible / Math.min(vh, rect.height) >= 0.6) triggerOnce();
-    };
-    requestAnimationFrame(checkInitial);
-
     return () => {
-      io?.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
       window.removeEventListener("load", onLoad);
-      timeouts.forEach((id) => window.clearTimeout(id));
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
 
   return (
-    <section
-      className="hp-impact-section"
-      id="impact"
-      aria-labelledby="impact-title"
-      ref={sectionRef}
-    >
-      <header className="hp-impact-head">
-        <span className="hp-eyebrow">
-          <span className="dot" aria-hidden="true" />
-          Our impact
-        </span>
-        <h2 className="hp-impact-title" id="impact-title">
-          Together, we&rsquo;re making{" "}
-          <span className="hp-serif-italic">a difference</span>.
-        </h2>
-      </header>
+    <section className="hp-impact-section" id="impact">
+      <div className="hp-impact-scroll" ref={scrollRef}>
+        <div className="hp-impact-pinned">
+          <svg
+            className="hp-impact-arch hp-impact-arch-1"
+            preserveAspectRatio="none"
+            viewBox="0 0 100 130"
+            aria-hidden="true"
+          >
+            <path d="M 0 130 L 0 30 Q 50 -20 100 30 L 100 130 Z" />
+          </svg>
+          <svg
+            className="hp-impact-arch hp-impact-arch-2"
+            preserveAspectRatio="none"
+            viewBox="0 0 100 130"
+            aria-hidden="true"
+          >
+            <path d="M 0 130 L 0 30 Q 50 -20 100 30 L 100 130 Z" />
+          </svg>
 
-      <div className="hp-impact-stage" aria-live="polite">
-        <svg
-          className="hp-impact-cover hp-impact-cover-2"
-          preserveAspectRatio="none"
-          viewBox="0 0 100 116"
-          aria-hidden="true"
-        >
-          <path d="M 0 16 Q 50 0 100 16 L 100 116 L 0 116 Z" />
-        </svg>
-        <svg
-          className="hp-impact-cover hp-impact-cover-3"
-          preserveAspectRatio="none"
-          viewBox="0 0 100 116"
-          aria-hidden="true"
-        >
-          <path d="M 0 16 Q 50 0 100 16 L 100 116 L 0 116 Z" />
-        </svg>
+          <div className="hp-impact-pinned-content">
+            <header className="hp-impact-head">
+              <span className="hp-eyebrow">
+                <span className="dot" aria-hidden="true" />
+                Our impact
+              </span>
+              <h2 className="hp-impact-title">
+                Together, we&rsquo;re making{" "}
+                <span className="hp-serif-italic">a difference</span>.
+              </h2>
+            </header>
 
-        <div className="hp-impact-state is-active" data-state="1">
-          <p className="hp-panel-num" ref={state1NumRef}>
-            $0
-          </p>
-          <p className="hp-panel-label">
-            Directed to Australian charities through theGoodintro.
-          </p>
-        </div>
+            <div className="hp-impact-stage">
+              <div className="hp-stage-layer" data-state="1">
+                <p className="hp-stage-num" ref={num1Ref}>
+                  $0
+                </p>
+                <p className="hp-stage-caption">
+                  Directed to Australian charities through theGoodintro.
+                </p>
+              </div>
 
-        <div className="hp-impact-state" data-state="2">
-          <p className="hp-panel-num" ref={state2NumRef}>
-            0
-          </p>
-          <p className="hp-panel-label">
-            Qualified introductions between executives and vendors.
-          </p>
-        </div>
+              <div className="hp-stage-layer" data-state="2">
+                <p className="hp-stage-num" ref={num2Ref}>
+                  0
+                </p>
+                <p className="hp-stage-caption">
+                  Qualified introductions between executives and vendors.
+                </p>
+              </div>
 
-        <div className="hp-impact-state" data-state="3">
-          <h3 className="hp-panel-heading">
-            Across <span className="hp-serif-italic">four</span> Australian
-            states.
-          </h3>
+              <div className="hp-stage-layer" data-state="3">
+                <h3 className="hp-stage-map-heading">
+                  Across Australian states.
+                </h3>
+                <div className="hp-map-wrap">
+                  <svg
+                    className="hp-panel-map"
+                    viewBox="0 0 1000 800"
+                    fill="none"
+                    aria-hidden="true"
+                    preserveAspectRatio="xMidYMid meet"
+                  >
+                    {/* Mainland — hand-traced outline from the v2 bundle */}
+                    <path
+                      className="au-outline"
+                      d="M 111 565 L 115 530 L 122 510 L 115 480 L 100 450 L 90 420 L 78 395 L 70 382
+                         L 75 355 L 82 335 L 88 310 L 89 286 L 105 268 L 130 250 L 160 240 L 187 252
+                         L 215 232 L 245 218 L 266 199 L 296 184 L 320 165 L 345 140 L 367 105 L 380 118
+                         L 393 138 L 410 132 L 415 125 L 430 110 L 452 78 L 470 72 L 490 78 L 510 70
+                         L 530 78 L 555 65 L 580 55 L 583 45 L 590 45 L 595 58 L 593 75 L 583 95
+                         L 575 130 L 572 156 L 605 165 L 640 170 L 660 178 L 674 189 L 686 178 L 695 145
+                         L 702 100 L 706 38 L 720 48 L 728 78 L 740 108 L 752 138 L 770 165 L 785 195
+                         L 800 229 L 815 244 L 832 257 L 852 269 L 870 290 L 881 320 L 905 340 L 922 358
+                         L 935 388 L 948 435 L 945 460 L 938 480 L 928 500 L 920 518 L 909 535 L 895 553
+                         L 889 564 L 882 582 L 877 600 L 870 620 L 855 638 L 825 658 L 791 668 L 770 660
+                         L 760 656 L 745 660 L 728 664 L 712 660 L 695 650 L 680 645 L 660 638 L 645 615
+                         L 632 595 L 622 575 L 615 580 L 605 585 L 595 580 L 588 568 L 578 555 L 575 545
+                         L 570 558 L 565 568 L 552 568 L 540 558 L 528 540 L 525 525 L 510 515 L 480 510
+                         L 440 504 L 411 504 L 380 510 L 350 522 L 320 535 L 291 553 L 265 558 L 235 565
+                         L 200 575 L 172 578 L 145 575 L 125 572 L 111 565 Z"
+                    />
+                    {/* Tasmania */}
+                    <path
+                      className="au-outline"
+                      d="M 758 705 L 832 705 L 833 716 L 826 735 L 820 758 L 808 770 L 790 770 L 770 765 L 762 750 L 760 730 L 758 705 Z"
+                    />
+                    {/* State borders */}
+                    <path
+                      className="au-state-border"
+                      d="M 413 130 L 413 510"
+                    />
+                    <path
+                      className="au-state-border"
+                      d="M 413 378 L 609 378"
+                    />
+                    <path
+                      className="au-state-border"
+                      d="M 609 70 L 609 378"
+                    />
+                    <path
+                      className="au-state-border"
+                      d="M 674 378 L 674 638"
+                    />
+                    <path
+                      className="au-state-border"
+                      d="M 674 444 L 940 444"
+                    />
+                    <path
+                      className="au-state-border"
+                      d="M 674 633 L 855 633"
+                    />
 
-          <div className="hp-map-wrap">
-            <svg
-              className="hp-panel-map"
-              viewBox="0 0 1000 800"
-              fill="none"
-              aria-hidden="true"
-              preserveAspectRatio="xMidYMid meet"
-            >
-              {/*
-                Mainland Australia outline. Clockwise from Cape Leeuwin (SW tip).
-                Hand-traced to hit recognisable landmarks: WA west-coast bulge,
-                Kimberley NW, Top End, Gulf of Carpentaria, Cape York Peninsula,
-                east coast through Brisbane/Sydney, SE corner / Wilsons Prom,
-                Great Australian Bight.
-              */}
-              <path
-                className="au-outline"
-                d="M 115 615
-                   C 100 612, 95 600, 105 580
-                   C 115 555, 120 540, 125 525
-                   L 125 470
-                   C 115 445, 100 430, 90 410
-                   C 85 380, 88 350, 90 320
-                   C 88 295, 90 280, 95 270
-                   L 110 255
-                   C 130 235, 155 225, 180 220
-                   C 215 200, 250 185, 290 180
-                   C 325 170, 360 165, 395 160
-                   L 425 145
-                   C 432 130, 440 122, 450 120
-                   L 460 130
-                   L 470 142
-                   C 478 155, 488 160, 495 165
-                   L 500 180
-                   C 502 195, 500 215, 502 235
-                   C 510 260, 520 280, 530 295
-                   C 535 290, 538 280, 540 270
-                   C 545 245, 555 220, 568 200
-                   C 575 188, 585 180, 590 175
-                   L 600 165
-                   C 605 145, 608 125, 615 105
-                   C 620 90, 628 80, 635 80
-                   L 640 90
-                   L 645 110
-                   C 648 130, 650 155, 655 175
-                   C 665 195, 675 215, 688 235
-                   C 705 270, 725 305, 750 335
-                   C 780 370, 815 405, 845 435
-                   C 858 455, 868 475, 875 495
-                   C 880 520, 882 545, 880 570
-                   L 875 590
-                   C 868 610, 858 625, 845 640
-                   C 825 655, 800 665, 775 668
-                   L 760 670
-                   C 745 668, 730 665, 715 660
-                   L 700 658
-                   C 680 660, 665 655, 650 648
-                   C 625 635, 600 625, 575 620
-                   L 545 615
-                   C 510 615, 475 620, 440 622
-                   C 395 625, 350 625, 305 620
-                   C 265 615, 230 610, 195 605
-                   L 160 605
-                   C 140 605, 125 612, 115 615
-                   Z"
-              />
+                    {CITIES.map((c) => (
+                      <g
+                        key={c.id}
+                        className="map-pin-wrap"
+                        data-pin={c.id}
+                        transform={`translate(${c.x}, ${c.y})`}
+                      >
+                        <g className="map-pin">
+                          <path d="M -1 0 C -10 -10, -10 -22, 0 -30 C 10 -22, 10 -10, 1 0 Z" />
+                          <circle cx="0" cy="-20" r="3" />
+                        </g>
+                      </g>
+                    ))}
 
-              {/* Tasmania — separate triangular-ish island south of Victoria. */}
-              <path
-                className="au-outline"
-                d="M 760 695
-                   C 770 690, 785 690, 800 695
-                   L 810 705
-                   C 815 720, 815 735, 810 750
-                   L 800 765
-                   C 785 772, 768 770, 758 760
-                   L 750 745
-                   C 748 730, 750 715, 755 705
-                   Z"
-              />
-
-              {/* Faint internal state borders */}
-              <path className="au-state-border" d="M 405 165 L 405 615" />
-              <path className="au-state-border" d="M 405 425 L 600 425" />
-              <path className="au-state-border" d="M 565 200 L 565 425" />
-              <path className="au-state-border" d="M 600 200 L 600 620" />
-              <path className="au-state-border" d="M 600 485 L 875 485" />
-              <path className="au-state-border" d="M 600 595 L 870 600" />
-
-              {CITIES.map((c) => (
-                <g
-                  key={c.id}
-                  className="map-pin-wrap"
-                  data-pin={c.id}
-                  transform={`translate(${c.x}, ${c.y})`}
-                >
-                  <g className="map-pin">
-                    <path d="M -1 0 C -10 -10, -10 -22, 0 -30 C 10 -22, 10 -10, 1 0 Z" />
-                    <circle cx="0" cy="-20" r="3" />
-                  </g>
-                </g>
-              ))}
-
-              {CITIES.map((c) => (
-                <text
-                  key={`label-${c.id}`}
-                  className="map-label"
-                  data-label={c.id}
-                  x={c.labelX}
-                  y={c.labelY}
-                  textAnchor={c.anchor}
-                >
-                  {c.label}
-                </text>
-              ))}
-            </svg>
+                    {CITIES.map((c) => (
+                      <text
+                        key={`label-${c.id}`}
+                        className="map-label"
+                        data-label={c.id}
+                        x={c.labelX}
+                        y={c.labelY}
+                        textAnchor={c.anchor}
+                      >
+                        {c.label}
+                      </text>
+                    ))}
+                  </svg>
+                </div>
+                <p className="hp-stage-caption">
+                  Founding executives in Sydney, Melbourne, Brisbane, and
+                  Perth.
+                </p>
+              </div>
+            </div>
           </div>
-
-          <p className="hp-panel-caption">
-            Founding executives in Sydney, Melbourne, Brisbane, and Perth.
-          </p>
         </div>
       </div>
     </section>

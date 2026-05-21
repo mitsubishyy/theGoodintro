@@ -5,92 +5,92 @@ import { useEffect, useRef } from "react";
 import { CALENDLY_URL } from "@/lib/config";
 
 /**
- * Final CTA — giant headline with floating charity bubbles around it. Each
- * bubble has its own `dx` / `dy` magnitude; scroll position drives a small
- * translate so the bubbles drift relative to scroll progress through the
- * section.
+ * Final CTA — illustrative executive avatar bubbles drift around the headline.
  *
- * The bubbles are rendered as honest placeholders (charity wordmarks on
- * cream/mint discs) until real partner photography is available.
+ * Two motions add per frame:
+ *   - drift = scroll-tied parallax based on section position in viewport
+ *   - float = continuous sine-wave wander on each bubble's own phase
+ * Together they give a "calmly alive" composition that keeps moving even when
+ * the user has stopped scrolling.
+ *
+ * Avatars use DiceBear Lorelei (same library used in /mockup/email). Names and
+ * roles are illustrative founding-cohort placeholders — disclaimer line below
+ * the buttons makes that explicit.
  */
 
 type Bubble = {
   size: number;
-  mint?: boolean;
   position: { left?: string; right?: string; top?: string; bottom?: string };
   dy: number;
   dx: number;
-  label: React.ReactNode;
+  name: string;
+  role: string;
   hideSm?: boolean;
 };
 
 const BUBBLES: Bubble[] = [
   {
     size: 140,
-    position: { left: "4%", top: "18%" },
-    dy: -12,
-    dx: 4,
-    label: (
-      <>
-        Beyond
-        <br />
-        Blue
-      </>
-    ),
+    position: { left: "4%", top: "16%" },
+    dy: -36,
+    dx: 12,
+    name: "Sarah Chen",
+    role: "CFO · ASX 200 industrials",
   },
   {
     size: 110,
-    mint: true,
-    position: { left: "9%", top: "62%" },
-    dy: 9,
-    dx: -3,
-    label: "OzHarvest",
+    position: { left: "10%", top: "50%" },
+    dy: 28,
+    dx: -9,
+    name: "Michael Reed",
+    role: "COO · regional bank",
   },
   {
     size: 100,
-    position: { right: "5%", top: "28%" },
-    dy: -10,
-    dx: -5,
-    label: "RFDS",
+    position: { right: "5%", top: "26%" },
+    dy: -30,
+    dx: -15,
+    name: "Priya Patel",
+    role: "CFO · Series B fintech",
   },
   {
     size: 130,
-    mint: true,
-    position: { right: "9%", top: "60%" },
-    dy: 11,
-    dx: 3,
-    label: (
-      <>
-        The Smith
-        <br />
-        Family
-      </>
-    ),
+    position: { right: "9%", top: "58%" },
+    dy: 34,
+    dx: 10,
+    name: "James Walker",
+    role: "MD · healthcare group",
   },
   {
     size: 90,
     hideSm: true,
-    position: { left: "14%", bottom: "8%" },
-    dy: -6,
-    dx: 6,
-    label: "Lifeline",
+    position: { left: "22%", bottom: "4%" },
+    dy: -20,
+    dx: 18,
+    name: "Emma Taylor",
+    role: "COO · ASX 100 logistics",
   },
   {
     size: 165,
-    mint: true,
     hideSm: true,
-    position: { right: "14%", top: "5%" },
-    dy: 12,
-    dx: -6,
-    label: (
-      <>
-        Cancer
-        <br />
-        Council
-      </>
-    ),
+    position: { right: "14%", top: "4%" },
+    dy: 36,
+    dx: -18,
+    name: "Dan Sullivan",
+    role: "CFO · infrastructure",
   },
 ];
+
+const DICEBEAR_BG = "F4ECDC,E7DBC2,D8E6D4,E3D8C1";
+
+function avatarUrl(name: string) {
+  const u = new URL("https://api.dicebear.com/9.x/lorelei/svg");
+  u.searchParams.set("seed", name);
+  u.searchParams.set("backgroundColor", DICEBEAR_BG);
+  u.searchParams.set("backgroundType", "solid");
+  u.searchParams.set("radius", "50");
+  return u.toString();
+}
 
 export default function FinalCtaSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -101,34 +101,77 @@ export default function FinalCtaSection() {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
 
-    const bubbles = section.querySelectorAll<HTMLDivElement>(".hp-cta-bubble");
+    const bubbles = Array.from(
+      section.querySelectorAll<HTMLDivElement>(".hp-cta-bubble")
+    );
     if (!bubbles.length) return;
 
-    let rafId = 0;
-    const update = () => {
-      rafId = 0;
+    const TAU = Math.PI * 2;
+    // Per-bubble float parameters — irrational ratios keep them from
+    // synchronising into a throb.
+    interface BubbleEl extends HTMLDivElement {
+      _phaseY: number;
+      _phaseX: number;
+      _periodY: number;
+      _periodX: number;
+      _ampY: number;
+      _ampX: number;
+    }
+    bubbles.forEach((b, i) => {
+      const bx = b as BubbleEl;
+      bx._phaseY = (i * 1.37) % TAU;
+      bx._phaseX = (i * 0.91 + 1.2) % TAU;
+      bx._periodY = 7000 + i * 850;
+      bx._periodX = 9000 + i * 730;
+      bx._ampY = 6 + (i % 3) * 2;
+      bx._ampX = 4 + ((i + 1) % 3) * 2;
+    });
+
+    let scrollOffset = 0;
+    let inView = false;
+    let rafScroll = 0;
+    let stepId = 0;
+
+    const computeScroll = () => {
+      rafScroll = 0;
       const rect = section.getBoundingClientRect();
       const vh = window.innerHeight || 1;
-      // 0 = section bottom just above viewport top, 1 = section top just
-      // below viewport bottom, 0.5 = section centred.
       const raw = (vh - rect.top) / (vh + rect.height);
       const p = Math.min(1, Math.max(0, raw));
-      const offset = (p - 0.5) * 2; // -1 to 1
-      bubbles.forEach((b) => {
-        const dy = parseFloat(b.dataset.dy ?? "0") * offset;
-        const dx = parseFloat(b.dataset.dx ?? "0") * offset;
-        b.style.transform = `translate(${dx}px, ${dy}px)`;
-      });
+      scrollOffset = (p - 0.5) * 2;
+      inView = rect.bottom > -200 && rect.top < vh + 200;
     };
     const onScroll = () => {
-      if (!rafId) rafId = requestAnimationFrame(update);
+      if (!rafScroll) rafScroll = requestAnimationFrame(computeScroll);
     };
+
+    const step = (now: number) => {
+      if (inView) {
+        bubbles.forEach((b) => {
+          const bx = b as BubbleEl;
+          const sx = parseFloat(b.dataset.dx ?? "0") * scrollOffset;
+          const sy = parseFloat(b.dataset.dy ?? "0") * scrollOffset;
+          const fx = Math.sin((now / bx._periodX) * TAU + bx._phaseX) * bx._ampX;
+          const fy = Math.sin((now / bx._periodY) * TAU + bx._phaseY) * bx._ampY;
+          b.style.transform = `translate3d(${sx + fx}px, ${sy + fy}px, 0)`;
+        });
+      }
+      stepId = requestAnimationFrame(step);
+    };
+
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
-    update();
+    computeScroll();
+    stepId = requestAnimationFrame(step);
+    const onLoad = () => onScroll();
+    window.addEventListener("load", onLoad);
+
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      window.removeEventListener("load", onLoad);
+      if (rafScroll) cancelAnimationFrame(rafScroll);
+      if (stepId) cancelAnimationFrame(stepId);
     };
   }, []);
 
@@ -144,19 +187,23 @@ export default function FinalCtaSection() {
           <div
             key={i}
             className={
-              "hp-cta-bubble" +
-              (b.mint ? " hp-cta-bubble--mint" : "") +
-              (b.hideSm ? " hp-cta-bubble--hide-sm" : "")
+              "hp-cta-bubble" + (b.hideSm ? " hp-cta-bubble--hide-sm" : "")
             }
             style={{
               width: b.size,
-              height: b.size,
               ...b.position,
             }}
             data-dy={b.dy}
             data-dx={b.dx}
           >
-            <span className="hp-cta-bubble-wm">{b.label}</span>
+            <div className="hp-cta-bubble-avatar">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img alt="" loading="lazy" src={avatarUrl(b.name)} />
+            </div>
+            <div className="hp-cta-bubble-caption">
+              <span className="hp-cta-bubble-name">{b.name}</span>
+              <span className="hp-cta-bubble-role">{b.role}</span>
+            </div>
           </div>
         ))}
       </div>
@@ -190,6 +237,10 @@ export default function FinalCtaSection() {
             </span>
           </Link>
         </div>
+        <p className="hp-cta-disclaimer">
+          Illustrative founding-cohort placeholders. Real names with permission,
+          on launch.
+        </p>
       </div>
     </section>
   );
