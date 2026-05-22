@@ -31,6 +31,7 @@ export default function Brand({ className }: BrandProps) {
           fontStyle: "italic",
           fontWeight: 500,
           color: "var(--primary)",
+          margin: "0 0.16em",
         }}
       >
         Good

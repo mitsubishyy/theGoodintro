@@ -1337,6 +1337,7 @@ body.hp-is-scrolled .hp-topnav {
   font-style: italic;
   font-weight: 500;
   color: var(--primary);
+  margin: 0 0.16em;
 }
 .hp-nav-links {
   display: none;
