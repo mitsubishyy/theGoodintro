@@ -127,9 +127,11 @@ export default function ImpactSection() {
 
       // Counters scrub linearly (clamped) to a quick finish so the user
       // spends most of the phase on the final value, not waiting for it.
+      // Stat 1 ($) starts at 30% of its final value so the user never sees $0.
       const s1 = clamp(p / 0.12, 0, 1);
+      const v1 = 0.3 + 0.7 * s1;
       if (num1Ref.current)
-        num1Ref.current.textContent = fmtDollar(Math.round(48300 * s1));
+        num1Ref.current.textContent = fmtDollar(Math.round(48300 * v1));
 
       const s2 = clamp((p - 0.4) / 0.12, 0, 1);
       if (num2Ref.current)
@@ -230,7 +232,7 @@ export default function ImpactSection() {
             <div className="hp-impact-stage">
               <div className="hp-stage-layer" data-state="1">
                 <p className="hp-stage-num" ref={num1Ref}>
-                  $0
+                  $14,490
                 </p>
                 <p className="hp-stage-caption">
                   Directed to Australian charities through theGoodintro.

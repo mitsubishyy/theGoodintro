@@ -48,21 +48,6 @@ export default function SiteHeader() {
             ))}
           </div>
           <div className="hp-nav-actions">
-            <a
-              className="hp-nav-phone"
-              href="mailto:hello@thegoodintro.com"
-              aria-label="Contact us"
-            >
-              <svg viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path
-                  d="M3.2 1.8 H5.0 L6 4.4 L4.6 5.4 C5.2 7.1 6.6 8.4 8.4 9 L9.4 7.6 L12 8.6 V10.4 C12 11.0 11.5 11.5 10.9 11.5 C5.9 11.2 2.4 7.7 2.1 2.7 C2.1 2.1 2.6 1.6 3.2 1.8 Z"
-                  stroke="currentColor"
-                  strokeWidth="1.3"
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </a>
             <a className="hp-nav-cta" href={CALENDLY_URL}>
               Apply
               <span className="arrow" aria-hidden="true">
