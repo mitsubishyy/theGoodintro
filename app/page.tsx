@@ -1,4 +1,5 @@
 import HeroSection from "./_components/home/hero-section";
+import WhySection from "./_components/home/why-section";
 import CharityMarqueeSection from "./_components/home/charity-marquee-section";
 import TwoSidesSection from "./_components/home/two-sides-section";
 import HowItWorksSection from "./_components/home/how-it-works-section";
@@ -10,6 +11,7 @@ export default function Home() {
   return (
     <>
       <HeroSection />
+      <WhySection />
       <CharityMarqueeSection />
       <TwoSidesSection />
       <HowItWorksSection />
