@@ -1313,7 +1313,10 @@ body.hp-is-scrolled .hp-topnav {
   font-weight: 700;
   font-size: 16px;
   letter-spacing: -0.01em;
-  color: var(--cream-11);
+  /* --foreground is dark ink in both the HopeRise and legacy themes, so the
+     wordmark stays black + emerald everywhere (--cream-11 means "light" in
+     the legacy theme and would turn the text white on /apply). */
+  color: var(--foreground);
   text-decoration: none;
 }
 .hp-brand-mark {
