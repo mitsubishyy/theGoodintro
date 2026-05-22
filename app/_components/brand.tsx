@@ -18,7 +18,10 @@ export default function Brand({ className }: BrandProps) {
         fontFamily: "var(--font-inter), system-ui, sans-serif",
         fontWeight: 700,
         letterSpacing: "-0.01em",
-        color: "var(--cream-11)",
+        // --foreground is dark ink in both the HopeRise and legacy themes;
+        // --cream-11 means "light" in the legacy theme and turned the
+        // "the"/"intro" text near-white on /apply.
+        color: "var(--foreground)",
       }}
     >
       the
