@@ -35,23 +35,6 @@ export default function HeroSection() {
           </span>
         </Link>
       </div>
-
-      <a
-        className="hp-scroll-cue"
-        href="#charities"
-        aria-label="Scroll to see where your gift can go"
-      >
-        Scroll
-        <svg viewBox="0 0 14 18" fill="none" aria-hidden="true">
-          <path
-            d="M7 1 V15 M2 10 L7 15 L12 10"
-            stroke="currentColor"
-            strokeWidth="1.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </a>
     </section>
   );
 }
