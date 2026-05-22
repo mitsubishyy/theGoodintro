@@ -16,6 +16,7 @@ import { SITE_URL, SITE_DESCRIPTION } from "@/lib/config";
 import SiteHeader from "./_components/site-header";
 import SiteFooter from "./_components/site-footer";
 import PageTransition from "./_components/PageTransition";
+import PageShell from "./_components/page-shell";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -103,15 +104,13 @@ export default function RootLayout({
       className={`${fraunces.variable} ${playfair.variable} ${ebGaramond.variable} ${cormorant.variable} ${libreCaslon.variable} ${crimsonPro.variable} ${sourceSerif.variable} ${inter.variable} ${mono.variable}`}
     >
       <body suppressHydrationWarning className="text-foreground bg-background antialiased">
-        <div className="hp-page-frame">
-          <div className="hp-page">
-            <SiteHeader />
-            <main>
-              <PageTransition>{children}</PageTransition>
-            </main>
-            <SiteFooter />
-          </div>
-        </div>
+        <PageShell>
+          <SiteHeader />
+          <main>
+            <PageTransition>{children}</PageTransition>
+          </main>
+          <SiteFooter />
+        </PageShell>
         <Analytics />
       </body>
     </html>

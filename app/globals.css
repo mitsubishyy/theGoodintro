@@ -104,6 +104,53 @@
   :root { --frame: 32px; }
 }
 
+/* ─────────────────────────────────────────────────────────────────────
+   Legacy theme — original (pre-HopeRise) token values. Scoped to routes
+   that must NOT inherit the marketing-site redesign (the executive survey
+   at /apply). Restores the light cream palette the survey was built on.
+   ───────────────────────────────────────────────────────────────────── */
+.legacy-theme {
+  --background: oklch(0.965 0.012 85);
+  --foreground: oklch(0.14 0.006 70);
+  --ink: oklch(0.10 0.005 70);
+  --card: oklch(0.99 0.006 85);
+  --card-foreground: oklch(0.14 0.006 70);
+  --muted: oklch(0.94 0.012 80);
+  --muted-foreground: oklch(0.50 0.010 70);
+  --primary: oklch(0.42 0.13 158);
+  --primary-foreground: oklch(0.985 0.003 85);
+  --primary-bright: oklch(0.65 0.16 155);
+  --accent: oklch(0.94 0.010 80);
+  --accent-foreground: oklch(0.14 0.006 70);
+  --border: oklch(0.89 0.012 80);
+  --border-strong: oklch(0.78 0.014 75);
+  --ring: oklch(0.42 0.13 158);
+  --signal: oklch(0.55 0.15 155);
+  --signal-soft: oklch(0.92 0.05 155);
+  --mint: oklch(0.55 0.13 155);
+  --mint-soft: oklch(0.92 0.05 155);
+  --mint-tint: oklch(0.95 0.022 155);
+  --stone: oklch(0.78 0.012 80);
+  --stone-soft: oklch(0.92 0.012 80);
+  --stone-tint: oklch(0.93 0.012 80);
+
+  --cream-1: oklch(0.965 0.012 85);
+  --cream-2: oklch(0.955 0.018 82);
+  --cream-3: oklch(0.96 0.014 78);
+  --cream-4: oklch(0.97 0.016 88);
+  --cream-5: oklch(0.96 0.010 85);
+  --cream-6: oklch(0.955 0.022 75);
+  --cream-7: oklch(0.962 0.013 80);
+  --cream-8: oklch(0.958 0.016 86);
+  --cream-9: oklch(0.963 0.018 80);
+  --cream-10: oklch(0.957 0.012 83);
+  --cream-11: oklch(0.961 0.015 84);
+
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+}
+
 * { box-sizing: border-box; border-color: var(--border); }
 
 html, body {
