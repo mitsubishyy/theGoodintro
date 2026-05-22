@@ -34,4 +34,7 @@ export const DGR_CHARITY_EXAMPLES = [
   { name: "Cancer Council", href: "https://www.cancer.org.au", domain: "cancer.org.au", color: "#00558c" },
   { name: "Australian Red Cross", href: "https://www.redcross.org.au", domain: "redcross.org.au", color: "#cf1020" },
   { name: "The Fred Hollows Foundation", href: "https://www.hollows.org", domain: "hollows.org", color: "#0072ad" },
+  { name: "Foodbank Australia", href: "https://www.foodbank.org.au", domain: "foodbank.org.au", color: "#6e2585" },
+  { name: "Lifeline", href: "https://www.lifeline.org.au", domain: "lifeline.org.au", color: "#003a70" },
+  { name: "Mission Australia", href: "https://www.missionaustralia.com.au", domain: "missionaustralia.com.au", color: "#ec008c" },
 ];

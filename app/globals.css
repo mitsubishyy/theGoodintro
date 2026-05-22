@@ -1042,29 +1042,22 @@ body {
 }
 .hp-gallery-viewport {
   position: relative;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   padding: 56px 0 80px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
           mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
+.hp-gallery-viewport::-webkit-scrollbar {
+  display: none; /* Safari/Chrome */
 }
 .hp-gallery-track {
   display: flex;
   gap: 22px;
   width: max-content;
   padding: 0 11px;
-  animation: hp-gallery-loop 80s linear infinite;
-  will-change: transform;
-}
-.hp-gallery-viewport:hover .hp-gallery-track,
-.hp-gallery-viewport:focus-within .hp-gallery-track {
-  animation-play-state: paused;
-}
-@keyframes hp-gallery-loop {
-  from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(-50%, 0, 0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hp-gallery-track { animation: none; }
 }
 .hp-gallery-card {
   flex: 0 0 280px;
@@ -1094,6 +1087,30 @@ body {
   overflow: hidden;
   display: grid;
   place-items: center;
+}
+.hp-gallery-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 2;
+}
+/* Logo cards: show the whole mark, in colour, on a clean ground — not a
+   cropped, greyed photo. */
+.hp-gallery-card.is-logo {
+  filter: none;
+}
+.hp-gallery-card.is-logo .hp-gallery-image {
+  background: #fff;
+}
+.hp-gallery-card.is-logo .hp-gallery-photo {
+  object-fit: contain;
+  padding: 38px;
+}
+.hp-gallery-card.is-logo .shape,
+.hp-gallery-card.is-logo .wm {
+  display: none;
 }
 .hp-gallery-image .shape {
   position: absolute;
@@ -1143,6 +1160,7 @@ body {
   left: 14px;
   right: 14px;
   bottom: 0;
+  z-index: 3; /* sit above the photo (z-index 2), which overlaps the panel top */
   background: var(--cream-1);
   border: 1px solid var(--hair);
   border-radius: 14px;
