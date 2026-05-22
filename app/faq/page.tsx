@@ -23,7 +23,7 @@ export default function FAQ() {
         bg="var(--cream-11)"
       />
 
-      <section>
+      <section style={{ background: "var(--paper-oat)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="grid lg:grid-cols-12 gap-12">
             <div className="lg:col-span-4">

@@ -34,7 +34,7 @@ export default function Impact() {
       {/* ── Honest status ────────────────────────────────────────── */}
       <section
         className="border-y"
-        style={{ background: "var(--mint-tint)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 md:py-24">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
@@ -59,7 +59,7 @@ export default function Impact() {
       </section>
 
       {/* ── Sample preview ───────────────────────────────────────── */}
-      <section>
+      <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="flex items-center gap-3 mb-10">
             <span
@@ -76,7 +76,7 @@ export default function Impact() {
 
           <div
             className="rounded-3xl border border-dashed p-8 md:p-14"
-            style={{ background: "var(--card)", borderColor: "var(--border-strong)" }}
+            style={{ background: "var(--paper-oat)", borderColor: "var(--border-strong)" }}
           >
             <SectionHead
               label="The whole programme, at a glance"
@@ -116,7 +116,7 @@ export default function Impact() {
               <div className="lg:col-span-7">
                 <figure
                   className="rounded-3xl border p-8 md:p-10"
-                  style={{ background: "var(--background)", borderColor: "var(--border)" }}
+                  style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
                 >
                   <Quote className="size-7 text-muted-foreground/30" />
                   <blockquote className="mt-4 text-xl md:text-2xl font-medium leading-snug tracking-tight">
@@ -140,7 +140,7 @@ export default function Impact() {
       {/* ── Example charities ────────────────────────────────────── */}
       <section
         className="border-y"
-        style={{ background: "var(--card)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 md:py-24">
           <p className="text-center text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground mb-10">
@@ -158,7 +158,7 @@ export default function Impact() {
       </section>
 
       {/* ── What your page will show ─────────────────────────────── */}
-      <section>
+      <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="grid lg:grid-cols-12 gap-12 items-start">
             <div className="lg:col-span-5">
@@ -188,6 +188,7 @@ export default function Impact() {
         lede="Apply as a founding executive. Every meeting you take builds a public record of giving you can stand behind."
         secondaryLabel="See the pricing"
         secondaryHref="/pricing"
+        tone="oat"
       />
     </>
   );

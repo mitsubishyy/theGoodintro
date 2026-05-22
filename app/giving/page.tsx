@@ -69,7 +69,7 @@ export default function Giving() {
       {/* ── The money path ───────────────────────────────────────── */}
       <section
         className="border-y overflow-hidden relative"
-        style={{ background: "var(--mint-tint)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
       >
         <div className="absolute inset-0 dotgrid opacity-40" aria-hidden />
         <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
@@ -113,7 +113,7 @@ export default function Giving() {
       </section>
 
       {/* ── The terms ────────────────────────────────────────────── */}
-      <section>
+      <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="grid lg:grid-cols-12 gap-12 items-start">
             <div className="lg:col-span-5">
@@ -147,7 +147,7 @@ export default function Giving() {
       {/* ── What DGR means ───────────────────────────────────────── */}
       <section
         className="border-y"
-        style={{ background: "var(--mint-tint)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="grid lg:grid-cols-12 gap-12 items-start">
@@ -171,7 +171,7 @@ export default function Giving() {
       </section>
 
       {/* ── How the choice works ─────────────────────────────────── */}
-      <section>
+      <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead
             label="The executive chooses"
@@ -181,7 +181,7 @@ export default function Giving() {
           <div className="mt-12 grid md:grid-cols-3 gap-4">
             <div
               className="rounded-2xl border p-6 md:p-8"
-              style={{ background: "var(--card)", borderColor: "var(--border)" }}
+              style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
             >
               <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
                 Nominate
@@ -193,7 +193,7 @@ export default function Giving() {
             </div>
             <div
               className="rounded-2xl border p-6 md:p-8"
-              style={{ background: "var(--card)", borderColor: "var(--border)" }}
+              style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
             >
               <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
                 Change freely
@@ -205,7 +205,7 @@ export default function Giving() {
             </div>
             <div
               className="rounded-2xl border p-6 md:p-8"
-              style={{ background: "var(--card)", borderColor: "var(--border)" }}
+              style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
             >
               <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
                 Confirmed in writing
@@ -222,7 +222,7 @@ export default function Giving() {
       {/* ── Causes ───────────────────────────────────────────────── */}
       <section
         className="border-y"
-        style={{ background: "var(--mint-tint)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-28">
           <SectionHead
@@ -251,7 +251,7 @@ export default function Giving() {
       </section>
 
       {/* ── Example charities marquee ────────────────────────────── */}
-      <section style={{ background: "var(--card)" }}>
+      <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 md:py-24">
           <p className="text-center text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground mb-10">
             Examples of DGR-endorsed Australian charities
@@ -270,7 +270,7 @@ export default function Giving() {
       {/* ── Verify it yourself ───────────────────────────────────── */}
       <section
         className="border-y"
-        style={{ background: "var(--mint-tint)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="grid lg:grid-cols-12 gap-12 items-start">
@@ -287,7 +287,7 @@ export default function Giving() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group rounded-2xl border p-6 md:p-8 transition-all duration-200 hover:-translate-y-0.5"
-                style={{ background: "var(--card)", borderColor: "var(--border)" }}
+                style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
               >
                 <div className="text-sm font-semibold tracking-tight">
                   ACNC Charity Register
@@ -306,7 +306,7 @@ export default function Giving() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group rounded-2xl border p-6 md:p-8 transition-all duration-200 hover:-translate-y-0.5"
-                style={{ background: "var(--card)", borderColor: "var(--border)" }}
+                style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
               >
                 <div className="text-sm font-semibold tracking-tight">
                   ABN Lookup
@@ -326,7 +326,7 @@ export default function Giving() {
       </section>
 
       {/* ── FAQ ──────────────────────────────────────────────────── */}
-      <section>
+      <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="grid lg:grid-cols-12 gap-12">
             <div className="lg:col-span-4">
@@ -384,6 +384,7 @@ export default function Giving() {
         lede="Apply as a founding executive. Every meeting you take sends a real gift to a DGR-endorsed charity you choose, confirmed to you in writing."
         secondaryLabel="See the pricing"
         secondaryHref="/pricing"
+        tone="oat"
       />
     </>
   );
@@ -405,14 +406,14 @@ function FlowStep({
       className="flex-1 rounded-2xl border p-6 text-center transition-all duration-200 hover:-translate-y-0.5"
       style={
         accent
-          ? { background: "var(--signal-soft)", borderColor: "var(--primary)" }
-          : { background: "var(--card)", borderColor: "var(--border)" }
+          ? { background: "var(--cream-1)", borderColor: "var(--primary)" }
+          : { background: "var(--cream-1)", borderColor: "var(--hair)" }
       }
     >
       <div
         className="size-12 rounded-xl mx-auto mb-4 grid place-items-center"
         style={{
-          background: accent ? "var(--card)" : "var(--accent)",
+          background: accent ? "var(--mint-tint)" : "var(--accent)",
           color: accent ? "var(--primary)" : "var(--foreground)",
         }}
       >

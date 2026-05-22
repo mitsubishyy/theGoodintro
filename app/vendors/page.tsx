@@ -40,7 +40,7 @@ export default function Vendors() {
       {/* ── What you get ─────────────────────────────────────────── */}
       <section
         className="border-y"
-        style={{ background: "var(--mint-tint)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead
@@ -68,7 +68,7 @@ export default function Vendors() {
       </section>
 
       {/* ── Who this is for ──────────────────────────────────────── */}
-      <section>
+      <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead label="Who this is for" title="Built for vendors who mean it." />
           <div className="mt-16 grid md:grid-cols-3 gap-4">
@@ -97,7 +97,7 @@ export default function Vendors() {
       {/* ── What is expected ─────────────────────────────────────── */}
       <section
         className="border-y"
-        style={{ background: "var(--mint-tint)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead
@@ -111,7 +111,7 @@ export default function Vendors() {
       {/* ── The 3:1 rule ─────────────────────────────────────────── */}
       <section
         className="border-y"
-        style={{ background: "var(--card)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-white)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
@@ -130,7 +130,7 @@ export default function Vendors() {
             <div className="lg:col-span-6">
               <div
                 className="rounded-3xl border p-10 md:p-16 text-center"
-                style={{ background: "var(--mint-tint)", borderColor: "var(--border)" }}
+                style={{ background: "var(--paper-oat)", borderColor: "var(--hair)" }}
               >
                 <div className="display-serif text-[clamp(4rem,12vw,9rem)] leading-none text-primary">
                   3:1
@@ -147,7 +147,7 @@ export default function Vendors() {
       {/* ── Pricing ──────────────────────────────────────────────── */}
       <section
         className="border-b overflow-hidden relative"
-        style={{ background: "var(--mint-tint)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
       >
         <div className="absolute inset-0 dotgrid opacity-40" aria-hidden />
         <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
@@ -169,7 +169,7 @@ export default function Vendors() {
       </section>
 
       {/* ── FAQ ──────────────────────────────────────────────────── */}
-      <section>
+      <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="grid lg:grid-cols-12 gap-12">
             <div className="lg:col-span-4">
@@ -252,6 +252,7 @@ export default function Vendors() {
         lede="Reach senior leaders by being relevant, and fund a real gift while you do it. Every meeting you book sends a real gift to the leader's chosen charity."
         primaryCta="Apply as a founding vendor"
         sub="One short call to start · You fund the giving"
+        tone="oat"
       />
     </>
   );
@@ -271,7 +272,7 @@ function VendorCard({
   return (
     <div
       className="rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-0.5"
-      style={{ background: "var(--card)", borderColor: "var(--border)" }}
+      style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
     >
       <div className="size-10 rounded-xl bg-foreground/[0.04] grid place-items-center mb-6">
         {lucide ? (

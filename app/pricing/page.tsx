@@ -37,12 +37,12 @@ export default function Pricing() {
         bg="var(--cream-8)"
       />
 
-      <section style={{ background: "var(--cream-8)" }}>
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 pb-24 md:pb-32">
+      <section style={{ background: "var(--paper-oat)" }}>
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           {/* Main pricing card */}
           <div
             className="mx-auto max-w-[540px] rounded-3xl border p-8 md:p-10"
-            style={{ background: "var(--card)", borderColor: "var(--border)" }}
+            style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
           >
             <div className="text-center">
               <div className="flex items-end justify-center gap-3">
@@ -86,8 +86,7 @@ export default function Pricing() {
             className="mx-auto mt-14 max-w-[540px] border-l-2 px-6 py-5"
             style={{
               borderColor: "var(--primary)",
-              background:
-                "color-mix(in oklab, var(--primary) 6%, transparent)",
+              background: "var(--cream-1)",
             }}
           >
             <p className="serif-italic text-base md:text-lg text-foreground leading-snug">
@@ -176,7 +175,7 @@ function ValueCard({
   return (
     <div
       className="rounded-2xl border p-5 text-center"
-      style={{ background: "var(--card)", borderColor: "var(--border)" }}
+      style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
     >
       <div
         className="flex justify-center mb-3"

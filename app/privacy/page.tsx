@@ -13,7 +13,7 @@ export default function Privacy() {
   return (
     <article className="mx-auto max-w-3xl px-6 lg:px-10 py-24 md:py-32">
       <SectionLabel>Legal</SectionLabel>
-      <h1 className="mt-6 text-5xl md:text-6xl font-semibold tracking-[-0.03em]">
+      <h1 className="mt-7 text-5xl md:text-6xl font-black tracking-[-0.03em] leading-[0.98]">
         Privacy
       </h1>
       <p className="mt-4 text-sm font-mono uppercase tracking-[0.18em] text-muted-foreground">

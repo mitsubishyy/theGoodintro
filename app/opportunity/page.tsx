@@ -39,7 +39,7 @@ export default function Opportunity() {
       />
 
       {/* ── Why this is worth building ───────────────────────────── */}
-      <section>
+      <section style={{ background: "var(--paper-oat)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead
             label="Why this is worth building"
@@ -52,7 +52,7 @@ export default function Opportunity() {
       {/* ── The model ────────────────────────────────────────────── */}
       <section
         className="border-y"
-        style={{ background: "var(--mint-tint)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-white)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead label="The model" title="Simple, and hard to game." />
@@ -84,7 +84,7 @@ export default function Opportunity() {
       </section>
 
       {/* ── The wedge ────────────────────────────────────────────── */}
-      <section>
+      <section style={{ background: "var(--paper-oat)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead label="Why it can work" title="The wedge." />
           <div className="mt-16 grid md:grid-cols-3 gap-4">
@@ -113,7 +113,7 @@ export default function Opportunity() {
       {/* ── Where it is today ────────────────────────────────────── */}
       <section
         className="border-y"
-        style={{ background: "var(--stone-tint)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-white)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead
@@ -125,7 +125,7 @@ export default function Opportunity() {
       </section>
 
       {/* ── Who I am looking for ─────────────────────────────────── */}
-      <section>
+      <section style={{ background: "var(--paper-oat)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead label="Who I am looking for" title="One person to build it with." />
           <div className="mt-16 grid md:grid-cols-3 gap-4">
@@ -157,12 +157,12 @@ export default function Opportunity() {
       {/* ── From the founder ─────────────────────────────────────── */}
       <section
         className="border-t"
-        style={{ borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-white)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div
             className="rounded-3xl border p-10 md:p-14 max-w-4xl mx-auto"
-            style={{ background: "var(--card)", borderColor: "var(--border)" }}
+            style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
           >
             <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
               From the founder
@@ -189,6 +189,7 @@ export default function Opportunity() {
         lede="Tell me what you would change, what you would own, and where you think it breaks. That is the conversation I want to have."
         primaryCta="Start a conversation"
         sub="Early and honest · One conversation to start"
+        tone="oat"
       />
     </>
   );
@@ -208,7 +209,7 @@ function OpCard({
   return (
     <div
       className="rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-0.5"
-      style={{ background: "var(--card)", borderColor: "var(--border)" }}
+      style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
     >
       <div className="size-10 rounded-xl bg-foreground/[0.04] grid place-items-center mb-6">
         {lucide ? (

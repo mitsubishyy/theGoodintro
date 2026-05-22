@@ -57,7 +57,7 @@ export default function HowItWorks() {
       {/* anchor nav */}
       <section
         className="border-b"
-        style={{ background: "var(--card)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-white)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-4 flex flex-wrap gap-x-8 gap-y-2 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
           <a href="#how" className="hover:text-foreground transition-colors">
@@ -76,7 +76,7 @@ export default function HowItWorks() {
       <section
         id="how"
         className="border-b scroll-mt-24"
-        style={{ background: "var(--mint-tint)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead label="End to end" title="From request to real giving." />
@@ -111,7 +111,7 @@ export default function HowItWorks() {
       {/* ── The money, in short ──────────────────────────────────── */}
       <section
         className="border-b overflow-hidden relative"
-        style={{ background: "var(--stone-tint)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-white)", borderColor: "var(--border)" }}
       >
         <div className="absolute inset-0 dotgrid opacity-40" aria-hidden />
         <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
@@ -141,7 +141,7 @@ export default function HowItWorks() {
       </section>
 
       {/* ── Why it works ─────────────────────────────────────────── */}
-      <section id="why" className="scroll-mt-24">
+      <section id="why" className="scroll-mt-24" style={{ background: "var(--paper-oat)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="max-w-2xl">
             <SectionHead
@@ -153,7 +153,7 @@ export default function HowItWorks() {
           <div className="mt-14 grid md:grid-cols-2 gap-4">
             <div
               className="rounded-2xl border p-8"
-              style={{ background: "var(--card)", borderColor: "var(--border)" }}
+              style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
             >
               <div className="size-12 rounded-xl bg-foreground/[0.04] grid place-items-center mb-6 text-muted-foreground">
                 <IconColdInbox size={22} />
@@ -174,11 +174,11 @@ export default function HowItWorks() {
             </div>
             <div
               className="rounded-2xl border p-8"
-              style={{ background: "var(--signal-soft)", borderColor: "var(--primary)" }}
+              style={{ background: "var(--cream-1)", borderColor: "var(--primary)" }}
             >
               <div
                 className="size-12 rounded-xl grid place-items-center mb-6"
-                style={{ background: "var(--card)", color: "var(--primary)" }}
+                style={{ background: "var(--mint-tint)", color: "var(--primary)" }}
               >
                 <IconIntro size={22} />
               </div>
@@ -207,12 +207,12 @@ export default function HowItWorks() {
       <section
         id="about"
         className="border-y scroll-mt-24"
-        style={{ background: "var(--cream-2)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-white)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div
             className="relative rounded-3xl border overflow-hidden p-10 md:p-16 grid md:grid-cols-12 gap-10"
-            style={{ background: "var(--card)", borderColor: "var(--border)" }}
+            style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
           >
             <div className="md:col-span-4">
               <div
@@ -294,7 +294,7 @@ export default function HowItWorks() {
       </section>
 
       {/* ── What we believe ──────────────────────────────────────── */}
-      <section>
+      <section style={{ background: "var(--paper-oat)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead
             label="What we believe"
@@ -326,7 +326,7 @@ export default function HowItWorks() {
       {/* ── How we keep this honest ──────────────────────────────── */}
       <section
         className="border-y overflow-hidden relative"
-        style={{ background: "var(--stone-tint)", borderColor: "var(--border)" }}
+        style={{ background: "var(--paper-white)", borderColor: "var(--border)" }}
       >
         <div className="absolute inset-0 dotgrid opacity-40" aria-hidden />
         <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
@@ -388,7 +388,7 @@ export default function HowItWorks() {
       </section>
 
       {/* ── Questions teaser ─────────────────────────────────────── */}
-      <section>
+      <section style={{ background: "var(--paper-oat)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="grid lg:grid-cols-12 gap-12">
             <div className="lg:col-span-4">
@@ -450,7 +450,7 @@ function PrincipleCard({
   return (
     <div
       className="rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-0.5"
-      style={{ background: "var(--card)", borderColor: "var(--border)" }}
+      style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
     >
       <div className="flex items-center justify-between mb-8">
         <div className="size-10 rounded-xl bg-foreground/[0.04] grid place-items-center">

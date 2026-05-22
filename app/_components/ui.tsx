@@ -1,24 +1,29 @@
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Plus, Minus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { IconCheck, IconX } from "./icons";
 import { CALENDLY_URL } from "@/lib/config";
 
 /* ────────────────────────────────────────────────────────────────
    Shared UI primitives used across pages.
+
+   Re-skinned to the HopeRise idiom that the homepage uses: bold-black
+   Inter headlines, mint-pill eyebrows, the emerald solid-pill primary
+   CTA (with pulse) and the ghost circle-arrow secondary, hairline-bordered
+   cards, and the emerald Fraunces-italic emphasis word. Classes live in
+   globals.css under the `.hp-*` namespace.
    ──────────────────────────────────────────────────────────────── */
 
+/** Mint eyebrow pill with the emerald dot. Matches the homepage eyebrows. */
 export function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
-      <span
-        className="h-px w-6"
-        style={{ background: "var(--border-strong)" }}
-      />
+    <span className="hp-eyebrow">
+      <span className="dot" aria-hidden="true" />
       {children}
-    </div>
+    </span>
   );
 }
 
+/** Solid emerald pill with the live pulse dot. */
 export function PrimaryCta({
   href = CALENDLY_URL,
   children,
@@ -27,16 +32,14 @@ export function PrimaryCta({
   children: React.ReactNode;
 }) {
   return (
-    <a
-      href={href}
-      className="group inline-flex items-center gap-2 rounded-full bg-foreground text-background px-6 py-3.5 text-sm font-medium hover:bg-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-    >
+    <a href={href} className="hp-btn-primary">
+      <span className="pulse" aria-hidden="true" />
       {children}
-      <ArrowRight className="size-4 group-hover:translate-x-0.5 transition-transform" />
     </a>
   );
 }
 
+/** Ghost outlined pill with the rotating circle-arrow. */
 export function SecondaryCta({
   href,
   children,
@@ -45,12 +48,19 @@ export function SecondaryCta({
   children: React.ReactNode;
 }) {
   return (
-    <Link
-      href={href}
-      className="group inline-flex items-center gap-2 rounded-full border border-border bg-card hover:bg-accent px-6 py-3.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-    >
+    <Link href={href} className="hp-btn-ghost">
       {children}
-      <ArrowUpRight className="size-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+      <span className="circle" aria-hidden="true">
+        <svg viewBox="0 0 14 14" fill="none">
+          <path
+            d="M3 11 L11 3 M5 3 H11 V9"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
     </Link>
   );
 }
@@ -65,7 +75,6 @@ export function PageHero({
   secondaryLabel,
   secondaryHref,
   pill,
-  bg = "var(--cream-1)",
   illustration,
 }: {
   eyebrow: string;
@@ -77,114 +86,53 @@ export function PageHero({
   secondaryLabel?: string;
   secondaryHref?: string;
   pill?: string;
+  /** Accepted for API compatibility; the page hero is now flat warm white. */
   bg?: string;
   illustration?: React.ReactNode;
 }) {
-  return (
-    <section className="relative overflow-hidden" style={{ background: bg }}>
-      <div className="relative mx-auto max-w-7xl px-6 lg:px-10 pt-16 pb-24 md:pt-20 md:pb-32">
-        {illustration ? (
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-7">
-              <PageHeroBody
-                pill={pill}
-                eyebrow={eyebrow}
-                title={title}
-                italicWord={italicWord}
-                lede={lede}
-                primaryCta={primaryCta}
-                primaryHref={primaryHref}
-                secondaryLabel={secondaryLabel}
-                secondaryHref={secondaryHref}
-              />
-            </div>
-            <div className="lg:col-span-5">{illustration}</div>
-          </div>
-        ) : (
-          <div className="text-center max-w-4xl mx-auto">
-            <PageHeroBody
-              centered
-              pill={pill}
-              eyebrow={eyebrow}
-              title={title}
-              italicWord={italicWord}
-              lede={lede}
-              primaryCta={primaryCta}
-              primaryHref={primaryHref}
-              secondaryLabel={secondaryLabel}
-              secondaryHref={secondaryHref}
-            />
-          </div>
-        )}
-      </div>
-    </section>
-  );
-}
-
-function PageHeroBody({
-  pill,
-  eyebrow,
-  title,
-  italicWord,
-  lede,
-  primaryCta,
-  primaryHref,
-  secondaryLabel,
-  secondaryHref,
-  centered,
-}: {
-  pill?: string;
-  eyebrow: string;
-  title: React.ReactNode;
-  italicWord?: string;
-  lede: string;
-  primaryCta: string;
-  primaryHref: string;
-  secondaryLabel?: string;
-  secondaryHref?: string;
-  centered?: boolean;
-}) {
-  return (
-    <>
-      {pill && (
-        <div className={"mb-6 " + (centered ? "flex justify-center" : "")}>
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 backdrop-blur-sm pl-2.5 pr-4 py-1.5 text-xs">
-            <span
-              className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-medium"
-              style={{ background: "var(--signal-soft)", color: "var(--signal)" }}
-            >
-              <span
-                className="size-1.5 rounded-full pulse-dot"
-                style={{ background: "var(--signal)" }}
-              />
-              Live
-            </span>
-            <span className="text-muted-foreground">{pill}</span>
-          </span>
-        </div>
-      )}
-      <div className={centered ? "flex justify-center" : ""}>
-        <SectionLabel>{eyebrow}</SectionLabel>
-      </div>
-      <h1 className="mt-6 text-5xl sm:text-6xl md:text-7xl font-semibold tracking-[-0.03em] leading-[1.02]">
+  const copy = (
+    <div className="hp-pagehero-copy">
+      <SectionLabel>{eyebrow}</SectionLabel>
+      <h1 className="hp-page-title">
         {title}
         {italicWord && (
           <>
             {" "}
-            <span className="serif-italic">{italicWord}</span>.
+            <span className="hp-serif-italic">{italicWord}</span>.
           </>
         )}
       </h1>
-      <p className={"mt-7 max-w-2xl text-lg md:text-xl text-muted-foreground leading-relaxed " + (centered ? "mx-auto" : "")}>
-        {lede}
-      </p>
-      <div className={"mt-9 flex flex-col sm:flex-row gap-3 " + (centered ? "items-center justify-center" : "items-start")}>
+      <p className="hp-page-lede">{lede}</p>
+      <div
+        className={
+          "flex flex-wrap items-center gap-3.5 " +
+          (illustration ? "" : "justify-center")
+        }
+      >
         <PrimaryCta href={primaryHref}>{primaryCta}</PrimaryCta>
         {secondaryLabel && secondaryHref && (
           <SecondaryCta href={secondaryHref}>{secondaryLabel}</SecondaryCta>
         )}
       </div>
-    </>
+      {pill && (
+        <p className="hp-closing-sub" style={{ marginTop: 0 }}>
+          {pill}
+        </p>
+      )}
+    </div>
+  );
+
+  return (
+    <section className="hp-pagehero">
+      {illustration ? (
+        <div className="hp-pagehero-inner is-split">
+          {copy}
+          <div>{illustration}</div>
+        </div>
+      ) : (
+        <div className="hp-pagehero-inner">{copy}</div>
+      )}
+    </section>
   );
 }
 
@@ -201,19 +149,33 @@ export function StepCard({
 }) {
   return (
     <div
-      className="group relative rounded-2xl border p-6 hover:-translate-y-0.5 transition-all duration-300"
-      style={{ background: "var(--card)", borderColor: "var(--border)" }}
+      className="group relative rounded-3xl border p-7 transition-all duration-300 hover:-translate-y-0.5"
+      style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
     >
-      <div className="flex items-center justify-between mb-8">
-        <div className="size-10 rounded-xl bg-foreground/[0.04] grid place-items-center group-hover:bg-foreground/[0.08] transition-colors">
-          <Icon size={20} className="text-foreground" />
+      <div className="flex items-center justify-between mb-7">
+        <div
+          className="size-12 rounded-full grid place-items-center transition-colors group-hover:[background:var(--primary)] group-hover:[color:var(--cream-1)]"
+          style={{ background: "var(--mint-tint)", color: "var(--primary-ink)" }}
+        >
+          <Icon size={22} />
         </div>
-        <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+        <span
+          className="font-mono text-[10px] uppercase tracking-[0.18em]"
+          style={{ color: "var(--cream-9)" }}
+        >
           {n}
         </span>
       </div>
-      <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
-      <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+      <h3
+        className="text-xl font-extrabold tracking-[-0.02em]"
+        style={{ color: "var(--cream-11)" }}
+      >
+        {title}
+      </h3>
+      <p
+        className="mt-3 text-[15px] leading-relaxed"
+        style={{ color: "var(--cream-9)" }}
+      >
         {body}
       </p>
     </div>
@@ -235,10 +197,15 @@ export function MoneyRow({
         "flex items-baseline justify-between gap-6 px-6 py-5 " +
         (last ? "" : "border-b")
       }
-      style={!last ? { borderColor: "var(--border)" } : undefined}
+      style={!last ? { borderColor: "var(--hair)" } : undefined}
     >
-      <span className="text-sm font-medium">{k}</span>
-      <span className="text-xs font-mono uppercase tracking-[0.14em] text-muted-foreground">
+      <span className="text-sm font-medium" style={{ color: "var(--cream-11)" }}>
+        {k}
+      </span>
+      <span
+        className="text-xs font-mono uppercase tracking-[0.14em]"
+        style={{ color: "var(--cream-9)" }}
+      >
         {v}
       </span>
     </div>
@@ -258,21 +225,27 @@ export function MoneyBlock({
 }) {
   return (
     <>
-      <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
+      <p
+        className="text-lg leading-relaxed max-w-2xl"
+        style={{ color: "var(--cream-9)" }}
+      >
         {lede}
       </p>
       <div className="mt-12 grid lg:grid-cols-5 gap-10 items-center">
         <div className="lg:col-span-2 relative">
-          <div className="display-serif text-[clamp(3.5rem,10vw,7.5rem)] leading-[1.05] text-primary">
+          <div className="hp-serif-italic text-[clamp(3.5rem,10vw,7rem)] leading-[1.05]">
             {bigNumber}
           </div>
-          <div className="mt-4 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
+          <div
+            className="mt-4 text-xs font-mono uppercase tracking-[0.18em]"
+            style={{ color: "var(--cream-9)" }}
+          >
             {bigLabel}
           </div>
         </div>
         <div
-          className="lg:col-span-3 rounded-2xl border backdrop-blur-sm"
-          style={{ background: "var(--card)", borderColor: "var(--border)" }}
+          className="lg:col-span-3 rounded-3xl border"
+          style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
         >
           {rows.map((r, i) => (
             <MoneyRow key={i} k={r.k} v={r.v} last={i === rows.length - 1} />
@@ -293,26 +266,14 @@ export function Faq({
   children: React.ReactNode;
 }) {
   return (
-    <details
-      open={open}
-      className="group border-b py-6 last:border-b-0"
-      style={{ borderColor: "var(--border)" }}
-    >
-      <summary className="cursor-pointer list-none flex items-center justify-between gap-6 [&::-webkit-details-marker]:hidden">
-        <span className="text-base md:text-lg font-medium tracking-tight">
-          {q}
-        </span>
-        <span
-          className="size-8 rounded-full border grid place-items-center text-muted-foreground group-open:bg-foreground group-open:text-background group-open:border-foreground transition-colors"
-          style={{ borderColor: "var(--border)" }}
-        >
-          <Plus className="size-4 group-open:hidden" />
-          <Minus className="size-4 hidden group-open:block" />
+    <details open={open} className="hp-faq">
+      <summary>
+        <span className="hp-faq-q">{q}</span>
+        <span className="hp-faq-icon" aria-hidden="true">
+          <Plus className="size-4" />
         </span>
       </summary>
-      <div className="mt-4 text-muted-foreground leading-relaxed max-w-2xl">
-        {children}
-      </div>
+      <div className="hp-faq-body">{children}</div>
     </details>
   );
 }
@@ -327,6 +288,7 @@ export function ClosingCta({
   secondaryLabel,
   secondaryHref,
   sub = "Free for executives · Invite only · One short call to start",
+  tone = "white",
 }: {
   eyebrow?: string;
   title: string;
@@ -337,33 +299,30 @@ export function ClosingCta({
   secondaryLabel?: string;
   secondaryHref?: string;
   sub?: string;
+  /** Background tone. Set to "oat" to keep the white/oat alternation unbroken. */
+  tone?: "white" | "oat";
 }) {
   return (
-    <section className="relative overflow-hidden border-t" style={{ borderColor: "var(--border)" }}>
-      <div className="mesh" aria-hidden />
-      <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-32 md:py-40 text-center">
+    <section className={"hp-closing" + (tone === "oat" ? " is-oat" : "")}>
+      <div className="hp-closing-inner">
         <SectionLabel>{eyebrow}</SectionLabel>
-        <h2 className="mt-6 text-5xl md:text-7xl font-semibold tracking-[-0.03em] leading-[1.02] max-w-3xl mx-auto">
+        <h2 className="hp-closing-title">
           {title}
           {italicWord && (
             <>
               {" "}
-              <span className="serif-italic">{italicWord}</span>
+              <span className="hp-serif-italic">{italicWord}</span>
             </>
           )}
         </h2>
-        <p className="mt-6 text-lg text-muted-foreground max-w-xl mx-auto">
-          {lede}
-        </p>
-        <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
+        <p className="hp-closing-lede">{lede}</p>
+        <div className="flex flex-wrap items-center justify-center gap-3.5">
           <PrimaryCta href={primaryHref}>{primaryCta}</PrimaryCta>
           {secondaryLabel && secondaryHref && (
             <SecondaryCta href={secondaryHref}>{secondaryLabel}</SecondaryCta>
           )}
         </div>
-        <div className="mt-10 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
-          {sub}
-        </div>
+        <p className="hp-closing-sub">{sub}</p>
       </div>
     </section>
   );
@@ -376,13 +335,15 @@ export function ComparisonRow({ text, bad }: { text: string; bad?: boolean }) {
         className="mt-0.5 size-5 rounded-full grid place-items-center shrink-0"
         style={
           bad
-            ? { background: "var(--stone-soft)", color: "var(--muted-foreground)" }
-            : { background: "var(--card)", color: "var(--primary)" }
+            ? { background: "var(--stone-soft)", color: "var(--cream-9)" }
+            : { background: "var(--mint-tint)", color: "var(--primary)" }
         }
       >
         {bad ? <IconX size={12} /> : <IconCheck size={12} />}
       </span>
-      <span className="leading-relaxed">{text}</span>
+      <span className="leading-relaxed" style={{ color: "var(--cream-10)" }}>
+        {text}
+      </span>
     </li>
   );
 }
@@ -398,14 +359,22 @@ export function MetricCard({
 }) {
   return (
     <div
-      className="rounded-2xl border p-6 md:p-8"
-      style={{ background: "var(--card)", borderColor: "var(--border)" }}
+      className="rounded-3xl border p-7 md:p-8"
+      style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
     >
-      <div className="display-serif text-5xl md:text-6xl text-foreground leading-none">
+      <div
+        className="font-black text-5xl md:text-6xl leading-none tracking-[-0.04em] tabular-nums"
+        style={{ color: "var(--signal)" }}
+      >
         {value}
       </div>
-      <div className="mt-4 text-sm font-semibold">{label}</div>
-      <div className="mt-2 text-xs text-muted-foreground leading-relaxed">
+      <div className="mt-4 text-sm font-bold" style={{ color: "var(--cream-11)" }}>
+        {label}
+      </div>
+      <div
+        className="mt-2 text-[13px] leading-relaxed"
+        style={{ color: "var(--cream-9)" }}
+      >
         {note}
       </div>
     </div>
@@ -426,22 +395,18 @@ export function SectionHead({
   centered?: boolean;
 }) {
   return (
-    <div className={centered ? "mx-auto max-w-2xl text-center" : "max-w-2xl"}>
+    <div className={"hp-sec-head" + (centered ? " is-centered" : "")}>
       <SectionLabel>{label}</SectionLabel>
-      <h2 className="mt-4 text-4xl md:text-5xl font-semibold tracking-tight">
+      <h2 className="hp-sec-title">
         {title}
         {italicWord && (
           <>
             {" "}
-            <span className="serif-italic">{italicWord}</span>
+            <span className="hp-serif-italic">{italicWord}</span>
           </>
         )}
       </h2>
-      {lede && (
-        <p className="mt-5 text-lg text-muted-foreground leading-relaxed">
-          {lede}
-        </p>
-      )}
+      {lede && <p className="hp-sec-lede">{lede}</p>}
     </div>
   );
 }
