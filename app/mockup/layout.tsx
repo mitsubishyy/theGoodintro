@@ -76,6 +76,7 @@ function AppTopBar() {
           <nav className="hidden md:flex items-center gap-1 text-[13px]">
             <MockupNavLink href="/mockup/email" label="Email flow" sub="primary" />
             <MockupNavLink href="/mockup/exec" label="Dashboard" sub="secondary" />
+            <MockupNavLink href="/mockup/rsvp" label="Cold RSVP" sub="outreach" />
           </nav>
         </div>
         <div className="flex items-center gap-3">
