@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Check, Heart, Mail, X } from "lucide-react";
+import { ArrowRight, Check, Heart, Mail, X } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Cold RSVP flow · theGoodintro mockup",
@@ -237,7 +237,8 @@ function YesCard() {
           </p>
         </div>
       </div>
-      <p className="mt-6 text-[13px] text-muted-foreground underline underline-offset-2">
+      <SiteCta>Want to learn more while you wait? Take a look around our site</SiteCta>
+      <p className="mt-4 text-[13px] text-muted-foreground underline underline-offset-2">
         Actually, not right now
       </p>
     </Card>
@@ -261,10 +262,24 @@ function NoCard() {
         Thanks for letting me know — I won&apos;t follow up. If the timing
         changes down the track, the door stays open.
       </p>
-      <p className="mt-6 text-[13px] text-muted-foreground underline underline-offset-2">
+      <SiteCta>Curious to know more? You&apos;re welcome to look around our site</SiteCta>
+      <p className="mt-4 text-[13px] text-muted-foreground underline underline-offset-2">
         Wait, I&apos;m interested after all
       </p>
     </Card>
+  );
+}
+
+function SiteCta({ children }: { children: React.ReactNode }) {
+  return (
+    <a
+      href="/"
+      className="mt-6 inline-flex items-center gap-1.5 text-[14px] font-medium hover:underline underline-offset-2"
+      style={{ color: "var(--primary)" }}
+    >
+      {children}
+      <ArrowRight className="size-4" />
+    </a>
   );
 }
 

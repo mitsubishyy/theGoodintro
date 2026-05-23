@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, Heart, X } from "lucide-react";
+import { ArrowRight, Check, Heart, X } from "lucide-react";
 
 // The token was already verified server-side before this page rendered, so the
 // response is effectively confirmed the moment they arrive. We show the
@@ -86,7 +86,11 @@ export default function RsvpClient({
             </p>
           </div>
         </div>
-        <Footer failed={failed} onRetry={() => send(current)}>
+        <Footer
+          failed={failed}
+          onRetry={() => send(current)}
+          siteLabel="Want to learn more while you wait? Take a look around our site"
+        >
           <button
             onClick={() => setCurrent("no")}
             className="text-[13px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
@@ -111,7 +115,11 @@ export default function RsvpClient({
         Thanks for letting me know — I won&apos;t follow up. If the timing
         changes down the track, the door stays open.
       </p>
-      <Footer failed={failed} onRetry={() => send(current)}>
+      <Footer
+        failed={failed}
+        onRetry={() => send(current)}
+        siteLabel="Curious to know more? You're welcome to look around our site"
+      >
         <button
           onClick={() => setCurrent("yes")}
           className="text-[13px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
@@ -152,10 +160,12 @@ function Badge({ tone, children }: { tone: "yes" | "no"; children: React.ReactNo
 function Footer({
   failed,
   onRetry,
+  siteLabel,
   children,
 }: {
   failed: boolean;
   onRetry: () => void;
+  siteLabel: string;
   children: React.ReactNode;
 }) {
   return (
@@ -169,7 +179,15 @@ function Footer({
           , or just reply to the email.
         </p>
       )}
-      {children}
+      <a
+        href="/"
+        className="inline-flex items-center gap-1.5 text-[14px] font-medium hover:underline underline-offset-2"
+        style={{ color: "var(--primary)" }}
+      >
+        {siteLabel}
+        <ArrowRight className="size-4" />
+      </a>
+      <div className="mt-4">{children}</div>
     </div>
   );
 }
