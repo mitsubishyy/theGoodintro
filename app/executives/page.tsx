@@ -1,16 +1,13 @@
 import Link from "next/link";
 import { ArrowUpRight, Compass, ShieldCheck, HeartHandshake } from "lucide-react";
 import {
-  PageHero,
   SectionHead,
   StepCard,
   MoneyBlock,
   ComparisonRow,
   Faq,
   ClosingCta,
-  PrimaryCta,
 } from "../_components/ui";
-import { ExecutivesIllustration } from "../_components/illustrations";
 import { CALENDLY_URL } from "@/lib/config";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -24,16 +21,40 @@ export const metadata = pageMetadata({
 export default function Executives() {
   return (
     <>
-      <PageHero
-        eyebrow="For executives · Invite only"
-        title="Conversations worth"
-        italicWord="your time"
-        lede="You are senior enough that your calendar is a target. theGoodintro turns the few conversations worth having into a real gift for a cause you choose."
-        primaryCta="Apply as a founding executive"
-        pill="Free for executives · Founding cohort applications open"
-        bg="var(--cream-3)"
-        illustration={<ExecutivesIllustration className="w-full h-auto" />}
-      />
+      {/* ── Hero — big bold text, no graphics ────────────────────── */}
+      <section className="hp-hero" aria-labelledby="exec-headline">
+        <h1 className="hp-headline" id="exec-headline">
+          Conversations worth{" "}
+          <span className="hp-serif-italic">your time</span>.
+        </h1>
+
+        <p className="hp-lede">
+          You are senior enough that your calendar is a target. theGoodintro
+          turns the few conversations worth having into a real gift for a cause
+          you choose.
+        </p>
+
+        <div className="hp-cta-row">
+          <a className="hp-btn-primary" href={CALENDLY_URL}>
+            <span className="pulse" aria-hidden="true" />
+            Apply as a founding executive
+          </a>
+          <Link className="hp-btn-ghost" href="/how-it-works">
+            How it works
+            <span className="circle" aria-hidden="true">
+              <svg viewBox="0 0 14 14" fill="none">
+                <path
+                  d="M3 11 L11 3 M5 3 H11 V9"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+          </Link>
+        </div>
+      </section>
 
       {/* ── How it works for you ─────────────────────────────────── */}
       <section
@@ -73,32 +94,18 @@ export default function Executives() {
         </div>
       </section>
 
-      {/* ── The honest answer ────────────────────────────────────── */}
+      {/* ── The 10:1 rule ────────────────────────────────────────── */}
       <section style={{ background: "var(--paper-white)" }}>
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
-          <SectionHead
-            label="The honest answer"
-            title="Is this a sales trap?"
-            lede="No. A vendor cannot reach you without stating a specific, relevant reason, and the conversation is about your priorities, not a hard sell. If a conversation is not useful, you simply do not take the next one. The model only works if executives genuinely want to be here."
-          />
-        </div>
-      </section>
-
-      {/* ── The 3:1 rule ─────────────────────────────────────────── */}
-      <section
-        className="border-y"
-        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
-      >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-6">
               <SectionHead
-                label="The 3:1 rule"
+                label="The 10:1 rule"
                 title="You are never the whole room."
-                lede="For every vendor we admit, there are at least three executives. Your inbox is not an auction where everyone chases the same few names. Requests stay scarce, relevant, and easy to decline."
+                lede="For every vendor we admit, there are at least ten executives. Your inbox is not an auction where everyone chases the same few names. Requests stay scarce, relevant, and easy to decline."
               />
               <ul className="mt-8 space-y-3 text-sm md:text-base max-w-xl">
-                <ComparisonRow text="At least three executives for every vendor we admit" />
+                <ComparisonRow text="At least ten executives for every vendor we admit" />
                 <ComparisonRow text="Vendors are not bidding against a crowd for your attention" />
                 <ComparisonRow text="Fewer, better requests, never a flooded inbox" />
               </ul>
@@ -109,7 +116,7 @@ export default function Executives() {
                 style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
               >
                 <div className="display-serif text-[clamp(4rem,12vw,9rem)] leading-none text-primary">
-                  3:1
+                  10:1
                 </div>
                 <div className="mt-5 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
                   Executives to vendors, deliberately
@@ -121,16 +128,24 @@ export default function Executives() {
       </section>
 
       {/* ── What your time is worth ──────────────────────────────── */}
-      <section style={{ background: "var(--paper-white)" }}>
+      <section
+        className="border-y"
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
+      >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
-          <SectionHead label="What your time is worth" title="Full transparency." />
+          <SectionHead
+            label="What your time is worth"
+            title="Your time is already so valuable."
+            italicWord="Do more with it."
+            lede="The only thing a conversation asks of you is your time, and you spend it on your terms. Every gift reaches the charity in full, never reduced by running costs."
+          />
           <div className="mt-12">
             <MoneyBlock
               lede="You direct exactly where the donation goes. Every dollar of the gift reaches the charity, never reduced by running costs."
               rows={[
                 { k: "To your chosen charity, per meeting", v: "the full gift" },
                 { k: "Platform admin fee", v: "paid by the vendor, never you" },
-                { k: "What it costs you", v: "nothing, ever" },
+                { k: "The Price", v: "one focused conversation" },
               ]}
             />
           </div>
@@ -144,27 +159,19 @@ export default function Executives() {
         </div>
       </section>
 
-      {/* ── The first cohort ─────────────────────────────────────── */}
+      <ClosingCta
+        title="Conversations worth"
+        italicWord="your time."
+        lede="Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives a real gift each time."
+        secondaryLabel="See how it works"
+        secondaryHref="/how-it-works"
+      />
+
+      {/* ── FAQ — at the bottom, exclusive accordion ─────────────── */}
       <section
-        className="border-y overflow-hidden relative"
+        className="border-y"
         style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
       >
-        <div className="absolute inset-0 dotgrid opacity-40" aria-hidden />
-        <div className="relative mx-auto max-w-3xl px-6 lg:px-10 py-24 md:py-32 text-center">
-          <SectionHead
-            label="The first cohort"
-            title="Join as a founding member."
-            lede="We are starting small on purpose. Founding members help shape how this works, for the executives who join and the causes they support."
-            centered
-          />
-          <div className="mt-10 flex justify-center">
-            <PrimaryCta href={CALENDLY_URL}>Apply as a founding executive</PrimaryCta>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FAQ ──────────────────────────────────────────────────── */}
-      <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="grid lg:grid-cols-12 gap-12">
             <div className="lg:col-span-4">
@@ -181,7 +188,7 @@ export default function Executives() {
               </a>
             </div>
             <div className="lg:col-span-8">
-              <Faq q="Is this just a sales meeting in disguise?" open>
+              <Faq name="exec-faq" q="Is this just a sales meeting in disguise?">
                 No. A vendor cannot reach you without writing the specific
                 initiative or problem they want to discuss, and that reason
                 is shown to you in plain language before anything is
@@ -190,7 +197,7 @@ export default function Executives() {
                 model only works if executives genuinely want to be here, so
                 it is built around your interests, not theirs.
               </Faq>
-              <Faq q="What actually counts as relevant?">
+              <Faq name="exec-faq" q="What actually counts as relevant?">
                 You define it. You tell us the priorities, initiatives, and
                 problems you would take a conversation about, and you can be
                 as broad or as narrow as you like. Anything outside that
@@ -198,66 +205,50 @@ export default function Executives() {
                 at any time, and a vendor still has to state a specific
                 reason that fits before a request is shown to you.
               </Faq>
-              <Faq q="How many requests will I get? Will I be flooded?">
-                No. We hold a deliberate 3:1 balance, at least three
+              <Faq name="exec-faq" q="How many requests will I get? Will I be flooded?">
+                No. We hold a deliberate 10:1 balance, at least ten
                 executives for every vendor we admit, so no leader is ever
                 the whole room. For a typical founding executive that is two
                 to four requests a quarter that actually fit, not a daily
                 inbox to manage.
               </Faq>
-              <Faq q="What happens if I decline?">
+              <Faq name="exec-faq" q="What happens if I decline?">
                 Nothing. Declining is the normal case, not the exception.
                 There is no penalty, no score, no follow-up, and no
                 explanation required. You see the stated reason first
                 precisely so that saying no is fast and free. A vendor cannot
                 contact you again about a declined request.
               </Faq>
-              <Faq q="Which charities can I choose?">
+              <Faq name="exec-faq" q="Which charities can I choose?">
                 Any Australian charity that holds deductible gift recipient
                 (DGR) endorsement. You name it, you can change it at any
                 time, and you can nominate a different one for each meeting.
                 That is exactly where your meeting&apos;s gift goes, and the
                 charity confirms receipt to you in writing.
               </Faq>
-              <Faq q="What does it cost an executive?">
+              <Faq name="exec-faq" q="What does it cost an executive?">
                 Nothing, ever. Joining, setting your topics, declining
                 requests, taking meetings, and leaving are all free. Vendors
                 fund both the platform and the donation. There is no future
                 tier where executives are charged, and the founding cohort is
                 grandfathered against any change.
               </Faq>
-              <Faq q="How much of my time is this, realistically?">
+              <Faq name="exec-faq" q="How much of my time is this, realistically?">
                 One short, focused conversation per request you accept,
                 typically 30 to 45 minutes. No preparation, no homework, and
                 no obligation to continue after the call. You only take the
                 meetings you choose.
               </Faq>
-              <Faq q="Is my information sold or shared?">
+              <Faq name="exec-faq" q="Is my information sold or shared?">
                 No. Your details are not sold, traded, or shared publicly.
                 Vendors only see what you choose to make visible, and a
                 request is only ever shown to you, never the other way
                 around, until you accept it.
               </Faq>
-              <Faq q="Why a founding cohort?">
-                We are starting with a deliberately small first group of
-                executives in Australia so the model can be shaped against
-                real feedback before it scales. Founding members influence
-                how requests are qualified and which vendors are accepted,
-                and are grandfathered against any future change.
-              </Faq>
             </div>
           </div>
         </div>
       </section>
-
-      <ClosingCta
-        title="Conversations worth"
-        italicWord="your time."
-        lede="Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives a real gift each time."
-        secondaryLabel="See how it works"
-        secondaryHref="/how-it-works"
-        tone="oat"
-      />
     </>
   );
 }

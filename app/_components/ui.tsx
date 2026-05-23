@@ -259,14 +259,18 @@ export function MoneyBlock({
 export function Faq({
   q,
   open,
+  name,
   children,
 }: {
   q: string;
   open?: boolean;
+  /** Shared name groups several <details> into an exclusive accordion:
+   *  opening one natively collapses any other with the same name. */
+  name?: string;
   children: React.ReactNode;
 }) {
   return (
-    <details open={open} className="hp-faq">
+    <details open={open} name={name} className="hp-faq">
       <summary>
         <span className="hp-faq-q">{q}</span>
         <span className="hp-faq-icon" aria-hidden="true">

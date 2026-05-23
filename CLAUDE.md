@@ -153,6 +153,16 @@ Sections rotate between these patterns — never repeat the same one back-to-bac
 11. Deep FAQ (10+ entries, 60–120 words each)
 12. Centered final CTA
 
+**HARD RULE — alternating section backgrounds.** Down every page, section
+backgrounds must strictly alternate between `--paper-white` and `--paper-oat`
+(oat sections carry `className="border-y"` + `borderColor: var(--border)`).
+Never place two same-tone backgrounds back-to-back. The hero (`hp-hero`, warm
+white) counts as the first band, so the first section after it is oat. After
+adding, deleting, or reordering ANY section, re-walk the whole page top to
+bottom and re-tone every band so the white/oat rhythm is unbroken — deleting a
+section is the usual way this regresses. `ClosingCta` accepts `tone="white"`
+(default) or `tone="oat"` to keep it in the rhythm.
+
 ## File map
 
 ```
