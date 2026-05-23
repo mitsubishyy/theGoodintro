@@ -1,0 +1,42 @@
+<!--
+  theGoodintro cold-outreach email, plain version.
+
+  Reads like a normal typed email: no colour, no header, no card. Just the
+  body, two buttons, and a "Warmly," sign-off so your own Gmail signature
+  follows underneath (the mail-merge appends it automatically).
+
+  Paste this as the HTML body. Merge fields from your recipient sheet:
+    {{first_name}}   greeting  (or use {{name}})
+    {{accept_url}}   from links.csv (scripts/make-rsvp-links.mjs)
+    {{decline_url}}  from links.csv
+
+  Suggested subject lines (pick one):
+    - A meeting that funds a charity you choose
+    - An invitation, and $1,000 to a charity you choose
+    - 30 minutes from you, $1,000 to your charity
+
+  Text is left unstyled on purpose so it inherits Gmail's normal font and
+  colour. Only the two buttons carry any styling.
+-->
+<div>
+  <p>Hi {{first_name}},</p>
+
+  <p>I'm Issy, founder of theGoodintro. I'm building an invite-only network where senior leaders take a small number of genuinely relevant meetings, and every meeting sends $1,000 to a charity they choose.</p>
+
+  <p>I'd like you to be one of the first executives. There's no platform to learn and nothing to fill in. If you're open to it, I'll call for five minutes to set you up, and from there the introductions come to you by email, one at a time, only when they're a real fit.</p>
+
+  <p>Are you in?</p>
+
+  <table role="presentation" cellpadding="0" cellspacing="0" style="margin:18px 0;"><tr>
+    <td style="padding-right:10px;">
+      <a href="{{accept_url}}" style="display:inline-block;background-color:#1F7A52;color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;padding:12px 26px;border-radius:6px;">Yes, I'm interested</a>
+    </td>
+    <td>
+      <a href="{{decline_url}}" style="display:inline-block;background-color:#ffffff;color:#1a1a1a;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;padding:11px 25px;border-radius:6px;border:1px solid #cccccc;">Not for me</a>
+    </td>
+  </tr></table>
+
+  <p>One tap is all it takes, and that's the whole idea. Accepting is exactly as easy as the giving will be: every meeting you take sends $1,000 to a charity you choose.</p>
+
+  <p>Warmly,</p>
+</div>

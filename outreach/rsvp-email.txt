@@ -1,0 +1,21 @@
+Hi {{first_name}},
+
+I'm Issy, founder of theGoodintro. I'm building an invite-only network where
+senior leaders take a small number of genuinely relevant meetings, and every
+meeting sends $1,000 to a charity they choose.
+
+I'd like you to be one of the first executives. There's no platform to learn
+and nothing to fill in. If you're open to it, I'll call for five minutes to
+set you up, and from there the introductions come to you by email, one at a
+time, only when they're a real fit.
+
+Are you in?
+
+  Yes, I'm interested:  {{accept_url}}
+  Not for me:          {{decline_url}}
+
+One tap is all it takes, and that's the whole idea. Accepting is exactly as
+easy as the giving will be: every meeting you take sends $1,000 to a charity
+you choose.
+
+Warmly,
