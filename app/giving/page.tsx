@@ -379,9 +379,9 @@ export default function Giving() {
 
       <ClosingCta
         eyebrow="The invitation"
-        title="Choose the cause,"
-        italicWord="the vendor funds it."
-        lede="Apply as a founding executive. Every meeting you take sends a real gift to a DGR-endorsed charity you choose, confirmed to you in writing."
+        title="A relevant meeting,"
+        italicWord="a real gift."
+        lede="Apply as a founding executive. You decide what is worth your time, and every conversation you take funds a DGR-endorsed charity you choose, $900 to $1,200, at no cost to you."
         secondaryLabel="See the pricing"
         secondaryHref="/pricing"
         tone="oat"
