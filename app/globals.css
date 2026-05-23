@@ -1096,11 +1096,9 @@ body {
   object-fit: cover;
   z-index: 2;
 }
-/* Logo cards: show the whole mark, in colour, on a clean ground — not a
-   cropped, greyed photo. */
-.hp-gallery-card.is-logo {
-  filter: none;
-}
+/* Logo cards show the whole mark on a clean white ground rather than a
+   cropped photo. They still follow the B&W-to-colour treatment from the base
+   card rule, so they sit greyscale until hovered/centred. */
 .hp-gallery-card.is-logo .hp-gallery-image {
   background: #fff;
 }
