@@ -5,7 +5,7 @@ import { pageMetadata } from "@/lib/metadata";
 export const metadata = pageMetadata({
   title: "Pricing. theGoodintro.",
   description:
-    "$1,500 AUD per meeting. The more meetings you take, the more goes to a charity the executive chooses. Up to 80% per meeting at the top tier.",
+    "$1,500 AUD per meeting. Between $900 and $1,200 of that reaches the charity the executive chooses, rising with the number of meetings you take across the year.",
   path: "/pricing",
 });
 
@@ -93,7 +93,7 @@ export default function Pricing() {
               The more you meet, the more goes to charity.
             </p>
             <p className="mt-3 text-[13px] text-muted-foreground leading-relaxed">
-              At 16+ meetings per year, 80% of every meeting fee goes directly to a cause the executive chooses. We take less so charities get more.
+              At 16 or more meetings a year, $1,200 of every $1,500 meeting goes directly to the cause the executive chooses. The more you meet, the more reaches the charity, from $900 a meeting up to $1,200.
             </p>
           </div>
 
@@ -112,7 +112,7 @@ export default function Pricing() {
             <ValueCard
               icon={Heart}
               title="Impact"
-              body="Up to 80% of every meeting fee goes to charity."
+              body="$900 to $1,200 of every meeting goes to charity, rising the more you meet."
             />
           </div>
 

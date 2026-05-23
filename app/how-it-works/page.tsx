@@ -117,15 +117,15 @@ export default function HowItWorks() {
         <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead
             label="The money, in short"
-            title="The gift is never the revenue."
-            lede="The full gift reaches the charity. Running costs are recovered through a separate, clearly named platform fee, so the gift is never reduced for them."
+            title="Where every $1,500 goes."
+            lede="Each meeting is one flat $1,500 fee, paid by the vendor. Between $900 and $1,200 of it goes to the executive's chosen charity, rising with the number of meetings the vendor takes across the year. The rest runs the network, and we publish the split at every tier."
           />
           <div className="mt-12">
             <MoneyBlock
-              lede="Executives pay nothing. The vendor funds the gift and the platform on separate lines."
+              lede="Executives pay nothing. The vendor pays one flat fee per meeting, and we publish how much of it reaches the charity at each tier."
               rows={[
-                { k: "To the chosen DGR-endorsed charity", v: "the full gift" },
-                { k: "Taken from the donation for costs", v: "nothing" },
+                { k: "Vendor pays, per meeting", v: "$1,500" },
+                { k: "To the chosen DGR-endorsed charity", v: "$900 to $1,200" },
                 { k: "What an executive pays", v: "nothing, ever" },
               ]}
             />
@@ -311,7 +311,7 @@ export default function HowItWorks() {
               n="02"
               icon={IconHeartCircle}
               title="Giving stays whole"
-              body="The donation figure is never blended with our costs. The platform fee is its own named line."
+              body="The charity's share is set by the tier, published, and paid in full, from $900 to $1,200 a meeting."
             />
             <PrincipleCard
               n="03"
@@ -340,9 +340,9 @@ export default function HowItWorks() {
             </div>
             <div className="lg:col-span-7">
               <ul className="space-y-3 text-sm md:text-base">
-                <ComparisonRow text="The gift is never reduced for our costs; the platform fee is its own named line" />
+                <ComparisonRow text="The charity's share is set by the tier and published, from $900 to $1,200 a meeting" />
                 <ComparisonRow text="Every nominated charity holds deductible gift recipient (DGR) endorsement" />
-                <ComparisonRow text="The charity confirms receipt of the full amount directly to the executive in writing" />
+                <ComparisonRow text="The charity confirms receipt directly to the executive in writing" />
                 <ComparisonRow text="Your details are never sold, traded, or published" />
                 <ComparisonRow text="No invented testimonials, no inflated numbers, no funding we do not have" />
               </ul>
@@ -407,8 +407,9 @@ export default function HowItWorks() {
             </div>
             <div className="lg:col-span-8">
               <Faq q="Who pays for the meeting?" open>
-                The vendor. It is free for executives. The vendor funds both
-                the charity gift and the separate, clearly named platform fee.
+                The vendor. It is free for executives. Each meeting is one flat
+                $1,500 fee, and we publish how much of it reaches the charity at
+                every tier.
               </Faq>
               <Faq q="Can a leader decline a request?">
                 Always. Seeing the stated reason first means declining is

@@ -48,7 +48,7 @@ export default function ApplyPage() {
               <p>
                 <Brand /> is an invite-only network where senior leaders
                 take a small number of genuinely relevant SaaS vendor conversations,
-                and 100% of every meeting fee goes to a charity you choose. You
+                and between $900 and $1,200 of every meeting fee goes to a charity you choose. You
                 are never pitched without a specific, stated reason, and you
                 decide which ones become meetings.
               </p>

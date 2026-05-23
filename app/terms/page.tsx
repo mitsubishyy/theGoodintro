@@ -37,8 +37,8 @@ export default function Terms() {
             What you can expect
           </h2>
           <p className="text-muted-foreground">
-            The figures described, including the per-meeting charity gift and
-            the separate admin fee, reflect the intended model and may change
+            The figures described, including the flat per-meeting fee and the
+            charity's share of it, reflect the intended model and may change
             as the platform is built. Final terms for executives and vendors
             will be provided in writing before any meeting or payment takes
             place.

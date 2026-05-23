@@ -75,7 +75,7 @@ export default function Vendors() {
             <VendorCard
               icon={Heart}
               title="Socially minded"
-              body="You are glad that the value you create here also sends a substantial gift to a cause the leader chooses."
+              body="You are glad that the value you create here also sends a real gift, $900 to $1,200 a meeting, to a cause the leader chooses."
               lucide
             />
             <VendorCard
@@ -157,10 +157,10 @@ export default function Vendors() {
           />
           <div className="mt-12">
             <MoneyBlock
-              lede="The donation is never reduced to cover our costs. The admin fee is its own named line, so you always know exactly what funds the charity and what funds the platform."
+              lede="You pay one flat $1,500 per meeting. We publish exactly how much of it reaches the charity at each tier, so you always know what funds the cause and what runs the network."
               rows={[
-                { k: "To the leader's chosen charity, per meeting", v: "the full gift" },
-                { k: "Platform admin fee", v: "billed to you, separately" },
+                { k: "You pay, per meeting", v: "$1,500" },
+                { k: "To the leader's chosen charity", v: "$900 to $1,200" },
                 { k: "What the leader pays", v: "nothing, ever" },
               ]}
             />
@@ -203,11 +203,11 @@ export default function Vendors() {
                 reason leaders take these meetings at all.
               </Faq>
               <Faq q="What exactly do I pay?">
-                Per held meeting you pay the charity gift, which goes
-                in full to the charity the leader chooses, plus a separate
-                platform fee on its own clearly named line. The gift is never
-                reduced to cover our costs. There is also a platform
-                membership for an active vendor seat. Pricing is on the{" "}
+                One flat fee of $1,500 per held meeting. No subscriptions, no
+                seat fee, no hidden costs. Between $900 and $1,200 of every
+                meeting goes to the charity the leader chooses, rising with the
+                number of meetings you take across the year, and we publish the
+                exact split at every tier. Pricing is on the{" "}
                 <Link
                   href="/pricing"
                   className="underline underline-offset-4 hover:text-primary"

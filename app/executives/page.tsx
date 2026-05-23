@@ -137,15 +137,15 @@ export default function Executives() {
             label="What your time is worth"
             title="Your time is already so valuable."
             italicWord="Do more with it."
-            lede="The only thing a conversation asks of you is your time, and you spend it on your terms. Every gift reaches the charity in full, never reduced by running costs."
+            lede="The only thing a conversation asks of you is your time, and you spend it on your terms. The charity you choose receives a real gift every meeting, from $900 to $1,200, paid by the vendor."
           />
           <div className="mt-12">
             <MoneyBlock
-              lede="You direct exactly where the donation goes. Every dollar of the gift reaches the charity, never reduced by running costs."
+              lede="You direct exactly where the donation goes, and the charity you choose receives its share of every meeting, paid entirely by the vendor."
               rows={[
-                { k: "To your chosen charity, per meeting", v: "the full gift" },
-                { k: "Platform admin fee", v: "paid by the vendor, never you" },
-                { k: "The Price", v: "one focused conversation" },
+                { k: "To your chosen charity, per meeting", v: "$900 to $1,200" },
+                { k: "What the vendor pays, per meeting", v: "$1,500" },
+                { k: "What it costs you", v: "one focused conversation" },
               ]}
             />
           </div>

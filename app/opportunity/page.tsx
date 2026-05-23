@@ -65,7 +65,7 @@ export default function Opportunity() {
             <OpCard
               icon={IconHeartCircle}
               title="A real gift, every meeting"
-              body="Every meeting sends a real gift to the leader's chosen registered charity. A separate, clearly named admin fee covers the platform."
+              body="Every meeting sends a real gift to the leader's chosen registered charity, $900 to $1,200 of the $1,500 fee. The rest runs the platform."
             />
             <OpCard
               icon={IconIntro}

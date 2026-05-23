@@ -101,7 +101,7 @@ export default function Impact() {
               <MetricCard
                 value="100%"
                 label="Of every gift delivered"
-                note="Sample. Never reduced for platform costs"
+                note="Sample. Every committed gift delivered in full"
               />
             </div>
 

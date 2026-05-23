@@ -44,10 +44,10 @@ const CAUSES = [
 const TERMS = [
   "A real gift is sent for every meeting that is actually held, paid by the vendor, never by the executive.",
   "Once a meeting takes place the donation is committed and is paid within 14 days, regardless of the commercial outcome of the conversation.",
-  "The full gift reaches the charity. No part of it is taken to cover platform costs; the platform fee is a separate, clearly named line billed to the vendor.",
-  "Funds are held separately from platform revenue between invoice and payment to the charity.",
+  "Each meeting is one flat $1,500 fee paid by the vendor. The charity receives $900 to $1,200 of it, rising with the number of meetings the vendor takes across the year, and we publish the split at every tier.",
+  "The charity's share is held separately between invoice and payment to the charity.",
   "Only deductible gift recipient (DGR) endorsed Australian charities are eligible, so the vendor receives a tax-deductible receipt and every gift is publicly verifiable.",
-  "The charity confirms receipt of the full amount directly to the executive, in writing.",
+  "The charity confirms receipt directly to the executive, in writing.",
   "The executive chooses and can change the charity at any time, including a different charity per meeting. We never assign one.",
   "If a vendor behaves badly in a meeting, the gift is still paid in full; the vendor loses access.",
 ];
@@ -76,14 +76,14 @@ export default function Giving() {
           <SectionHead
             label="The giving promise"
             title="The money path, exactly."
-            lede="The donation is paid by the vendor, held separately, and delivered to the executive's chosen charity within 14 days of the meeting, confirmed in writing. The gift is never the revenue."
+            lede="The donation is paid by the vendor, held separately, and delivered to the executive's chosen charity within 14 days of the meeting, and confirmed in writing."
           />
           <div className="mt-12">
             <MoneyBlock
-              lede="The charity figure stays whole on purpose. Running costs are recovered through a separately named platform fee, so the two numbers never get blended."
+              lede="Each meeting is one flat $1,500 fee, paid by the vendor. The charity's share rises with how many meetings the vendor takes across the year, and we publish the split at every tier."
               rows={[
-                { k: "To the chosen DGR-endorsed charity, per meeting", v: "the full gift" },
-                { k: "Taken from the donation for costs", v: "nothing" },
+                { k: "Vendor pays, per meeting", v: "$1,500" },
+                { k: "To the chosen DGR-endorsed charity", v: "$900 to $1,200" },
                 { k: "Paid to the charity", v: "within 14 days" },
                 { k: "Confirmed to the executive", v: "in writing" },
               ]}
@@ -93,19 +93,19 @@ export default function Giving() {
             <FlowStep
               icon={IconBriefcase}
               label="Vendor"
-              detail="Pays the charity gift plus a separate, named platform fee"
+              detail="Pays one flat $1,500 fee per meeting"
             />
             <FlowArrow />
             <FlowStep
               icon={IconNetwork}
               label="theGoodintro"
-              detail="Holds the gift separately, takes nothing from it"
+              detail="Sends the charity its share, keeps the rest to run the network"
             />
             <FlowArrow />
             <FlowStep
               icon={IconGift}
               label="Chosen charity"
-              detail="Receives the full gift, confirms in writing"
+              detail="Receives $900 to $1,200, confirms in writing"
               accent
             />
           </div>
@@ -176,7 +176,7 @@ export default function Giving() {
           <SectionHead
             label="The executive chooses"
             title="Their conversation. Their cause."
-            lede="The executive directs every dollar. We never assign a charity, and we never blend the gift with anything else."
+            lede="The executive directs where their charity's share goes. We never assign a charity for them."
           />
           <div className="mt-12 grid md:grid-cols-3 gap-4">
             <div
@@ -211,8 +211,8 @@ export default function Giving() {
                 Confirmed in writing
               </div>
               <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed">
-                The charity confirms receipt of the full gift directly to
-                you, within 14 days of the meeting.
+                The charity confirms receipt directly to you, within 14 days
+                of the meeting.
               </p>
             </div>
           </div>
@@ -368,9 +368,9 @@ export default function Giving() {
                 DGR-endorsed Australian charity.
               </Faq>
               <Faq q="How do I know the money arrived?">
-                The charity confirms receipt of the full gift directly to
-                the executive, in writing, within 14 days of the meeting. The
-                donation is never reduced for platform costs.
+                The charity confirms receipt directly to the executive, in
+                writing, within 14 days of the meeting. The charity's share is
+                set by the tier and paid in full.
               </Faq>
             </div>
           </div>
@@ -380,7 +380,7 @@ export default function Giving() {
       <ClosingCta
         eyebrow="The invitation"
         title="Choose the cause,"
-        italicWord="we fund it."
+        italicWord="the vendor funds it."
         lede="Apply as a founding executive. Every meeting you take sends a real gift to a DGR-endorsed charity you choose, confirmed to you in writing."
         secondaryLabel="See the pricing"
         secondaryHref="/pricing"
