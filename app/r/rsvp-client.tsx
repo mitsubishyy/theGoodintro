@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, Heart, Loader2, X } from "lucide-react";
+import { Check, Heart, X } from "lucide-react";
 
-// Records the response, then shows a warm confirmation. The recipient already
-// chose by clicking Accept/Decline in the email, so we record on mount — one
-// click, nothing else to do. They can flip their answer or undo if they
-// misclicked, which keeps the whole thing reversible.
+// The token was already verified server-side before this page rendered, so the
+// response is effectively confirmed the moment they arrive. We show the
+// "you're in" state immediately and record in the background — no spinner, no
+// waiting. `keepalive` lets the request finish even if they close the tab and
+// get back to work, which is exactly what a busy exec does.
 
 type Action = "yes" | "no";
-type State = "saving" | "saved" | "error";
 
 export default function RsvpClient({
   token,
@@ -23,66 +23,42 @@ export default function RsvpClient({
   campaign: string;
 }) {
   const [current, setCurrent] = useState<Action>(action);
-  const [state, setState] = useState<State>("saving");
-  const lastSent = useRef<string>("");
+  const [failed, setFailed] = useState(false);
+  const sentFor = useRef<string>("");
 
-  async function send(a: Action | "undo") {
-    setState("saving");
-    try {
-      const res = await fetch("/api/rsvp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, action: a, campaign }),
-      });
-      if (!res.ok) throw new Error(String(res.status));
-      setState("saved");
-    } catch {
-      setState("error");
-    }
+  function send(a: Action) {
+    setFailed(false);
+    fetch("/api/rsvp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, action: a, campaign }),
+      keepalive: true,
+    })
+      .then((res) => {
+        if (!res.ok) setFailed(true);
+      })
+      .catch(() => setFailed(true));
   }
 
-  // Record the initial choice exactly once on load.
+  // Record the current choice once; re-records if they flip their answer.
   useEffect(() => {
-    if (lastSent.current === current) return;
-    lastSent.current = current;
-    void send(current);
+    if (sentFor.current === current) return;
+    sentFor.current = current;
+    send(current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current]);
 
-  const hi = firstName ? `${firstName}, ` : "";
-
-  if (state === "error") {
-    return (
-      <Card>
-        <h1 className="text-2xl font-semibold tracking-[-0.02em]">
-          That didn&apos;t go through
-        </h1>
-        <p className="mt-3 text-[15px] text-muted-foreground leading-relaxed">
-          Something went wrong saving your response. Please try the button
-          again — or just reply to the email and I&apos;ll sort it out.
-        </p>
-        <button
-          onClick={() => send(current)}
-          className="mt-6 inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[14px] font-medium"
-          style={{ background: "var(--foreground)", color: "var(--background)" }}
-        >
-          Try again
-        </button>
-      </Card>
-    );
-  }
-
-  const saving = state === "saving";
+  const hi = firstName ? `, ${firstName}` : "";
 
   if (current === "yes") {
     return (
       <Card>
         <Badge tone="yes">
-          {saving ? <Loader2 className="size-3.5 animate-spin" /> : <Check className="size-3.5" />}
-          {saving ? "Saving" : "Noted"}
+          <Check className="size-3.5" />
+          Noted
         </Badge>
         <h1 className="mt-4 text-3xl font-semibold tracking-[-0.02em] leading-tight">
-          Wonderful{hi ? `, ${firstName}` : ""}.
+          Wonderful{hi}.
         </h1>
         <p className="mt-3 text-[15px] text-muted-foreground leading-relaxed">
           That&apos;s all I needed. I&apos;ll be in touch shortly with the next
@@ -110,7 +86,14 @@ export default function RsvpClient({
             </p>
           </div>
         </div>
-        <Undo label="Actually, not right now" onClick={() => setCurrent("no")} />
+        <Footer failed={failed} onRetry={() => send(current)}>
+          <button
+            onClick={() => setCurrent("no")}
+            className="text-[13px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
+          >
+            Actually, not right now
+          </button>
+        </Footer>
       </Card>
     );
   }
@@ -118,17 +101,24 @@ export default function RsvpClient({
   return (
     <Card>
       <Badge tone="no">
-        {saving ? <Loader2 className="size-3.5 animate-spin" /> : <X className="size-3.5" />}
-        {saving ? "Saving" : "Noted"}
+        <X className="size-3.5" />
+        Noted
       </Badge>
       <h1 className="mt-4 text-3xl font-semibold tracking-[-0.02em] leading-tight">
-        No problem{hi ? `, ${firstName}` : ""}.
+        No problem{hi}.
       </h1>
       <p className="mt-3 text-[15px] text-muted-foreground leading-relaxed">
         Thanks for letting me know — I won&apos;t follow up. If the timing
         changes down the track, the door stays open.
       </p>
-      <Undo label="Wait, I&apos;m interested after all" onClick={() => setCurrent("yes")} />
+      <Footer failed={failed} onRetry={() => send(current)}>
+        <button
+          onClick={() => setCurrent("yes")}
+          className="text-[13px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
+        >
+          Wait, I&apos;m interested after all
+        </button>
+      </Footer>
     </Card>
   );
 }
@@ -159,13 +149,27 @@ function Badge({ tone, children }: { tone: "yes" | "no"; children: React.ReactNo
   );
 }
 
-function Undo({ label, onClick }: { label: string; onClick: () => void }) {
+function Footer({
+  failed,
+  onRetry,
+  children,
+}: {
+  failed: boolean;
+  onRetry: () => void;
+  children: React.ReactNode;
+}) {
   return (
-    <button
-      onClick={onClick}
-      className="mt-6 text-[13px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
-    >
-      {label}
-    </button>
+    <div className="mt-6">
+      {failed && (
+        <p className="mb-3 text-[12px] text-muted-foreground">
+          We had a little trouble saving that.{" "}
+          <button onClick={onRetry} className="underline underline-offset-2 hover:text-foreground">
+            Tap to retry
+          </button>
+          , or just reply to the email.
+        </p>
+      )}
+      {children}
+    </div>
   );
 }

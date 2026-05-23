@@ -1,24 +1,22 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import { verify } from "../../../lib/rsvp";
 
 /*
   POST /api/rsvp
 
   Records a one-click response from a cold-outreach email ("yes, I'm
-  interested" / "no thanks"). Mirrors the /api/apply pattern: the browser only
-  ever talks to this same-origin route, which forwards the record server-side
-  to a private Google Sheet via a Google Apps Script Web App (env:
-  RSVP_WEBHOOK_URL). See RSVP_SETUP.md for the one-time setup.
+  interested" / "no thanks"). The recipient is identified by the signed token
+  in their email link (see lib/rsvp.ts) — there is no login.
 
-  No database. The recipient is identified by the signed token in their email
-  link (see lib/rsvp.ts) — there is no login. If RSVP_WEBHOOK_URL is unset, the
-  response is logged to the server and still returns ok, so links are testable
-  in preview before the Sheet is wired up.
+  Speed matters: a vetted exec taps a button and must not be left waiting. So
+  we verify the token, reply { ok: true } immediately, and forward the record
+  to the Google Sheet in `after()` — after the response is already sent. The
+  Apps Script web app round-trip is slow (several seconds), but the visitor
+  never feels it. If RSVP_WEBHOOK_URL is unset, the response is just logged.
 
-  Called from app/r/rsvp-client.tsx on page load. We deliberately do the write
-  on a POST (not on the GET of the link itself) so corporate email link
-  scanners — which silently pre-open every URL in an inbound email — cannot
-  record a false "interested" against someone who never actually clicked.
+  We record on a POST (not on the GET of the link itself) so corporate email
+  link scanners — which silently pre-open every URL in an inbound email —
+  cannot record a false "interested" against someone who never clicked.
 */
 
 export const runtime = "nodejs";
@@ -64,31 +62,29 @@ export async function POST(req: NextRequest) {
 
   const webhook = process.env.RSVP_WEBHOOK_URL;
 
-  if (!webhook) {
-    console.log("[rsvp] RSVP_WEBHOOK_URL not set. Response:", record);
-    return NextResponse.json({ ok: true });
-  }
+  // Forward to the Sheet AFTER the response is sent, so the click is instant.
+  after(async () => {
+    if (!webhook) {
+      console.log("[rsvp] RSVP_WEBHOOK_URL not set. Response:", record);
+      return;
+    }
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 15_000);
+      const res = await fetch(webhook, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(record),
+        signal: ctrl.signal,
+      });
+      clearTimeout(t);
+      if (!res.ok) throw new Error(`Sheet responded ${res.status}`);
+      console.log(`[rsvp] ${record.response} from ${record.name} (${record.email})`);
+    } catch (err) {
+      console.error("[rsvp] Failed to forward to Sheet:", err);
+      console.error("[rsvp] LOST-RESPONSE-RECOVERY:", JSON.stringify(record));
+    }
+  });
 
-  try {
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 10_000);
-    const res = await fetch(webhook, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(record),
-      signal: ctrl.signal,
-    });
-    clearTimeout(t);
-    if (!res.ok) throw new Error(`Sheet responded ${res.status}`);
-  } catch (err) {
-    console.error("[rsvp] Failed to forward to Sheet:", err);
-    console.error("[rsvp] LOST-RESPONSE-RECOVERY:", JSON.stringify(record));
-    return NextResponse.json(
-      { error: "Something went wrong. Please try again in a moment." },
-      { status: 502 },
-    );
-  }
-
-  console.log(`[rsvp] ${record.response} from ${record.name} (${record.email})`);
   return NextResponse.json({ ok: true });
 }
