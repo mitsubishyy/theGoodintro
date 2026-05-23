@@ -6,9 +6,16 @@ when conventions change.
 ## What this is
 
 A validation marketing site for theGoodintro: an Australian-first, invite-only
-marketplace where senior executives take qualified meetings and every meeting
-sends $1,000 to a charity the executive chooses. Pre-platform — this site
-exists to validate demand from both sides via booked calls.
+network where senior executives take qualified meetings and every meeting sends
+a real gift to a charity the executive chooses. Pre-platform — this site exists
+to validate demand from both sides via booked calls.
+
+**Charity-amount claims: the pricing page is the source of truth.** Never state
+a fixed dollar figure to charity from memory. The live model lives in
+[`app/pricing/page.tsx`](app/pricing/page.tsx): $1,500 AUD per meeting, with a
+tiered amount to the chosen charity ($900 at 1–5 meetings/yr up to $1,200 at
+16+, i.e. up to 80%). In customer copy prefer "a real gift" / "the full gift"
+over any number; if you must quote a figure, read it off the pricing page first.
 
 Concept brief: [`README.md`](README.md). Site plan and decisions:
 [`PLAN.md`](PLAN.md). Every word of original page copy: [`copy/*.md`](copy/).
@@ -61,7 +68,7 @@ Defined in [`app/globals.css`](app/globals.css) as OKLCH tokens.
 - **Background**: warm paper (`--background`, `oklch(0.965 0.012 85)`)
 - **Foreground / ink**: `oklch(0.14 0.006 70)`
 - **Primary accent (the only colour)**: deep emerald, `--primary`
-  (`oklch(0.42 0.13 158)`) for CTAs, the italic emphasis moment, the `$1,000`
+  (`oklch(0.42 0.13 158)`) for CTAs, the italic emphasis moment, the `$1,500`
   number, the pulse dot, link hovers
 - **Signal / pulse**: brighter emerald variant (`--signal`)
 - **Mint tint**: lighter emerald wash for section accents (`--mint-tint`)
@@ -89,7 +96,7 @@ alternating.
 - **Display + body**: Inter (next/font/google, self-hosted)
 - **Italic emphasis only**: Fraunces — variable serif. Use via the
   `.serif-italic` class for the one italic emphasis moment per page max.
-  Also used for the big `$1,000` number via `.display-serif`.
+  Also used for the big `$1,500` number via `.display-serif`.
 - **Mono labels / micro UI**: JetBrains Mono. Use for eyebrows, stat
   labels, technical UI hints. Uppercase, `tracking-[0.18em]`.
 
