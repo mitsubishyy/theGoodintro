@@ -18,7 +18,7 @@ const LEGAL = [
 
 export default function SiteFooter() {
   const pathname = usePathname();
-  if (pathname === "/apply") return null;
+  if (pathname === "/apply" || pathname.startsWith("/admin")) return null;
 
   return (
     <footer className="hp-footer">

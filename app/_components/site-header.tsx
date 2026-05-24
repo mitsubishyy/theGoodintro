@@ -30,6 +30,9 @@ export default function SiteHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Internal admin portal renders its own shell, no marketing nav.
+  if (pathname.startsWith("/admin")) return null;
+
   return (
     <nav className="hp-topnav" aria-label="Primary">
       <Link href="/" className="hp-brand">

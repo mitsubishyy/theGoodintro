@@ -14,6 +14,11 @@ import { usePathname } from "next/navigation";
 export default function PageShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
+  // Internal admin portal: full-bleed, no marketing page-frame.
+  if (pathname.startsWith("/admin")) {
+    return <>{children}</>;
+  }
+
   if (pathname === "/apply") {
     return <div className="legacy-theme">{children}</div>;
   }
