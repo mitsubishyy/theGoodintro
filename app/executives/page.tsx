@@ -9,6 +9,7 @@ import {
   ClosingCta,
 } from "../_components/ui";
 import { MeetingRequestEmail } from "../_components/meeting-request-email";
+import { Avatar } from "../mockup/_components/avatar";
 import { CALENDLY_URL } from "@/lib/config";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -116,7 +117,10 @@ export default function Executives() {
               </ul>
             </div>
             <div className="lg:col-span-7">
-              <MeetingRequestEmail showAddressHeaders={false} />
+              <MeetingRequestEmail
+                showAddressHeaders={false}
+                vendorAvatar={<Avatar name="Lachlan Kim" size={56} />}
+              />
             </div>
           </div>
         </div>
