@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { Heart } from "lucide-react";
-import { PageHero, SectionHead, Faq, ClosingCta } from "../_components/ui";
+import { PageHero, SectionHead, Faq, ClosingCta, FunnelDiagram } from "../_components/ui";
 import { VendorsIllustration } from "../_components/illustrations";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -92,57 +91,7 @@ export default function Vendors() {
             lede="Every request states why it is relevant before it reaches a leader. That single rule keeps quality high on both sides, and it is why senior leaders agree to be here at all."
           />
 
-          <ol className="mt-16 flex flex-col md:flex-row md:items-start">
-            {FUNNEL.map((step, i) => {
-              const last = i === FUNNEL.length - 1;
-              return (
-                <li
-                  key={step}
-                  className="contents md:flex md:flex-1 md:items-start"
-                >
-                  <div className="flex-1 flex flex-col items-center text-center gap-4 px-2">
-                    <span
-                      className="size-12 rounded-full grid place-items-center font-bold text-base shrink-0"
-                      style={
-                        last
-                          ? { background: "var(--primary)", color: "var(--cream-1)" }
-                          : { background: "var(--mint-tint)", color: "var(--primary-ink)" }
-                      }
-                    >
-                      {last ? <Heart className="size-5" fill="currentColor" /> : i + 1}
-                    </span>
-                    <p
-                      className="text-sm leading-snug max-w-[20ch]"
-                      style={{ color: "var(--cream-10)" }}
-                    >
-                      {step}
-                    </p>
-                  </div>
-                  {!last && (
-                    <div
-                      className="flex items-center justify-center py-3 md:py-0 md:mt-4"
-                      style={{ color: "var(--primary)" }}
-                      aria-hidden="true"
-                    >
-                      <svg
-                        className="size-7 rotate-90 md:rotate-0"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                      >
-                        <path
-                          d="M4 12h13M12 5l7 7-7 7"
-                          stroke="currentColor"
-                          strokeWidth="3.25"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                </li>
-              );
-            })}
-          </ol>
+          <FunnelDiagram steps={FUNNEL} />
         </div>
       </section>
 

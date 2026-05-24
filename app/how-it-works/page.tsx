@@ -1,40 +1,38 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 import Image from "next/image";
-import Link from "next/link";
-import { Compass, HeartHandshake, ShieldCheck, Quote } from "lucide-react";
+import { Quote } from "lucide-react";
 import {
   PageHero,
   SectionHead,
-  StepCard,
-  MoneyBlock,
+  FunnelDiagram,
   ComparisonRow,
-  Faq,
   ClosingCta,
 } from "../_components/ui";
 import {
-  IconColdInbox,
   IconIntro,
   IconHandshake,
   IconHeartCircle,
   IconLinkedIn,
   IconMail,
 } from "../_components/icons";
-import { HowItWorksIllustration } from "../_components/illustrations";
-import {
-  CALENDLY_URL,
-  FOUNDER_LINKEDIN,
-  ACNC_REGISTER_URL,
-  ABN_LOOKUP_URL,
-} from "@/lib/config";
+import { FOUNDER_LINKEDIN } from "@/lib/config";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
   title: "How it works. theGoodintro.",
   description:
-    "The whole model in the open: how a relevant conversation becomes a real gift, why it works better than cold outreach, and who is building it.",
+    "The whole model in the open: how a relevant conversation becomes a real gift, and who is building it.",
   path: "/how-it-works",
 });
+
+const MODEL_STEPS = [
+  "Vendor states the specific initiative",
+  "Match to the executive's stated priorities",
+  "Executive sees the reason and decides",
+  "One focused conversation happens",
+  "A real gift reaches the executive's chosen charity",
+];
 
 export default function HowItWorks() {
   const hasFounderPhoto = existsSync(
@@ -51,162 +49,28 @@ export default function HowItWorks() {
         secondaryLabel="See the giving"
         secondaryHref="/giving"
         bg="var(--cream-5)"
-        illustration={<HowItWorksIllustration className="w-full h-auto" />}
       />
 
-      {/* anchor nav */}
-      <section
-        className="border-b"
-        style={{ background: "var(--paper-white)", borderColor: "var(--border)" }}
-      >
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-4 flex flex-wrap gap-x-8 gap-y-2 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
-          <a href="#how" className="hover:text-foreground transition-colors">
-            How it works
-          </a>
-          <a href="#why" className="hover:text-foreground transition-colors">
-            Why it works
-          </a>
-          <a href="#about" className="hover:text-foreground transition-colors">
-            About
-          </a>
-        </div>
-      </section>
-
-      {/* ── End to end ───────────────────────────────────────────── */}
+      {/* ── The model diagram ────────────────────────────────────── */}
       <section
         id="how"
-        className="border-b scroll-mt-24"
+        className="border-y scroll-mt-24"
         style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
-          <SectionHead label="End to end" title="From request to real giving." />
-          <div className="mt-16 grid md:grid-cols-3 gap-4">
-            <StepCard
-              n="01"
-              icon={Compass}
-              title="The leader sets relevance"
-              body="An executive joins free and tells us the priorities they will take conversations about. Nothing outside that gets near them."
-            />
-            <StepCard
-              n="02"
-              icon={ShieldCheck}
-              title="The vendor qualifies the ask"
-              body="A vendor states the specific initiative or problem. That context is shown to the leader, who decides freely. No obligation."
-            />
-            <StepCard
-              n="03"
-              icon={HeartHandshake}
-              title="The conversation funds a cause"
-              body="One focused conversation happens, and a real gift goes to the leader's chosen DGR-endorsed charity."
-            />
-          </div>
-          <p className="mt-12 text-center text-base text-muted-foreground italic max-w-3xl mx-auto">
-            A vendor states a specific need, the leader approves only what
-            fits, one short conversation happens, and a real gift goes to their
-            chosen charity.
-          </p>
-        </div>
-      </section>
-
-      {/* ── The money, in short ──────────────────────────────────── */}
-      <section
-        className="border-b overflow-hidden relative"
-        style={{ background: "var(--paper-white)", borderColor: "var(--border)" }}
-      >
-        <div className="absolute inset-0 dotgrid opacity-40" aria-hidden />
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead
-            label="The money, in short"
-            title="Where every $1,500 goes."
-            lede="Each meeting is one flat $1,500 fee, paid by the vendor. Between $900 and $1,200 of it goes to the executive's chosen charity, rising with the number of meetings the vendor takes across the year. The rest runs the network, and we publish the split at every tier."
+            label="The model"
+            title="From request to real giving."
+            lede="Five steps. The executive decides at every one."
           />
-          <div className="mt-12">
-            <MoneyBlock
-              lede="Executives pay nothing. The vendor pays one flat fee per meeting, and we publish how much of it reaches the charity at each tier."
-              rows={[
-                { k: "Vendor pays, per meeting", v: "$1,500" },
-                { k: "To the chosen DGR-endorsed charity", v: "$900 to $1,200" },
-                { k: "What an executive pays", v: "nothing, ever" },
-              ]}
-            />
-          </div>
-          <Link
-            href="/giving"
-            className="mt-10 inline-flex items-center gap-1.5 text-sm font-medium hover:text-primary transition-colors"
-          >
-            The full giving terms and how to verify them
-            <span aria-hidden>→</span>
-          </Link>
+          <FunnelDiagram steps={MODEL_STEPS} />
         </div>
       </section>
 
-      {/* ── Why it works ─────────────────────────────────────────── */}
-      <section id="why" className="scroll-mt-24" style={{ background: "var(--paper-oat)" }}>
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
-          <div className="max-w-2xl">
-            <SectionHead
-              label="Why it works"
-              title="The cold inbox, or this."
-              lede="Same goal, reaching a senior leader. Two completely different experiences. The difference is one requirement: a stated, specific reason before a meeting can be requested."
-            />
-          </div>
-          <div className="mt-14 grid md:grid-cols-2 gap-4">
-            <div
-              className="rounded-2xl border p-8"
-              style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
-            >
-              <div className="size-12 rounded-xl bg-foreground/[0.04] grid place-items-center mb-6 text-muted-foreground">
-                <IconColdInbox size={22} />
-              </div>
-              <div className="text-[10px] font-mono uppercase tracking-[0.18em] mb-3 text-muted-foreground">
-                The cold inbox
-              </div>
-              <h3 className="text-xl font-semibold tracking-tight mb-6">
-                Generic outreach that goes nowhere.
-              </h3>
-              <ul className="space-y-3 text-sm">
-                <ComparisonRow bad text="Sent without relevance to your priorities" />
-                <ComparisonRow bad text="No accountability for wasting your time" />
-                <ComparisonRow bad text="The same pitch sent to everyone" />
-                <ComparisonRow bad text="Zero gift to anyone, ever" />
-                <ComparisonRow bad text="Sales follow-up assumed by default" />
-              </ul>
-            </div>
-            <div
-              className="rounded-2xl border p-8"
-              style={{ background: "var(--cream-1)", borderColor: "var(--primary)" }}
-            >
-              <div
-                className="size-12 rounded-xl grid place-items-center mb-6"
-                style={{ background: "var(--mint-tint)", color: "var(--primary)" }}
-              >
-                <IconIntro size={22} />
-              </div>
-              <div
-                className="text-[10px] font-mono uppercase tracking-[0.18em] mb-3"
-                style={{ color: "var(--primary)" }}
-              >
-                theGoodintro
-              </div>
-              <h3 className="text-xl font-semibold tracking-tight mb-6">
-                A qualified, paid-for introduction.
-              </h3>
-              <ul className="space-y-3 text-sm">
-                <ComparisonRow text="Qualified by stated, specific relevance" />
-                <ComparisonRow text="You approve or decline every request" />
-                <ComparisonRow text="One short conversation, on your terms" />
-                <ComparisonRow text="A real gift to a charity you choose, every time" />
-                <ComparisonRow text="No follow-up unless you invite it" />
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── About: the founder ───────────────────────────────────── */}
+      {/* ── From the founder ─────────────────────────────────────── */}
       <section
         id="about"
-        className="border-y scroll-mt-24"
+        className="border-b scroll-mt-24"
         style={{ background: "var(--paper-white)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
@@ -225,7 +89,7 @@ export default function HowItWorks() {
                     alt="Isobel Hardwick, founder of theGoodintro"
                     fill
                     sizes="(min-width: 768px) 33vw, 100vw"
-                    className="object-cover"
+                    className="object-cover object-top"
                     priority={false}
                   />
                 ) : (
@@ -249,11 +113,11 @@ export default function HowItWorks() {
                   LinkedIn
                 </a>
                 <a
-                  href={CALENDLY_URL}
+                  href="mailto:issy@thegoodintros.com"
                   className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   <IconMail size={16} />
-                  hello@thegoodintro.com
+                  issy@thegoodintros.com
                 </a>
               </div>
             </div>
@@ -346,81 +210,6 @@ export default function HowItWorks() {
                 <ComparisonRow text="Your details are never sold, traded, or published" />
                 <ComparisonRow text="No invented testimonials, no inflated numbers, no funding we do not have" />
               </ul>
-              <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm font-medium">
-                <Link
-                  href="/giving"
-                  className="inline-flex items-center gap-1.5 hover:text-primary transition-colors"
-                >
-                  How the giving works <span aria-hidden>→</span>
-                </Link>
-                <Link
-                  href="/privacy"
-                  className="inline-flex items-center gap-1.5 hover:text-primary transition-colors"
-                >
-                  Our privacy stance <span aria-hidden>→</span>
-                </Link>
-                <Link
-                  href="/impact"
-                  className="inline-flex items-center gap-1.5 hover:text-primary transition-colors"
-                >
-                  Public impact <span aria-hidden>→</span>
-                </Link>
-                <a
-                  href={ACNC_REGISTER_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 hover:text-primary transition-colors"
-                >
-                  ACNC register <span aria-hidden>↗</span>
-                </a>
-                <a
-                  href={ABN_LOOKUP_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 hover:text-primary transition-colors"
-                >
-                  ABN Lookup <span aria-hidden>↗</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Questions teaser ─────────────────────────────────────── */}
-      <section style={{ background: "var(--paper-oat)" }}>
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16 md:py-20">
-          <div className="grid lg:grid-cols-12 gap-10">
-            <div className="lg:col-span-4">
-              <SectionHead
-                label="Questions"
-                title="The ones leaders ask first."
-                lede="A few here. The full set lives on the FAQ."
-              />
-              <Link
-                href="/faq"
-                className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium hover:text-primary transition-colors"
-              >
-                Read every question
-                <span aria-hidden>→</span>
-              </Link>
-            </div>
-            <div className="lg:col-span-8">
-              <Faq q="Who pays for the meeting?" open>
-                The vendor. It is free for executives. Each meeting is one flat
-                $1,500 fee, and we publish how much of it reaches the charity at
-                every tier.
-              </Faq>
-              <Faq q="Can a leader decline a request?">
-                Always. Seeing the stated reason first means declining is
-                easy and normal. There is no penalty, no follow-up, and no
-                obligation.
-              </Faq>
-              <Faq q="Will executives be flooded with requests?">
-                No. We hold a deliberate 10:1 balance, at least ten
-                executives for every vendor admitted, so no leader is ever
-                the whole room and no vendor is bidding against a crowd.
-              </Faq>
             </div>
           </div>
         </div>
@@ -432,6 +221,7 @@ export default function HowItWorks() {
         lede="Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives a real gift each time."
         secondaryLabel="For vendors"
         secondaryHref="/vendors"
+        tone="oat"
       />
     </>
   );
@@ -449,13 +239,10 @@ function PrincipleCard({
   body: string;
 }) {
   return (
-    <div
-      className="rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-0.5"
-      style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
-    >
+    <div className="group rounded-2xl border p-6 transition-all duration-300 [background:var(--cream-1)] [border-color:var(--hair)] hover:scale-[1.01] hover:[background:var(--mint-tint)] hover:[border-color:var(--primary)] hover:shadow-[0_8px_30px_-12px_rgba(20,83,45,0.28)]">
       <div className="flex items-center justify-between mb-8">
-        <div className="size-10 rounded-xl bg-foreground/[0.04] grid place-items-center">
-          <Icon size={20} className="text-foreground" />
+        <div className="size-10 rounded-xl grid place-items-center transition-colors [background:var(--mint-tint)] [color:var(--primary-ink)] group-hover:[background:var(--primary)] group-hover:[color:var(--cream-1)]">
+          <Icon size={20} />
         </div>
         <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
           {n}
