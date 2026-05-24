@@ -108,7 +108,7 @@ export default function TwoSidesSection() {
           </p>
           <div className="hp-do-card-footer">
             <div className="hp-do-tags">
-              <span className="hp-do-tag">#3:1 ratio</span>
+              <span className="hp-do-tag">#10:1 ratio</span>
               <span className="hp-do-tag">#Stated relevance</span>
             </div>
             <span className="hp-do-arrow" aria-hidden="true">

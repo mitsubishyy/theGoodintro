@@ -108,7 +108,7 @@ export default function Vendors() {
         </div>
       </section>
 
-      {/* ── The 3:1 rule ─────────────────────────────────────────── */}
+      {/* ── The 10:1 rule ────────────────────────────────────────── */}
       <section
         className="border-y"
         style={{ background: "var(--paper-white)", borderColor: "var(--border)" }}
@@ -117,12 +117,12 @@ export default function Vendors() {
           <div className="grid lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-6">
               <SectionHead
-                label="The 3:1 rule"
+                label="The 10:1 rule"
                 title="Real access, not an auction."
-                lede="We deliberately keep at least three executives for every vendor. You are not one of a hundred vendors fighting over the same inbox. Access stays genuine, which is exactly why senior leaders agree to be here at all."
+                lede="We deliberately keep at least ten executives for every vendor. You are not one of a hundred vendors fighting over the same inbox. Access stays genuine, which is exactly why senior leaders agree to be here at all."
               />
               <ul className="mt-8 space-y-3 text-sm md:text-base max-w-xl">
-                <ComparisonRow text="At least three executives for every vendor admitted" />
+                <ComparisonRow text="At least ten executives for every vendor admitted" />
                 <ComparisonRow text="No bidding war and no race to the cheapest pitch" />
                 <ComparisonRow text="Scarcity is the product: it is why leaders stay" />
               </ul>
@@ -133,7 +133,7 @@ export default function Vendors() {
                 style={{ background: "var(--paper-oat)", borderColor: "var(--hair)" }}
               >
                 <div className="display-serif text-[clamp(4rem,12vw,9rem)] leading-none text-primary">
-                  3:1
+                  10:1
                 </div>
                 <div className="mt-5 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
                   Executives to vendors, deliberately
@@ -195,8 +195,8 @@ export default function Vendors() {
                 reason and decides. If what happens in the meeting does not
                 match the stated reason, that counts against your access.
               </Faq>
-              <Faq q="What does the 3:1 rule mean for me?">
-                We keep at least three executives for every vendor admitted.
+              <Faq q="What does the 10:1 rule mean for me?">
+                We keep at least ten executives for every vendor admitted.
                 It means you are not competing with a crowd for the same
                 inbox, but it also means seats are deliberately limited.
                 Access is genuine because it is scarce. That scarcity is the

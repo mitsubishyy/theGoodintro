@@ -101,8 +101,8 @@ export default function Pricing() {
           <div className="mx-auto mt-12 max-w-[540px] grid grid-cols-1 sm:grid-cols-3 gap-3">
             <ValueCard
               icon={Users}
-              title="The 3:1 rule"
-              body="At least three executives for every vendor. You're never crowded out."
+              title="The 10:1 rule"
+              body="At least ten executives for every vendor. You're never crowded out."
             />
             <ValueCard
               icon={Filter}

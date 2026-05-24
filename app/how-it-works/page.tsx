@@ -417,7 +417,7 @@ export default function HowItWorks() {
                 obligation.
               </Faq>
               <Faq q="Will executives be flooded with requests?">
-                No. We hold a deliberate 3:1 balance, at least three
+                No. We hold a deliberate 10:1 balance, at least ten
                 executives for every vendor admitted, so no leader is ever
                 the whole room and no vendor is bidding against a crowd.
               </Faq>

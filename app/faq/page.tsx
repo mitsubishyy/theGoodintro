@@ -52,7 +52,7 @@ export default function FAQ() {
                 request is shown to you.
               </Faq>
               <Faq q="How many requests will I get? Will I be flooded?">
-                No. We hold a deliberate 3:1 balance, at least three
+                No. We hold a deliberate 10:1 balance, at least ten
                 executives for every vendor we admit, so no leader is ever
                 the whole room. For a typical founding executive that is two
                 to four requests a quarter that actually fit, not a daily
