@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { IconCheck, IconX } from "./icons";
 import { CALENDLY_URL } from "@/lib/config";
+import { cn } from "@/lib/utils";
 
 /* ────────────────────────────────────────────────────────────────
    Shared UI primitives used across pages.
@@ -141,15 +142,20 @@ export function StepCard({
   icon: Icon,
   title,
   body,
+  hoverHighlight = false,
 }: {
   n: string;
   icon: React.ComponentType<{ className?: string; size?: number }>;
   title: string;
   body: string;
+  hoverHighlight?: boolean;
 }) {
   return (
     <div
-      className="group relative rounded-3xl border p-7 transition-all duration-300 hover:-translate-y-0.5"
+      className={cn(
+        "group relative rounded-3xl border p-7 transition-all duration-300 hover:-translate-y-0.5",
+        hoverHighlight && "step-card-hl",
+      )}
       style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
     >
       <div className="flex items-center justify-between mb-7">

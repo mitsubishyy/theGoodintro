@@ -68,18 +68,21 @@ export default function Executives() {
           />
           <div className="mt-16 grid md:grid-cols-3 gap-4">
             <StepCard
+              hoverHighlight
               n="01"
               icon={Compass}
               title="You set what is relevant"
               body="Tell us the priorities and challenges you want to talk about. Anything outside that never reaches you."
             />
             <StepCard
+              hoverHighlight
               n="02"
               icon={ShieldCheck}
               title="You get qualified requests"
               body="A vendor must state the specific initiative or problem before they can ask. You see the reason and decide. No obligation."
             />
             <StepCard
+              hoverHighlight
               n="03"
               icon={HeartHandshake}
               title="One focused conversation"

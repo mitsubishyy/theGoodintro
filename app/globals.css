@@ -531,28 +531,46 @@ body {
 }
 .hp-marquee-track {
   display: flex;
-  gap: clamp(56px, 6vw, 96px);
+  gap: clamp(8px, 1vw, 16px);
   width: max-content;
   align-items: center;
-  animation: hp-marquee 30s linear infinite;
+  animation: hp-marquee 36s linear infinite;
   will-change: transform;
 }
-.hp-marquee:hover .hp-marquee-track { animation-play-state: paused; }
 @keyframes hp-marquee {
   from { transform: translate3d(0, 0, 0); }
   to   { transform: translate3d(-50%, 0, 0); }
 }
-.hp-charity-wm {
-  font-family: var(--font-inter), sans-serif;
-  font-weight: 600;
-  font-size: clamp(20px, 2.2vw, 30px);
-  color: var(--cream-1);
-  letter-spacing: -0.012em;
-  white-space: nowrap;
-  opacity: 0.92;
-  transition: opacity .18s ease;
+.hp-marquee-chip {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(195px, 21vw, 273px);
+  height: clamp(109px, 12vw, 151px);
+  padding: clamp(8px, 1vw, 14px);
+  background: transparent;
 }
-.hp-charity-wm:hover { opacity: 1; }
+.hp-marquee-chip img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hp-marquee-track {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    gap: clamp(16px, 2vw, 28px);
+  }
+  .hp-marquee {
+    -webkit-mask-image: none;
+            mask-image: none;
+  }
+}
 .hp-marquee-note {
   margin: clamp(28px, 3vw, 40px) auto 0;
   font-family: var(--font-fraunces), serif;
@@ -727,6 +745,14 @@ body {
   border-color: var(--primary);
   color: var(--cream-1);
   transform: rotate(-45deg);
+}
+
+/* StepCard opt-in green hover — matches the "Two sides of one room" cards.
+   !important is needed to override the inline base background/border. */
+.step-card-hl:hover {
+  background: var(--mint-tint) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 8px 30px -12px color-mix(in oklch, var(--primary) 28%, transparent);
 }
 
 /* How it works for you — sticky-left 2-column with step cards on the right */
@@ -1040,55 +1066,171 @@ body {
   max-width: 20ch;
   text-wrap: balance;
 }
-/* Continuous, non-interactive charity logo loop. One track holds two copies
-   of the set; the animation slides it 0 -> -50% for a seamless infinite loop.
-   Edges are softened with a gradient mask. */
-.hp-logo-loop {
+.hp-gallery-viewport {
   position: relative;
-  margin-top: clamp(8px, 1.6vw, 18px);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 56px 0 80px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
           mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
 }
-.hp-logo-loop-track {
+.hp-gallery-viewport::-webkit-scrollbar {
+  display: none; /* Safari/Chrome */
+}
+.hp-gallery-track {
   display: flex;
-  align-items: center;
-  gap: clamp(20px, 2.4vw, 40px);
+  gap: 22px;
   width: max-content;
-  padding: 16px 20px;
-  animation: hp-logo-loop 40s linear infinite;
-  will-change: transform;
+  padding: 0 11px;
 }
-@keyframes hp-logo-loop {
-  from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(-50%, 0, 0); }
+.hp-gallery-card {
+  flex: 0 0 280px;
+  height: 360px;
+  position: relative;
+  border-radius: 18px;
+  filter: grayscale(1) contrast(0.95);
+  transform: scale(0.92);
+  transition: filter .4s cubic-bezier(.22,.61,.36,1), transform .4s cubic-bezier(.22,.61,.36,1);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
-.hp-logo-chip {
-  flex: 0 0 auto;
+.hp-gallery-card:hover,
+.hp-gallery-card:focus-visible,
+.hp-gallery-card.is-active {
+  filter: grayscale(0) contrast(1);
+  transform: scale(1.05);
+  outline: none;
+  z-index: 2;
+}
+.hp-gallery-image {
+  position: relative;
+  height: 280px;
+  background: var(--cream-3);
+  border-radius: 18px;
+  overflow: hidden;
   display: grid;
   place-items: center;
-  width: 220px;
-  height: 132px;
-  padding: 26px 32px;
-  border-radius: 18px;
+}
+.hp-gallery-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 2;
+}
+/* Logo cards show the whole mark on a clean white ground rather than a
+   cropped photo. They still follow the B&W-to-colour treatment from the base
+   card rule, so they sit greyscale until hovered/centred. */
+.hp-gallery-card.is-logo .hp-gallery-image {
   background: #fff;
-  border: 1px solid var(--hair);
-  box-shadow: 0 12px 30px -20px rgba(0,0,0,0.22);
 }
-.hp-logo-chip img {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
+.hp-gallery-card.is-logo .hp-gallery-photo {
   object-fit: contain;
+  padding: 38px;
 }
-@media (prefers-reduced-motion: reduce) {
-  .hp-logo-loop-track {
-    animation: none;
-    flex-wrap: wrap;
-    justify-content: center;
-    width: auto;
-  }
+.hp-gallery-card.is-logo .shape,
+.hp-gallery-card.is-logo .wm {
+  display: none;
+}
+.hp-gallery-image .shape {
+  position: absolute;
+  background: var(--primary);
+  opacity: 0.20;
+  pointer-events: none;
+}
+.hp-gallery-card:nth-child(5n+1) .shape {
+  width: 220px; height: 220px; border-radius: 50%;
+  top: -70px; right: -70px;
+}
+.hp-gallery-card:nth-child(5n+2) .shape {
+  width: 240px; height: 120px;
+  border-radius: 240px 240px 0 0;
+  bottom: 0; left: 50%; transform: translateX(-50%);
+}
+.hp-gallery-card:nth-child(5n+3) .shape {
+  width: 180px; height: 180px; border-radius: 50%;
+  bottom: -60px; left: -50px;
+}
+.hp-gallery-card:nth-child(5n+4) .shape {
+  width: 200px; height: 200px;
+  border-radius: 0 0 200px 200px;
+  top: 0; right: -40px; opacity: 0.16;
+}
+.hp-gallery-card:nth-child(5n+5) .shape {
+  width: 160px; height: 320px;
+  border-radius: 160px;
+  top: -40px; left: -40px;
+  transform: rotate(-12deg);
+}
+.hp-gallery-image .wm {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-fraunces), serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(22px, 2.2vw, 28px);
+  line-height: 1.15;
+  color: var(--cream-11);
+  text-align: center;
+  padding: 0 24px;
+  letter-spacing: -0.015em;
+}
+.hp-gallery-card-info {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 0;
+  z-index: 3; /* sit above the photo (z-index 2), which overlaps the panel top */
+  background: var(--cream-1);
+  border: 1px solid var(--hair);
+  border-radius: 14px;
+  padding: 14px 16px 16px;
+  box-shadow: 0 10px 28px -16px rgba(0,0,0,0.18);
+}
+.hp-gallery-name {
+  font-family: var(--font-inter), sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.012em;
+  color: var(--cream-11);
+  margin: 0;
+}
+.hp-gallery-cause {
+  font-family: var(--font-inter), sans-serif;
+  font-weight: 400;
+  font-size: 12.5px;
+  color: var(--cream-9);
+  margin: 2px 0 10px;
+}
+.hp-gallery-bar-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cream-9);
+  margin-bottom: 6px;
+}
+.hp-gallery-bar-row .pct {
+  color: var(--cream-11);
+  font-weight: 600;
+}
+.hp-gallery-bar {
+  height: 4px;
+  background: var(--cream-4);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.hp-gallery-bar .fill {
+  height: 100%;
+  background: var(--signal);
+  border-radius: 999px;
 }
 
 /* Final CTA section with floating bubbles */
@@ -1506,7 +1648,8 @@ body.hp-is-scrolled .hp-topnav {
 
 /* HopeRise footer */
 .hp-footer {
-  background: var(--cream-6);
+  /* Light oat, matching the top nav (--cream-1). */
+  background: var(--cream-1);
   padding: clamp(56px, 7vw, 96px) clamp(28px, 5vw, 64px) clamp(36px, 5vw, 56px);
 }
 .hp-footer-grid {
