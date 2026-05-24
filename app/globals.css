@@ -49,6 +49,8 @@
   --primary-bright: oklch(0.62 0.18 158);
   --primary-ink: oklch(0.32 0.10 158);
   --primary-hover: oklch(0.38 0.13 158);
+  /* Darkest brand green — the non-interactive marquee band background */
+  --emerald-deep: oklch(0.20 0.06 158);
   --accent: oklch(0.935 0.016 80);
   --accent-foreground: oklch(0.190 0.012 80);
   --border: color-mix(in oklch, oklch(0.190 0.012 80) 14%, transparent);
@@ -516,7 +518,7 @@ body {
 .hp-marquee-section {
   padding: clamp(56px, 7vw, 96px) 0 clamp(40px, 5vw, 64px);
   text-align: center;
-  background: oklch(0.20 0.06 158);
+  background: var(--emerald-deep);
 }
 .hp-marquee-section .hp-eyebrow {
   background: var(--mint-tint);
@@ -778,7 +780,8 @@ body {
   align-items: flex-start;
   gap: clamp(18px, 2vh, 26px);
   position: sticky;
-  top: clamp(32px, 5vh, 64px);
+  /* Offset clears the sticky nav (~90px) so the eyebrow is never cut off. */
+  top: clamp(108px, 12vh, 132px);
 }
 @media (max-width: 900px) {
   .hp-hiw-left { position: static; }
@@ -901,7 +904,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: clamp(48px, 8vh, 88px) clamp(28px, 5vw, 64px) clamp(36px, 5vh, 64px);
+  /* Top padding clears the sticky nav (~90px) so the eyebrow is never cut off. */
+  padding: clamp(120px, 16vh, 156px) clamp(28px, 5vw, 64px) clamp(36px, 5vh, 64px);
   gap: clamp(24px, 4vh, 56px);
 }
 .hp-impact-head {
@@ -950,7 +954,7 @@ body {
   font-size: clamp(5rem, 14vw, 11rem);
   line-height: 1;
   letter-spacing: -0.04em;
-  color: var(--signal);
+  color: var(--primary);
   margin: 0;
   font-variant-numeric: tabular-nums;
 }
@@ -961,6 +965,15 @@ body {
   color: var(--cream-9);
   max-width: 40ch;
   text-wrap: pretty;
+  text-align: center;
+}
+/* $80,000 pledge caption: centred, one line on desktop, wraps on mobile. */
+.hp-stage-caption--pledge {
+  text-align: center;
+  max-width: none;
+}
+@media (min-width: 768px) {
+  .hp-stage-caption--pledge { white-space: nowrap; }
 }
 .hp-stage-map-heading {
   font-family: var(--font-inter), sans-serif;

@@ -11,10 +11,10 @@ import { useEffect, useRef } from "react";
  * only transform + opacity on the animated elements — keeps the scrub silky.
  *
  * Timeline (0–1 across the 300vh runway):
- *   0.00 – 0.12  Stat 1 counter runs $0 → $48,300
+ *   0.00 – 0.12  Stat 1 counter runs $24,000 → $80,000
  *   0.20 – 0.40  Oat arch (1) rises behind stat 1
  *   0.29 – 0.31  Stat 1 → Stat 2 cross-fade
- *   0.40 – 0.52  Stat 2 counter runs 0 → 42
+ *   0.40 – 0.52  Stat 2 shows the 10:1 ratio (static, no counter)
  *   0.60 – 0.80  Warm-white arch (2) rises behind stat 2
  *   0.69 – 0.71  Stat 2 → Stat 3 (map) cross-fade
  *   0.80 – 1.00  Map outline visible + four pins drop in (staggered, scrubbable)
@@ -34,7 +34,6 @@ const CITY_ORDER = ["sydney", "melbourne", "brisbane", "perth"] as const;
 export default function ImpactSection() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const num1Ref = useRef<HTMLParagraphElement | null>(null);
-  const num2Ref = useRef<HTMLParagraphElement | null>(null);
 
   useEffect(() => {
     const container = scrollRef.current;
@@ -65,7 +64,6 @@ export default function ImpactSection() {
     });
 
     const fmtDollar = (v: number) => "$" + v.toLocaleString("en-AU");
-    const fmtInt = (v: number) => String(v);
     const clamp = (v: number, a: number, b: number) =>
       Math.min(b, Math.max(a, v));
     const smoothstep = (x: number, a: number, b: number) => {
@@ -78,8 +76,7 @@ export default function ImpactSection() {
     };
 
     if (reduce) {
-      if (num1Ref.current) num1Ref.current.textContent = fmtDollar(48300);
-      if (num2Ref.current) num2Ref.current.textContent = fmtInt(42);
+      if (num1Ref.current) num1Ref.current.textContent = fmtDollar(80000);
       layer1.style.opacity = "1";
       layer2.style.opacity = "1";
       layer3.style.opacity = "1";
@@ -125,17 +122,14 @@ export default function ImpactSection() {
       if (Math.abs(p - lastP) < 0.0008) return;
       lastP = p;
 
-      // Counters scrub linearly (clamped) to a quick finish so the user
-      // spends most of the phase on the final value, not waiting for it.
-      // Stat 1 ($) starts at 30% of its final value so the user never sees $0.
+      // Stat 1 ($) counter scrubs linearly (clamped) to a quick finish so the
+      // user spends most of the phase on the final value, not waiting for it.
+      // It starts at 30% of its final value so the user never sees $0. Stat 2
+      // is the static 10:1 ratio, so it has no counter.
       const s1 = clamp(p / 0.12, 0, 1);
       const v1 = 0.3 + 0.7 * s1;
       if (num1Ref.current)
-        num1Ref.current.textContent = fmtDollar(Math.round(48300 * v1));
-
-      const s2 = clamp((p - 0.4) / 0.12, 0, 1);
-      if (num2Ref.current)
-        num2Ref.current.textContent = fmtInt(Math.round(42 * s2));
+        num1Ref.current.textContent = fmtDollar(Math.round(80000 * v1));
 
       // Arches rise — translate3d only, no width/height churn.
       const a1 = clamp((p - 0.2) / 0.2, 0, 1);
@@ -221,7 +215,7 @@ export default function ImpactSection() {
             <header className="hp-impact-head">
               <span className="hp-eyebrow">
                 <span className="dot" aria-hidden="true" />
-                Our impact
+                Our founding pledge
               </span>
               <h2 className="hp-impact-title">
                 Together, we&rsquo;re making{" "}
@@ -232,19 +226,20 @@ export default function ImpactSection() {
             <div className="hp-impact-stage">
               <div className="hp-stage-layer" data-state="1">
                 <p className="hp-stage-num" ref={num1Ref}>
-                  $14,490
+                  $80,000
                 </p>
-                <p className="hp-stage-caption">
-                  Directed to Australian charities through theGoodintro.
+                <p className="hp-stage-caption hp-stage-caption--pledge">
+                  Founding-year{" "}
+                  <span className="hp-serif-italic">goal</span> across
+                  DGR-endorsed Australian charities.
                 </p>
               </div>
 
               <div className="hp-stage-layer" data-state="2">
-                <p className="hp-stage-num" ref={num2Ref}>
-                  0
-                </p>
+                <p className="hp-stage-num">10:1</p>
                 <p className="hp-stage-caption">
-                  Qualified introductions between executives and vendors.
+                  Executives for every vendor admitted. No leader is ever the
+                  whole room.
                 </p>
               </div>
 
@@ -339,8 +334,7 @@ export default function ImpactSection() {
                   </svg>
                 </div>
                 <p className="hp-stage-caption">
-                  Founding executives in Sydney, Melbourne, Brisbane, and
-                  Perth.
+                  Launching across Sydney, Melbourne, Brisbane, and Perth.
                 </p>
               </div>
             </div>
