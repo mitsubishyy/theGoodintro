@@ -1,24 +1,26 @@
 /**
- * Where your gift can go — dark emerald band with scrolling charity wordmarks.
+ * Where your gift can go — dark emerald band with a continuous, non-interactive
+ * loop of charity logos on clean white chips.
  *
  * The marquee track holds two identical copies of the charity list; the CSS
  * animation translates the track from 0 → -50%, which lands set B in set A's
- * starting position for a seamless loop. Pauses on hover.
+ * starting position for a seamless loop. It simply always rotates — no hover,
+ * pause, or centring logic.
  */
 
+// Real brand-colour logos on clean white tiles, so dark-text logos stay legible
+// against the emerald band.
 const CHARITIES = [
-  "Beyond Blue",
-  "OzHarvest",
-  "Royal Flying Doctor Service",
-  "The Smith Family",
-  "Mission Australia",
-  "Cancer Council",
-  "Lifeline",
-  "Australian Red Cross",
-  "Foodbank Australia",
-  "Black Dog Institute",
-  "headspace",
-  "The Salvation Army",
+  { name: "Beyond Blue", img: "/charities/beyond-blue.png" },
+  { name: "Cancer Council", img: "/charities/cancer-council.png" },
+  {
+    name: "Royal Flying Doctor Service",
+    img: "/charities/royal-flying-doctor-service.png",
+  },
+  { name: "The Smith Family", img: "/charities/the-smith-family.png" },
+  { name: "Mission Australia", img: "/charities/mission-australia.png" },
+  { name: "Lifeline", img: "/charities/lifeline.png" },
+  { name: "Foodbank Australia", img: "/charities/foodbank-australia.png" },
 ];
 
 export default function CharityMarqueeSection() {
@@ -35,14 +37,20 @@ export default function CharityMarqueeSection() {
 
       <div className="hp-marquee" aria-label="Example Australian DGR charities">
         <div className="hp-marquee-track">
-          {CHARITIES.map((name) => (
-            <span key={`a-${name}`} className="hp-charity-wm">
-              {name}
+          {CHARITIES.map((c) => (
+            <span key={`a-${c.name}`} className="hp-marquee-chip">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={c.img} alt={c.name} loading="lazy" draggable={false} />
             </span>
           ))}
-          {CHARITIES.map((name) => (
-            <span key={`b-${name}`} className="hp-charity-wm" aria-hidden="true">
-              {name}
+          {CHARITIES.map((c) => (
+            <span
+              key={`b-${c.name}`}
+              className="hp-marquee-chip"
+              aria-hidden="true"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={c.img} alt="" loading="lazy" draggable={false} />
             </span>
           ))}
         </div>
