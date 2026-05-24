@@ -116,7 +116,7 @@ export default function Executives() {
               </ul>
             </div>
             <div className="lg:col-span-7">
-              <MeetingRequestEmail />
+              <MeetingRequestEmail showAddressHeaders={false} />
             </div>
           </div>
         </div>

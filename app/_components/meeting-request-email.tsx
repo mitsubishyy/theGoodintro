@@ -21,6 +21,7 @@ import {
 export function MeetingRequestEmail({
   vendorAvatar,
   showAppLink = false,
+  showAddressHeaders = true,
 }: {
   /** Render-prop for the vendor avatar. Defaults to an initials monogram
    *  (brand-safe for the marketing site). The mockup passes a DiceBear
@@ -28,6 +29,9 @@ export function MeetingRequestEmail({
   vendorAvatar?: React.ReactNode;
   /** Show the "View in the app" link in the footer (mockup only). */
   showAppLink?: boolean;
+  /** Show the From/To/Cc address rows. Off on the marketing site, where
+   *  the mail-client chrome is noise. */
+  showAddressHeaders?: boolean;
 }) {
   return (
     <EmailFrame
@@ -37,6 +41,7 @@ export function MeetingRequestEmail({
       subject="Lachlan Kim (CRO, Atlassian) wants 30 minutes"
       preview="Budget pacing tools for finance leaders at scale-ups. $1,000 will direct to Beyond Blue."
       received="Today, 10:42 am"
+      showHeaders={showAddressHeaders}
     >
       <p className="text-[15px] leading-relaxed">Hi Jane,</p>
       <p className="mt-3 text-[15px] leading-relaxed">
@@ -203,6 +208,7 @@ export function EmailFrame({
   subject,
   preview,
   received,
+  showHeaders = true,
   children,
 }: {
   from: string;
@@ -211,6 +217,7 @@ export function EmailFrame({
   subject: string;
   preview?: string;
   received: string;
+  showHeaders?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -244,18 +251,20 @@ export function EmailFrame({
           </p>
         )}
 
-        <dl className="mt-4 grid grid-cols-[60px,1fr] sm:grid-cols-[80px,1fr] gap-y-1 text-[12px]">
-          <dt className="text-muted-foreground">From</dt>
-          <dd>{from}</dd>
-          <dt className="text-muted-foreground">To</dt>
-          <dd>{to}</dd>
-          {cc && (
-            <>
-              <dt className="text-muted-foreground">Cc</dt>
-              <dd>{cc}</dd>
-            </>
-          )}
-        </dl>
+        {showHeaders && (
+          <dl className="mt-4 grid grid-cols-[60px,1fr] sm:grid-cols-[80px,1fr] gap-y-1 text-[12px]">
+            <dt className="text-muted-foreground">From</dt>
+            <dd>{from}</dd>
+            <dt className="text-muted-foreground">To</dt>
+            <dd>{to}</dd>
+            {cc && (
+              <>
+                <dt className="text-muted-foreground">Cc</dt>
+                <dd>{cc}</dd>
+              </>
+            )}
+          </dl>
+        )}
       </div>
 
       {/* Body */}
