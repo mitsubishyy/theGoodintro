@@ -8,6 +8,7 @@ import {
   Faq,
   ClosingCta,
 } from "../_components/ui";
+import { MeetingRequestEmail } from "../_components/meeting-request-email";
 import { CALENDLY_URL } from "@/lib/config";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -97,8 +98,35 @@ export default function Executives() {
         </div>
       </section>
 
-      {/* ── The 10:1 rule ────────────────────────────────────────── */}
+      {/* ── What a request looks like ────────────────────────────── */}
       <section style={{ background: "var(--paper-white)" }}>
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+            <div className="lg:col-span-5 lg:sticky lg:top-28">
+              <SectionHead
+                label="What a request looks like"
+                title="See one before you decide."
+                lede="No abstraction. This is exactly what lands in your inbox when a vetted vendor asks for time: who they are, the stated reason, why it is relevant to you, the gift to your chosen charity, and one tap to accept, decline, or send to your EA."
+              />
+              <ul className="mt-8 space-y-3 text-sm md:text-base max-w-xl">
+                <ComparisonRow text="The vendor and their verified role, up front" />
+                <ComparisonRow text="The specific initiative, in plain language" />
+                <ComparisonRow text="The exact gift to the charity you chose" />
+                <ComparisonRow text="Accept, decline, or forward, all inside the email" />
+              </ul>
+            </div>
+            <div className="lg:col-span-7">
+              <MeetingRequestEmail />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── The 10:1 rule ────────────────────────────────────────── */}
+      <section
+        className="border-y"
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
+      >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-6">
@@ -131,10 +159,7 @@ export default function Executives() {
       </section>
 
       {/* ── What your time is worth ──────────────────────────────── */}
-      <section
-        className="border-y"
-        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
-      >
+      <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead
             label="What your time is worth"
@@ -163,6 +188,7 @@ export default function Executives() {
       </section>
 
       <ClosingCta
+        tone="oat"
         title="Conversations worth"
         italicWord="your time."
         lede="Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives a real gift each time."
@@ -171,10 +197,7 @@ export default function Executives() {
       />
 
       {/* ── FAQ — at the bottom, exclusive accordion ─────────────── */}
-      <section
-        className="border-y"
-        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
-      >
+      <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="grid lg:grid-cols-12 gap-12">
             <div className="lg:col-span-4">
