@@ -110,9 +110,9 @@ const INCOMING: MeetingRequest[] = [
     vendorRole: "CRO",
     vendorCompany: "Acme",
     topic: "Budget pacing tools for finance leaders at scale-ups",
-    proposed: "Tue 28 May · 30 min",
+    proposed: "Tue 28 May · 45 min",
     pitch:
-      "Acme helps finance teams move budget pacing and forecast accuracy from quarterly to weekly. I'd like 30 minutes to walk through the operating model behind it and the three places it most often breaks in the first quarter.",
+      "Acme helps finance teams move budget pacing and forecast accuracy from quarterly to weekly. I'd like 45 minutes to walk through the operating model behind it and the three places it most often breaks in the first quarter.",
     why:
       "Hexagon's move from product to platform over the last 18 months is the exact phase where pacing tends to break. It was the unlock for teams we've worked with, and two of your peers told me it'd be worth a conversation.",
     companyBlurb:
@@ -126,7 +126,7 @@ const INCOMING: MeetingRequest[] = [
     vendorRole: "Head of Partnerships",
     vendorCompany: "Canva",
     topic: "Design operations for finance and legal teams",
-    proposed: "Thu 30 May · 30 min",
+    proposed: "Thu 30 May · 45 min",
     pitch:
       "Canva's design ops team works with the finance and legal functions at most of the ASX 100. I want to share how we structure those engagements end-to-end, and the two patterns that consistently kill momentum in the first 90 days.",
     why:

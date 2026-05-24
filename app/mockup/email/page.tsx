@@ -191,7 +191,7 @@ function LinkedInPostPreview() {
         </span>
       </div>
       <div className="px-4 py-4 text-[13.5px] leading-relaxed" style={{ color: "#1f2937" }}>
-        I spent 30 minutes today with Lachlan Smith from Acme. As a result,
+        I spent 45 minutes today with Lachlan Smith from Acme. As a result,
         $1,000 has been directed to <strong>Beyond Blue</strong> for mental
         health support across Australia.
         <br />
@@ -273,7 +273,7 @@ function OnboardingCapture() {
         <CaptureRow
           label="Calendar"
           value="Connected: jane.allen@hexagon.com.au (Google)"
-          subnote="theGoodintro can hold 30-minute slots; calendar invites sent automatically."
+          subnote="theGoodintro can hold 45-minute slots; calendar invites sent automatically."
         />
         <CaptureRow
           label="EA / delegate"

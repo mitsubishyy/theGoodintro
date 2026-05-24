@@ -38,7 +38,7 @@ export function MeetingRequestEmail({
       from="theGoodintro <introductions@thegoodintro.com>"
       to="Jane Allen <jane.allen@hexagon.com.au>"
       cc="Emma Roy (EA) <emma.roy@hexagon.com.au>"
-      subject="Lachlan Smith (Acme) wants 30 minutes"
+      subject="Lachlan Smith (Acme) wants 45 minutes"
       preview="Budget pacing tools for finance leaders at scale-ups. $1,000 will direct to Beyond Blue."
       received="Today, 10:42 am"
       showHeaders={showAddressHeaders}
@@ -46,7 +46,7 @@ export function MeetingRequestEmail({
       <p className="text-[15px] leading-relaxed">Hi Jane,</p>
       <p className="mt-3 text-[15px] leading-relaxed">
         <strong>Lachlan Smith</strong>, CRO at <strong>Acme</strong>, has
-        requested 30 minutes with you. He has been verified and reviewed.
+        requested 45 minutes with you. He has been verified and reviewed.
         Here&apos;s what you need to know.
       </p>
 
@@ -96,7 +96,7 @@ export function MeetingRequestEmail({
       <DetailLabel>What they want to discuss</DetailLabel>
       <p className="text-[14px] leading-relaxed">
         Acme helps finance teams move budget pacing and forecast accuracy from
-        quarterly to weekly. Lachlan would like 30 minutes to walk through the
+        quarterly to weekly. Lachlan would like 45 minutes to walk through the
         operating model behind it and the three places it most often breaks in
         the first quarter.
       </p>
@@ -154,7 +154,7 @@ export function MeetingRequestEmail({
       </div>
 
       <p className="mt-6 text-[12px] text-muted-foreground leading-relaxed">
-        Accepting holds a 30-minute slot in your calendar in the next two weeks.
+        Accepting holds a 45-minute slot in your calendar in the next two weeks.
         We&apos;ll find a time that works for both of you and send invites
         automatically. If you decline, Lachlan is told politely and without your
         name attached to the reason.

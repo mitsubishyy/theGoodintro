@@ -116,7 +116,7 @@ export default function FAQ() {
               </Faq>
               <Faq q="How much of my time is this, realistically?">
                 One short, focused meeting per request you accept, typically
-                30 to 45 minutes. No preparation, no follow-up homework, no
+                45 minutes. No preparation, no follow-up homework, no
                 obligation to continue after the call. You only take the
                 meetings you want, and only see requests in categories you
                 opted into. For a typical founding executive that is two to

@@ -267,7 +267,7 @@ export default function Executives() {
               </Faq>
               <Faq name="exec-faq" q="How much of my time is this, realistically?">
                 One short, focused conversation per request you accept,
-                typically 30 to 45 minutes. No preparation, no homework, and
+                typically 45 minutes. No preparation, no homework, and
                 no obligation to continue after the call. You only take the
                 meetings you choose.
               </Faq>
