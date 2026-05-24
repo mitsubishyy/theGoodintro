@@ -170,8 +170,8 @@ export default function Vendors() {
 
       {/* ── FAQ ──────────────────────────────────────────────────── */}
       <section style={{ background: "var(--paper-white)" }}>
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
-          <div className="grid lg:grid-cols-12 gap-12">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16 md:py-20">
+          <div className="grid lg:grid-cols-12 gap-10">
             <div className="lg:col-span-4">
               <SectionHead
                 label="Questions"
