@@ -38,14 +38,14 @@ export function MeetingRequestEmail({
       from="theGoodintro <introductions@thegoodintro.com>"
       to="Jane Allen <jane.allen@hexagon.com.au>"
       cc="Emma Roy (EA) <emma.roy@hexagon.com.au>"
-      subject="Lachlan Kim (CRO, Atlassian) wants 30 minutes"
+      subject="Lachlan Smith (Acme) wants 30 minutes"
       preview="Budget pacing tools for finance leaders at scale-ups. $1,000 will direct to Beyond Blue."
       received="Today, 10:42 am"
       showHeaders={showAddressHeaders}
     >
       <p className="text-[15px] leading-relaxed">Hi Jane,</p>
       <p className="mt-3 text-[15px] leading-relaxed">
-        <strong>Lachlan Kim</strong>, CRO at <strong>Atlassian</strong>, has
+        <strong>Lachlan Smith</strong>, CRO at <strong>Acme</strong>, has
         requested 30 minutes with you. He has been verified and reviewed.
         Here&apos;s what you need to know.
       </p>
@@ -59,11 +59,11 @@ export function MeetingRequestEmail({
         }}
       >
         <div className="flex items-start gap-4">
-          {vendorAvatar ?? <InitialsAvatar name="Lachlan Kim" size={56} />}
+          {vendorAvatar ?? <InitialsAvatar name="Lachlan Smith" size={56} />}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-[15px] font-semibold tracking-tight">
-                Lachlan Kim
+                Lachlan Smith
               </span>
               <span
                 className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.14em]"
@@ -77,16 +77,16 @@ export function MeetingRequestEmail({
               </span>
             </div>
             <div className="mt-0.5 text-[12px] text-muted-foreground">
-              CRO · Atlassian (ASX:TEAM)
+              CRO · Acme
             </div>
             <div className="mt-2 text-[11px] text-muted-foreground">
               ABN verified · Founder reviewed ·{" "}
               <a
-                href="https://linkedin.com/in/lachlankim-atl"
+                href="https://linkedin.com/in/lachlansmith-acme"
                 className="underline-offset-2 hover:underline"
                 style={{ color: "var(--primary)" }}
               >
-                linkedin.com/in/lachlankim-atl
+                linkedin.com/in/lachlansmith-acme
               </a>
             </div>
           </div>
@@ -95,18 +95,18 @@ export function MeetingRequestEmail({
 
       <DetailLabel>What they want to discuss</DetailLabel>
       <p className="text-[14px] leading-relaxed">
-        Atlassian&apos;s finance team rebuilt budget pacing and forecast
-        accuracy from quarterly to weekly inside 9 months. He&apos;d like 30
-        minutes to share the operating model and the three places it most often
-        breaks in the first quarter.
+        Acme helps finance teams move budget pacing and forecast accuracy from
+        quarterly to weekly. Lachlan would like 30 minutes to walk through the
+        operating model behind it and the three places it most often breaks in
+        the first quarter.
       </p>
 
       <DetailLabel>Why you, specifically</DetailLabel>
       <p className="text-[14px] leading-relaxed">
-        Hexagon&apos;s transition from product to platform over the last 18
-        months has the same shape Atlassian&apos;s did two years ago. The pacing
-        rebuild was their unlock during a similar phase. Two of your peers have
-        suggested it would be worth a conversation.
+        Your move from product to platform over the last 18 months is the exact
+        phase where pacing tends to break, and where Acme has helped similar
+        finance teams most. Two of your peers suggested the conversation would
+        be worth your time.
       </p>
 
       {/* The donation strip */}

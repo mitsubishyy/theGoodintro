@@ -106,18 +106,18 @@ type MeetingRequest = {
 const INCOMING: MeetingRequest[] = [
   {
     id: "m-001",
-    vendorName: "Lachlan Kim",
+    vendorName: "Lachlan Smith",
     vendorRole: "CRO",
-    vendorCompany: "Atlassian",
+    vendorCompany: "Acme",
     topic: "Budget pacing tools for finance leaders at scale-ups",
     proposed: "Tue 28 May · 30 min",
     pitch:
-      "Atlassian's finance team rebuilt budget pacing and forecast accuracy from quarterly to weekly inside 9 months. I'd like 30 minutes to share the operating model we landed on and the three places it most often breaks in the first quarter.",
+      "Acme helps finance teams move budget pacing and forecast accuracy from quarterly to weekly. I'd like 30 minutes to walk through the operating model behind it and the three places it most often breaks in the first quarter.",
     why:
-      "Hexagon's transition from product to platform over the last 18 months has the same shape ours had two years ago. The pacing rebuild was the unlock for us during a similar phase, and I've been told by two of your peers that it'd be worth a conversation.",
+      "Hexagon's move from product to platform over the last 18 months is the exact phase where pacing tends to break. It was the unlock for teams we've worked with, and two of your peers told me it'd be worth a conversation.",
     companyBlurb:
-      "Atlassian (ASX:TEAM, NASDAQ:TEAM) · collaboration software · A$6.1B revenue FY25 · ~13,000 staff · Sydney HQ.",
-    linkedin: "linkedin.com/in/lachlankim-atl",
+      "Acme · finance operations software · ~600 staff · Sydney HQ.",
+    linkedin: "linkedin.com/in/lachlansmith-acme",
     verified: { abn: true, founder: true },
   },
   {

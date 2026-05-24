@@ -45,6 +45,8 @@ export default function EmailMockup() {
           </p>
           <div className="mt-6">
             <MeetingRequestEmail
+              /* Seed stays "Lachlan Kim" to keep the same approved face;
+                 the displayed name is the fake "Lachlan Smith". */
               vendorAvatar={<Avatar name="Lachlan Kim" size={56} />}
               showAppLink
             />
@@ -97,7 +99,7 @@ function LinkedInShareEmail() {
         Hi Jane,
       </p>
       <p className="mt-3 text-[15px] leading-relaxed">
-        Your meeting with <strong>Lachlan Kim (Atlassian)</strong> today funded{" "}
+        Your meeting with <strong>Lachlan Smith (Acme)</strong> today funded{" "}
         <span className="serif-italic" style={{ color: "var(--primary)" }}>$1,000</span>{" "}
         to <strong>Beyond Blue</strong>. The charity has confirmed receipt.
       </p>
@@ -189,7 +191,7 @@ function LinkedInPostPreview() {
         </span>
       </div>
       <div className="px-4 py-4 text-[13.5px] leading-relaxed" style={{ color: "#1f2937" }}>
-        I spent 30 minutes today with Lachlan Kim from Atlassian. As a result,
+        I spent 30 minutes today with Lachlan Smith from Acme. As a result,
         $1,000 has been directed to <strong>Beyond Blue</strong> for mental
         health support across Australia.
         <br />

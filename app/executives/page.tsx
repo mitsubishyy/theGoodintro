@@ -119,6 +119,8 @@ export default function Executives() {
             <div className="lg:col-span-7">
               <MeetingRequestEmail
                 showAddressHeaders={false}
+                /* Seed stays "Lachlan Kim" to keep the exact approved face;
+                   the displayed name is the fake "Lachlan Smith". */
                 vendorAvatar={<Avatar name="Lachlan Kim" size={56} />}
               />
             </div>
