@@ -84,6 +84,9 @@
   /* Site-wide alternation pair (warm white + oat) */
   --paper-white: oklch(0.975 0.015 85);
   --paper-oat:   oklch(0.89 0.022 80);
+  /* Richer warm sand — a deliberately darker, warmer band so a cream card
+     placed on it lifts off rather than blending (used by the pricing band). */
+  --paper-sand:  oklch(0.80 0.050 74);
 
   /* Hairline used by HopeRise components */
   --hair: color-mix(in oklch, var(--cream-11) 14%, transparent);

@@ -1,5 +1,4 @@
-import { Users, Filter, Heart } from "lucide-react";
-import { PageHero, PrimaryCta } from "../_components/ui";
+import { PageHero, PrimaryCta, Faq } from "../_components/ui";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
@@ -9,11 +8,33 @@ export const metadata = pageMetadata({
   path: "/pricing",
 });
 
+// The tier rate applies only to meetings within that band, never
+// retroactively. "annual" shows the running total across all bands crossed,
+// from the band's first meeting to its last.
 const TIERS = [
-  { range: "1 – 5", charity: 900, pct: 60 },
-  { range: "6 – 10", charity: 1000, pct: 67 },
-  { range: "11 – 15", charity: 1100, pct: 73 },
-  { range: "16+", charity: 1200, pct: 80 },
+  { range: "1–5", charity: "$900", annual: "$900 to $4,500" },
+  { range: "6–10", charity: "$1,000", annual: "$5,500 to $9,500" },
+  { range: "11–15", charity: "$1,100", annual: "$10,600 to $15,000" },
+  { range: "16+", charity: "$1,200", annual: "$16,200+" },
+];
+
+const SPEND_FAQS = [
+  {
+    q: "What counts as a meeting?",
+    a: "A held conversation with an executive who has accepted your request. No-shows from either side do not count and do not incur the fee.",
+  },
+  {
+    q: "What if I pre-purchase meeting credits?",
+    a: "The tier structure still applies. Buying 16 credits upfront does not unlock the $1,200 rate from meeting one. The charity share builds as you cross each band, the same way it would month by month.",
+  },
+  {
+    q: "Is the charity gift tax-deductible to us?",
+    a: "Yes. The charity issues a tax-deductible receipt directly to you. Every nominated charity holds DGR endorsement.",
+  },
+  {
+    q: "Do I lose unused credits at year-end?",
+    a: "No. Credits roll over into the new year. Your tier resets each calendar year, so a new year begins back at the $900 band.",
+  },
 ];
 
 export default function Pricing() {
@@ -37,11 +58,11 @@ export default function Pricing() {
         bg="var(--cream-8)"
       />
 
-      <section style={{ background: "var(--paper-oat)" }}>
+      <section style={{ background: "var(--paper-sand)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           {/* Main pricing card */}
           <div
-            className="mx-auto max-w-[540px] rounded-3xl border p-8 md:p-10"
+            className="mx-auto max-w-[620px] rounded-3xl border p-8 md:p-10 shadow-[0_18px_50px_-24px_rgba(0,0,0,0.35)]"
             style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
           >
             <div className="text-center">
@@ -58,22 +79,55 @@ export default function Pricing() {
               </div>
             </div>
 
-            <div className="mt-10 mb-4 text-center">
-              <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
-                The more you meet, the more goes to charity
-              </span>
-            </div>
-
-            <div>
-              {TIERS.map((tier, i) => (
-                <TierRow
-                  key={i}
-                  range={tier.range}
-                  charity={tier.charity}
-                  last={i === TIERS.length - 1}
-                />
-              ))}
-            </div>
+            {/* Tier table — the rate applies only within each band */}
+            <table className="mt-10 w-full border-collapse text-left">
+              <thead>
+                <tr
+                  className="border-b"
+                  style={{ borderColor: "var(--border)" }}
+                >
+                  <th className="pb-3 pr-3 align-bottom text-[10px] font-mono font-medium uppercase tracking-[0.14em] leading-tight text-muted-foreground">
+                    Meetings per year
+                  </th>
+                  <th className="pb-3 px-3 align-bottom text-[10px] font-mono font-medium uppercase tracking-[0.14em] leading-tight text-muted-foreground">
+                    Charity share, per meeting
+                  </th>
+                  <th className="pb-3 pl-3 align-bottom text-right text-[10px] font-mono font-medium uppercase tracking-[0.14em] leading-tight text-muted-foreground">
+                    Annual to charity
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {TIERS.map((tier, i) => (
+                  <tr
+                    key={tier.range}
+                    className={i === TIERS.length - 1 ? "" : "border-b"}
+                    style={
+                      i === TIERS.length - 1
+                        ? undefined
+                        : { borderColor: "var(--border)" }
+                    }
+                  >
+                    <td className="py-4 pr-3 text-sm font-semibold tabular-nums whitespace-nowrap">
+                      {tier.range}
+                    </td>
+                    <td className="py-4 px-3">
+                      <span
+                        className="display-serif text-2xl tabular-nums"
+                        style={{ color: "var(--primary)" }}
+                      >
+                        {tier.charity}
+                      </span>
+                    </td>
+                    <td className="py-4 pl-3 text-right">
+                      <span className="display-serif text-base md:text-lg tabular-nums text-foreground">
+                        {tier.annual}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
           {/* GST disclosure */}
@@ -81,43 +135,45 @@ export default function Pricing() {
             All prices in AUD and exclude GST
           </div>
 
-          {/* Charity callout */}
+          {/* Worked example */}
           <div
-            className="mx-auto mt-14 max-w-[540px] border-l-2 px-6 py-5"
+            className="mx-auto mt-14 max-w-[620px] border-l-2 px-6 py-5"
             style={{
               borderColor: "var(--primary)",
               background: "var(--cream-1)",
             }}
           >
             <p className="serif-italic text-base md:text-lg text-foreground leading-snug">
-              The more you meet, the more goes to charity.
+              How the tiers add up.
             </p>
             <p className="mt-3 text-[13px] text-muted-foreground leading-relaxed">
-              At 16 or more meetings a year, $1,200 of every $1,500 meeting goes directly to the cause the executive chooses. The more you meet, the more reaches the charity, from $900 a meeting up to $1,200.
+              Every meeting costs $1,500. The charity share within that fee
+              rises as you take more meetings across the year.
+            </p>
+            <p className="mt-3 text-[13px] text-muted-foreground leading-relaxed">
+              A vendor at 16 meetings sends{" "}
+              <strong className="font-semibold text-foreground">$16,200</strong>{" "}
+              to charity: $4,500 from the first 5 meetings, $5,000 from the next
+              5, $5,500 from the next 5, and $1,200 from the 16th.
             </p>
           </div>
 
-          {/* Value prop cards */}
-          <div className="mx-auto mt-12 max-w-[540px] grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <ValueCard
-              icon={Users}
-              title="The 10:1 rule"
-              body="At least ten executives for every vendor. You're never crowded out."
-            />
-            <ValueCard
-              icon={Filter}
-              title="Qualified"
-              body="Every meeting pre-qualified for fit before booking."
-            />
-            <ValueCard
-              icon={Heart}
-              title="Impact"
-              body="$900 to $1,200 of every meeting goes to charity, rising the more you meet."
-            />
+          {/* Pricing FAQ */}
+          <div className="mx-auto mt-16 max-w-[620px]">
+            <h2 className="text-2xl md:text-3xl font-extrabold tracking-[-0.02em] text-center">
+              Questions on the spend.
+            </h2>
+            <div className="mt-6 grid sm:grid-cols-2 gap-x-10">
+              {SPEND_FAQS.map((item) => (
+                <Faq key={item.q} q={item.q}>
+                  {item.a}
+                </Faq>
+              ))}
+            </div>
           </div>
 
           {/* CTA */}
-          <div className="mx-auto mt-14 max-w-[540px] flex flex-col items-center text-center">
+          <div className="mx-auto mt-14 max-w-[620px] flex flex-col items-center text-center">
             <PrimaryCta>Apply as a founding vendor</PrimaryCta>
             <p className="mt-4 text-xs text-muted-foreground">
               Limited to ~20 vendor seats at any time.
@@ -126,67 +182,5 @@ export default function Pricing() {
         </div>
       </section>
     </>
-  );
-}
-
-function TierRow({
-  range,
-  charity,
-  last,
-}: {
-  range: string;
-  charity: number;
-  last?: boolean;
-}) {
-  return (
-    <div
-      className={"flex items-baseline justify-between gap-6 py-5 " + (last ? "" : "border-b")}
-      style={!last ? { borderColor: "var(--border)" } : undefined}
-    >
-      <div>
-        <div className="text-sm font-semibold tracking-tight tabular-nums">
-          {range} meetings / yr
-        </div>
-      </div>
-      <div className="text-right">
-        <span
-          className="display-serif text-2xl tabular-nums"
-          style={{ color: "var(--primary)" }}
-        >
-          ${charity.toLocaleString()}
-        </span>
-        <span className="ml-2 text-xs text-muted-foreground">
-          per meeting to charity
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function ValueCard({
-  icon: Icon,
-  title,
-  body,
-}: {
-  icon: React.ComponentType<{ size?: number; className?: string }>;
-  title: string;
-  body: string;
-}) {
-  return (
-    <div
-      className="rounded-2xl border p-5 text-center"
-      style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
-    >
-      <div
-        className="flex justify-center mb-3"
-        style={{ color: "var(--primary)" }}
-      >
-        <Icon size={20} />
-      </div>
-      <div className="text-[13px] font-semibold tracking-tight">{title}</div>
-      <div className="mt-2 text-xs text-muted-foreground leading-relaxed">
-        {body}
-      </div>
-    </div>
   );
 }
