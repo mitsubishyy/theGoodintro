@@ -58,7 +58,7 @@ export default function Pricing() {
         bg="var(--cream-8)"
       />
 
-      <section style={{ background: "var(--paper-sand)" }}>
+      <section style={{ background: "var(--paper-oat)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           {/* Main pricing card */}
           <div
@@ -134,10 +134,14 @@ export default function Pricing() {
           <div className="mt-8 text-center text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
             All prices in AUD and exclude GST
           </div>
+        </div>
+      </section>
 
-          {/* Worked example */}
+      {/* ── Worked example — opens the alternating-band run ──────── */}
+      <section style={{ background: "var(--paper-white)" }}>
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16 md:py-24">
           <div
-            className="mx-auto mt-14 max-w-[620px] border-l-2 px-6 py-5"
+            className="mx-auto max-w-[620px] border-l-2 px-6 py-5"
             style={{
               borderColor: "var(--primary)",
               background: "var(--cream-1)",
@@ -157,9 +161,13 @@ export default function Pricing() {
               5, $5,500 from the next 5, and $1,200 from the 16th.
             </p>
           </div>
+        </div>
+      </section>
 
-          {/* Pricing FAQ */}
-          <div className="mx-auto mt-16 max-w-[620px]">
+      {/* ── Questions on the spend ───────────────────────────────── */}
+      <section style={{ background: "var(--paper-white)" }}>
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16 md:py-24">
+          <div className="mx-auto max-w-[620px]">
             <h2 className="text-2xl md:text-3xl font-extrabold tracking-[-0.02em] text-center">
               Questions on the spend.
             </h2>
@@ -171,9 +179,13 @@ export default function Pricing() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* CTA */}
-          <div className="mx-auto mt-14 max-w-[620px] flex flex-col items-center text-center">
+      {/* ── Closing CTA ──────────────────────────────────────────── */}
+      <section style={{ background: "var(--paper-white)" }}>
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16 md:py-24">
+          <div className="mx-auto max-w-[620px] flex flex-col items-center text-center">
             <PrimaryCta>Apply as a founding vendor</PrimaryCta>
             <p className="mt-4 text-xs text-muted-foreground">
               Limited to ~20 vendor seats at any time.
