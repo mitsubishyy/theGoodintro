@@ -531,7 +531,7 @@ body {
 }
 .hp-marquee-track {
   display: flex;
-  gap: clamp(8px, 1vw, 16px);
+  gap: clamp(16px, 2vw, 32px);
   width: max-content;
   align-items: center;
   animation: hp-marquee 36s linear infinite;
@@ -546,10 +546,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: clamp(195px, 21vw, 273px);
-  height: clamp(109px, 12vw, 151px);
-  padding: clamp(8px, 1vw, 14px);
-  background: transparent;
+  width: clamp(150px, 15vw, 200px);
+  height: clamp(88px, 9.5vw, 120px);
+  padding: clamp(14px, 1.6vw, 22px);
+  background: #fff;
+  border-radius: 14px;
 }
 .hp-marquee-chip img {
   max-width: 100%;
@@ -1343,9 +1344,8 @@ body {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: color-mix(in oklch, var(--cream-1) 88%, transparent);
-  backdrop-filter: saturate(140%) blur(10px);
-  -webkit-backdrop-filter: saturate(140%) blur(10px);
+  /* Light oat — nav and footer share --paper-oat so they match. */
+  background: var(--paper-oat);
   border-bottom: 1px solid transparent;
   transition: border-color .2s ease, background .2s ease;
 }
@@ -1648,8 +1648,9 @@ body.hp-is-scrolled .hp-topnav {
 
 /* HopeRise footer */
 .hp-footer {
-  /* Light oat, matching the top nav (--cream-1). */
-  background: var(--cream-1);
+  /* Light oat — matches the top nav (--paper-oat). */
+  background: var(--paper-oat);
+  border-top: 1px solid var(--border);
   padding: clamp(56px, 7vw, 96px) clamp(28px, 5vw, 64px) clamp(36px, 5vw, 56px);
 }
 .hp-footer-grid {
