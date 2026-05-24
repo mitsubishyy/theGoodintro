@@ -1,18 +1,6 @@
 import Link from "next/link";
-import { BadgeCheck, Heart, HeartHandshake } from "lucide-react";
-import {
-  PageHero,
-  SectionHead,
-  MoneyBlock,
-  ComparisonRow,
-  Faq,
-  ClosingCta,
-} from "../_components/ui";
-import {
-  IconHandshake,
-  IconIntro,
-  IconHeartCircle,
-} from "../_components/icons";
+import { Heart } from "lucide-react";
+import { PageHero, SectionHead, Faq, ClosingCta } from "../_components/ui";
 import { VendorsIllustration } from "../_components/illustrations";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -22,6 +10,23 @@ export const metadata = pageMetadata({
     "A qualified introduction to a vetted, hard-to-reach senior audience. Every meeting you book sends a real gift to the leader's chosen charity. Australia first, invite only.",
   path: "/vendors",
 });
+
+const HERO_STATS = [
+  { value: "10:1", label: "Executives for every vendor admitted" },
+  {
+    value: "$900 to $1,200",
+    label: "To the leader's chosen charity, per meeting",
+  },
+  { value: "45 min", label: "One focused conversation, led by the leader" },
+];
+
+const FUNNEL = [
+  "You state the specific initiative",
+  "It is matched to a leader's stated priorities",
+  "The leader sees the reason and decides",
+  "The meeting happens, one focused conversation",
+  "A gift goes to the leader's chosen charity",
+];
 
 export default function Vendors() {
   return (
@@ -37,138 +42,184 @@ export default function Vendors() {
         illustration={<VendorsIllustration className="w-full h-auto" />}
       />
 
-      {/* ── What you get ─────────────────────────────────────────── */}
+      {/* ── Hero stat band: the whole argument in one line ───────────── */}
       <section
         className="border-y"
-        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
+        style={{ background: "var(--emerald-deep)", borderColor: "var(--emerald-deep)" }}
       >
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
-          <SectionHead
-            label="What you get"
-            title="A room you cannot cold-email into."
-          />
-          <div className="mt-16 grid md:grid-cols-3 gap-4">
-            <VendorCard
-              icon={IconHandshake}
-              title="A vetted senior audience"
-              body="Leaders who opted in and set their own priorities. Not a scraped list, and not someone screening on their behalf."
-            />
-            <VendorCard
-              icon={IconIntro}
-              title="A qualified introduction"
-              body="You state the specific initiative. It reaches the leader only when it genuinely fits what they asked to hear about."
-            />
-            <VendorCard
-              icon={IconHeartCircle}
-              title="Goodwill that lasts"
-              body={<>Every meeting sends a real gift to the leader&apos;s chosen charity. You are remembered as the introduction that did some good.</>}
-            />
-          </div>
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-12 md:py-14">
+          <dl className="grid sm:grid-cols-3 gap-10 sm:gap-0">
+            {HERO_STATS.map((s, i) => (
+              <div
+                key={s.label}
+                className={
+                  "text-center sm:px-8 " +
+                  (i > 0 ? "sm:border-l" : "")
+                }
+                style={
+                  i > 0
+                    ? { borderColor: "color-mix(in oklch, var(--cream-1) 20%, transparent)" }
+                    : undefined
+                }
+              >
+                <dt
+                  className="font-black leading-none tracking-[-0.03em] tabular-nums"
+                  style={{
+                    color: "var(--cream-1)",
+                    fontSize: "clamp(1.75rem, 3.6vw, 2.75rem)",
+                  }}
+                >
+                  {s.value}
+                </dt>
+                <dd
+                  className="mt-3 text-sm leading-snug mx-auto max-w-[24ch]"
+                  style={{ color: "color-mix(in oklch, var(--cream-1) 75%, transparent)" }}
+                >
+                  {s.label}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 
-      {/* ── Who this is for ──────────────────────────────────────── */}
+      {/* ── The funnel: request to gift, one diagram ─────────────────── */}
       <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
-          <SectionHead label="Who this is for" title="Built for vendors who mean it." />
-          <div className="mt-16 grid md:grid-cols-3 gap-4">
-            <VendorCard
-              icon={Heart}
-              title="Socially minded"
-              body="You are glad that the value you create here also sends a real gift, $900 to $1,200 a meeting, to a cause the leader chooses."
-              lucide
-            />
-            <VendorCard
-              icon={BadgeCheck}
-              title="Genuine intent"
-              body="You have a specific initiative or problem to discuss and can state it plainly. No vague discovery, no laboured demos."
-              lucide
-            />
-            <VendorCard
-              icon={HeartHandshake}
-              title="Meet on their terms"
-              body="One focused conversation, led by the leader's priorities. No hard selling. The relationship is the point."
-              lucide
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* ── What is expected ─────────────────────────────────────── */}
-      <section
-        className="border-y"
-        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
-      >
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead
-            label="What is expected"
-            title="State your reason up front."
-            lede="Before a request reaches a leader you describe the specific initiative or challenge that makes the conversation relevant. That one requirement is what keeps quality high on both sides, and it is why senior leaders agree to be here at all."
+            label="How it works for vendors"
+            title="From request to gift."
+            lede="Every request states why it is relevant before it reaches a leader. That single rule keeps quality high on both sides, and it is why senior leaders agree to be here at all."
           />
+
+          <ol className="mt-16 flex flex-col md:flex-row md:items-start">
+            {FUNNEL.map((step, i) => {
+              const last = i === FUNNEL.length - 1;
+              return (
+                <li
+                  key={step}
+                  className="contents md:flex md:flex-1 md:items-start"
+                >
+                  <div className="flex-1 flex flex-col items-center text-center gap-4 px-2">
+                    <span
+                      className="size-12 rounded-full grid place-items-center font-bold text-base shrink-0"
+                      style={
+                        last
+                          ? { background: "var(--primary)", color: "var(--cream-1)" }
+                          : { background: "var(--mint-tint)", color: "var(--primary-ink)" }
+                      }
+                    >
+                      {last ? <Heart className="size-5" fill="currentColor" /> : i + 1}
+                    </span>
+                    <p
+                      className="text-sm leading-snug max-w-[20ch]"
+                      style={{ color: "var(--cream-10)" }}
+                    >
+                      {step}
+                    </p>
+                  </div>
+                  {!last && (
+                    <div
+                      className="flex items-center justify-center py-3 md:py-0 md:mt-4"
+                      style={{ color: "var(--primary)" }}
+                      aria-hidden="true"
+                    >
+                      <svg
+                        className="size-7 rotate-90 md:rotate-0"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path
+                          d="M4 12h13M12 5l7 7-7 7"
+                          stroke="currentColor"
+                          strokeWidth="3.25"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
         </div>
       </section>
 
-      {/* ── The 10:1 rule ────────────────────────────────────────── */}
+      {/* ── The money split: where $1,500 goes ───────────────────────── */}
       <section
         className="border-y"
-        style={{ background: "var(--paper-white)", borderColor: "var(--border)" }}
-      >
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-6">
-              <SectionHead
-                label="The 10:1 rule"
-                title="Real access, not an auction."
-                lede="We deliberately keep at least ten executives for every vendor. You are not one of a hundred vendors fighting over the same inbox. Access stays genuine, which is exactly why senior leaders agree to be here at all."
-              />
-              <ul className="mt-8 space-y-3 text-sm md:text-base max-w-xl">
-                <ComparisonRow text="At least ten executives for every vendor admitted" />
-                <ComparisonRow text="No bidding war and no race to the cheapest pitch" />
-                <ComparisonRow text="Scarcity is the product: it is why leaders stay" />
-              </ul>
-            </div>
-            <div className="lg:col-span-6">
-              <div
-                className="rounded-3xl border p-10 md:p-16 text-center"
-                style={{ background: "var(--paper-oat)", borderColor: "var(--hair)" }}
-              >
-                <div className="display-serif text-[clamp(4rem,12vw,9rem)] leading-none text-primary">
-                  10:1
-                </div>
-                <div className="mt-5 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
-                  Executives to vendors, deliberately
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Pricing ──────────────────────────────────────────────── */}
-      <section
-        className="border-b overflow-hidden relative"
         style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
       >
-        <div className="absolute inset-0 dotgrid opacity-40" aria-hidden />
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead
             label="What it costs, in full"
-            title="Transparent pricing."
+            title="Where your money goes."
           />
-          <div className="mt-12">
-            <MoneyBlock
-              lede="You pay one flat $1,500 per meeting. We publish exactly how much of it reaches the charity at each tier, so you always know what funds the cause and what runs the network."
-              rows={[
-                { k: "You pay, per meeting", v: "$1,500" },
-                { k: "To the leader's chosen charity", v: "$900 to $1,200" },
-                { k: "What the leader pays", v: "nothing, ever" },
-              ]}
-            />
+
+          <div className="mt-12 max-w-4xl">
+            <div
+              className="flex items-baseline gap-3 font-mono uppercase tracking-[0.14em]"
+              style={{ color: "var(--cream-9)" }}
+            >
+              <span
+                className="font-black tracking-[-0.03em] tabular-nums normal-case"
+                style={{ color: "var(--cream-11)", fontSize: "clamp(2rem, 4vw, 3rem)", fontFamily: "var(--font-inter), sans-serif" }}
+              >
+                $1,500
+              </span>
+              <span className="text-xs">per meeting</span>
+            </div>
+
+            {/* split bar */}
+            <div
+              className="mt-6 flex gap-1.5 h-24 rounded-2xl overflow-hidden"
+              role="img"
+              aria-label="Of every 1,500 dollar meeting, 900 to 1,200 dollars goes to the leader's chosen charity and 300 to 600 dollars runs the network."
+            >
+              <div
+                className="flex flex-col justify-center px-6 rounded-l-2xl"
+                style={{ flexGrow: 75, background: "var(--primary)", color: "var(--cream-1)" }}
+              >
+                <span className="font-black text-xl md:text-2xl tracking-[-0.02em] tabular-nums">
+                  $900 to $1,200
+                </span>
+                <span className="text-xs md:text-sm opacity-90">
+                  to the leader&apos;s chosen charity
+                </span>
+              </div>
+              <div
+                className="flex flex-col justify-center px-4 rounded-r-2xl"
+                style={{ flexGrow: 25, background: "var(--stone)", color: "var(--cream-11)" }}
+              >
+                <span className="font-black text-base md:text-lg tracking-[-0.02em] tabular-nums">
+                  $300 to $600
+                </span>
+                <span className="text-[11px] md:text-xs" style={{ color: "var(--cream-10)" }}>
+                  runs the network
+                </span>
+              </div>
+            </div>
+
+            <p
+              className="mt-6 text-[15px] leading-relaxed max-w-2xl"
+              style={{ color: "var(--cream-9)" }}
+            >
+              The charity share rises with the number of meetings you take
+              across the year. Full tier table on the{" "}
+              <Link
+                href="/pricing"
+                className="underline underline-offset-4 hover:text-primary"
+              >
+                pricing page
+              </Link>
+              .
+            </p>
           </div>
         </div>
       </section>
 
-      {/* ── FAQ ──────────────────────────────────────────────────── */}
+      {/* ── FAQ: the four decision questions ─────────────────────────── */}
       <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16 md:py-20">
           <div className="grid lg:grid-cols-12 gap-10">
@@ -176,7 +227,7 @@ export default function Vendors() {
               <SectionHead
                 label="Questions"
                 title="Before you apply."
-                lede="The things vendors ask first. If yours is not here, raise it on the call."
+                lede="The four things vendors weigh first. If yours is not here, raise it on the call."
               />
             </div>
             <div className="lg:col-span-8">
@@ -187,20 +238,6 @@ export default function Vendors() {
                 Acceptance is not automatic and it is not for sale. Vendors
                 who repeatedly miss relevance, or who behave badly in
                 meetings, lose access.
-              </Faq>
-              <Faq q="What has to be in a request?">
-                The specific initiative or problem that makes the
-                conversation relevant to that leader, in plain language. No
-                vague discovery, no generic decks. The leader sees that
-                reason and decides. If what happens in the meeting does not
-                match the stated reason, that counts against your access.
-              </Faq>
-              <Faq q="What does the 10:1 rule mean for me?">
-                We keep at least ten executives for every vendor admitted.
-                It means you are not competing with a crowd for the same
-                inbox, but it also means seats are deliberately limited.
-                Access is genuine because it is scarce. That scarcity is the
-                reason leaders take these meetings at all.
               </Faq>
               <Faq q="What exactly do I pay?">
                 One flat fee of $1,500 per held meeting. No subscriptions, no
@@ -230,16 +267,6 @@ export default function Vendors() {
                 honest and stops anyone gaming it. You are buying a qualified,
                 relevant conversation and a real gift, not a guaranteed deal.
               </Faq>
-              <Faq q="Can we choose the charity?">
-                No. The executive chooses, every time. The giving belongs to
-                the leader. Your name is attached to the introduction that
-                funded it, which is the point.
-              </Faq>
-              <Faq q="Why Australia first?">
-                Starting in one market keeps quality high and every gift
-                verifiable while the model is proven. International expansion
-                comes once the founding cohort has shaped how this works.
-              </Faq>
             </div>
           </div>
         </div>
@@ -255,36 +282,5 @@ export default function Vendors() {
         tone="oat"
       />
     </>
-  );
-}
-
-function VendorCard({
-  icon: Icon,
-  title,
-  body,
-  lucide,
-}: {
-  icon: React.ComponentType<{ className?: string; size?: number }>;
-  title: string;
-  body: React.ReactNode;
-  lucide?: boolean;
-}) {
-  return (
-    <div
-      className="rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-0.5"
-      style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
-    >
-      <div className="size-10 rounded-xl bg-foreground/[0.04] grid place-items-center mb-6">
-        {lucide ? (
-          <Icon className="size-5 text-foreground" />
-        ) : (
-          <Icon size={20} className="text-foreground" />
-        )}
-      </div>
-      <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
-      <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-        {body}
-      </p>
-    </div>
   );
 }
