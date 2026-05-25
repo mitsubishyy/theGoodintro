@@ -21,7 +21,7 @@ function countInBand(meetings: number, lo: number, hi: number) {
 }
 
 export function PricingSlider() {
-  const [meetings, setMeetings] = useState(16);
+  const [meetings, setMeetings] = useState(10);
 
   const rows = BANDS.map((b) => {
     const count = countInBand(meetings, b.lo, b.hi);
@@ -29,6 +29,7 @@ export function PricingSlider() {
   });
   const charity = rows.reduce((sum, r) => sum + r.amount, 0);
   const pay = meetings * FEE;
+  const sharePct = Math.round((charity / pay) * 100);
   const currentBand =
     meetings <= 5 ? 1 : meetings <= 10 ? 2 : meetings <= 15 ? 3 : 4;
   const pct = ((meetings - MIN) / (MAX - MIN)) * 100;
@@ -48,6 +49,12 @@ export function PricingSlider() {
           style={{ color: "var(--primary)", fontSize: "clamp(3rem, 7vw, 4.75rem)" }}
         >
           {money(charity)}
+        </div>
+        <div
+          className="mt-3 font-mono text-[11px] uppercase tracking-[0.16em]"
+          style={{ color: "var(--primary)" }}
+        >
+          {sharePct}% of your fees reach charity
         </div>
         <p className="mt-4 text-[14px] leading-relaxed text-foreground/70 max-w-sm">
           Across {meetings} {meetings === 1 ? "meeting" : "meetings"} in the year,

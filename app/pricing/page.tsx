@@ -86,14 +86,9 @@ export default function Pricing() {
           >
             {/* left rail: the fee + the reassurances */}
             <div
-              className="relative p-8 md:p-10 border-b lg:border-b-0 lg:border-r"
-              style={{ borderColor: "var(--hair)", background: "var(--cream-2)" }}
+              className="p-8 md:p-10 border-b lg:border-b-0 lg:border-r"
+              style={{ borderColor: "var(--hair)", background: "var(--cream-1)" }}
             >
-              <span
-                className="absolute left-8 md:left-10 top-0 h-1 w-12 rounded-b-full"
-                style={{ background: "var(--primary)" }}
-                aria-hidden="true"
-              />
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
                 Flat fee, AUD, ex GST
               </div>
@@ -128,8 +123,12 @@ export default function Pricing() {
               </div>
             </div>
 
-            {/* right: annual volume, charity-led */}
-            <div className="p-8 md:p-10">
+            {/* right: annual volume, charity-led — in its own bubble */}
+            <div className="p-6 md:p-8" style={{ background: "var(--cream-1)" }}>
+              <div
+                className="rounded-2xl border p-6 md:p-7"
+                style={{ background: "var(--paper-white)", borderColor: "var(--hair)" }}
+              >
               <div className="grid grid-cols-[1fr_auto] sm:grid-cols-[140px_1fr_90px] gap-x-6 pb-4 border-b" style={{ borderColor: "var(--border)" }}>
                 <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
                   Annual volume
@@ -190,6 +189,7 @@ export default function Pricing() {
                   </div>
                 </div>
               ))}
+              </div>
             </div>
           </div>
 
@@ -214,9 +214,8 @@ export default function Pricing() {
               .
             </h2>
             <p className="mt-5 text-[15px] md:text-base leading-relaxed text-foreground/75">
-              Every meeting costs $1,500. The charity share rises as you take
-              more meetings across the year. Drag the slider to see the figure
-              climb, band by band.
+              Every meeting costs $1,500. Drag the slider to watch the charity
+              share climb, band by band.
             </p>
           </div>
 
