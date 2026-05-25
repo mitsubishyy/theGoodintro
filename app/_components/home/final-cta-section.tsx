@@ -100,6 +100,9 @@ export default function FinalCtaSection() {
     if (!section) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
+    // The floating bubbles are hidden under 760px (see globals.css), so there's
+    // nothing to animate on mobile — skip the scroll-drift + float loop there.
+    if (window.matchMedia("(max-width: 760px)").matches) return;
 
     const bubbles = Array.from(
       section.querySelectorAll<HTMLDivElement>(".hp-cta-bubble")

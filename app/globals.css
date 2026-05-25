@@ -1315,9 +1315,11 @@ body {
   white-space: nowrap;
 }
 @media (max-width: 760px) {
-  /* Don't transform-scale here — the JS owns the transform. Shrink via width. */
-  .hp-cta-bubble { width: 78%; }
-  .hp-cta-bubble--hide-sm { display: none; }
+  /* The floating-avatar composition only works on a wide viewport where the
+     bubbles live in the margins around the headline. In a narrow column they
+     pile up behind the text, so hide them on mobile — clean centered headline
+     + CTAs. Desktop (>760px) keeps the full floating composition. */
+  .hp-cta-bubbles { display: none; }
 }
 .hp-cta-disclaimer {
   font-family: var(--font-mono), ui-monospace, monospace;
