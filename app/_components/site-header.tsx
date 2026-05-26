@@ -9,7 +9,6 @@ const NAV = [
   { href: "/executives", label: "Executives" },
   { href: "/vendors", label: "Vendors" },
   { href: "/giving", label: "Giving" },
-  { href: "/pricing", label: "Pricing" },
 ];
 
 export default function SiteHeader() {
