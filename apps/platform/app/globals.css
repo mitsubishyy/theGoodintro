@@ -1,0 +1,39 @@
+@import "tailwindcss";
+@import "@thegoodintro/tokens/portal.css";
+
+/* Maps the shared design tokens onto Tailwind v4 utility names so the carried
+   portal mockups (bg-*, text-*, border-*, font-*, rounded-*) resolve. The token
+   VALUES live in @thegoodintro/tokens (packages/tokens/src/portal.css). */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-ring: var(--ring);
+  --color-ink: var(--ink);
+
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-fraunces);
+  --font-mono: var(--font-mono);
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+}
+
+html,
+body {
+  background: var(--portal-page);
+  color: var(--foreground);
+}

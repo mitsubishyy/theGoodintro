@@ -5,12 +5,15 @@ node_modules/
 .env*.local
 *.log
 
-# Next.js
-/.next/
-/out/
-/build
+# Next.js (nested per-app in the monorepo, so not rooted)
+.next/
+out/
+build/
 next-env.d.ts
 *.tsbuildinfo
+
+# Turborepo
+.turbo/
 
 # Vercel
 .vercel

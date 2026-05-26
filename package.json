@@ -1,38 +1,23 @@
 {
-  "name": "thegoodintro",
+  "name": "thegoodintro-monorepo",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "npm@11.11.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "indexnow": "node scripts/notify-indexnow.mjs"
-  },
-  "dependencies": {
-    "@vercel/analytics": "^2.0.1",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "lucide-react": "^1.16.0",
-    "next": "16.2.4",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "tailwind-merge": "^3.6.0"
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "build:web": "turbo run build --filter=@thegoodintro/web",
+    "build:platform": "turbo run build --filter=@thegoodintro/platform",
+    "dev:web": "turbo run dev --filter=@thegoodintro/web",
+    "dev:platform": "turbo run dev --filter=@thegoodintro/platform",
+    "indexnow": "npm run indexnow --workspace=@thegoodintro/web"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.4",
-    "tailwindcss": "^4",
-    "typescript": "^5"
-  },
-  "browserslist": [
-    "chrome >= 120",
-    "firefox >= 120",
-    "safari >= 16",
-    "edge >= 120"
-  ]
+    "turbo": "^2.5.0"
+  }
 }

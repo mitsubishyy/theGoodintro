@@ -1,0 +1,50 @@
+/* ─────────────────────────────────────────────────────────────────────
+   theGoodintro — shared platform design tokens (single source of truth).
+
+   Carried over from the marketing site's globals.css so the internal
+   cockpit shares the same warm-cream + ink + amber language. The marketing
+   site stays emerald-only; the platform is deliberately warmer: emerald is
+   kept ONLY on the sidebar, the page is warm cream, the metrics ribbon and
+   primary buttons are dark ink, and amber is the single small accent.
+
+   Tweak the platform palette here, in one place. Both apps/platform and any
+   future shared UI package consume these values.
+   ───────────────────────────────────────────────────────────────────── */
+
+:root {
+  color-scheme: light;
+
+  /* Base surface + ink (mirrors the marketing tokens the mockups assume) */
+  --background: oklch(0.985 0.010 80);
+  --foreground: oklch(0.190 0.012 80);
+  --ink: oklch(0.10 0.005 70);
+  --card: oklch(0.973 0.010 110);
+  --card-foreground: oklch(0.190 0.012 80);
+  --muted: oklch(0.935 0.016 80);
+  --muted-foreground: oklch(0.470 0.018 80);
+
+  /* Emerald — kept for the sidebar only on the platform */
+  --primary: oklch(0.42 0.13 158);
+  --primary-foreground: oklch(0.985 0.010 80);
+  --primary-bright: oklch(0.62 0.18 158);
+  --primary-ink: oklch(0.32 0.10 158);
+  --primary-hover: oklch(0.38 0.13 158);
+  --emerald-deep: oklch(0.20 0.06 158);
+
+  --accent: oklch(0.935 0.016 80);
+  --accent-foreground: oklch(0.190 0.012 80);
+  --border: color-mix(in oklch, oklch(0.190 0.012 80) 14%, transparent);
+  --border-strong: oklch(0.760 0.022 80);
+  --ring: oklch(0.42 0.13 158);
+
+  /* Portal (internal app) palette */
+  --portal-page: oklch(0.964 0.014 84);
+  --portal-card: oklch(0.992 0.005 84);
+  --portal-header: oklch(0.964 0.014 84);
+  --portal-ribbon: oklch(0.205 0.012 70);
+  --portal-ink: oklch(0.17 0.006 70);
+  --portal-amber: oklch(0.66 0.115 64);
+  --portal-amber-soft: oklch(0.93 0.05 76);
+  --portal-amber-ink: oklch(0.46 0.09 60);
+  --portal-line: color-mix(in oklch, oklch(0.17 0.006 70) 9%, transparent);
+}

@@ -1,8 +1,11 @@
 import type { NextConfig } from "next";
-import { dirname } from "path";
+import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
-const projectRoot = dirname(fileURLToPath(import.meta.url));
+// In the monorepo the workspace root (where the lockfile lives) is two
+// levels up from apps/web. Turbopack uses this as its filesystem root so it
+// resolves the hoisted node_modules and does not warn about lockfile location.
+const monorepoRoot = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 const securityHeaders = [
   {
@@ -40,7 +43,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  turbopack: { root: projectRoot },
+  turbopack: { root: monorepoRoot },
   images: {
     remotePatterns: [
       {

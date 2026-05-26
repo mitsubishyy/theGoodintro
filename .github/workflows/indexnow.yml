@@ -32,4 +32,6 @@ jobs:
       - name: Submit URLs to IndexNow
         env:
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        # The marketing site (and its IndexNow script) now lives in apps/web.
         run: node scripts/notify-indexnow.mjs
+        working-directory: apps/web
