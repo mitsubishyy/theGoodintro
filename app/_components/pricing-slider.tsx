@@ -87,10 +87,30 @@ export function PricingSlider() {
           }}
         />
 
-        <div className="mt-3 flex justify-between font-mono text-[11px] tabular-nums text-muted-foreground">
-          {[1, 6, 11, 16, 25].map((n) => (
-            <span key={n}>{n}</span>
-          ))}
+        {/* Ticks sit at each value's true track position, not even
+            visual intervals — 16→25 spans 9 steps, the rest span 5, so
+            evenly-spaced labels would misrepresent where the thumb is. */}
+        <div className="relative mt-3 h-4 font-mono text-[11px] tabular-nums text-muted-foreground">
+          {[1, 6, 11, 16, 25].map((n) => {
+            const left = ((n - MIN) / (MAX - MIN)) * 100;
+            return (
+              <span
+                key={n}
+                className="absolute top-0"
+                style={{
+                  left: `${left}%`,
+                  transform:
+                    n === MIN
+                      ? "translateX(0)"
+                      : n === MAX
+                        ? "translateX(-100%)"
+                        : "translateX(-50%)",
+                }}
+              >
+                {n}
+              </span>
+            );
+          })}
         </div>
       </div>
 
