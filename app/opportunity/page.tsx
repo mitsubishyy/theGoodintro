@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { BadgeCheck, Heart, HeartHandshake, Target } from "lucide-react";
-import { CALENDLY_URL } from "@/lib/config";
 import { pageMetadata } from "@/lib/metadata";
 import {
   PageHero,
@@ -177,7 +176,7 @@ export default function Opportunity() {
               want now is the right person to build it with.
             </p>
             <div className="mt-8">
-              <PrimaryCta href={CALENDLY_URL}>Start a conversation</PrimaryCta>
+              <PrimaryCta>Start a conversation</PrimaryCta>
             </div>
           </div>
         </div>
