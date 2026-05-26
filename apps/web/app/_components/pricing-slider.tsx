@@ -1,17 +1,30 @@
 "use client";
 
 import { useState } from "react";
+import { MEETING_FEE_AUD, CHARITY_BANDS } from "@thegoodintro/pricing";
 
-const FEE = 1500;
+const FEE = MEETING_FEE_AUD;
 const MIN = 1;
 const MAX = 25;
 
-const BANDS = [
-  { label: "Band 1", range: "1–5", rate: 900, lo: 1, hi: 5, fill: "oklch(0.62 0.11 158)" },
-  { label: "Band 2", range: "6–10", rate: 1000, lo: 6, hi: 10, fill: "oklch(0.54 0.13 158)" },
-  { label: "Band 3", range: "11–15", rate: 1100, lo: 11, hi: 15, fill: "oklch(0.47 0.13 158)" },
-  { label: "Band 4", range: "16+", rate: 1200, lo: 16, hi: Infinity, fill: "oklch(0.40 0.13 158)" },
+// The numeric band model (rates + ranges) comes from the shared
+// @thegoodintro/pricing single source of truth; only the presentation (labels,
+// range text, bar fills) lives here, so the slider can never drift from the
+// platform ledger.
+const BAND_FILLS = [
+  "oklch(0.62 0.11 158)",
+  "oklch(0.54 0.13 158)",
+  "oklch(0.47 0.13 158)",
+  "oklch(0.40 0.13 158)",
 ];
+const BANDS = CHARITY_BANDS.map((b, i) => ({
+  label: `Band ${b.band}`,
+  range: b.hi === null ? `${b.lo}+` : `${b.lo}–${b.hi}`,
+  rate: b.rateAud,
+  lo: b.lo,
+  hi: b.hi === null ? Infinity : b.hi,
+  fill: BAND_FILLS[i],
+}));
 
 const money = (n: number) => "$" + n.toLocaleString("en-US");
 

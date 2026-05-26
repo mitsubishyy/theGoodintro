@@ -1,0 +1,20 @@
+{
+  "name": "@thegoodintro/pricing",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Single source of truth for theGoodintro money model: meeting fee, charity bands, gift math, and credit/cycle ledger helpers. Consumed by the marketing pricing page AND the platform ledger so the two never drift.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./ledger": "./src/ledger.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0"
+  }
+}

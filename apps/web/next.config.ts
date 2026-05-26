@@ -44,6 +44,9 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   turbopack: { root: monorepoRoot },
+  // Shared workspace package consumed by the pricing slider (single source of
+  // truth for the charity band model).
+  transpilePackages: ["@thegoodintro/pricing"],
   images: {
     remotePatterns: [
       {
