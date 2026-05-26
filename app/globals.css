@@ -100,6 +100,20 @@
   --ill-tan-light: oklch(0.88 0.06 75);
   --ill-cream: oklch(0.94 0.015 85);
   --ill-ink: oklch(0.18 0.008 70);
+
+  /* Portal (internal app) palette. The marketing site stays emerald-only;
+     the internal cockpit is deliberately warmer: emerald sidebar kept, a
+     warm-cream page, a dark-ink metrics ribbon and primary buttons, and
+     amber as the only small accent. Tweak these in one place. */
+  --portal-page: oklch(0.964 0.014 84);
+  --portal-card: oklch(0.992 0.005 84);
+  --portal-header: oklch(0.964 0.014 84);
+  --portal-ribbon: oklch(0.205 0.012 70);
+  --portal-ink: oklch(0.17 0.006 70);
+  --portal-amber: oklch(0.66 0.115 64);
+  --portal-amber-soft: oklch(0.93 0.05 76);
+  --portal-amber-ink: oklch(0.46 0.09 60);
+  --portal-line: color-mix(in oklch, oklch(0.17 0.006 70) 9%, transparent);
 }
 
 @media (min-width: 768px) {
