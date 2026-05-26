@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { PageHero, SectionHead, Faq, ClosingCta, FunnelDiagram } from "../_components/ui";
+import { PageHero, SectionHead, Faq, ClosingCta } from "../_components/ui";
 import { VendorsIllustration } from "../_components/illustrations";
+import { VendorsFlow } from "../_components/vendors-flow";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
@@ -19,21 +20,13 @@ const HERO_STATS = [
   { value: "45 min", label: "One focused conversation, led by the leader" },
 ];
 
-const FUNNEL = [
-  "You state the specific initiative",
-  "It is matched to a leader's stated priorities",
-  "The leader sees the reason and decides",
-  "The meeting happens, one focused conversation",
-  "A gift goes to the leader's chosen charity",
-];
-
 export default function Vendors() {
   return (
     <>
       <PageHero
         eyebrow="For vendors"
-        title="Reach leaders"
-        italicWord="honestly"
+        title="From request to"
+        italicWord="gift."
         lede="A genuinely qualified introduction to a vetted, hard-to-reach senior audience. Earned by being relevant, not by buying a list and sending more cold email."
         primaryCta="Apply as a founding vendor"
         pill="Founding vendor applications open"
@@ -82,24 +75,11 @@ export default function Vendors() {
         </div>
       </section>
 
-      {/* ── The funnel: request to gift, one diagram ─────────────────── */}
+      {/* ── How it works: 5-step flow (oat band) ─────────────────────── */}
+      <VendorsFlow />
+
+      {/* ── The money split: where $1,500 goes (white band) ──────────── */}
       <section style={{ background: "var(--paper-white)" }}>
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
-          <SectionHead
-            label="How it works for vendors"
-            title="From request to gift."
-            lede="Every request states why it is relevant before it reaches a leader. That single rule keeps quality high on both sides, and it is why senior leaders agree to be here at all."
-          />
-
-          <FunnelDiagram steps={FUNNEL} />
-        </div>
-      </section>
-
-      {/* ── The money split: where $1,500 goes ───────────────────────── */}
-      <section
-        className="border-y"
-        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
-      >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead
             label="What it costs, in full"
@@ -168,8 +148,11 @@ export default function Vendors() {
         </div>
       </section>
 
-      {/* ── FAQ: the four decision questions ─────────────────────────── */}
-      <section style={{ background: "var(--paper-white)" }}>
+      {/* ── FAQ: the four decision questions (oat band) ──────────────── */}
+      <section
+        className="border-y"
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
+      >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16 md:py-20">
           <div className="grid lg:grid-cols-12 gap-10">
             <div className="lg:col-span-4">
@@ -202,12 +185,12 @@ export default function Vendors() {
                 </Link>
                 .
               </Faq>
-              <Faq q="Is the charity gift tax-deductible to us?">
-                Yes. Every nominated charity holds deductible gift recipient
-                (DGR) endorsement, so the charity issues a tax-deductible
-                receipt directly to you, the vendor. DGR status is shown and
-                is verifiable on the public register before the meeting is
-                confirmed.
+              <Faq q="How do we know the gift reaches the charity?">
+                Every nominated charity holds deductible gift recipient (DGR)
+                endorsement and is listed on the public register, so it is
+                independently verifiable before the meeting is confirmed. Once
+                the meeting is held, the gift is paid to the chosen charity and
+                confirmed in writing.
               </Faq>
               <Faq q="What if the meeting does not lead anywhere?">
                 Once the meeting happens, the donation is committed and is
@@ -228,7 +211,7 @@ export default function Vendors() {
         lede="Reach senior leaders by being relevant, and fund a real gift while you do it. Every meeting you book sends a real gift to the leader's chosen charity."
         primaryCta="Apply as a founding vendor"
         sub="One short call to start · You fund the giving"
-        tone="oat"
+        tone="white"
       />
     </>
   );

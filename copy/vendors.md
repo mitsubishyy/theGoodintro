@@ -51,7 +51,7 @@ Lede: The donation is never reduced to cover our costs. The admin fee is its own
 Give flow:
 - After the meeting — the donation is sent to the leader's chosen registered charity
 - You get confirmation — in writing, every time
-- The admin fee — is billed to you, never blended with the gift
+- The split is published, so the charity's share is clear at every tier
 
 ## Founding vendors
 

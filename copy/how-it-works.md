@@ -37,12 +37,12 @@ Big number: The gift
 - Platform admin fee — paid by the vendor, a separate named line
 - Taken from the donation — nothing
 
-Lede: The charity figure stays whole on purpose. Running costs are recovered through the named admin fee, so the two numbers never get blended.
+Lede: We publish the split at every tier, so you can see exactly how much of each meeting goes to the charity the executive chooses.
 
 Give flow:
 - After the meeting — the donation is sent to the leader's chosen registered charity
 - Confirmation — in writing, every time
-- The admin fee — is the vendor's, never blended with the gift
+- The split is published, so the charity's share is clear at every tier
 
 ## Choosing the charity
 

@@ -9,6 +9,14 @@ Scope: the **executive side** and the **admin portal**. The vendor-facing portal
 UX, charity selection, and automated reminders are still left for later, though
 the admin-side view of vendors and the meeting scenarios is covered below.
 
+These workflow notes have since been turned into three build-ready portal briefs
+(read those first when building): [ADMIN_PORTAL_BRIEF.md](ADMIN_PORTAL_BRIEF.md),
+[VENDOR_PORTAL_BRIEF.md](VENDOR_PORTAL_BRIEF.md), and
+[EXECUTIVE_PORTAL_BRIEF.md](EXECUTIVE_PORTAL_BRIEF.md). The vendor portal,
+including the self-edit profile and the onboarding-checklist feature, is now
+specced in the vendor and admin briefs. This file remains the underlying workflow
+reasoning.
+
 Guiding principle throughout: **make it easy and simple** for the executive.
 Senior execs barely touch the system (see exec UX notes). The build splits into
 work we do ourselves and tasks we build or offshore.

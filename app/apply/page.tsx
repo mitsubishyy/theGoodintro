@@ -56,8 +56,7 @@ export default function ApplyPage() {
                 The concept is to make vendor outreach respectful and to turn
                 the few conversations worth having into real donations to
                 causes you care about. It only costs you and other senior
-                leaders your time for the meeting. The charity donations are
-                paid by the vendors.
+                leaders your time for the meeting. You never pay for the gift.
               </p>
             </div>
           </div>

@@ -6,7 +6,8 @@ export default function HeroSection() {
     <section className="hp-hero" aria-labelledby="hero-headline">
       <h1 className="hp-headline" id="hero-headline">
         Meetings that fund{" "}
-        <span className="hp-serif-italic">what matters</span>.
+        <span className="hp-serif-italic">what matters</span>
+        <span style={{ color: "var(--primary)" }}>.</span>
       </h1>
 
       <p className="hp-lede">

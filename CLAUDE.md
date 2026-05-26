@@ -20,6 +20,37 @@ over any number; if you must quote a figure, read it off the pricing page first.
 Concept brief: [`README.md`](README.md). Site plan and decisions:
 [`PLAN.md`](PLAN.md). Every word of original page copy: [`copy/*.md`](copy/).
 
+## Platform build briefs (read these before building any portal)
+
+The future platform has **three portals**, each with a build-ready brief. They are
+spec/reference for when Issy is ready to build; **do not start implementing them
+unless Issy explicitly asks** (she is currently in a documentation phase). When
+that time comes, read the relevant brief first:
+
+- **Admin portal** (Issy's internal cockpit): [`ADMIN_PORTAL_BRIEF.md`](ADMIN_PORTAL_BRIEF.md)
+- **Vendor portal** (paying SaaS vendors): [`VENDOR_PORTAL_BRIEF.md`](VENDOR_PORTAL_BRIEF.md)
+- **Executive portal** (senior leaders + EAs, email-first): [`EXECUTIVE_PORTAL_BRIEF.md`](EXECUTIVE_PORTAL_BRIEF.md)
+
+**Start here for the first build:** [`MVP_SCOPE.md`](MVP_SCOPE.md) carves the
+bare-bones v1 (accept money, book meetings, onboard executives) out of the three
+briefs and lists what is explicitly deferred. Read it before scoping any build.
+
+They build on [`PLATFORM_WORKFLOWS.md`](PLATFORM_WORKFLOWS.md) (workflows) and
+[`POSITIONING.md`](POSITIONING.md) (rules), and fold in two competitor UX
+references with a strict "take the structure, not the look" guardrail: **MeetMagic**
+(what data/fields to capture) and **HR Partner** (admin dashboard, Clients
+list/detail, and the Checklists/onboarding flow). Never adopt their palettes
+(MeetMagic purple is forbidden; no HR Partner pink or cartoon icons), only emerald
+on warm paper.
+
+Each brief is kept as **both the `.md` (source of truth, loads into context) and a
+house-style `theGoodintro-*-portal-brief.docx`** for sharing. If you edit a brief,
+**regenerate its `.docx`** with `python3` + `python-docx` (no pandoc in this env;
+the converter lives at `/tmp/md2docx_portals.py` during a session, recreate if
+gone). House rule for the briefs: **no em or en dashes in prose** (the no-dash site
+rule applies), the only exception being the `# theGoodintro — …` H1 title, which
+all three share.
+
 ## The locked design brief
 
 These four answers anchor every design decision. Do not pivot on these

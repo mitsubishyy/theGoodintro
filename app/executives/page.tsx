@@ -171,7 +171,7 @@ export default function Executives() {
             label="What your time is worth"
             title="Your time is already so valuable."
             italicWord="Do more with it."
-            lede="The only thing a conversation asks of you is your time, and you spend it on your terms. The charity you choose receives a real gift every meeting, from $900 to $1,200, paid by the vendor."
+            lede="The only thing a conversation asks of you is your time, and you spend it on your terms. The charity you choose receives a real gift every meeting, from $900 to $1,200. You never pay."
           />
           <div className="mt-12">
             <MoneyBlock

@@ -28,8 +28,8 @@ const SPEND_FAQS = [
     a: "The tier structure still applies. Buying 16 credits upfront does not unlock the $1,200 rate from meeting one. The charity share builds as you cross each band, the same way it would month by month.",
   },
   {
-    q: "Is the charity gift tax-deductible to us?",
-    a: "Yes. The charity issues a tax-deductible receipt directly to you. Every nominated charity holds DGR endorsement.",
+    q: "How do we know the gift reaches the charity?",
+    a: "Every nominated charity is DGR-endorsed and listed on the public register, so it is independently verifiable. The gift is paid to the executive's chosen charity after the meeting and confirmed in writing.",
   },
   {
     q: "Do I lose unused credits at year-end?",

@@ -18,6 +18,12 @@ fast** over polished.
   level.
 - It can reuse the existing design tokens (emerald accent, warm paper) for
   consistency, but does not need marketing-site craft.
+- **AI agents do the legwork; Issy reviews and sends.** A recurring pattern across
+  the portal: an agent drafts the work (proposed meeting times, a decline email's
+  body / subject / recipient, follow-up copy) and presents it as a **task**, and
+  Issy **reviews and confirms / sends**. The human stays in control of anything
+  that leaves the platform; the agent removes the typing. The goal is "the less
+  work for me, the better".
 - Security matters even though it is internal: **2FA for the super admin**, since
   it holds calendar tokens, payment data, and personal data.
 
@@ -34,8 +40,10 @@ section.
 │ │ Requests ⬤2│                                               │
 │ │ Meetings   │                                               │
 │ │ Comms    ⬤5│                                               │
-│ │ Vendors    │                                               │
-│ │ Executives │                                               │
+│ │ Clients  ▾ │   <- expands to:                              │
+│ │  · Vendors │                                               │
+│ │  · Execs   │                                               │
+│ │ Checklists │   <- Templates / Assigned                     │
 │ │ ─────────  │                                               │
 │ │ Settings   │                                               │
 │ └────────────┘                                               │
@@ -43,9 +51,19 @@ section.
 ```
 
 Sidebar order reads top to bottom as "what needs me today", then "my
-directory", then "admin": Dashboard, Requests pending, Meetings, Comms, Vendors,
-Executives, Settings. Count badges show where work is waiting. The bell carries
-"new vendor / exec onboarded" and "meeting move requested" notifications.
+directory", then "admin": Dashboard, Requests pending, Meetings, Comms,
+**Clients**, **Checklists**, Settings. **Clients** is a collapsible parent that expands to two
+children, **Vendors** and **Executives** (mirroring HR Partner's expandable
+"Employees" group). Both sides of the network are clients of theGoodintro, so
+they live together under one heading. Count badges show where work is waiting.
+The bell carries "new vendor / exec onboarded" and "meeting move requested"
+notifications.
+
+This **persistent side-menu plus land-straight-on-the-dashboard** flow follows
+the HR Partner reference (attached screenshots): the navigation is always present
+on the left, and login drops you onto the helicopter dashboard rather than a menu
+or splash. We take that structure, not HR Partner's colours or icons (see the
+Dashboard reference guardrails).
 
 ## Role model
 
@@ -58,54 +76,205 @@ Same portal for everyone; **role decides what renders**.
 
 ## Screens
 
-### Dashboard
-
-A **skinny metrics ribbon** across the top, then a **task table** below.
+**You land here on login.** No splash, no menu to choose from: sign in and the
+dashboard loads. It is the **helicopter view of the whole platform**, a metrics
+ribbon across the top and then a grid of **colour-coded data cards**, each one a
+**hyperlink into its full module**. Reference for the layout and data density:
+**HR Partner** (the attached screenshots, see Dashboard reference below). Take
+their structure, never their look.
 
 ```
-┌ DASHBOARD ───────────────────────────────────────────────────┐
-│ ┌─ metrics ribbon (skinny) ─────────────────────────────────┐ │
-│ │ 12 sched · 34 ahead · 87 done │ 18 vend · 25 ex │ $42k     │ │
-│ │                               │              charity·$61k  │ │
-│ └───────────────────────────────────────────────────────────┘ │
-│  TASKS                                [ All ▾ ]  [ Cal | List ] │
-│  ┌──────────────────────────────────────────────────────────┐ │
-│  │ Type         │ Who              │ Age  │ Action            │ │
-│  │ Pending exec │ Vendor X → CFO Y │ 4d ⚠ │ Nudge · Move      │ │
-│  │ Move request │ CEO Z meeting    │ 1d   │ Reschedule        │ │
-│  │ Cancelled    │ Vendor A × COO B │ 2d   │ Rebook            │ │
-│  │ New onboard  │ Exec: J. Smith   │  —   │ Set up profile    │ │
-│  └──────────────────────────────────────────────────────────┘ │
-└────────────────────────────────────────────────────────────────┘
+┌ DASHBOARD ─────────────────────────────────────────────────────────┐
+│ ┌─ metrics ribbon (skinny) ───────────────────────────────────────┐ │
+│ │ 12 sched · 34 ahead · 87 done │ 18 vend · 25 ex │ $42k charity   │ │
+│ │                               │              · rev $61k MTD/YTD  │ │
+│ └─────────────────────────────────────────────────────────────────┘ │
+│  ┌─ NEEDS ACTION ⬤7 ───────────┐  ┌─ BOOKED MEETINGS [Cal|List] ──┐ │
+│  │ Pending exec  VX→CFO Y  4d⚠ │  │  calendar of upcoming meetings │ │
+│  │ Move request  CEO Z     1d  │  │  (click a meeting → drawer)    │ │
+│  │ Cancelled     VA×COO B  2d  │  └────────────────────────────────┘ │
+│  │ New onboard   J. Smith  ·   │  ┌─ DISTRIBUTIONS ────────────────┐ │
+│  └─────────────────────────────┘  │ ◔ meeting status  ◔ vendors    │ │
+│  ┌─ PENDING REQUESTS  →all ────┐  │ ◔ exec capacity   ◔ charities  │ │
+│  │ Vendor X → CFO Y    4d ⚠     │  └────────────────────────────────┘ │
+│  │ Vendor Q → CIO R    2d       │  ┌─ UNRESPONDED COMMS ⬤5  →inbox ─┐ │
+│  └─────────────────────────────┘  │ Vendor A  "credits?"   1d      │ │
+│  ┌─ RECENT ONBOARDS  →directory┐  │ Vendor C  "reschedule" 3d ⚠    │ │
+│  │ + Exec J. Smith (set up)     │  └────────────────────────────────┘ │
+│  │ + Vendor Acme (active)       │  ┌─ GIFTS SENT  →giving ──────────┐ │
+│  └─────────────────────────────┘  │ $1,200 → Beyond Blue  ✓ 18 May │ │
+│                                    └────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────┘
 ```
 
-- Ribbon metrics: meetings scheduled this month / booked ahead / completed;
+- **Metrics ribbon:** meetings scheduled this month / booked ahead / completed;
   active vendors; active execs; total to charity; revenue this month and YTD.
   (Money segment hidden for staff.)
-- Task table is the work surface; each row carries its own action button.
-- Surfaces the "hidden but accessible" items as tasks rather than big cards:
-  pending exec answers, move requests, cancellations, churn flags.
-- `Cal | List` toggle swaps the table for a calendar of booked meetings.
+- **Every card is a doorway.** Each widget is a compact, scannable view of one
+  module that **links straight into the full module** (a "→ all" / header link,
+  exactly like HR Partner's cards). The dashboard is for taking in the whole
+  platform at a glance, not for doing deep work in place.
+- **Colour carries meaning, sparingly.** Use emerald for healthy / done, a warm
+  amber for "needs attention soon", and a clear red only for overdue / at-risk,
+  with a **count badge** on cards that hold work (Needs action ⬤7, Comms ⬤5),
+  mirroring HR Partner's "17 Overdue" treatment. Status, never decoration.
+- **Needs action** is the work queue: pending exec answers, **confirm-a-time
+  tasks** (after an exec accepts), **AI-drafted decline emails to send**, move
+  requests, cancellations, new onboards needing setup, and **RED manual-follow-up
+  tasks** (raised after a request's third unanswered follow-up). Each carries its
+  own action and an age with an overdue flag.
+- **Booked meetings** keeps the `Cal | List` toggle; clicking a meeting opens the
+  Meetings detail drawer.
+- **Distributions** are small donut charts (meeting status, vendors by package,
+  exec capacity used, charities supported) for the at-a-glance read HR Partner
+  gets from its donuts, in our palette.
+- **Pending requests**, **Unresponded comms**, **Recent onboards**, and **Gifts
+  sent** are quick-view cards into Requests, Comms, the directories, and Giving.
+
+#### Dashboard reference (HR Partner) and the guardrails
+
+What we are taking from the HR Partner screenshots, and what we are not:
+
+- **Take:** a persistent left side-menu, logging straight into the dashboard, a
+  helicopter grid of self-contained data cards, count badges for overdue work,
+  donut charts for distributions, and every card linking into its larger module.
+- **Do not take:** HR Partner's **pink and purple** palette (purple is forbidden,
+  it reads as MeetMagic), their cartoon / clip-art icons, or their density-for-
+  density's-sake. We keep **emerald on warm paper**, the custom outline icons,
+  and white space. The pattern is theirs; the craft and palette stay ours.
+
+#### Dashboards across all three portals
+
+The hyperlinked-card helicopter pattern is the **shared model for every portal's
+dashboard**, tuned to each audience's density:
+
+- **Admin (this doc):** the fullest version, the whole platform at a glance.
+- **Vendor** ([VENDOR_PORTAL_BRIEF.md](VENDOR_PORTAL_BRIEF.md)): the same idea,
+  scoped to the vendor's own requests, meetings, credits, and giving.
+- **Executive** ([EXECUTIVE_PORTAL_BRIEF.md](EXECUTIVE_PORTAL_BRIEF.md)):
+  deliberately the **lightest** version, a calm single-column home, since the
+  exec surface is email-first. It borrows the "land on it, cards link onward"
+  principle but never the data density.
 
 ### Requests pending
 
 - Queue of vendor-to-exec requests waiting on the exec to action.
-- Shows the 5-day follow-up status per row.
+- **On submit, the request appears here**, and Issy can **see the exact email
+  that was sent** to the exec (the vendor's three form answers).
+- **Automated follow-up sequence to the exec:** up to **three follow-up emails,
+  each 4 days apart** (roughly days 4, 8, 12 after the initial). The row shows
+  which follow-up is next and when. The **requesting user is auto-emailed an
+  update at each follow-up**, so the vendor sees we are chasing it.
+- **After the third follow-up with no response, a RED task is raised** on the
+  dashboard's Needs action queue as a **manual step for Issy to follow up**.
 - Actions: nudge the exec, or action on their behalf.
+
+### Scheduling (AI-assisted, admin-confirmed)
+
+When an exec **accepts**, the booking is not fully automatic; it routes through
+Issy as a quick task:
+
+- An **AI agent pulls the exec's availability** from their calendar (free/busy
+  plus the per-exec rule) and raises a **"confirm a time" task** with proposed
+  slots.
+- **Issy reviews and confirms** a slot; that sends the **calendar invite to both
+  parties**. The vendor-side invite goes to **both vendor emails**: the requesting
+  user and, if the request was on behalf of someone else (Q3 = b), the named
+  attendee.
+- This is the agreed model (light human confirm), and it supersedes the earlier
+  "auto-book with no confirm" note in PLATFORM_WORKFLOWS.
+
+### Decline handling (AI-drafted, admin-sent)
+
+When an exec **declines**, they can add an **optional reason** ("not relevant / no
+capacity / bad timing"), shared back to Issy as a task:
+
+- The task is **half-done by an AI agent**: it drafts the **email body, subject
+  line, and recipient** (the requesting user) to let the vendor down gracefully.
+- **Issy reviews and sends.** The draft-then-review pattern keeps the human in
+  control of anything that leaves the platform, with the AI doing the typing.
 
 ### Meetings
 
-The edit-bookings hub.
+The edit-bookings hub, and **the calendar is the platform's shared source of
+truth**, so this is one of the **biggest things to build on the admin portal**.
 
+- **Calendar source of truth (core build):** the booked meeting lives in both
+  parties' real calendars (Google / Outlook) and on the platform. If either side
+  **moves or cancels the event in their own calendar**, that change must **sync
+  back** and be reflected in admin Meetings, the vendor's Meetings, and the exec's
+  view. Designing this two-way sync is a priority, not an afterthought.
 - Calendar / list toggle; filters by status, vendor, exec, and date range.
 - Click a meeting to open a **detail drawer**: exec, vendor, date and time, Zoom
   or Teams link, the invite description, and actions: **Reschedule / move,
   Cancel, Resend invite**.
-- A "needs rescheduling" filter catches meetings where a side declined or asked
-  to move via the calendar invite (admin has visibility and access to move it).
-- **Past meetings view** records the outcome per meeting: completed, no-show, or
-  cancelled. This status triggers the donation release, the LinkedIn post, and
-  the follow-up.
+- **Reschedule / cancel (v1):** when either side asks to move or cancel (via the
+  calendar, a reply, or the EA), it **raises a rebook task for Issy**, who
+  re-coordinates and re-confirms a time. The vendor and exec see the resulting
+  state. No credit is affected (a credit is only consumed once a meeting is sat).
+- **Outcome capture:** the **Zoom / Teams call reports attendance via API**, which
+  feeds the meeting outcome (completed / no-show), rather than Issy guessing. A
+  **no-show is also reported by the vendor emailing us** (Comms). The outcome is
+  what consumes a credit and triggers the (manual) gift release and follow-up.
+
+### Gift record (one source, many views)
+
+When a meeting is marked **sat** and the gift released, a **single canonical gift
+record** is created (meeting, exec, charity, amount per the pricing tier at meeting
+time, date, confirmation). Every surface is a **read-only view of this one
+record**: the **vendor's Giving**, the **executive's impact** view, and the
+**public impact numbers**. No surface stores its own copy, so the gift can never
+drift across portals. (Gift release itself is manual in v1; the record is the
+thing all portals read.)
+
+### Giving (donations & payout runs)
+
+The charity flow is now confirmed (donation model, see
+[CHARITY_FLOW.md](CHARITY_FLOW.md)), so this module is **in scope**. Its job is to
+tell Issy **how much to donate to each charity** for a given week or month, and to
+track each donation through to a filed receipt. theGoodintro is the donor.
+
+- **Builds on the canonical gift record.** Each meeting marked *sat* already creates
+  one gift record (exec, charity, amount per tier, date). This module is the
+  operational view over those records, it does not store its own copy.
+- **Payout run (the core view):** pick a period (this week / this month / custom).
+  The module **groups all unpaid gift records by charity** and shows:
+
+| Charity (national entity) | ABN | Gifts in period | Total to donate | Saved payee / EFT | Action |
+|---|---|---|---|---|---|
+
+  This single screen answers "how much do I send each charity this period". The
+  **Total to donate** column is the exact figure Issy transfers per charity.
+- **Mark as paid:** after transferring, Issy marks that charity's line paid, enters
+  the **payment date**, and **uploads the receipt** the charity issued to
+  theGoodintro Pty Ltd. That flips those gift records from **Released** to **Paid**.
+- **Gift record status:** *Released* (meeting sat, gift committed and owed) → *Paid*
+  (donated, receipt on file). Public impact numbers count committed gifts; Paid
+  confirms the gift and carries the receipt for the tax deduction.
+- **Charities directory:** the 15 nominated charities as records, each holding the
+  **legal entity name, ABN, DGR-confirmed date**, saved donation/EFT details
+  (verified once, reused), and a **per-charity running total** (this period and
+  all-time). Enforces the **national-entity-only rule** (one payee per charity,
+  never a state arm) and surfaces a reminder to **re-verify DGR** periodically.
+- **Cadence setting:** weekly or monthly payout run, chosen in Settings, matching
+  whatever donation rhythm Issy runs.
+- **Export for the accountant:** per-charity, per-period CSV plus a total-donations
+  figure for the company tax deduction and the BAS.
+- **Manual in v1:** marking a meeting sat and running the payout are manual; the
+  platform aggregates and records, Issy reviews and pays (the draft-then-confirm
+  pattern). The per-gift runbook behind each line lives in CHARITY_FLOW.md.
+
+### Comms
+
+- Shared-inbox style: conversation list on the left, thread on the right, assign
+  to a staffer, internal notes, jump in.
+- Powered by vendors emailing `support@thegoodintro.com`, which auto-forwards
+  into the shared inbox surfaced here. A tool like Front or Help Scout can power
+  it under the hood.
+- **Executive replies land here too.** An exec who wants to ask a question or say
+  "not now" simply **replies to the request email the normal way**; that reply
+  routes into this shared inbox for Issy to handle (no special UI for the exec).
+- This inbox is also where a **vendor-reported no-show** arrives.
 
 ### Comms
 
@@ -115,33 +284,221 @@ The edit-bookings hub.
   into the shared inbox surfaced here. A tool like Front or Help Scout can power
   it under the hood.
 
-### Vendors
+### Clients (Vendors & Executives)
 
-- List with status, bulk meetings purchased, credits used vs remaining, and
-  payment status (which gates whether the exec list is unlocked).
-- Vendor detail: package, remaining credits, access status, comms history.
-- Vendors are vetted at onboarding (legitimate SaaS only), so there is no
-  per-request approval gate.
+Both client types share one pattern: **a filterable list, click a row to open a
+full profile**. The list is the directory; the profile is where the work happens
+(setting up an exec, unlocking a vendor's access). The profile layout follows the
+HR Partner employee record (attached screenshot): a left **modules rail**, a
+central column of **info cards**, and a right **activity timeline**. Structure
+from HR Partner, palette and icons stay ours.
 
-### Executives
+#### Vendors list
 
-- List with status, chosen charity, "calendar connected?" flag, meeting count.
-- Exec detail: profile (set up here at onboarding), onboarding status, calendar
-  connection, charity, business-context notes, meeting history, EA linkage.
+Filter bar (search by company, plus filters for status, package, and date joined),
+then a row per vendor:
+
+| Logo | Company name | Active credits | Date joined | Status |
+|------|--------------|----------------|-------------|--------|
+
+- **Active credits** is the live balance (purchased minus reserved/consumed); a
+  zero balance is the visual cue that their exec list is locked.
+- Row click opens the **vendor profile**.
+
+#### Executives list
+
+Filter bar (search by name or company, plus filters for status, region, industry,
+and date joined), then a row per executive:
+
+| Photo | Company | Name | Title | Date joined | Status |
+|-------|---------|------|-------|-------------|--------|
+
+- Row click opens the **executive profile**.
+
+#### Status (shared vocabulary)
+
+Status answers "are they actively using the platform?" and **holds churn**. Use
+one colour-coded set across both lists:
+
+- **Invited**, record created, not yet onboarded.
+- **Setup**, onboarding in progress (vendor: awaiting payment; exec: profile or
+  calendar not yet connected).
+- **Active**, fully onboarded and in use (emerald).
+- **Dormant**, onboarded but inactive for a defined window (amber); an early
+  churn-risk flag.
+- **Churned**, left or lapsed (held here, not deleted, so history and reporting
+  survive; muted/grey). Reachable from the list via a status filter, and counted
+  on the dashboard's "hidden but accessible" churn metric.
+
+#### Vendor profile (detail)
+
+This is where a vendor's **access to the full executive list is released**.
+
+- **Modules rail:** Account & billing, Credits & purchases, **Vetting & access**,
+  **Onboarding / checklist**, Seats / team, Requests, Meetings, Comms history,
+  Giving, Files, Notes.
+- **Info cards:** company details, vetting status, live credit balance, payment
+  status.
+- **Vetting & access (the gate):** sign-up is open (work email only), but a vendor
+  has **no payment screen until Issy approves them**. The gate is a **Calendly
+  vetting call plus a short application form**; the **application answers are
+  auto-pasted into the calendar invite** so Issy is briefed. This module shows the
+  **application answers, the booked call, and the vetting status**, with an
+  **Approve / Decline** action. **Approve unlocks payment** for the vendor;
+  **Decline** keeps it hidden. Vetting can be **AI-assisted** (auto-check ABN,
+  domain, website, LinkedIn; flag competitors / scrapers) presenting Issy a
+  recommendation she confirms. Approval flips the vendor to **Verified** (the
+  badge shown in the exec email).
+- **Access on payment:** once the **Xero invoice is paid, the executive list
+  auto-unlocks immediately** with the credit balance, and the onboarding checklist
+  attaches (one event, several effects). No manual "mark as paid" step. There is
+  **no per-request approval gate** once a vetted vendor is paid and active.
+- **Pipeline status:** Signed up → Call booked → Approved → Paid → Active (or
+  Declined), visible at a glance.
+- **New sign-up notification:** every new sign-up alerts Issy across **Slack, the
+  admin dashboard (Recent onboards), and email**, so a registration never goes
+  unseen and the vetting call can be prompted.
+- **Onboarding / checklist:** the same payment event **auto-attaches the
+  onboarding checklist** to the vendor (see Checklists & onboarding). This module
+  shows their checklist progress (X / Y, percent), surfaces any item that is
+  **pending admin review or a paired admin task**, and lets Issy review uploads,
+  countersign, and mark items or the whole checklist complete.
+- **Activity timeline:** admin actions and account events (payment received, list
+  unlocked, credits topped up, seat added), each stamped with who and when,
+  exactly like the HR Partner timeline. Feeds the audit log.
+
+#### Executive profile (detail)
+
+This is where Issy **sets up and maintains the executive profile**.
+
+- **Modules rail:** Profile, Onboarding status, Calendar connection, Charity,
+  Business-context notes, Capacity / cadence, **Visibility (hide)**, Meetings
+  history, EA linkage, LinkedIn connection, Files, Notes.
+- **Info cards:** name, title, company, photo; chosen charity; "calendar
+  connected?" flag; meeting count.
+- **Set up here:** the admin **creates and edits the exec profile at onboarding**
+  (name, title, company, photo, business-context notes), links the EA, and tracks
+  the onboarding pipeline through to Active.
 - **Capacity / cadence:** a per-exec meeting limit with remaining capacity
   visible, so vendors cannot over-book and burn out execs.
+- **Hide / temporarily unlist:** Issy can **hide an executive from all
+  users/vendors for a period** if they are currently busy, so they drop out of the
+  executive list and cannot be requested until unhidden. This is **temporary and
+  not a churn** (distinct from the Churned status). It is the vendor-facing answer
+  to "this exec is unavailable right now", expected to be rare.
+- **Activity timeline:** profile edits, charity changes, calendar connect, meeting
+  outcomes, each stamped with who and when. Feeds the audit log.
+
+### Checklists & onboarding
+
+Where Issy **builds the onboarding checklist once** and lets it run itself. The
+goal is "the less work for me, the better": author a template, and it
+auto-attaches to every new paying vendor with no per-vendor effort. The flow is
+adapted from **HR Partner Checklists** (attached screenshots); their structure,
+our look, and our language throughout (HR Partner's "Employee" is our **vendor /
+vendor user**, their "Company Admin" is **Issy / admin**, and we drop all the
+HR-specific framing). The **Checklists** sidebar item has two areas, **Templates**
+(build) and **Assigned** (send / track), mirroring HR Partner's "Configure >
+Template" and "Assigned".
+
+#### Templates (build a checklist)
+
+Checklists > **Templates** > "**Add checklist template**" opens the builder:
+
+- **Template name** and a **brief description for your own records** (internal,
+  not shown to vendors).
+- **Add items:** an "**Add new checklist item**" action builds items one by one.
+  **Previously used items appear in a "Not selected" column** and can be
+  **dragged into "Selected in template"** to reuse them, so common items are
+  built once and reused across templates (the HR Partner drag-to-reuse pattern).
+- **Reorder** items within the template.
+
+#### Checklist item builder
+
+Each item (the HR Partner "Add checklist item" dialog, relabelled for us):
+
+- **Item description** (the text the vendor sees on the item).
+- **Item type** (dropdown), the set we support:
+  - **Standard check item** (a plain task, e.g. "complete your profile"),
+  - **Link to an external site** (visit before completing),
+  - **View a library document** (a PDF from our document library, e.g. vendor
+    guidelines or the giving promise),
+  - **Fill out a custom form** (an internal form),
+  - **Electronically sign a document** (e-sign, e.g. code of conduct),
+  - **Video clip** (e.g. a short platform tour),
+  - **Upload a file** (mandatory or optional; appeared in the vendor completion
+    flow, keep it as a type).
+- **Who must complete it:** **"Vendor must check off this item"** and / or
+  **"Admin must check off this item"** (our rename of HR Partner's Employee /
+  Company Admin checkboxes). An admin-side item is the **paired admin task** that
+  shows as "pending admin review" to the vendor rather than blocking them.
+- **Advanced / reminder timing** per item: an automatic late-reminder window
+  (HR Partner's "Remind in 8 days"), defaulting to our standard cadence but
+  overridable per item. See Notifications below.
+
+#### Assigning a checklist
+
+Two paths, and ours **defaults to automatic** to keep Issy's effort near zero:
+
+- **Auto-attach (default, the theGoodintro way):** designate one template as the
+  **vendor onboarding checklist**; it **attaches automatically when a vendor's
+  payment lands** (the same event that unlocks the exec list), and can attach to
+  each new seat. Vendors never see it pre-payment. No manual send needed.
+- **Manual assign (kept for one-offs):** Checklists > **Assigned** > "**Assign
+  checklist**" opens a dialog to: pick a **template**, choose a **recipient list**
+  (one or more vendors / seats, with All / None), and write the **subject** and a
+  rich-text **message** (with a "use template" option) for the notification email.
+  Send, and recipients are emailed a link into their portal. Use this for
+  non-onboarding checklists (a new policy, a re-sign) or to target specific
+  vendors. Only recipients with an active primary email get the notification.
+
+#### Tracking and review
+
+- Checklists > **Assigned** lists every assigned checklist with status and
+  progress; an **Update** action opens a vendor's checklist to view items and
+  progress. The same progress also shows in the **vendor profile's Onboarding
+  module**.
+- **Review and countersign:** open a vendor's uploads, review submitted items, and
+  **mark items or the whole checklist complete**. Paired admin items surface as
+  "pending admin review" to both sides, never as a silent block on the vendor.
+
+#### Notifications and reminders
+
+- Per-item **automatic late reminders** to vendors with outstanding items
+  ("remind in N days"), cadence editable here and in Settings. Honest nudges, no
+  urgency theatre (brand rule).
+- The assignment email carries the admin's custom subject and message; items
+  cannot be completed from the email, the link leads into the portal.
+
+#### Scope and dependencies
+
+- **Scope:** vendor-side feature. Executives are **not** put through self-serve
+  checklists; they are onboarded by Issy via the 5-minute call and the exec
+  profile (email-first principle). Extending checklists to execs is a later
+  option, not the default.
+- **Dependencies to build / confirm:** a **document library** (to hold the PDFs
+  for "view a library document"), a **custom forms** capability (for "fill out a
+  form"), and an **e-signature** capability (for "sign a document"). These are
+  their own modules in HR Partner; for us they can start minimal and grow. Flagged
+  in Open pre-build items.
 
 ### Settings (internal use)
 
-- Staff and roles, follow-up timing (5 days, editable), email templates,
-  notification preferences.
+- Staff and roles, follow-up timing (exec meeting-request follow-ups: **up to
+  three, 4 days apart**, editable), email templates, notification preferences, and
+  **checklist reminder cadence**.
 
 ## Operational must-haves (build into the data model early)
 
+- **Admin actions propagate outward.** When Issy **refunds, suspends a vendor,
+  manually books or edits a meeting, hides an exec, or marks an outcome**, the
+  change must reflect in the affected **vendor and/or exec surface** (and notify
+  where appropriate). No admin action should be invisible to the party it affects.
 - **Activity / audit log:** who did what (moved a booking, edited a profile,
-  marked a donation sent).
+  marked a donation sent), including **EA actions attributed to the exec**.
 - **Reporting / export:** CSV and date-range reports for accounting, GST on the
-  admin fee, and charity / investor reporting.
+  full meeting fee (the whole $1,500 is revenue under the donation model), donations
+  by charity and period, and charity / investor reporting.
 - **Onboarding pipeline status:** each exec and vendor moves through stages
   (invited, profile created, calendar connected, active).
 - **Data deletion:** clean deletion of a vendor or exec record (Australian
@@ -149,11 +506,14 @@ The edit-bookings hub.
 
 ## Deferred and flagged
 
-- **Finance and donations:** blocked on the charity flow (not yet confirmed).
-  The fund-holding direction tensions with the "never touch the donations"
-  positioning principle and is flagged pending in POSITIONING.md. Needs legal and
-  accounting advice. A **Charities directory** (records, ACNC verification,
-  payout details, per-charity totals) is deferred with it.
+- **Finance and donations:** charity flow now **confirmed** (donation model, see
+  [CHARITY_FLOW.md](CHARITY_FLOW.md)), so the **Giving (donations & payout runs)**
+  module and **Charities directory** are now **in scope** (specified above), no
+  longer deferred. The donation model also resolves the old "never touch the
+  donations" tension: theGoodintro funds the gift from its own revenue rather than
+  holding the charity's money (POSITIONING.md still carries the old pending flag,
+  sweep on next pass). Tax and GST specifics remain pending professional sign-off
+  (CHARITY_FLOW.md open items).
 - **Staff portal:** build later; super admin only first.
 
 ## Visual draft (saved, build when ready)
@@ -161,17 +521,19 @@ The edit-bookings hub.
 A **static, non-interactive visual draft** of the dashboard exists in the repo,
 to be built out properly when Issy is ready.
 
-- **Route:** `/admin` — file [app/admin/page.tsx](app/admin/page.tsx). Run
+- **Route:** `/admin`, file [app/admin/page.tsx](app/admin/page.tsx). Run
   `npm run dev` and open `http://localhost:3000/admin`.
 - **State:** static only. Buttons, toggles, and "View all" links are visual, not
   wired. No data layer, no auth yet.
 - **Look (approved direction):** white dashboard canvas; emerald leads on the
   **sidebar** (deep emerald, loved), the **top bar**, and the **metrics bubble**
   ribbon; emerald used as accent elsewhere (links, calendar dots, tags).
-- **Layout:** helicopter view. Metrics ribbon on top, then a 8/4 widget grid:
-  Booked-meetings **calendar** (with Calendar/List toggle) and a **Needs action**
-  table on the left; **Pending requests** and **Unresponded comms** quick-views
-  on the right. Every widget links into its larger page.
+- **Layout:** helicopter view (HR Partner reference). Metrics ribbon on top, then
+  a widget grid: **Needs action**, **Pending requests**, and **Recent onboards**
+  on one side; **Booked-meetings calendar** (Calendar/List toggle),
+  **Distributions** donuts, **Unresponded comms**, and **Gifts sent** on the
+  other. Colour-coded with count badges on cards that hold work. Every widget
+  links into its larger page.
 - **Routing note:** `/admin` is a bare full-screen route. Made it opt out of the
   marketing chrome by adding `pathname.startsWith("/admin")` checks to
   `app/_components/page-shell.tsx`, `site-header.tsx`, and `site-footer.tsx`
@@ -183,9 +545,18 @@ to be built out properly when Issy is ready.
 
 ## Open pre-build items
 
-- **Meeting source of truth:** decide whether the database is master (calendar
-  mirrors it) or the calendar is master (DB listens for changes). Affects all of
-  Meetings.
+- **Meeting source of truth (now a core build):** the two-way calendar sync is
+  confirmed as one of the biggest admin builds (see Meetings). Still to decide is
+  the mechanism: whether the database is master (calendar mirrors it) or the
+  calendar is master (DB listens for changes). Affects all of Meetings.
+- **Outcome capture integration:** the **Zoom / Teams API** provides attendance
+  data (confirmed), so it drives the meeting outcome, with the **vendor-emailed
+  no-show** as the fallback. Remaining work is the integration itself.
 - **Admin 2FA.**
+- **Checklist dependencies:** decide how minimal to start the **document
+  library**, **custom forms**, and **e-signature** capabilities that the richer
+  checklist item types lean on. A v1 onboarding checklist can run on standard
+  tasks, external links, video, and file upload alone, with library docs / forms
+  / e-sign added as those modules land.
 - **Volume check:** confirm current meeting volume actually justifies a custom
   build versus a lighter stopgap.

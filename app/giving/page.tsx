@@ -42,11 +42,10 @@ const CAUSES = [
 ];
 
 const TERMS = [
-  "A real gift is sent for every meeting that is actually held, paid by the vendor, never by the executive.",
+  "A real gift is sent to the chosen charity for every meeting that is actually held. The executive never pays.",
   "Once a meeting takes place the donation is committed and is paid within 14 days, regardless of the commercial outcome of the conversation.",
   "Each meeting is one flat $1,500 fee paid by the vendor. The charity receives $900 to $1,200 of it, rising with the number of meetings the vendor takes across the year, and we publish the split at every tier.",
-  "The charity's share is held separately between invoice and payment to the charity.",
-  "Only deductible gift recipient (DGR) endorsed Australian charities are eligible, so the vendor receives a tax-deductible receipt and every gift is publicly verifiable.",
+  "Only deductible gift recipient (DGR) endorsed Australian charities are eligible, so every gift goes to a recognised cause and is publicly verifiable.",
   "The charity confirms receipt directly to the executive, in writing.",
   "The executive chooses and can change the charity at any time, including a different charity per meeting. We never assign one.",
   "If a vendor behaves badly in a meeting, the gift is still paid in full; the vendor loses access.",
@@ -76,7 +75,7 @@ export default function Giving() {
           <SectionHead
             label="The giving promise"
             title="The money path, exactly."
-            lede="The donation is paid by the vendor, held separately, and delivered to the executive's chosen charity within 14 days of the meeting, and confirmed in writing."
+            lede="The gift is delivered to the executive's chosen charity within 14 days of the meeting, and confirmed in writing."
           />
           <div className="mt-12">
             <MoneyBlock
@@ -155,12 +154,12 @@ export default function Giving() {
               <SectionHead
                 label="What DGR means"
                 title="Why it has to be DGR."
-                lede="Deductible gift recipient is the Australian Taxation Office status that lets a charity issue a tax-deductible receipt to whoever gives. It is a higher bar than charity registration alone."
+                lede="Deductible gift recipient is the Australian Taxation Office's higher-bar endorsement, listed on the public register. It is a stricter standard than charity registration alone."
               />
             </div>
             <div className="lg:col-span-7">
               <ul className="space-y-3 text-sm md:text-base">
-                <ComparisonRow text="The vendor who funds the gift receives a tax-deductible receipt, every meeting" />
+                <ComparisonRow text="Every gift goes to a charity that meets the ATO's higher endorsement bar" />
                 <ComparisonRow text="DGR status is public and checkable, so nothing rests on our word" />
                 <ComparisonRow text="It keeps every gift traceable to a recognised Australian cause" />
                 <ComparisonRow text="It removes any grey area about where the money went" />
@@ -340,26 +339,20 @@ export default function Giving() {
               <Faq q="What is DGR, in plain terms?" open>
                 Deductible gift recipient is an endorsement from the
                 Australian Taxation Office. A charity that holds it can issue
-                a receipt that makes a gift tax-deductible to the giver. Not
-                every registered charity has it, which is why we require it.
+                a place on its public register. Not every registered charity
+                has it, which is why we require it.
               </Faq>
               <Faq q="Can an executive pick a charity that is not DGR-endorsed?">
                 No. The choice is restricted to DGR-endorsed Australian
-                charities. It is a deliberate limit. It guarantees the vendor
-                a tax-deductible receipt and keeps every gift verifiable, with
-                no grey area about where money went.
+                charities. It is a deliberate limit. It keeps every gift
+                verifiable on the public register, with no grey area about
+                where money went.
               </Faq>
               <Faq q="What if the meeting does not go well?">
                 The donation is still paid in full within 14 days. It is
                 committed once the meeting happens, regardless of the
                 commercial outcome. A vendor who behaves badly loses access,
                 but the gift to the charity is never clawed back.
-              </Faq>
-              <Faq q="Who receives the tax receipt?">
-                The vendor, because the vendor pays the donation. The
-                executive does not claim a deduction and does not pay
-                anything. The charity issues the receipt directly to the
-                vendor who funded it.
               </Faq>
               <Faq q="Are the charities shown here your partners?">
                 No. The names shown are well-known examples to illustrate the

@@ -67,29 +67,17 @@ export default function FAQ() {
               </Faq>
               <Faq q="Which charities can I choose? Are there restrictions?">
                 Any Australian charity that holds deductible gift recipient
-                (DGR) endorsement. DGR is the Australian Taxation Office
-                status that lets a charity issue a tax-deductible receipt to
-                the giver. You can change your nominated charity at any time,
+                (DGR) endorsement. DGR is a higher-bar Australian Taxation
+                Office endorsement, listed on the public register. You can
+                change your nominated charity at any time,
                 and nominate a different one for each meeting. Restricting it
                 to DGR keeps every gift verifiable on the public register and
                 traceable to a recognised Australian cause.
               </Faq>
-              <Faq q="How is the charity gift actually paid? Who holds the money?">
-                Vendors are invoiced for the donation plus a separately named
-                platform fee at the point a meeting is confirmed. The
-                donation is held separately from platform revenue from invoice
-                until it is paid to the chosen charity, which happens within
-                14 days of the meeting. The charity confirms receipt directly
-                to you. The platform fee is recognised as revenue; the
-                donation is not.
-              </Faq>
-              <Faq q="Is the donation tax-deductible?">
-                Yes. The donation is made by the vendor, and because every
-                nominated charity holds DGR endorsement, the charity issues a
-                tax-deductible receipt directly to the vendor. The executive
-                does not claim a deduction, because the executive does not pay
-                the donation. DGR status is verifiable on the public register
-                before any meeting is confirmed.
+              <Faq q="When is the charity gift paid?">
+                Once the meeting is held, the gift is paid to your chosen
+                charity within 14 days and confirmed to you in writing. The
+                amount is set by the published tier and paid in full.
               </Faq>
               <Faq q="What if a meeting does not go well? Can the donation be reversed?">
                 Once the meeting takes place, the donation is committed and is
