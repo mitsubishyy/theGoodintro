@@ -432,16 +432,23 @@ How a vendor buys and tracks access. Available **only after Issy approves them**
 (see Account lifecycle). **Vendors buy meetings in bulk**; a paid invoice
 auto-credits the account and unlocks the executive list.
 
-- **1 credit = 1 meeting = $1,500 AUD (flat).** Of that, a **tiered charity share
-  reaches the executive's chosen charity** ($900 rising to $1,200 per meeting as
-  annual volume crosses bands), and the **remainder is the admin fee**. Always
-  read the live numbers off [`app/pricing/page.tsx`](app/pricing/page.tsx), never
-  hardcode them. Charities are **DGR-endorsed** (tax-deductible receipt to the
-  vendor).
-- **Credits roll over, but the charity tier resets each calendar year.** A credit
-  carried into a new year is charged at the **lowest charity band** ($900): if a
-  vendor starts the year with 1 leftover credit, that meeting sends the lowest
-  amount, the tier then climbs again with volume.
+- **1 credit = 1 meeting = $1,500 AUD (flat).** Of that, a **tiered charity share is
+  donated to the executive's chosen charity** ($900 rising to $1,200 per meeting as
+  volume crosses bands within the vendor's cycle), and the **remainder is what
+  theGoodintro keeps** after the gift. Always read the live numbers off the tier
+  model, never hardcode them. Charities are **DGR-endorsed and publicly verifiable**;
+  under the donation model theGoodintro makes the gift, so the **vendor does not
+  receive a gift receipt** (see [`CHARITY_FLOW.md`](CHARITY_FLOW.md)).
+- **Credits roll over forever, but the charity tier resets every 12 months from the
+  vendor's first purchase** (not the calendar year). A credit carried into a new
+  cycle is charged at the **lowest charity band** ($900), and the tier climbs again
+  with volume. Full cycle and carry-over rules are the Giving math in
+  [`ADMIN_PORTAL_BRIEF.md`](ADMIN_PORTAL_BRIEF.md).
+- **At request time the vendor sees the projected gift** for that meeting: their
+  **current tier rate** (what their next held meeting sends to charity) and how many
+  meetings remain until the next band. Show it as indicative ("approximately $X"),
+  since the exact amount locks when the meeting is held. The calculation is the
+  projected-amount rule in the Giving math ([`ADMIN_PORTAL_BRIEF.md`](ADMIN_PORTAL_BRIEF.md)).
 - **Access is a 12-month window tied to purchase.** Buying **any** amount of
   credits unlocks the **whole platform for 12 months**. If a vendor **uses up all
   their credits and has not purchased more before the 12-month expiry**, the

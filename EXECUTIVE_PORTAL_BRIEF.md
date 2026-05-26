@@ -105,11 +105,17 @@ without the portal. This is the approved design direction; build to it.
 - **Two context blocks map straight from the form:** "What they want to discuss"
   is the vendor's **Q1 (who are we / the problem)**; "Why you, specifically" is
   **Q2**, carried as the emerald-highlighted moment.
-- **Charity line:** shows the gift **pulled from the pricing-page model, never
+- **Charity line:** shows the gift **pulled from the live tier model, never
   hardcoded** (CLAUDE.md rule), directing to the exec's **standing nomination**
-  (their default charity). The exec can **reply CHARITY to choose a different
-  DGR-endorsed charity for this meeting only**, leaving their default intact. The
-  charity must be **DGR-endorsed** (AU deductible gift recipient).
+  (their default charity). The amount is the **requesting vendor's current tier
+  rate** (the gift their next held meeting sends, $900 to $1,200), so it depends on
+  who is requesting, not the exec. Show it as **indicative** ("approximately $X")
+  and confirm the exact figure after the meeting, since it can change if other
+  meetings are held first or the vendor's cycle renews. The exec can **reply CHARITY
+  to choose a different DGR-endorsed charity for this meeting only**, leaving their
+  default intact. The charity must be **DGR-endorsed** (AU deductible gift recipient).
+  The projected-amount rule is the Giving math in
+  [`ADMIN_PORTAL_BRIEF.md`](ADMIN_PORTAL_BRIEF.md).
 - **Three actions in the email:** Accept, Decline, **Send to {{EA}}** (the EA's
   name shows when one is linked). The workflows behind these buttons are the build
   (PLATFORM_WORKFLOWS "build the workflow behind the buttons").

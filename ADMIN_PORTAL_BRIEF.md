@@ -264,6 +264,181 @@ track each donation through to a filed receipt. theGoodintro is the donor.
   platform aggregates and records, Issy reviews and pays (the draft-then-confirm
   pattern). The per-gift runbook behind each line lives in CHARITY_FLOW.md.
 
+#### How each gift amount is calculated (tier build-up)
+
+> **The authoritative financial source of truth is [CALCULATIONS.md](CALCULATIONS.md)**,
+> which defines every money figure and count with formulas, worked proofs, and
+> reconciliation checks. This section is the summary; if the two ever disagree,
+> CALCULATIONS.md wins.
+
+This is the math behind every gift amount and every payout total.
+
+**The tiers (per vendor, per calendar year):**
+
+| Band | Held meetings in the year | Gift to the chosen charity | theGoodintro keeps |
+|---|---|---|---|
+| 1 | 1 to 5 | $900 | $600 |
+| 2 | 6 to 10 | $1,000 | $500 |
+| 3 | 11 to 15 | $1,100 | $400 |
+| 4 | 16 or more | $1,200 | $300 |
+
+Every meeting is a flat $1,500 fee. The split above is how much of that fee becomes
+the charity gift versus theGoodintro revenue. Under the donation model the whole
+$1,500 is our revenue and the gift is a donation we make; the split is for
+transparency and for working out the gift amount, not a separate pot of money.
+
+**Copy flag:** the live pricing page FAQ currently says the tier "resets each
+calendar year". That wording is wrong under the rolling 12-month-from-first-payment
+rule below and needs aligning to "12 months from your first purchase" on the next
+copy pass.
+
+**The rules that govern the count:**
+
+- **Marginal, never retroactive.** Each meeting is priced by the band its own
+  position falls into. Crossing into a new band does not re-price earlier meetings.
+- **Per vendor, per rolling 12-month cycle.** The count is each vendor's running
+  tally of held meetings within their current cycle. A vendor's cycle starts on the
+  date of their **first payment** and renews every 12 months from that date. At each
+  renewal the count resets to 0, so the next held meeting is back at band 1 ($900).
+  (Not the calendar year.)
+- **Later purchases never re-anchor the cycle.** The 12-month clock always runs from
+  the vendor's first-ever purchase. Buying more credits mid-cycle does not extend or
+  reset it. Example: a vendor buys 6 credits today and 6 more in six months; all 12
+  sit in the same cycle (the one anchored today), and the band keeps building as
+  meetings are held, up to the 12-month renewal of that first purchase.
+- **Counted on "sat", in order.** Only a held (sat) meeting increments a vendor's
+  count, in the order meetings are marked sat (tie-break by the sat timestamp).
+  No-shows, cancellations, and reschedules never increment it, and pre-purchased
+  credits (tokens) do not advance the tier: buying 16 upfront does not start you at
+  band 4.
+- **Carried-over credits reset to band 1, and never expire.** Unused credits are not
+  lost; they carry forward indefinitely (no expiry, by design, to keep setup simple).
+  But because the count resets at each renewal, carried credits are priced from
+  **band 1** as they are used. Delaying meetings into a new cycle therefore lowers
+  the gift on those meetings rather than continuing up the bands.
+- **Locked at meeting time.** The moment a meeting is marked sat, its gift amount is
+  locked from the band its position lands in and written onto the gift record.
+  Nothing later changes it.
+- **One charity per meeting.** Each gift goes to the charity the executive nominated
+  for that specific meeting, so one vendor's meetings can fund several charities.
+
+**Per-meeting amount (the algorithm), run once when a meeting is marked sat:**
+
+```
+n = the vendor's count of held meetings in their current 12-month cycle, including this one (1-based)
+
+gift = $900     if n <= 5
+       $1,000   if 6  <= n <= 10
+       $1,100   if 11 <= n <= 15
+       $1,200   if n >= 16
+
+charity = the executive's nominated charity for this meeting
+```
+
+It writes `gift` and `charity` onto the gift record, which is the single canonical
+record every surface reads.
+
+**Projected amount (what the vendor portal and the executive request email/portal
+show before a meeting is held):**
+
+The locked amount is only known once a meeting is sat. Before that, both surfaces
+show a *projected* gift, computed from the **requesting vendor's** current position:
+
+```
+held = the requesting vendor's count of held meetings in their current cycle
+projected = band(held + 1)        // the rate their next held meeting will earn
+```
+
+- This is the vendor's **current tier rate**: what their next held meeting sends to
+  charity ($900 to $1,200).
+- It is **indicative, not locked.** Show it as "approximately $X". The exact figure
+  is set when the meeting is sat, and can differ if other meetings are sat first
+  (a higher band) or the vendor's 12-month cycle renews in between (resets to $900).
+- It depends on the **requesting vendor's** tier, not the executive, so the same
+  charity can receive different gift sizes from different vendors.
+- Read it from the live tier model, never hardcoded (CLAUDE.md rule). The per-surface
+  display wording lives in the vendor and executive portal briefs.
+
+**Payout run (what to pay each charity for a period):**
+
+```
+1. Select gift records that are Released (meeting sat) and not yet Paid,
+   with a sat date inside the chosen period (this week / month / custom).
+2. Group them by charity (national entity + ABN).
+3. Sum the locked gift amounts within each group.
+4. Output one row per charity: number of gifts, total to donate, saved payee.
+```
+
+The "total to donate" per row is exactly what Issy transfers to that charity.
+Because amounts are locked at sat time, the payout is a plain sum with no tier
+recalculation needed.
+
+**Worked example A (one vendor, one charity).** Vendor A holds 7 meetings this year,
+all nominating Royal Flying Doctor Service:
+
+- Meetings 1 to 5: 5 x $900 = $4,500
+- Meetings 6 to 7: 2 x $1,000 = $2,000
+- RFDS receives $6,500 from Vendor A so far this year.
+
+**Worked example B (one payout run, mixed vendors and charities).** These meetings
+are sat and unpaid in the period:
+
+| Meeting | Vendor's held-count | Band | Gift | Chosen charity |
+|---|---|---|---|---|
+| Vendor A, 6th | 6 | 2 | $1,000 | Cancer Council |
+| Vendor A, 7th | 7 | 2 | $1,000 | RFDS |
+| Vendor B, 1st | 1 | 1 | $900 | Cancer Council |
+| Vendor B, 2nd | 2 | 1 | $900 | RFDS |
+
+Grouped by charity, the payout run shows:
+
+| Charity | Gifts | Total to donate |
+|---|---|---|
+| Cancer Council | 2 | $1,900 |
+| Royal Flying Doctor Service | 2 | $1,900 |
+| Total to disburse | 4 | $3,800 |
+
+**Worked example C (carry-over across cycles).** A new vendor buys 16 credits and
+pays $24,000 upfront ($1,500 x 16). In their first 12-month cycle they hold only 10
+meetings:
+
+- Meetings 1 to 5: 5 x $900 = $4,500
+- Meetings 6 to 10: 5 x $1,000 = $5,000
+- Cycle 1 donated: $9,500. The 6 unused credits carry over.
+
+At the 12-month renewal the count resets to 0. The 6 carried credits are now priced
+from band 1, so as they are used in cycle 2: 5 x $900 + 1 x $1,000 = $5,500. Across
+both cycles the 16 credits donate $15,000, which is $1,200 less than the $16,200 they
+would have donated had all 16 been held inside one cycle. This is intended: the band
+build-up rewards using meetings within a cycle.
+
+**Reconciliation checks (so the numbers always tie out):**
+
+- The sum of every gift amount in a period equals the sum of the per-charity totals.
+- A vendor's gift amounts across a cycle match their band schedule. A vendor who
+  holds 16 meetings within a single cycle has sent $16,200 to charities ($4,500 +
+  $5,000 + $5,500 + $1,200), matching the annual figure on the pricing page; meetings
+  spread across cycles donate less because the band resets (see example C).
+- Each charity's all-time total in the Charities directory equals the sum of all
+  Paid gifts to that charity.
+
+### Expenses & P&L
+
+So the portal can show real profit (not just meeting-driven money), it tracks operating
+costs alongside revenue. Full math in [CALCULATIONS.md](CALCULATIONS.md) section 2.18.
+
+- **Expense entry:** date, category, payee, amount (ex GST), GST input credit, total,
+  financial year. Categories Issy defines (software, ads, contractors, founder pay,
+  etc.). Receipt/file attach optional.
+- **Net GST (BAS):** GST collected on sales minus GST input credits on expenses, plus
+  GST already remitted, gives GST currently owed.
+- **Operating profit (per FY):** gross revenue minus charity donated minus operating
+  expenses. This is the closest figure to "what the business actually made"; the
+  official tax figures still come from the accountant.
+- **Deferred revenue and total charity owed** are surfaced here too as liabilities, so
+  the dashboard never mistakes prepaid cash or unpaid gifts for profit.
+- Everything in this module exports to CSV (see CALCULATIONS.md section 6).
+
 ### Comms
 
 - Shared-inbox style: conversation list on the left, thread on the right, assign

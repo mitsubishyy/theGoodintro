@@ -20,6 +20,12 @@ over any number; if you must quote a figure, read it off the pricing page first.
 Concept brief: [`README.md`](README.md). Site plan and decisions:
 [`PLAN.md`](PLAN.md). Every word of original page copy: [`copy/*.md`](copy/).
 
+**Money is calculated in one place.** [`CALCULATIONS.md`](CALCULATIONS.md) is the
+authoritative financial source of truth: every donation, revenue, GST, count, band,
+and payout figure, with formulas, worked proofs, and reconciliation checks. Any
+money number anywhere on the platform must match it. Charity-flow model and open tax
+questions: [`CHARITY_FLOW.md`](CHARITY_FLOW.md).
+
 ## Platform build briefs (read these before building any portal)
 
 The future platform has **three portals**, each with a build-ready brief. They are
