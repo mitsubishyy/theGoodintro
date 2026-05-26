@@ -62,8 +62,11 @@ In scope (minimum):
   (a leftover credit is charged at the **lowest charity band**).
 - **On payment, unlock immediately:** the executive list shows, the **credit
   balance** appears, and the vendor can start requesting.
-- **A credit is deducted only after a meeting is sat**; overcommit allowed up to
-  **4 beyond balance** (VENDOR_PORTAL_BRIEF.md "Billing & credits").
+- **A credit is reserved when a meeting is booked** (so the vendor's available
+  balance drops at booking, preventing over-use) and finally **consumed when the
+  meeting is sat**; declined / cancelled / no-show meetings release the
+  reservation. Overcommit allowed up to **4 beyond available balance**
+  (VENDOR_PORTAL_BRIEF.md "Billing & credits").
 - **Admin sees it:** vetting + payment status on the vendor record, a new-signup
   alert (Slack + dashboard + email), and a vendor **payment notification (email +
   in-app)**.

@@ -451,14 +451,6 @@ costs alongside revenue. Full math in [CALCULATIONS.md](CALCULATIONS.md) section
   routes into this shared inbox for Issy to handle (no special UI for the exec).
 - This inbox is also where a **vendor-reported no-show** arrives.
 
-### Comms
-
-- Shared-inbox style: conversation list on the left, thread on the right, assign
-  to a staffer, internal notes, jump in.
-- Powered by vendors emailing `support@thegoodintro.com`, which auto-forwards
-  into the shared inbox surfaced here. A tool like Front or Help Scout can power
-  it under the hood.
-
 ### Clients (Vendors & Executives)
 
 Both client types share one pattern: **a filterable list, click a row to open a
