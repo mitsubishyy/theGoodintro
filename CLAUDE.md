@@ -3,6 +3,17 @@
 This file is loaded by Claude Code on every session. Keep it tight. Update it
 when conventions change.
 
+> **Monorepo:** `apps/web` = the marketing site (the design rules in THIS file are
+> for it: Employment Hero look, emerald-only, no gold). `apps/platform` = the
+> internal platform (admin/vendor/exec). **When building or editing the platform,
+> `apps/platform/CLAUDE.md` is mandatory reading and its rules are non-negotiable.**
+> Core platform rules in one line: the spec docs in the repo root are the source of
+> truth; **reproduce the committed portal mockups component-for-component (never
+> reinterpret, simplify, or drop a widget)**; use the `--portal-*` palette (dark
+> ink ribbon, amber accent, emerald only on the sidebar); follow CHANGE_SAFETY.md
+> (branch, feature flag off by default, staging first, Issy approves every
+> go-live); when unsure, ask Issy a recommendation-first question, don't guess.
+
 ## What this is
 
 A validation marketing site for theGoodintro: an Australian-first, invite-only
