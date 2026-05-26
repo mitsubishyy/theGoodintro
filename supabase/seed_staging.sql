@@ -145,3 +145,33 @@ values
   ('00000000-0000-0000-0000-00000000610a','00000000-0000-0000-0000-0000000013a1',
    '00000000-0000-0000-0000-00000000c1a1','band_1', 90000, 60000, 'released')
 on conflict (id) do nothing;
+
+-- Pillar 3a sign-up test users (no vendor org yet): one work domain, one generic.
+insert into auth.users
+  (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
+   created_at, updated_at, raw_app_meta_data, raw_user_meta_data,
+   is_sso_user, is_anonymous, confirmation_token, recovery_token,
+   email_change_token_new, email_change)
+values
+  ('00000000-0000-0000-0000-000000000000','00000000-0000-0000-0000-00000000a004',
+   'authenticated','authenticated','gina@gamma.test',
+   extensions.crypt('Passw0rd!test', extensions.gen_salt('bf')), now(), now(), now(),
+   '{"provider":"email","providers":["email"]}','{"name":"Gina Gamma"}',
+   false,false,'','','',''),
+  ('00000000-0000-0000-0000-000000000000','00000000-0000-0000-0000-00000000a005',
+   'authenticated','authenticated','freebie@gmail.com',
+   extensions.crypt('Passw0rd!test', extensions.gen_salt('bf')), now(), now(), now(),
+   '{"provider":"email","providers":["email"]}','{"name":"Free Bee"}',
+   false,false,'','','','')
+on conflict (id) do nothing;
+
+insert into auth.identities
+  (user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
+values
+  ('00000000-0000-0000-0000-00000000a004','00000000-0000-0000-0000-00000000a004',
+   '{"sub":"00000000-0000-0000-0000-00000000a004","email":"gina@gamma.test","email_verified":true,"phone_verified":false}',
+   'email', now(), now(), now()),
+  ('00000000-0000-0000-0000-00000000a005','00000000-0000-0000-0000-00000000a005',
+   '{"sub":"00000000-0000-0000-0000-00000000a005","email":"freebie@gmail.com","email_verified":true,"phone_verified":false}',
+   'email', now(), now(), now())
+on conflict do nothing;

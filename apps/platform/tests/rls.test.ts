@@ -130,3 +130,26 @@ describe("vendors cannot write (RLS denies)", () => {
     expect(error).not.toBeNull();
   });
 });
+
+describe("vendor sign-up RPC (signup_vendor)", () => {
+  it("a work-email user creates their org (idempotent)", async () => {
+    const gina = await signIn("gina@gamma.test");
+    const { data, error } = await gina.rpc("signup_vendor", {
+      p_company: "Gamma Co",
+      p_full_name: "Gina Gamma",
+    });
+    expect(error).toBeNull();
+    expect(typeof data).toBe("string");
+    const { data: vendors } = await gina.from("vendor").select("email_domain");
+    expect(vendors).toEqual([{ email_domain: "gamma.test" }]);
+  });
+
+  it("a generic-domain user is rejected", async () => {
+    const freebie = await signIn("freebie@gmail.com");
+    const { error } = await freebie.rpc("signup_vendor", {
+      p_company: "Freebie",
+      p_full_name: "Free Bee",
+    });
+    expect(error).not.toBeNull();
+  });
+});
