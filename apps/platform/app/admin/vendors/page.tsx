@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/format";
 
@@ -41,7 +42,11 @@ export default async function VendorsPage() {
               const remaining = lots.reduce((s, l) => s + l.quantity_remaining, 0);
               return (
                 <tr key={v.id as string} style={{ borderTop: "1px solid var(--portal-line)" }}>
-                  <td className="px-4 py-3 font-medium">{v.name as string}</td>
+                  <td className="px-4 py-3 font-medium">
+                    <Link href={`/admin/vendors/${v.id}`} className="underline-offset-2 hover:underline">
+                      {v.name as string}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3" style={{ color: "var(--muted-foreground)" }}>{v.email_domain as string}</td>
                   <td className="px-4 py-3">
                     <span

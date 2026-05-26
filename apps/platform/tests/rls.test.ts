@@ -94,7 +94,8 @@ describe("staff (admin) full access — the admin shell data path", () => {
 
   it("staff see every vendor", async () => {
     const { data } = await admin.from("vendor").select("id");
-    expect(data?.length).toBe(2);
+    // >= 2: the seed has Alpha + Beta; the sign-up test may add Gamma.
+    expect((data ?? []).length).toBeGreaterThanOrEqual(2);
   });
 
   it("staff can read the staff table and all gifts", async () => {

@@ -17,7 +17,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   turbopack: { root: monorepoRoot },
-  transpilePackages: ["@thegoodintro/types"],
+  transpilePackages: ["@thegoodintro/types", "@thegoodintro/pricing"],
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

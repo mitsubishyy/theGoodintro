@@ -79,6 +79,11 @@ export default async function VendorHome() {
         </div>
         <h2 className="mt-3 text-lg font-semibold">{step.title}</h2>
         <p className="mt-1 text-sm" style={{ color: "var(--muted-foreground)" }}>{step.body}</p>
+        {vendor?.status === "signed_up" ? (
+          <Link href="/vendor/application" className="mt-4 inline-block rounded-lg px-4 py-2 text-sm font-semibold" style={{ background: "var(--portal-ink)", color: "var(--portal-card)" }}>
+            Start your application
+          </Link>
+        ) : null}
       </div>
 
       <p className="mt-6 text-xs" style={{ color: "var(--muted-foreground)" }}>
