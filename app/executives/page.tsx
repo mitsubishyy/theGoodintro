@@ -171,7 +171,7 @@ export default function Executives() {
             label="What your time is worth"
             title="Your time is already so valuable."
             italicWord="Do more with it."
-            lede="The only thing a conversation asks of you is your time, and you spend it on your terms. The charity you choose receives a real gift every meeting, from $900 to $1,200, paid by the vendor."
+            lede="The only thing a conversation asks of you is your time, and you spend it on your terms. The charity you choose receives a real gift every meeting, from $900 to $1,200. You never pay."
           />
           <div className="mt-12">
             <MoneyBlock
@@ -255,8 +255,8 @@ export default function Executives() {
                 Any Australian charity that holds deductible gift recipient
                 (DGR) endorsement. You name it, you can change it at any
                 time, and you can nominate a different one for each meeting.
-                That is exactly where your meeting&apos;s gift goes, and the
-                charity confirms receipt to you in writing.
+                That is exactly where your meeting&apos;s gift goes, and you
+                receive written confirmation that it was made.
               </Faq>
               <Faq name="exec-faq" q="What does it cost an executive?">
                 Nothing, ever. Joining, setting your topics, declining

@@ -185,12 +185,12 @@ export default function Vendors() {
                 </Link>
                 .
               </Faq>
-              <Faq q="Is the charity gift tax-deductible to us?">
-                Yes. Every nominated charity holds deductible gift recipient
-                (DGR) endorsement, so the charity issues a tax-deductible
-                receipt directly to you, the vendor. DGR status is shown and
-                is verifiable on the public register before the meeting is
-                confirmed.
+              <Faq q="How do we know the gift reaches the charity?">
+                Every nominated charity holds deductible gift recipient (DGR)
+                endorsement and is listed on the public register, so it is
+                independently verifiable before the meeting is confirmed. Once
+                the meeting is held, the gift is paid to the chosen charity and
+                confirmed in writing.
               </Faq>
               <Faq q="What if the meeting does not lead anywhere?">
                 Once the meeting happens, the donation is committed and is

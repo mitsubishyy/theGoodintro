@@ -206,7 +206,7 @@ export default function HowItWorks() {
               <ul className="space-y-3 text-sm md:text-base">
                 <ComparisonRow text="The charity's share is set by the tier and published, from $900 to $1,200 a meeting" />
                 <ComparisonRow text="Every nominated charity holds deductible gift recipient (DGR) endorsement" />
-                <ComparisonRow text="The charity confirms receipt directly to the executive in writing" />
+                <ComparisonRow text="The executive receives written confirmation of every gift" />
                 <ComparisonRow text="Your details are never sold, traded, or published" />
                 <ComparisonRow text="No invented testimonials, no inflated numbers, no funding we do not have" />
               </ul>

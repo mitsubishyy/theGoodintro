@@ -27,7 +27,7 @@ Eyebrow: What we believe
 H2: Three things we will not compromise.
 
 - Relevance is earned — No one reaches a leader without a stated, specific reason. That requirement is the product.
-- Giving stays whole — The donation figure is never blended with our costs. The admin fee is its own named line.
+- Giving is transparent: we publish the split at every tier, so the charity's share is always clear.
 - Small on purpose — We are starting with a deliberately small invite-only cohort so the first members shape it.
 
 ## The first cohort

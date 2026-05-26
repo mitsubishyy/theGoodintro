@@ -48,7 +48,7 @@ Big number: The gift
 - Platform admin fee — paid by the vendor, never you
 - What it costs you — nothing, ever
 
-Lede: Every dollar of the gift reaches the charity. The platform covers its costs through a clearly named admin fee paid by the vendor, never taken from the donation.
+Lede: The charity receives the full amount shown at every tier, from $900 to $1,200 a meeting, and we publish the split.
 
 Give flow:
 - After the meeting — the donation is sent to your chosen registered charity
