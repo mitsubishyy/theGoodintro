@@ -14,3 +14,12 @@ next-env.d.ts
 
 # Vercel
 .vercel
+
+# Local MCP config (machine-specific)
+.mcp.json
+
+# Stale nested duplicate of the repo (do not track)
+/theGoodintro/
+
+# Generated from the .md briefs, regenerable
+*.docx
