@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
-const PUBLIC_PATHS = ["/login", "/signup", "/auth", "/api/webhooks"];
+const PUBLIC_PATHS = ["/login", "/signup", "/auth", "/api/webhooks", "/e"];
 
 /**
  * Refreshes the auth session on every request and gates access: anyone not

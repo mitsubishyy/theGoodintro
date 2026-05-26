@@ -54,8 +54,12 @@ describe("RLS tenant boundary", () => {
   });
 
   it("a vendor sees only their own requests and gifts", async () => {
+    // >= 1: the seed has one Alpha request; the request-loop test may add more.
     const { data: reqs } = await alex.from("request").select("id");
-    expect(reqs?.length).toBe(1);
+    expect((reqs ?? []).length).toBeGreaterThanOrEqual(1);
+    // Isolation: Beta has no requests of its own.
+    const { data: blairReqs } = await blair.from("request").select("id");
+    expect(blairReqs ?? []).toEqual([]);
     const { data: alexGifts } = await alex.from("gift_record").select("id");
     expect(alexGifts?.length).toBe(1);
     const { data: blairGifts } = await blair.from("gift_record").select("id");
