@@ -7,5 +7,8 @@ export default defineConfig({
     include: ["tests/**/*.test.ts"],
     testTimeout: 30000,
     hookTimeout: 30000,
+    // Integration tests share one staging DB; run files serially to avoid
+    // cross-file races on shared rows.
+    fileParallelism: false,
   },
 });

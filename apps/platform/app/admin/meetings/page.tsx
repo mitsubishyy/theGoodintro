@@ -1,0 +1,100 @@
+import type { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
+import { formatDate } from "@/lib/format";
+import { confirmMeetingAction, markHeldAction, releaseMeetingAction } from "./actions";
+
+export const metadata: Metadata = {
+  title: "Meetings — theGoodintro admin",
+  robots: { index: false, follow: false },
+};
+
+const inputStyle = { background: "var(--portal-card)", borderColor: "var(--portal-line)" } as const;
+
+type Row = {
+  id: string;
+  status: string;
+  scheduled_at: string | null;
+  credit_lot_id: string | null;
+  payment_due_at: string | null;
+  request: { executive: { title: string; company: string } | { title: string; company: string }[]; vendor: { name: string } | { name: string }[] } | null;
+};
+
+function names(r: Row) {
+  const req = Array.isArray(r.request) ? r.request[0] : r.request;
+  const exec = req && (Array.isArray(req.executive) ? req.executive[0] : req.executive);
+  const vendor = req && (Array.isArray(req.vendor) ? req.vendor[0] : req.vendor);
+  return { execLabel: exec ? `${exec.title}, ${exec.company}` : "—", vendor: vendor?.name ?? "—" };
+}
+
+export default async function MeetingsPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("meeting")
+    .select("id, status, scheduled_at, credit_lot_id, payment_due_at, request:request_id(executive:executive_id(title,company), vendor:vendor_id(name))")
+    .in("status", ["proposed", "confirmed"])
+    .order("created_at", { ascending: true });
+  const rows = (data ?? []) as unknown as Row[];
+
+  return (
+    <div className="max-w-3xl">
+      <h1 className="text-2xl font-semibold tracking-tight">Meetings</h1>
+      <p className="mt-1 mb-6 text-sm" style={{ color: "var(--muted-foreground)" }}>
+        Confirm times and record outcomes. A held meeting consumes a credit and
+        records the gift.
+      </p>
+
+      <div className="flex flex-col gap-3">
+        {rows.map((r) => {
+          const { execLabel, vendor } = names(r);
+          return (
+            <div key={r.id} className="rounded-xl border p-4" style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }}>
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-medium">{vendor} → {execLabel}</div>
+                <span className="rounded-full px-2 py-0.5 text-xs" style={{ background: "var(--portal-amber-soft)", color: "var(--portal-amber-ink)" }}>
+                  {r.status}
+                </span>
+              </div>
+
+              {r.status === "proposed" ? (
+                <form action={confirmMeetingAction} className="mt-3 flex flex-wrap items-end gap-2">
+                  <input type="hidden" name="meeting_id" value={r.id} />
+                  <input name="scheduled_at" type="datetime-local" className="rounded-lg border px-2 py-1.5 text-sm" style={inputStyle} />
+                  <input name="join_url" placeholder="Join URL" className="rounded-lg border px-2 py-1.5 text-sm" style={inputStyle} />
+                  <button type="submit" className="rounded-lg px-3 py-1.5 text-sm font-semibold" style={{ background: "var(--portal-ink)", color: "var(--portal-card)" }}>
+                    Confirm time
+                  </button>
+                </form>
+              ) : (
+                <div className="mt-2">
+                  <div className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+                    {formatDate(r.scheduled_at)}
+                    {r.credit_lot_id ? " · credit reserved" : " · uncredited (payment due " + formatDate(r.payment_due_at) + ")"}
+                  </div>
+                  <div className="mt-2 flex gap-2">
+                    <form action={markHeldAction}>
+                      <input type="hidden" name="meeting_id" value={r.id} />
+                      <button type="submit" className="rounded-lg px-3 py-1.5 text-sm font-semibold" style={{ background: "var(--portal-ink)", color: "var(--portal-card)" }}>Mark held</button>
+                    </form>
+                    <form action={releaseMeetingAction}>
+                      <input type="hidden" name="meeting_id" value={r.id} />
+                      <input type="hidden" name="outcome" value="no_show" />
+                      <button type="submit" className="rounded-lg border px-3 py-1.5 text-sm" style={{ borderColor: "var(--portal-line)" }}>No-show</button>
+                    </form>
+                    <form action={releaseMeetingAction}>
+                      <input type="hidden" name="meeting_id" value={r.id} />
+                      <input type="hidden" name="outcome" value="cancelled" />
+                      <button type="submit" className="rounded-lg border px-3 py-1.5 text-sm" style={{ borderColor: "var(--portal-line)" }}>Cancel</button>
+                    </form>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+        {rows.length === 0 ? (
+          <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>No meetings to schedule.</p>
+        ) : null}
+      </div>
+    </div>
+  );
+}
