@@ -10,6 +10,9 @@ Last updated 2026-05-26.
 - **Next.js** app (the same codebase family as the marketing site) + **Supabase**
   (Postgres, Auth, storage). This is already the working setup (`.mcp.json`,
   Supabase project), so it is the platform baseline.
+- **Hosting / region: AWS Sydney (ap-southeast-2).** Supabase runs on AWS, so the
+  project is provisioned in the Sydney region, all data lives in AWS Sydney
+  (onshore). The Next.js app is deployed to an AU/Sydney edge where possible.
 - One database, row-level security for the vendor/admin boundary. Admin (Issy)
   has full access; vendor users see only their own org.
 

@@ -60,9 +60,9 @@ compliance section of [OPS_AND_COMPLIANCE.md](OPS_AND_COMPLIANCE.md). Last updat
   Privacy Act reforms are tightening. Means: a clear **privacy policy** and
   **collection notice**, only collect what's needed, honour access/correction
   requests, and the retention/deletion rules below. **[LEGAL]**
-- **Data residency:** database hosted in the **Australian region (Sydney)** so AU
-  personal data stays onshore, the cleanest position under APP 8 (cross-border
-  disclosure).
+- **Data residency: AWS Sydney (ap-southeast-2).** Everything is hosted in AWS
+  Sydney, the Supabase project runs on AWS in that region, so AU personal data
+  stays onshore. The cleanest position under APP 8 (cross-border disclosure).
 - **Notifiable Data Breaches (NDB):** maintain a written **incident-response
   plan**, detect, contain, assess, and if an eligible breach is likely to cause
   serious harm, notify the **OAIC** and affected individuals. Owner: Issy.
@@ -99,7 +99,7 @@ compliance section of [OPS_AND_COMPLIANCE.md](OPS_AND_COMPLIANCE.md). Last updat
 
 ## Pre-launch checklist
 
-- [ ] Sydney-region database provisioned
+- [ ] Supabase project provisioned in AWS Sydney (ap-southeast-2)
 - [ ] RLS policies written + tested
 - [ ] Webhook signature verification on Xero + Zoom/Teams
 - [ ] Rate limiting on auth + signed-link endpoints
