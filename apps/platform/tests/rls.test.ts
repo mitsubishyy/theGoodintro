@@ -103,4 +103,30 @@ describe("staff (admin) full access — the admin shell data path", () => {
     const { data: gifts } = await admin.from("gift_record").select("id");
     expect(gifts?.length).toBe(1);
   });
+
+  it("staff can insert and delete (write path), then cleans up", async () => {
+    const name = `RLS test charity ${Date.now()}`;
+    const { data, error } = await admin
+      .from("charity")
+      .insert({ name })
+      .select("id")
+      .single();
+    expect(error).toBeNull();
+    expect(data?.id).toBeTruthy();
+    await admin.from("charity").delete().eq("id", data!.id);
+    const { data: gone } = await admin.from("charity").select("id").eq("id", data!.id);
+    expect(gone).toEqual([]);
+  });
+});
+
+describe("vendors cannot write (RLS denies)", () => {
+  it("a vendor insert into charity is rejected", async () => {
+    const alex = await signIn("alex@alpha.test");
+    const { error } = await alex
+      .from("charity")
+      .insert({ name: "Should not exist" })
+      .select("id")
+      .single();
+    expect(error).not.toBeNull();
+  });
 });

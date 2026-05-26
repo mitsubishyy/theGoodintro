@@ -14,3 +14,10 @@ export async function getFlag(key: string): Promise<boolean> {
     .maybeSingle();
   return data?.enabled === true;
 }
+
+/** Throw if a flag is off — server-side guard for flag-gated write actions. */
+export async function assertFlag(key: string): Promise<void> {
+  if (!(await getFlag(key))) {
+    throw new Error(`This feature (${key}) is not enabled.`);
+  }
+}
