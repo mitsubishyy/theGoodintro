@@ -37,14 +37,14 @@ export default function PlatformHome() {
           className="font-mono text-xs uppercase tracking-[0.18em]"
           style={{ color: "var(--portal-amber-ink)" }}
         >
-          Internal · draft
+          Demo · no login needed
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">
           theGoodintro platform
         </h1>
         <p className="mt-2 max-w-md text-sm" style={{ color: "var(--muted-foreground)" }}>
-          Visual starting point. The three portal mockups below carry the shared
-          warm-cream + ink + amber palette into the platform build.
+          Pick a portal to explore. Each opens straight in with a synthetic demo
+          account on staging data — no sign-in required.
         </p>
       </header>
 

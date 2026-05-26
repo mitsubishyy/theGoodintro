@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
-const PUBLIC_PATHS = ["/login", "/signup", "/auth", "/api/webhooks", "/e"];
+const PUBLIC_PATHS = ["/", "/login", "/signup", "/auth", "/api/webhooks", "/e", "/demo", "/exec"];
 
 /**
  * Refreshes the auth session on every request and gates access: anyone not
@@ -45,6 +45,14 @@ export async function updateSession(request: NextRequest) {
 
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
+    // Demo open-access: skip the login form, auto-sign-in the role's account.
+    if (process.env.NEXT_PUBLIC_DEMO_OPEN_ACCESS === "1") {
+      url.pathname = "/demo/enter";
+      url.search = "";
+      url.searchParams.set("role", path.startsWith("/vendor") ? "vendor" : "admin");
+      url.searchParams.set("next", path);
+      return NextResponse.redirect(url);
+    }
     url.pathname = "/login";
     url.searchParams.set("next", path);
     return NextResponse.redirect(url);
