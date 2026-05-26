@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { CALENDLY_URL } from "@/lib/config";
 
 export default function HeroSection() {
   return (
@@ -17,7 +16,7 @@ export default function HeroSection() {
       </p>
 
       <div className="hp-cta-row">
-        <a className="hp-btn-primary" href={CALENDLY_URL}>
+        <a className="hp-btn-primary">
           <span className="pulse" aria-hidden="true" />
           Apply as a founding executive
         </a>

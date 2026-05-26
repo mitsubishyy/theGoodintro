@@ -3,11 +3,11 @@
 //
 // Requires an IndexNow key:
 //   1. Set INDEXNOW_KEY in the environment.
-//   2. Host the key file at https://thegoodintro.com/<INDEXNOW_KEY>.txt
+//   2. Host the key file at https://thegoodintro.vercel.app/<INDEXNOW_KEY>.txt
 //      containing exactly the key (place it in public/).
 // Without the key this is a safe no-op so it never breaks a deploy.
 
-const HOST = "thegoodintro.com";
+const HOST = "thegoodintro.vercel.app";
 const SITE = `https://${HOST}`;
 const KEY = process.env.INDEXNOW_KEY;
 

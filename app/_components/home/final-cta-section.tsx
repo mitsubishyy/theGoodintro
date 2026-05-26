@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { CALENDLY_URL } from "@/lib/config";
 
 /**
  * Final CTA — illustrative executive avatar bubbles drift around the headline.
@@ -221,7 +220,7 @@ export default function FinalCtaSection() {
           <span className="hp-serif-italic">making a difference</span>.
         </h2>
         <div className="hp-cta-row">
-          <a className="hp-btn-primary" href={CALENDLY_URL}>
+          <a className="hp-btn-primary">
             <span className="pulse" aria-hidden="true" />
             Apply as an executive
           </a>

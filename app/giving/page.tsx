@@ -46,7 +46,7 @@ const TERMS = [
   "Once a meeting takes place the donation is committed and is paid within 14 days, regardless of the commercial outcome of the conversation.",
   "Each meeting is one flat $1,500 fee paid by the vendor. The charity receives $900 to $1,200 of it, rising with the number of meetings the vendor takes across the year, and we publish the split at every tier.",
   "Only deductible gift recipient (DGR) endorsed Australian charities are eligible, so every gift goes to a recognised cause and is publicly verifiable.",
-  "The charity confirms receipt directly to the executive, in writing.",
+  "The executive receives written confirmation that the gift was made.",
   "The executive chooses and can change the charity at any time, including a different charity per meeting. We never assign one.",
   "If a vendor behaves badly in a meeting, the gift is still paid in full; the vendor loses access.",
 ];
@@ -210,8 +210,8 @@ export default function Giving() {
                 Confirmed in writing
               </div>
               <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed">
-                The charity confirms receipt directly to you, within 14 days
-                of the meeting.
+                You receive written confirmation that the gift was made,
+                within 14 days of the meeting.
               </p>
             </div>
           </div>
@@ -361,9 +361,9 @@ export default function Giving() {
                 DGR-endorsed Australian charity.
               </Faq>
               <Faq q="How do I know the money arrived?">
-                The charity confirms receipt directly to the executive, in
-                writing, within 14 days of the meeting. The charity's share is
-                set by the tier and paid in full.
+                You receive written confirmation that the gift was made,
+                within 14 days of the meeting. The charity's share is set by
+                the tier and paid in full.
               </Faq>
             </div>
           </div>

@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CALENDLY_URL } from "@/lib/config";
 
 const NAV = [
   { href: "/how-it-works", label: "How it works" },
@@ -52,7 +51,7 @@ export default function SiteHeader() {
             ))}
           </div>
           <div className="hp-nav-actions">
-            <a className="hp-nav-cta" href={CALENDLY_URL}>
+            <a className="hp-nav-cta">
               Apply
               <span className="arrow" aria-hidden="true">
                 <svg viewBox="0 0 10 10" fill="none">

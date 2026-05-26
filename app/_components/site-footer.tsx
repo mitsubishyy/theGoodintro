@@ -51,9 +51,9 @@ export default function SiteFooter() {
         <div className="hp-footer-contact">
           <a
             className="hp-footer-email"
-            href="mailto:hello@thegoodintro.com"
+            href="mailto:issy@thegoodintros.com"
           >
-            hello@thegoodintro.com
+            issy@thegoodintros.com
           </a>
           <p className="hp-footer-meta">ABN pending registration</p>
           <p className="hp-footer-meta">&copy; 2026 theGoodintro Pty Ltd</p>

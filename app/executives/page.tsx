@@ -10,7 +10,6 @@ import {
 } from "../_components/ui";
 import { MeetingRequestEmail } from "../_components/meeting-request-email";
 import { Avatar } from "../mockup/_components/avatar";
-import { CALENDLY_URL } from "@/lib/config";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
@@ -37,7 +36,7 @@ export default function Executives() {
         </p>
 
         <div className="hp-cta-row">
-          <a className="hp-btn-primary" href={CALENDLY_URL}>
+          <a className="hp-btn-primary">
             <span className="pulse" aria-hidden="true" />
             Apply as a founding executive
           </a>
@@ -212,12 +211,9 @@ export default function Executives() {
                 title="Good things to ask."
                 lede="Not seeing what you need? Start a conversation and ask."
               />
-              <a
-                href={CALENDLY_URL}
-                className="mt-6 inline-flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors"
-              >
-                Book a call →
-              </a>
+              <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                Booking link coming soon
+              </span>
             </div>
             <div className="lg:col-span-8">
               <Faq name="exec-faq" q="Is this just a sales meeting in disguise?">
@@ -255,8 +251,8 @@ export default function Executives() {
                 Any Australian charity that holds deductible gift recipient
                 (DGR) endorsement. You name it, you can change it at any
                 time, and you can nominate a different one for each meeting.
-                That is exactly where your meeting&apos;s gift goes, and the
-                charity confirms receipt to you in writing.
+                That is exactly where your meeting&apos;s gift goes, and you
+                receive written confirmation that it was made.
               </Faq>
               <Faq name="exec-faq" q="What does it cost an executive?">
                 Nothing, ever. Joining, setting your topics, declining

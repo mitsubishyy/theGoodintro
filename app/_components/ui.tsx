@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Plus, Heart } from "lucide-react";
 import { IconCheck, IconX } from "./icons";
-import { CALENDLY_URL } from "@/lib/config";
 import { cn } from "@/lib/utils";
 
 /* ────────────────────────────────────────────────────────────────
@@ -26,14 +25,16 @@ export function SectionLabel({ children }: { children: React.ReactNode }) {
 
 /** Solid emerald pill with the live pulse dot. */
 export function PrimaryCta({
-  href = CALENDLY_URL,
+  href,
   children,
 }: {
   href?: string;
   children: React.ReactNode;
 }) {
+  // No href yet (Apply destination pending): render an inert button-styled
+  // element rather than a link to nowhere.
   return (
-    <a href={href} className="hp-btn-primary">
+    <a {...(href ? { href } : {})} className="hp-btn-primary">
       <span className="pulse" aria-hidden="true" />
       {children}
     </a>
@@ -72,7 +73,7 @@ export function PageHero({
   italicWord,
   lede,
   primaryCta = "Apply as a founding executive",
-  primaryHref = CALENDLY_URL,
+  primaryHref,
   secondaryLabel,
   secondaryHref,
   pill,
@@ -294,7 +295,7 @@ export function ClosingCta({
   italicWord,
   lede,
   primaryCta = "Apply as a founding executive",
-  primaryHref = CALENDLY_URL,
+  primaryHref,
   secondaryLabel,
   secondaryHref,
   sub = "Free for executives · Invite only · One short call to start",
