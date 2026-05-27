@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "theGoodintro — Platform",
+  title: "TheGoodIntro — Platform",
   robots: { index: false, follow: false },
 };
 
@@ -40,7 +40,7 @@ export default function PlatformHome() {
           Demo · no login needed
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-          theGoodintro platform
+          TheGoodIntro platform
         </h1>
         <p className="mt-2 max-w-md text-sm" style={{ color: "var(--muted-foreground)" }}>
           Pick a portal to explore. Each opens straight in with a synthetic demo

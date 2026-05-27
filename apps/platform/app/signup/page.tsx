@@ -4,7 +4,7 @@ import { getFlag } from "@/lib/flags";
 import { SignUpForm } from "./signup-form";
 
 export const metadata: Metadata = {
-  title: "Create your account — theGoodintro",
+  title: "Create your account — TheGoodIntro",
   robots: { index: false, follow: false },
 };
 
@@ -15,7 +15,7 @@ export default async function SignUpPage() {
     <main className="flex min-h-screen items-center justify-center px-6 py-16" style={{ background: "var(--portal-page)", color: "var(--foreground)" }}>
       <div className="w-full max-w-sm rounded-2xl border p-8" style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }}>
         <p className="font-mono text-xs uppercase tracking-[0.18em]" style={{ color: "var(--portal-amber-ink)" }}>
-          theGoodintro
+          TheGoodIntro
         </p>
         <h1 className="mt-1 mb-6 text-xl font-semibold tracking-tight">Create your account</h1>
 

@@ -5,10 +5,10 @@ import { Quote } from "lucide-react";
 import {
   PageHero,
   SectionHead,
-  FunnelDiagram,
   ComparisonRow,
   ClosingCta,
 } from "../_components/ui";
+import { VendorsFlow } from "../_components/vendors-flow";
 import {
   IconIntro,
   IconHandshake,
@@ -27,11 +27,11 @@ export const metadata = pageMetadata({
 });
 
 const MODEL_STEPS = [
-  "Vendor states the specific initiative",
-  "Match to the executive's stated priorities",
-  "Executive sees the reason and decides",
-  "One focused conversation happens",
-  "A real gift reaches the executive's chosen charity",
+  "A vendor states the specific initiative.",
+  "It is matched to the executive’s stated priorities.",
+  "The executive sees the reason and decides.",
+  "One focused conversation happens.",
+  "A real gift reaches the executive’s chosen charity.",
 ];
 
 export default function HowItWorks() {
@@ -52,20 +52,18 @@ export default function HowItWorks() {
       />
 
       {/* ── The model diagram ────────────────────────────────────── */}
-      <section
+      <VendorsFlow
         id="how"
-        className="border-y scroll-mt-24"
-        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
-      >
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
-          <SectionHead
-            label="The model"
-            title="From request to real giving."
-            lede="Five steps. The executive decides at every one."
-          />
-          <FunnelDiagram steps={MODEL_STEPS} />
-        </div>
-      </section>
+        eyebrow="The model"
+        title={
+          <>
+            From request to real{" "}
+            <span className="serif-italic">giving</span>.
+          </>
+        }
+        lede="Five steps. The executive decides at every one."
+        steps={MODEL_STEPS}
+      />
 
       {/* ── From the founder ─────────────────────────────────────── */}
       <section

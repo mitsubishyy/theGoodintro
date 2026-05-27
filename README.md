@@ -13,8 +13,9 @@ Closest reference point is MeetMagic, but with three deliberate differences.
 1. **Semi-qualified meeting requests.** A vendor cannot request a meeting cold.
    They must state the specific initiative or business challenge that makes the
    meeting relevant, so the executive sees why before accepting.
-2. **Higher absolute dollars to charity.** Target is $1,000 per meeting to
-   charity, versus roughly $700 on MeetMagic.
+2. **Higher absolute dollars to charity.** Between $900 and $1,200 per meeting
+   reaches the chosen charity, rising with annual volume (see the pricing page),
+   versus roughly $700 on MeetMagic.
 3. **"100% of meeting funds to charity" positioning.** The charity figure is
    kept clean and headline worthy. Platform costs are recovered through a
    separate, clearly named admin fee rather than skimmed off the donation.

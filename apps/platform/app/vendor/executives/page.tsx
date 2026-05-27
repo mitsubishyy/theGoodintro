@@ -6,7 +6,7 @@ import { getVendor } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
 
 export const metadata: Metadata = {
-  title: "Executives — theGoodintro",
+  title: "Executives — TheGoodIntro",
   robots: { index: false, follow: false },
 };
 

@@ -116,3 +116,120 @@ export function charitySharePercent(meetingsHeld: number): number {
     (cumulativeCharityCents(meetingsHeld) / totalFeesCents(meetingsHeld)) * 100,
   );
 }
+
+/* ────────────────────────────────────────────────────────────────────────
+   Period / reporting figures (CALCULATIONS.md section 2). All pure, integer
+   cents, guarded. The platform's DB-backed reporting layer filters frozen gift
+   / purchase / expense rows, then calls these to add them up, so there is one
+   place the maths lives. See packages/pricing/src/reporting.ts for the
+   record-level aggregators that consume these.
+   ──────────────────────────────────────────────────────────────────────── */
+
+function assertNonNegInt(v: number, name: string): void {
+  if (!Number.isInteger(v) || v < 0) {
+    throw new RangeError(`${name} must be a non-negative integer, got ${v}`);
+  }
+}
+
+/** GST is 10% of the ex-GST fee: $150 / 15,000 cents per meeting (CALCULATIONS 0.1, 2.12). */
+export const GST_AUD = 150;
+export const GST_CENTS = 15_000;
+
+/** GST collected (cents) on credits sold (CALCULATIONS 2.12). Never revenue; held for the ATO. */
+export function gstCentsForCredits(credits: number): number {
+  assertNonNegInt(credits, "credits");
+  return credits * GST_CENTS;
+}
+
+/** Keep / admin share (cents) for the Nth held meeting in a cycle (= fee - charity). */
+export function keepCentsForMeetingNumber(n: number): number {
+  return adminFeeCents(charityShareCentsForMeetingNumber(n));
+}
+
+/**
+ * Cumulative keep (net revenue excl charity, ex-GST) for `meetingsHeld` held in
+ * one cycle (CALCULATIONS 2.14: C = sum of keep(n) = gross - charity).
+ */
+export function cumulativeKeepCents(meetingsHeld: number): number {
+  assertNonNegInt(meetingsHeld, "meetingsHeld");
+  let total = 0;
+  for (let n = 1; n <= meetingsHeld; n++) total += keepCentsForMeetingNumber(n);
+  return total;
+}
+
+/**
+ * Cumulative charity (cents) across multiple cycles, where the band count RESETS
+ * at each cycle boundary (CALCULATIONS 2.11, invariant 5). `meetingsPerCycle[i]`
+ * is the meetings held in cycle i. Proves the intended difference: 16 meetings in
+ * one cycle donate $16,200, but split as [10, 6] donate only $15,000.
+ */
+export function cumulativeCharityCentsAcrossCycles(meetingsPerCycle: readonly number[]): number {
+  return meetingsPerCycle.reduce((sum, m) => sum + cumulativeCharityCents(m), 0);
+}
+
+/**
+ * Deferred revenue (cents): prepaid-but-unused credits valued at the ex-GST fee
+ * (CALCULATIONS 2.15). Throws if more meetings were held than credits purchased,
+ * which enforces invariant 6 (CreditsRemaining is never negative) at this layer
+ * rather than silently clamping it.
+ */
+export function deferredRevenueCents(creditsPurchased: number, meetingsHeld: number): number {
+  assertNonNegInt(creditsPurchased, "creditsPurchased");
+  assertNonNegInt(meetingsHeld, "meetingsHeld");
+  const unused = creditsPurchased - meetingsHeld;
+  if (unused < 0) {
+    throw new RangeError(
+      `meetingsHeld (${meetingsHeld}) cannot exceed creditsPurchased (${creditsPurchased})`,
+    );
+  }
+  return unused * MEETING_FEE_CENTS;
+}
+
+/**
+ * Australian financial year bounds (1 Jul to 30 Jun) for a date, half-open
+ * [start, end) (CALCULATIONS 0.4). Use this for revenue / GST / donation period
+ * reporting. Do NOT use the calendar year (the current dashboards' bug) or the
+ * vendor band cycle for tax periods.
+ */
+export function financialYearBounds(d: Date): { start: Date; end: Date } {
+  const y = d.getUTCFullYear();
+  const julyThisYear = Date.UTC(y, 6, 1); // month index 6 = July
+  const startYear = d.getTime() >= julyThisYear ? y : y - 1;
+  return {
+    start: new Date(Date.UTC(startYear, 6, 1)),
+    end: new Date(Date.UTC(startYear + 1, 6, 1)),
+  };
+}
+
+/**
+ * The master identity (CALCULATIONS invariant 9): every ex-GST fee dollar splits
+ * into exactly donated + owed + retained + deferred, with nothing left over. If
+ * `balances` is false, a number upstream is wrong and must not be trusted.
+ */
+export interface FeeReconciliation {
+  feesCollectedCents: number;
+  donatedCents: number;
+  owedCents: number;
+  retainedCents: number;
+  deferredCents: number;
+  balances: boolean;
+}
+export function reconcileFees(args: {
+  creditsPurchased: number;
+  meetingsHeld: number;
+  donatedCents: number;
+  owedCents: number;
+  retainedCents: number;
+}): FeeReconciliation {
+  const feesCollectedCents = totalFeesCents(args.creditsPurchased);
+  const deferredCents = deferredRevenueCents(args.creditsPurchased, args.meetingsHeld);
+  const sum = args.donatedCents + args.owedCents + args.retainedCents + deferredCents;
+  return {
+    feesCollectedCents,
+    donatedCents: args.donatedCents,
+    owedCents: args.owedCents,
+    retainedCents: args.retainedCents,
+    deferredCents,
+    balances: sum === feesCollectedCents,
+  };
+}

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { MfaForm } from "./mfa-form";
 
 export const metadata: Metadata = {
-  title: "Two-factor — theGoodintro",
+  title: "Two-factor — TheGoodIntro",
   robots: { index: false, follow: false },
 };
 

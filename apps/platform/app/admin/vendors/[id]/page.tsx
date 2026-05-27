@@ -11,7 +11,7 @@ import {
 } from "../actions";
 
 export const metadata: Metadata = {
-  title: "Vendor — theGoodintro admin",
+  title: "Vendor — TheGoodIntro admin",
   robots: { index: false, follow: false },
 };
 

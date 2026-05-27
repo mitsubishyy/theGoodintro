@@ -60,8 +60,9 @@ describe("RLS tenant boundary", () => {
     // Isolation: Beta has no requests of its own.
     const { data: blairReqs } = await blair.from("request").select("id");
     expect(blairReqs ?? []).toEqual([]);
+    // Seed has three Alpha gifts after the exec-dashboard demo enrichment (0009).
     const { data: alexGifts } = await alex.from("gift_record").select("id");
-    expect(alexGifts?.length).toBe(1);
+    expect(alexGifts?.length).toBe(3);
     const { data: blairGifts } = await blair.from("gift_record").select("id");
     expect(blairGifts?.length).toBe(0);
   });
@@ -105,8 +106,9 @@ describe("staff (admin) full access — the admin shell data path", () => {
   it("staff can read the staff table and all gifts", async () => {
     const { data: staff } = await admin.from("staff").select("id");
     expect((staff ?? []).length).toBeGreaterThanOrEqual(1);
+    // Three Alpha gifts in the seed after the exec-dashboard demo enrichment (0009).
     const { data: gifts } = await admin.from("gift_record").select("id");
-    expect(gifts?.length).toBe(1);
+    expect(gifts?.length).toBe(3);
   });
 
   it("staff can insert and delete (write path), then cleans up", async () => {

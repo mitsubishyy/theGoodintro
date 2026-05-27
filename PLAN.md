@@ -27,7 +27,7 @@ Success signal: booked calls from credible executives and willing vendors.
 | Lead audience | Homepage speaks to executives first, with a clear secondary path for vendors. |
 | Conversion | Homepage commits to the executive; the vendor is routed to a first-class /vendors page. Both sides book a call via Calendly. |
 | Credibility | Founding-member framing. Invite-only first cohort. No invented stats or fake testimonials. |
-| Disclosure | Full transparency: $1,000 per meeting to charity, a separate clearly named admin fee, Australia-first. |
+| Disclosure | Full transparency: $900 to $1,200 per meeting to charity (rising with annual volume; see the pricing page), a separate clearly named admin fee, Australia-first. |
 
 Visual identity, voice and language rules: open. To be redecided as part of the
 design reset.
@@ -125,9 +125,11 @@ pending a custom-domain sender) lands when it resumes. Decisions made:
    sitemap: `/pricing` (`--cream-8`), `/charities` (`--cream-9`), `/impact`
    (`--cream-10`). Nav adds Pricing only; Charities and Impact are footer plus
    contextual links to keep the nav lean for a conservative audience.
-4. **Pricing disclosure.** Executives free. Vendors pay the $1,000 gift
-   (100% to charity) plus a separate, clearly named platform fee. The annual
-   membership figure is deliberately not published while in validation; the
+4. **Pricing disclosure.** Executives free. Vendors pay $1,500 per meeting, of
+   which $900 to $1,200 is the gift to the executive's chosen charity (rising by
+   band, per the pricing page); the remainder is a separate, clearly named
+   platform fee. The annual membership figure is deliberately not published
+   while in validation; the
    site shows only "+ platform fee" and quotes it on the call.
 5. **Impact dashboard, honestly.** Built at `/impact` as an explicitly
    labelled sample preview, with a truthful "live total is $0" status. It is

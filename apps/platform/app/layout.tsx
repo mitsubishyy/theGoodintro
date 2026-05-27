@@ -21,7 +21,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "theGoodintro — Platform",
+  title: "TheGoodIntro — Platform",
   // The internal cockpit is never indexed.
   robots: { index: false, follow: false },
 };

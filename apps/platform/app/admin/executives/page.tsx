@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
 
 export const metadata: Metadata = {
-  title: "Executives — theGoodintro admin",
+  title: "Executives — TheGoodIntro admin",
   robots: { index: false, follow: false },
 };
 

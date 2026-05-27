@@ -7,7 +7,7 @@ import { getFlag } from "@/lib/flags";
 import { RequestForm } from "./request-form";
 
 export const metadata: Metadata = {
-  title: "Request a meeting — theGoodintro",
+  title: "Request a meeting — TheGoodIntro",
   robots: { index: false, follow: false },
 };
 

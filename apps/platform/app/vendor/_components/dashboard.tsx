@@ -1,6 +1,7 @@
 /* Vendor dashboard — ported component-for-component from the committed mockup
    (app/vendor/page.tsx). Presentational; live data via props. */
 import Link from "next/link";
+import { MEETING_FEE_AUD } from "@thegoodintro/pricing";
 import { Icon } from "./icons";
 import { signOutAction } from "@/app/login/actions";
 
@@ -165,7 +166,7 @@ export function VendorDashboard(props: {
                     <div className="h-2.5 rounded-full overflow-hidden" style={{ background: "var(--portal-amber-soft)" }}>
                       <div className="h-full rounded-full" style={{ width: `${credits.progressPercent}%`, background: "var(--portal-amber)" }} />
                     </div>
-                    <div className="text-[11.5px] mt-2" style={{ color: "var(--cream-9)" }}>1 credit = 1 meeting = $1,500 AUD. The charity share rises as you meet more.</div>
+                    <div className="text-[11.5px] mt-2" style={{ color: "var(--cream-9)" }}>{`1 credit = 1 meeting = $${MEETING_FEE_AUD.toLocaleString()} AUD. The charity share rises as you meet more.`}</div>
                   </div>
                 </div>
               </Widget>

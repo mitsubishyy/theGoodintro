@@ -3,6 +3,12 @@
 This file is loaded by Claude Code on every session. Keep it tight. Update it
 when conventions change.
 
+> **READ FIRST — [`FACTS.md`](FACTS.md) is the canonical house facts.** Brand is
+> **TheGoodIntro** (capital T, G, I) in all copy/UI, never lowercase, even though
+> the repo's legacy paths use "theGoodintro." Pricing/charity figures come ONLY
+> from [`app/pricing/page.tsx`](apps/web/app/pricing/page.tsx) / [`CALCULATIONS.md`](CALCULATIONS.md),
+> never from memory or older docs. FACTS.md wins over any conflicting text.
+
 > **Monorepo:** `apps/web` = the marketing site (the design rules in THIS file are
 > for it: Employment Hero look, emerald-only, no gold). `apps/platform` = the
 > internal platform (admin/vendor/exec). **When building or editing the platform,
@@ -48,9 +54,19 @@ that time comes, read the relevant brief first:
 - **Vendor portal** (paying SaaS vendors): [`VENDOR_PORTAL_BRIEF.md`](VENDOR_PORTAL_BRIEF.md)
 - **Executive portal** (senior leaders + EAs, email-first): [`EXECUTIVE_PORTAL_BRIEF.md`](EXECUTIVE_PORTAL_BRIEF.md)
 
-**Start here for the first build:** [`MVP_SCOPE.md`](MVP_SCOPE.md) carves the
-bare-bones v1 (accept money, book meetings, onboard executives) out of the three
-briefs and lists what is explicitly deferred. Read it before scoping any build.
+**START HERE to build the platform:** [`V2_BUILD_PLAN.md`](V2_BUILD_PLAN.md) is the
+master entry point. It consolidates a full audit of the v1 build, the exact gap
+list (maths, state machine, reports), the schema migrations, the prioritized build
+sequence, and the verification gates. It says what is already done and verified
+(do not redo) and what to build next. Read it before touching the platform.
+
+[`MVP_SCOPE.md`](MVP_SCOPE.md) carves the bare-bones v1 (accept money, book
+meetings, onboard executives) out of the three briefs and lists what is deferred.
+
+**Portal layout/visual source of truth:** [`PORTAL_LAYOUT_BLUEPRINT.md`](PORTAL_LAYOUT_BLUEPRINT.md)
+locks how every portal screen is laid out (HR Partner density on `--portal-*`
+tokens, one template per screen, every module specified). The briefs own workflows;
+the blueprint owns layout and wins on any visual conflict.
 
 They build on [`PLATFORM_WORKFLOWS.md`](PLATFORM_WORKFLOWS.md) (workflows) and
 [`POSITIONING.md`](POSITIONING.md) (rules), and fold in two competitor UX

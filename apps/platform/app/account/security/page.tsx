@@ -4,7 +4,7 @@ import { getStaff } from "@/lib/auth";
 import { EnrollTotp } from "./enroll";
 
 export const metadata: Metadata = {
-  title: "Security — theGoodintro",
+  title: "Security — TheGoodIntro",
   robots: { index: false, follow: false },
 };
 

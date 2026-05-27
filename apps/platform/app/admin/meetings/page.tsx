@@ -4,7 +4,7 @@ import { formatDate } from "@/lib/format";
 import { confirmMeetingAction, markHeldAction, releaseMeetingAction } from "./actions";
 
 export const metadata: Metadata = {
-  title: "Meetings — theGoodintro admin",
+  title: "Meetings — TheGoodIntro admin",
   robots: { index: false, follow: false },
 };
 

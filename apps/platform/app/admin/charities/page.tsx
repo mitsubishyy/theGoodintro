@@ -4,7 +4,7 @@ import { getFlag } from "@/lib/flags";
 import { CharityForm } from "./charity-form";
 
 export const metadata: Metadata = {
-  title: "Charities — theGoodintro admin",
+  title: "Charities — TheGoodIntro admin",
   robots: { index: false, follow: false },
 };
 

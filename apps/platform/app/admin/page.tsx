@@ -12,7 +12,7 @@ import {
 } from "./_components/widgets";
 
 export const metadata: Metadata = {
-  title: "Dashboard — theGoodintro admin",
+  title: "Dashboard — TheGoodIntro admin",
   robots: { index: false, follow: false },
 };
 

@@ -13,7 +13,7 @@ import {
 } from "./_components/dashboard";
 
 export const metadata: Metadata = {
-  title: "Your account — theGoodintro",
+  title: "Your account — TheGoodIntro",
   robots: { index: false, follow: false },
 };
 
@@ -58,7 +58,7 @@ export default async function VendorHome() {
     return (
       <main className="mx-auto max-w-2xl px-6 py-16" style={{ color: "var(--foreground)" }}>
         <p className="font-mono text-xs uppercase tracking-[0.18em]" style={{ color: "var(--portal-amber-ink)" }}>{vendor.name}</p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">Welcome to theGoodintro</h1>
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight">Welcome to TheGoodIntro</h1>
         <div className="mt-8 rounded-2xl border p-6" style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }}>
           <span className="rounded-full px-2 py-0.5 text-xs" style={{ background: "var(--portal-amber-soft)", color: "var(--portal-amber-ink)" }}>{vendor.status}</span>
           <h2 className="mt-3 text-lg font-semibold">{step.title}</h2>

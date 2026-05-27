@@ -4,7 +4,7 @@ import { getVendor } from "@/lib/auth";
 import { ApplicationForm } from "./application-form";
 
 export const metadata: Metadata = {
-  title: "Your application — theGoodintro",
+  title: "Your application — TheGoodIntro",
   robots: { index: false, follow: false },
 };
 

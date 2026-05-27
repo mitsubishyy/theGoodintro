@@ -175,3 +175,89 @@ values
    '{"sub":"00000000-0000-0000-0000-00000000a005","email":"freebie@gmail.com","email_verified":true,"phone_verified":false}',
    'email', now(), now(), now())
 on conflict do nothing;
+
+-- ─────────────────────────────────────────────────────────────────────────
+-- Exec dashboard demo enrichment (0009). Synthetic, staging-only. Populates the
+-- executive dashboard's widgets for Jordan Smith (ec01): a richer DGR-charity
+-- picker, incoming (submitted) requests, and several held meetings + gifts
+-- across two vendors. Money matches CALCULATIONS.md (band 1 = $900 / $600).
+-- ─────────────────────────────────────────────────────────────────────────
+
+-- More DGR-endorsed charities (real AU orgs / real ABNs) so the picker + search
+-- have substance.
+insert into public.charity (id, name, abn, dgr_status) values
+  ('00000000-0000-0000-0000-00000000c1a3','Royal Flying Doctor Service','74438059643','endorsed'),
+  ('00000000-0000-0000-0000-00000000c1a4','The Smith Family','28000030179','endorsed'),
+  ('00000000-0000-0000-0000-00000000c1a5','Black Dog Institute','12115954197','endorsed'),
+  ('00000000-0000-0000-0000-00000000c1a6','Cancer Council Australia','91130793725','endorsed')
+on conflict (id) do nothing;
+
+-- Two incoming (submitted) requests to Jordan Smith — the "Incoming" column.
+insert into public.request
+  (id, vendor_id, requested_by_user_id, executive_id, q1_what, q2_why, meeting_minutes, status)
+values
+  ('00000000-0000-0000-0000-000000005201','00000000-0000-0000-0000-00000000ad01',
+   '00000000-0000-0000-0000-00000000a5a1','00000000-0000-0000-0000-00000000ec01',
+   'Budget pacing tools for finance leaders moving from product to platform.',
+   'Your payments modernisation work is the exact phase where pacing tends to break; two of your peers suggested it would be worth 45 minutes.',
+   45,'submitted'),
+  ('00000000-0000-0000-0000-000000005203','00000000-0000-0000-0000-00000000ad01',
+   '00000000-0000-0000-0000-00000000a5a1','00000000-0000-0000-0000-00000000ec01',
+   'Design operations for finance and legal teams at scale.',
+   'The brand-and-ops lessons from our IPO prep map closely to what your team is navigating now.',
+   45,'submitted')
+on conflict (id) do nothing;
+
+-- Alpha: two more accepted requests -> held meetings -> gifts (band 1), plus one
+-- confirmed upcoming meeting. Alpha already had 1 held; cycle becomes 3 held.
+insert into public.request
+  (id, vendor_id, requested_by_user_id, executive_id, q1_what, q2_why, meeting_minutes, status)
+values
+  ('00000000-0000-0000-0000-0000000004a2','00000000-0000-0000-0000-00000000ad01',
+   '00000000-0000-0000-0000-00000000a5a1','00000000-0000-0000-0000-00000000ec01',
+   'Treasury reporting automation walkthrough.',
+   'Following our last conversation on reconciliation time.',45,'accepted'),
+  ('00000000-0000-0000-0000-0000000004a3','00000000-0000-0000-0000-00000000ad01',
+   '00000000-0000-0000-0000-00000000a5a1','00000000-0000-0000-0000-00000000ec01',
+   'Cash-flow forecasting for treasury teams.',
+   'You mentioned weekly pacing was a goal.',45,'accepted'),
+  ('00000000-0000-0000-0000-0000000004a4','00000000-0000-0000-0000-00000000ad01',
+   '00000000-0000-0000-0000-00000000a5a1','00000000-0000-0000-0000-00000000ec01',
+   'Quarterly close acceleration.',
+   'A short follow-up to the treasury automation thread.',45,'accepted')
+on conflict (id) do nothing;
+
+insert into public.meeting
+  (id, request_id, charity_id, scheduled_at, credit_lot_id, status, outcome_source)
+values
+  ('00000000-0000-0000-0000-0000000013a2','00000000-0000-0000-0000-0000000004a2',
+   '00000000-0000-0000-0000-00000000c1a2', now() - interval '21 days',
+   '00000000-0000-0000-0000-0000000010a1','held','zoom_teams_api'),
+  ('00000000-0000-0000-0000-0000000013a3','00000000-0000-0000-0000-0000000004a3',
+   '00000000-0000-0000-0000-00000000c1a1', now() - interval '42 days',
+   '00000000-0000-0000-0000-0000000010a1','held','vendor_reported'),
+  ('00000000-0000-0000-0000-0000000013a4','00000000-0000-0000-0000-0000000004a4',
+   '00000000-0000-0000-0000-00000000c1a1', now() + interval '5 days',
+   '00000000-0000-0000-0000-0000000010a1','confirmed', null)
+on conflict (id) do nothing;
+
+insert into public.gift_record
+  (id, meeting_id, charity_id, band_at_completion, charity_amount_cents, admin_fee_cents, status, created_at)
+values
+  ('00000000-0000-0000-0000-0000000061a2','00000000-0000-0000-0000-0000000013a2',
+   '00000000-0000-0000-0000-00000000c1a2','band_1', 90000, 60000, 'paid', now() - interval '21 days'),
+  ('00000000-0000-0000-0000-0000000061a3','00000000-0000-0000-0000-0000000013a3',
+   '00000000-0000-0000-0000-00000000c1a1','band_1', 90000, 60000, 'released', now() - interval '42 days')
+on conflict (id) do nothing;
+
+-- Alpha cycle now reflects 3 held; credit lot: 5 bought, 3 held + 1 confirmed reserved => 1 left.
+update public.cycle set held_meetings_count = 3
+  where id = '00000000-0000-0000-0000-00000000c9a1';
+update public.credit_lot set quantity_remaining = 1
+  where id = '00000000-0000-0000-0000-0000000010a1';
+
+-- NOTE: Beta (bd01) is deliberately left pristine — no requests, credits, or
+-- gifts. The money-path + RLS tests use Beta as the "fresh / no-credit" vendor
+-- (tests/meetings.test.ts, tests/rls.test.ts), so demo data must not touch it.
+-- The exec's second vendor in the impact list would come from a future seed that
+-- also provisions a third vendor; for now all enrichment stays under Alpha.

@@ -1,14 +1,14 @@
-// "How it works for vendors" 5-step flow.
-// Ported from the Claude Design handoff (Vendors Flow Section.html, Variant B,
-// number-above-card layout). Styles live in globals.css under `.vflow-*`.
+import type { ReactNode } from "react";
+
+// 5-step flow used on /vendors ("How it works for vendors") and /how-it-works
+// ("The model"). Ported from the Claude Design handoff (Vendors Flow Section.html,
+// Variant B, number-above-card layout). Styles live in globals.css under `.vflow-*`.
 // Each step: mono number → square white tile with a single icon → copy below.
 // Emerald arrows sit in the gaps; step 05 is the emerald "destination" card.
+// The artwork is shared; eyebrow / title / lede / step copy are passed in.
 
-const STEPS = [
-  {
-    n: "01",
-    copy: "You state the specific initiative.",
-    art: (
+const STEP_ART: ReactNode[] = [
+  (
       <svg viewBox="0 0 160 132" fill="none">
         {/* doc, head-on */}
         <rect x="40" y="32" width="68" height="84" rx="4" fill="var(--tan-1)" />
@@ -21,12 +21,8 @@ const STEPS = [
         <circle cx="116" cy="50" r="2.2" fill="var(--tan-1)" />
         <circle cx="116" cy="50" r="2.2" className="ic-stroke" strokeWidth="1.1" />
       </svg>
-    ),
-  },
-  {
-    n: "02",
-    copy: "It is matched to a leader’s stated priorities.",
-    art: (
+  ),
+  (
       <svg viewBox="0 0 160 132" fill="none">
         {/* left card */}
         <rect x="18" y="40" width="50" height="56" rx="4" fill="var(--tan-1)" />
@@ -42,12 +38,8 @@ const STEPS = [
         <circle cx="80" cy="68" r="5" className="ic-stroke" strokeWidth="1.1" />
         <circle cx="80" cy="68" r="1.6" fill="var(--tan-1)" />
       </svg>
-    ),
-  },
-  {
-    n: "03",
-    copy: "The leader sees the reason and decides.",
-    art: (
+  ),
+  (
       <svg viewBox="0 0 160 132" fill="none">
         {/* envelope body */}
         <rect x="32" y="40" width="84" height="60" rx="4" fill="var(--tan-1)" />
@@ -59,12 +51,8 @@ const STEPS = [
         <circle cx="124" cy="36" r="13" className="ic-stroke" strokeWidth="1.1" />
         <path d="M118 37 L122.5 41.5 L130 33" className="ic-stroke-cream" strokeWidth="2.2" />
       </svg>
-    ),
-  },
-  {
-    n: "04",
-    copy: "The meeting happens. One focused conversation.",
-    art: (
+  ),
+  (
       <svg viewBox="0 0 160 132" fill="none">
         {/* calendar */}
         <rect x="38" y="32" width="84" height="86" rx="6" fill="var(--tan-1)" />
@@ -82,13 +70,8 @@ const STEPS = [
         <rect x="76" y="78" width="14" height="12" rx="2" fill="var(--em)" />
         <rect x="76" y="78" width="14" height="12" rx="2" className="ic-stroke" strokeWidth="1.1" />
       </svg>
-    ),
-  },
-  {
-    n: "05",
-    dest: true,
-    copy: "A gift goes to the leader’s chosen charity.",
-    art: (
+  ),
+  (
       <svg viewBox="0 0 160 132" fill="none">
         {/* heart above box */}
         <path d="M80 32 C 75 24, 65 24, 65 32 C 65 40, 75 47, 80 50 C 85 47, 95 40, 95 32 C 95 24, 85 24, 80 32 Z" fill="var(--tan-1)" />
@@ -102,49 +85,74 @@ const STEPS = [
         <ellipse cx="86" cy="58" rx="6" ry="4" transform="rotate(22 86 58)" className="ic-stroke-cream" />
         <circle cx="80" cy="58" r="2.4" fill="var(--tan-1)" />
       </svg>
-    ),
-  },
+  ),
 ];
 
-export function VendorsFlow() {
+const VENDOR_COPY = [
+  "You state the specific initiative.",
+  "It is matched to a leader’s stated priorities.",
+  "The leader sees the reason and decides.",
+  "The meeting happens. One focused conversation.",
+  "A gift goes to the leader’s chosen charity.",
+];
+
+type VendorsFlowProps = {
+  id?: string;
+  eyebrow?: string;
+  title?: ReactNode;
+  lede?: string;
+  /** Five strings, one per step. Defaults to the vendor-voiced copy. */
+  steps?: string[];
+};
+
+export function VendorsFlow({
+  id = "how-vendors",
+  eyebrow = "How it works for vendors",
+  title = (
+    <>
+      From stated initiative to a{" "}
+      <span className="serif-italic">funded conversation</span>.
+    </>
+  ),
+  lede = "Five steps. Nothing speculative, no surprises. The leader sees the same words you wrote.",
+  steps = VENDOR_COPY,
+}: VendorsFlowProps = {}) {
   return (
     <section
       className="vflow-section border-y"
-      id="how-vendors"
+      id={id}
       aria-labelledby="vflow-title"
       style={{ borderColor: "var(--border)" }}
     >
       <header className="vflow-head">
         <span className="vflow-eyebrow">
           <span className="dot" aria-hidden="true" />
-          How it works for vendors
+          {eyebrow}
         </span>
-        <h2 id="vflow-title">
-          From stated initiative to a{" "}
-          <span className="serif-italic">funded conversation</span>.
-        </h2>
-        <p>
-          Five steps. Nothing speculative, no surprises. The leader sees the
-          same words you wrote.
-        </p>
+        <h2 id="vflow-title">{title}</h2>
+        <p>{lede}</p>
       </header>
 
       <div className="vflow">
         <ol className="vflow-cards">
-          {STEPS.map((s) => (
-            <li
-              key={s.n}
-              className={"vflow-card" + (s.dest ? " vflow-card--dest" : "")}
-            >
-              <span className="vflow-num">{s.n}</span>
-              <div className="vflow-card-inner">
-                <div className="vflow-art" aria-hidden="true">
-                  {s.art}
+          {STEP_ART.map((art, i) => {
+            const n = String(i + 1).padStart(2, "0");
+            const dest = i === STEP_ART.length - 1;
+            return (
+              <li
+                key={n}
+                className={"vflow-card" + (dest ? " vflow-card--dest" : "")}
+              >
+                <span className="vflow-num">{n}</span>
+                <div className="vflow-card-inner">
+                  <div className="vflow-art" aria-hidden="true">
+                    {art}
+                  </div>
                 </div>
-              </div>
-              <p className="vflow-copy">{s.copy}</p>
-            </li>
-          ))}
+                <p className="vflow-copy">{steps[i]}</p>
+              </li>
+            );
+          })}
         </ol>
       </div>
     </section>

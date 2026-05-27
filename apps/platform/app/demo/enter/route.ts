@@ -34,13 +34,17 @@ export async function GET(req: NextRequest) {
     },
   );
 
+  const email = role === "vendor" ? process.env.DEMO_VENDOR_EMAIL : process.env.DEMO_ADMIN_EMAIL;
+  const password = process.env.DEMO_PASSWORD;
+
+  // Sign in as the requested role's account unless we already are it. This both
+  // logs in a fresh visitor and SWITCHES accounts when the visitor moves between
+  // portals (admin <-> vendor), so they never land on an account that isn't set
+  // up for the section they're viewing.
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    const email = role === "vendor" ? process.env.DEMO_VENDOR_EMAIL : process.env.DEMO_ADMIN_EMAIL;
-    const password = process.env.DEMO_PASSWORD;
-    if (email && password) {
-      await supabase.auth.signInWithPassword({ email, password });
-    }
+  const alreadyRight = user && email && user.email?.toLowerCase() === email.toLowerCase();
+  if (!alreadyRight && email && password) {
+    await supabase.auth.signInWithPassword({ email, password });
   }
   return res;
 }

@@ -6,7 +6,7 @@ import { ExecutiveForm } from "../executive-form";
 import { createExecutiveAction } from "../actions";
 
 export const metadata: Metadata = {
-  title: "New executive — theGoodintro admin",
+  title: "New executive — TheGoodIntro admin",
   robots: { index: false, follow: false },
 };
 

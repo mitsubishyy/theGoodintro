@@ -5,7 +5,7 @@ import { formatAud } from "@/lib/format";
 import { ConfirmForm } from "./confirm-form";
 
 export const metadata: Metadata = {
-  title: "An introduction worth your time — theGoodintro",
+  title: "An introduction worth your time — TheGoodIntro",
   robots: { index: false, follow: false },
 };
 

@@ -26,7 +26,7 @@ export function ApplicationForm() {
   return (
     <form action={formAction} className="flex flex-col gap-5">
       <Q label="Who are you, and what do you do?" name="who_we_are" />
-      <Q label="Why are you relevant to the leaders on theGoodintro?" name="why_relevant" />
+      <Q label="Why are you relevant to the leaders on TheGoodIntro?" name="why_relevant" />
       <Q label="What are you hoping to achieve?" name="goals" />
 
       {state.error ? (

@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/format";
 
 export const metadata: Metadata = {
-  title: "Vendors — theGoodintro admin",
+  title: "Vendors — TheGoodIntro admin",
   robots: { index: false, follow: false },
 };
 

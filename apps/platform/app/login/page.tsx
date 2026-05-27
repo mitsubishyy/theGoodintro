@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = {
-  title: "Sign in — theGoodintro",
+  title: "Sign in — TheGoodIntro",
   robots: { index: false, follow: false },
 };
 
@@ -23,7 +23,7 @@ export default async function LoginPage({
         style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }}
       >
         <p className="font-mono text-xs uppercase tracking-[0.18em]" style={{ color: "var(--portal-amber-ink)" }}>
-          theGoodintro
+          TheGoodIntro
         </p>
         <h1 className="mt-1 mb-6 text-xl font-semibold tracking-tight">
           Sign in to the platform

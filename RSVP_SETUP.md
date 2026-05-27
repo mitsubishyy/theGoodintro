@@ -141,7 +141,7 @@ Tie the one tap to the giving, so the ease they feel accepting is the ease
 they expect from donating. A short line just under the buttons:
 
 > One tap is all it takes, and that's the whole idea. Accepting is exactly as
-> easy as the giving will be: every meeting you take sends **$1,000** to a
+> easy as the giving will be: every meeting you take sends **a real gift** to a
 > charity you choose.
 
 The "Yes" landing page repeats this beat ("Notice how easy that was? Giving is

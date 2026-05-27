@@ -4,7 +4,7 @@ import { formatAud, formatDate } from "@/lib/format";
 import { markGiftPaidAction } from "./actions";
 
 export const metadata: Metadata = {
-  title: "Giving — theGoodintro admin",
+  title: "Giving — TheGoodIntro admin",
   robots: { index: false, follow: false },
 };
 

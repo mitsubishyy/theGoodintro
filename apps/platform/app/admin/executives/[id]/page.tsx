@@ -8,7 +8,7 @@ import { EaSection } from "../ea-section";
 import { updateExecutiveAction, setExecutiveStatusAction } from "../actions";
 
 export const metadata: Metadata = {
-  title: "Executive — theGoodintro admin",
+  title: "Executive — TheGoodIntro admin",
   robots: { index: false, follow: false },
 };
 

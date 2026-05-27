@@ -69,7 +69,7 @@ The illustration style is defined in [app/_components/illustrations.tsx](../../a
 
 | Page | Concept | Notes |
 |---|---|---|
-| `/giving` | A donation moment. Hands releasing a coin into a marked envelope, or a stylised charity tile with the $1,000 mark. Emerald and tan dominant. | The page already has a "kinds of causes" grid further down; the illustration should set up the "real giving" claim, not duplicate the icon grid. |
+| `/giving` | A donation moment. Hands releasing a coin into a marked envelope, or a stylised charity tile with the charity-gift mark. Emerald and tan dominant. | The page already has a "kinds of causes" grid further down; the illustration should set up the "real giving" claim, not duplicate the icon grid. |
 | `/impact` | A milestone or proof composition. Stacked badges, a ledger entry, or a chart. Reads as evidence, not aspiration. | Sober and quiet. This is the page where a sceptical CFO checks our claims. |
 | `/pricing` | **Intentionally left text-only.** The current centred pricing hero is a deliberate design choice and should not be touched. | Skip. |
 | `/faq` | A question mark composed from a coin and an envelope, or a stack of small cards with a single highlighted one. | Lowest priority of the three. |
