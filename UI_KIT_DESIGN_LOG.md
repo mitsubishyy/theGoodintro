@@ -1,0 +1,60 @@
+# UI Kit Design Log (the bridge between Claude Design and the build)
+
+The locked visual decisions coming out of the Claude Design sessions for the
+`packages/ui` kit and the reference screens. It exists so the build chat ports the
+ACTUAL locked design, not just the original `UI_KIT_BRIEF.md`. The brief is the
+component API contract; THIS log is what changed/locked during visual iteration.
+
+**Port rule for the build chat:** when a screen is marked LOCKED here, port it from
+(a) this log, (b) `UI_KIT_BRIEF.md` for the component APIs, and (c) the Claude Design
+output Issy provides (screenshots + exported code). Do NOT port from the brief alone;
+the refinements below override it where they differ. Visuals iterate in Claude Design
+first, then port (the established workflow).
+
+## Global decisions (apply to every screen)
+
+- **Per-portal sidebar colour (evolves "emerald sidebar only").** Each portal is
+  identified by its sidebar colour; everything else (cream page, dark ribbon, amber
+  accent, all components) stays identical across portals.
+  - Admin = brand emerald `oklch(0.42 0.13 158)` (LOCKED).
+  - Vendor and Exec = their own deep, brand-safe tones, assigned when those dashboards
+    are designed (candidates: deep teal-pine, deep clay/bronze). TBD.
+  - FORBIDDEN for any portal: purple/violet (reads as the competitor MeetMagic), blue,
+    pink, bright yellow. When the vendor/exec tones are locked, update FACTS.md and
+    PORTAL_LAYOUT_BLUEPRINT.md (which currently say "emerald sidebar only").
+- **Wordmark:** `TheGoodIntro`, one word, with "Good" in the emerald highlight (per
+  FACTS.md). NOTE: the first dashboard render showed "The Good Intro" (three words);
+  the locked form is one word unless Issy explicitly chooses the spaced logo.
+- **Breathing room:** a touch more padding and line-height than strict HR-Partner
+  density; operational, not cramped, not marketing-airy. The top metrics ribbon is
+  laid out as **two rows of four** stats, never eight across.
+- **Distributions** render as a **horizontal-bar variant** (per row: label, value, a
+  small proportion bar), not mini donut charts.
+- **Every widget ships three states** (blueprint section 0): empty (considered copy +
+  an action, e.g. "All clear"), loading (real shimmer skeletons, no spinners), error
+  (inline "Could not load… other widgets unaffected" + Retry + last-refresh time).
+
+## Screens
+
+### Admin Dashboard — LOCKED (pending the wordmark call)
+Claude Design file: `claude.ai/design` "Admin Dashboard v2". Layout:
+- Top: dark `--portal-ribbon` band, 8 stats in two rows of four (scheduled this month,
+  booked ahead, completed MTD, active vendors / active executives, to charity, revenue
+  month, revenue year).
+- Row: **Booked Meetings** calendar (8-col, Calendar/List toggle) + **Pending
+  Requests** (4-col, status pills: Review/Match/Exec/Block).
+- Row: **Needs Action** (8-col, red dot = manual follow-up, "N open · M assigned to
+  you" footer) + **Distributions** (4-col, horizontal bars: meeting status, vendors by
+  tier, exec capacity, charities supported).
+- Row: **Unresponded Comms** / **Recent Onboards** / **Gifts Sent** (4-col each).
+- A "Component States" section demonstrates the empty / loading / error variants.
+- Note: the Gifts-Sent dollar figures in the mock are placeholder; real values come
+  from `@thegoodintro/pricing` + `lib/reporting.ts`, never hardcoded.
+
+### Admin Meetings list (T3) — designing next
+### Admin Vendor detail (T4) — to do
+### Admin New Executive form (T5) — to do
+### Vendor Get-started checklist (T6) — to do
+### Vendor dashboard + Exec dashboard — to do (these introduce the per-portal sidebar colours)
+
+Update this log as each screen is locked.
