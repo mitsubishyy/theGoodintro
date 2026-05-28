@@ -75,11 +75,16 @@ via `private.is_staff()`, exactly like `expense`. No vendor/exec read policy exi
   that creates a new tag or picks an existing one (scoped to that entity type), with
   the existing-tags / create-new dropdown. The header keeps only the structured chips
   (Tier, ID, derived indicators), never tags.
-- **Bulk ("at scale"):** in the admin **vendors list** and **executives list**,
-  select multiple rows (the T3 table multi-select) and apply or remove a tag across
-  all selected.
-- **Management:** a light tag-management view (Settings, or inline) to rename,
-  recolour, or delete a tag, per entity type.
+- **Tags management page (admin side navigation):** a dedicated **"Tags"** item in
+  the admin sidebar (under Configure). This is the full management surface, split into
+  **Vendor tags** and **Executive tags** (separate sets). Per tag: name, colour, and a
+  live count of records carrying it, with rename / recolour / delete; create a new tag
+  from here.
+- **Bulk tagging at scale (both directions):**
+  1. *Tag-centric* — from the Tags page, open a tag and bulk add/remove records via a
+     searchable multi-select of vendors (or executives), showing which already have it.
+  2. *Record-centric* — from the vendors or executives **list**, select multiple rows
+     (the T3 multi-select) and apply or remove a tag across all selected.
 - The vendor and executive **portals get no tag UI and no tag data at all.**
 
 ## Build sequence
