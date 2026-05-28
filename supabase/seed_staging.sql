@@ -103,11 +103,14 @@ update public.vendor set owner_user_id = '00000000-0000-0000-0000-00000000b5b1'
   where id = '00000000-0000-0000-0000-00000000bd01';
 
 -- Alpha has paid for 5 credits, one cycle, one held meeting + its gift record.
-insert into public.invoice (id, vendor_id, xero_invoice_id, kind, line_items, amount_cents, status) values
+insert into public.invoice
+  (id, vendor_id, xero_invoice_id, kind, line_items, amount_cents, status,
+   quantity, fee_ex_gst_cents, gst_cents, purchase_date) values
   ('00000000-0000-0000-0000-0000000019a1','00000000-0000-0000-0000-00000000ad01',
    'XERO-TEST-0001','credit_purchase',
    '[{"name":"Meeting credits x5","amount_cents":750000},{"name":"Admin fee","amount_cents":0}]',
-   750000,'paid')
+   750000,'paid',
+   5, 750000, 75000, now()::date)  -- 5 x $1,500 ex-GST; GST = 5 x $150 (PurchaseRow)
 on conflict (id) do nothing;
 
 insert into public.cycle (id, vendor_id, started_at, ends_at, held_meetings_count) values
@@ -140,10 +143,12 @@ on conflict (id) do nothing;
 
 -- Gift for the held meeting: 1st in the cycle => band 1, $900 charity / $600 admin.
 insert into public.gift_record
-  (id, meeting_id, charity_id, band_at_completion, charity_amount_cents, admin_fee_cents, status)
+  (id, meeting_id, charity_id, band_at_completion, charity_amount_cents, admin_fee_cents, status,
+   sat_date, cycle_number, position_n, schedule_version)
 values
   ('00000000-0000-0000-0000-00000000610a','00000000-0000-0000-0000-0000000013a1',
-   '00000000-0000-0000-0000-00000000c1a1','band_1', 90000, 60000, 'released')
+   '00000000-0000-0000-0000-00000000c1a1','band_1', 90000, 60000, 'released',
+   (now() - interval '2 days')::date, 1, 3, 'v1')  -- 3rd held in Alpha's cycle 1
 on conflict (id) do nothing;
 
 -- Pillar 3a sign-up test users (no vendor org yet): one work domain, one generic.
@@ -242,12 +247,15 @@ values
 on conflict (id) do nothing;
 
 insert into public.gift_record
-  (id, meeting_id, charity_id, band_at_completion, charity_amount_cents, admin_fee_cents, status, created_at)
+  (id, meeting_id, charity_id, band_at_completion, charity_amount_cents, admin_fee_cents, status, created_at,
+   sat_date, cycle_number, position_n, paid_date, schedule_version)
 values
   ('00000000-0000-0000-0000-0000000061a2','00000000-0000-0000-0000-0000000013a2',
-   '00000000-0000-0000-0000-00000000c1a2','band_1', 90000, 60000, 'paid', now() - interval '21 days'),
+   '00000000-0000-0000-0000-00000000c1a2','band_1', 90000, 60000, 'paid', now() - interval '21 days',
+   (now() - interval '21 days')::date, 1, 2, (now() - interval '20 days')::date, 'v1'),  -- 2nd held, paid
   ('00000000-0000-0000-0000-0000000061a3','00000000-0000-0000-0000-0000000013a3',
-   '00000000-0000-0000-0000-00000000c1a1','band_1', 90000, 60000, 'released', now() - interval '42 days')
+   '00000000-0000-0000-0000-00000000c1a1','band_1', 90000, 60000, 'released', now() - interval '42 days',
+   (now() - interval '42 days')::date, 1, 1, null, 'v1')  -- 1st held in Alpha's cycle 1
 on conflict (id) do nothing;
 
 -- Alpha cycle now reflects 3 held; credit lot: 5 bought, 3 held + 1 confirmed reserved => 1 left.

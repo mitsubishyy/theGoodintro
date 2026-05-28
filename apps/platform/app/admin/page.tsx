@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { formatAud, ageShort } from "@/lib/format";
+import { financialYearWindow, monthWindow, revenueForPeriod } from "@/lib/reporting";
 import {
   MetricsRibbon,
   CalendarWidget,
@@ -27,31 +28,34 @@ export default async function AdminDashboard() {
   const y = now.getUTCFullYear();
   const monthStart = new Date(Date.UTC(y, now.getUTCMonth(), 1)).toISOString();
   const monthEnd = new Date(Date.UTC(y, now.getUTCMonth() + 1, 1)).toISOString();
-  const yearStart = new Date(Date.UTC(y, 0, 1)).toISOString();
   const head = { count: "exact" as const, head: true };
+  const fyWindow = financialYearWindow(now);
+  const mtdWindow = monthWindow(now);
 
   const [
     scheduled, ahead, doneC, vendorsC, execsC,
-    giftsRes, monthMeetings, proposedMtgs, onboardExecs, releasedGifts, pendingReqs,
+    monthMeetings, proposedMtgs, onboardExecs, releasedGifts, pendingReqs,
+    fyRev, mtdRev,
   ] = await Promise.all([
     supabase.from("meeting").select("id", head).eq("status", "confirmed"),
     supabase.from("meeting").select("id", head).eq("status", "proposed"),
     supabase.from("meeting").select("id", head).eq("status", "held"),
     supabase.from("vendor").select("id", head),
     supabase.from("executive").select("id", head).eq("status", "active"),
-    supabase.from("gift_record").select("charity_amount_cents, admin_fee_cents, created_at"),
     supabase.from("meeting").select("scheduled_at").in("status", ["confirmed", "held"]).gte("scheduled_at", monthStart).lt("scheduled_at", monthEnd),
     supabase.from("meeting").select("created_at, request:request_id(vendor:vendor_id(name), executive:executive_id(title,company))").eq("status", "proposed").order("created_at", { ascending: true }).limit(6),
     supabase.from("executive").select("name, created_at").in("status", ["invited", "set_up"]).order("created_at", { ascending: true }).limit(6),
     supabase.from("gift_record").select("created_at, charity:charity_id(name)").eq("status", "released").order("created_at", { ascending: true }).limit(6),
     supabase.from("request").select("created_at, vendor:vendor_id(name), executive:executive_id(title,company)").eq("status", "submitted").order("created_at", { ascending: true }).limit(8),
+    // Money goes through the reporting layer (FY, filtered on sat_date) so the
+    // dashboard, reports, and CSV never drift. Never recompute money in a page.
+    revenueForPeriod(supabase, fyWindow),
+    revenueForPeriod(supabase, mtdWindow),
   ]);
 
-  const gifts = (giftsRes.data ?? []) as { charity_amount_cents: number; admin_fee_cents: number; created_at: string }[];
-  const inYear = gifts.filter((g) => g.created_at >= yearStart);
-  const toCharity = inYear.reduce((s, g) => s + g.charity_amount_cents, 0);
-  const revenueYtd = inYear.reduce((s, g) => s + g.admin_fee_cents, 0);
-  const revenueMtd = gifts.filter((g) => g.created_at >= monthStart).reduce((s, g) => s + g.admin_fee_cents, 0);
+  const toCharity = fyRev.charityCommittedCents;
+  const revenueYtd = fyRev.netCents;
+  const revenueMtd = mtdRev.netCents;
 
   const bookedDays = Array.from(
     new Set((monthMeetings.data ?? []).map((m) => new Date(m.scheduled_at as string).getUTCDate())),
