@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { charityShareCentsForMeetingNumber } from "@thegoodintro/pricing";
 import { formatAud } from "@/lib/format";
+import { execCharityForPeriod, financialYearWindow } from "@/lib/reporting";
 import type {
   Charity,
   MeetingRequest,
@@ -176,10 +177,16 @@ export async function loadExecDashboard(
       : Promise.resolve({ count: 0 } as { count: number }),
   ]);
 
-  const generatedAllTimeCents = donations.reduce((s, d) => s + d.amountCents, 0);
-  const yearStr = String(new Date().getFullYear());
-  const thisYear = donations.filter((d) => d.iso.startsWith(yearStr));
-  const thisYearCents = thisYear.reduce((s, d) => s + d.amountCents, 0);
+  // Money totals through the reporting layer (one source of truth): per-exec
+  // charity all-time and this financial year (on sat_date, not the calendar year).
+  const fy = financialYearWindow();
+  const [generatedAllTime, thisFy] = await Promise.all([
+    execCharityForPeriod(supabase, execId, {}), // all-time (open window)
+    execCharityForPeriod(supabase, execId, fy),
+  ]);
+  const generatedAllTimeCents = generatedAllTime.totalCents;
+  const thisYearCents = thisFy.totalCents;
+  const thisYearCount = donations.filter((d) => d.iso >= fy.from && d.iso < fy.to).length;
 
   const name = (execRow.name as string) ?? "there";
   return {
@@ -206,7 +213,7 @@ export async function loadExecDashboard(
       requestsToAction: incoming.length,
     },
     thisYearAmount: formatAud(thisYearCents),
-    thisYearCount: thisYear.length,
+    thisYearCount,
   };
 }
 

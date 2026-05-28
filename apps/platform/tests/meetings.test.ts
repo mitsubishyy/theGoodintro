@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, afterAll } from "vitest";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { confirmMeeting, markHeld, releaseMeeting } from "../lib/meetings";
 
@@ -66,9 +66,11 @@ describe("meeting money path", () => {
     const { data: lot2 } = await sb.from("credit_lot").select("quantity_remaining").eq("id", lot!.id).single();
     expect(lot2?.quantity_remaining).toBe(0);
 
-    // cleanup (request delete cascades meeting + gift)
+    // cleanup (request delete cascades meeting + gift). markHeld now resolves/opens
+    // a band cycle for Beta (DEC-4), so clear it too or it leaks into other suites.
     await sb.from("request").delete().eq("id", reqId);
     await sb.from("credit_lot").delete().eq("id", lot!.id);
+    await sb.from("cycle").delete().eq("vendor_id", BETA);
   });
 
   it("with no credit, confirm schedules at least 30 days out (overcommit)", async () => {
@@ -108,5 +110,12 @@ describe("meeting money path", () => {
 
     await sb.from("request").delete().eq("id", reqId);
     await sb.from("credit_lot").delete().eq("id", lot!.id);
+  });
+
+  // Defensive: ensure no Beta band cycle leaks out of this file even if a test
+  // fails before its own cleanup runs.
+  afterAll(async () => {
+    const sb = await admin();
+    await sb.from("cycle").delete().eq("vendor_id", BETA);
   });
 });

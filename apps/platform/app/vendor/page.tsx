@@ -5,6 +5,7 @@ import { getVendor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { formatAud, ageShort } from "@/lib/format";
 import { bandForMeetingNumber } from "@thegoodintro/pricing";
+import { vendorCharityForPeriod, financialYearWindow } from "@/lib/reporting";
 import {
   VendorDashboard,
   type ExecRow,
@@ -72,7 +73,6 @@ export default async function VendorHome() {
   }
 
   const now = new Date();
-  const yearStart = new Date(Date.UTC(now.getUTCFullYear(), 0, 1)).toISOString();
   const month = new Intl.DateTimeFormat("en-AU", { month: "long", year: "numeric", timeZone: "Australia/Sydney" }).format(now);
 
   const [lotsRes, meetingsRes, cycleRes, giftsRes, requestsRes, execsRes] = await Promise.all([
@@ -103,7 +103,9 @@ export default async function VendorHome() {
   }
 
   const gifts = giftsRes.data ?? [];
-  const toCharityCents = gifts.filter((g) => (g.created_at as string) >= yearStart).reduce((s, g) => s + (g.charity_amount_cents as number), 0);
+  // Money through the reporting layer (FY, on sat_date) so all three dashboards
+  // read one source and never drift. The gift list below is display only.
+  const toCharityCents = await vendorCharityForPeriod(supabase, vendor.id, financialYearWindow(now));
   const giftRows: GiftRow[] = gifts.map((g) => {
     const charity = one<{ name: string }>(g.charity);
     const mtg = one<{ request: unknown }>(g.meeting);
