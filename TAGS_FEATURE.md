@@ -70,16 +70,19 @@ via `private.is_staff()`, exactly like `expense`. No vendor/exec read policy exi
 - **Individual:** tags are NOT shown in the profile header. They live in a **"Tags"
   item in the record's left module rail** (the T4 rail, alongside Overview / Users &
   Seats / Requests / Meetings / Billing & Credits / Checklist / Notes), with a small
-  count badge. Selecting it shows the tag manager in the centre panel: the record's
-  current tags as removable amber-soft `Badge` chips, plus an "+ Add tag" control
-  that creates a new tag or picks an existing one (scoped to that entity type), with
-  the existing-tags / create-new dropdown. The header keeps only the structured chips
-  (Tier, ID, derived indicators), never tags.
+  count badge. Selecting it shows a **multi-select tag input** (the HR Partner
+  "Employee Tags" pattern): the record's current tags as removable amber-soft chips,
+  plus a typeahead/dropdown to add an existing tag or create a new one inline (scoped
+  to that entity type). The header keeps only the structured chips (Tier, ID, derived
+  indicators), never tags. (Note: HR Partner shows read-only tag chips in the profile
+  header; we deliberately do NOT, per Issy, tags live in the rail.)
 - **Tags management page (admin side navigation):** a dedicated **"Tags"** item in
-  the admin sidebar (under Configure). This is the full management surface, split into
-  **Vendor tags** and **Executive tags** (separate sets). Per tag: name, colour, and a
-  live count of records carrying it, with rename / recolour / delete; create a new tag
-  from here.
+  the admin sidebar (under Configure), split into **Vendor tags** and **Executive
+  tags** (separate sets). Follows the HR Partner Tags-list pattern: a simple list
+  where each row is the tag **name (click it to see the records carrying it)**, a
+  **member count**, an **edit** action (rename / recolour) and a **delete** action,
+  with a **"+ Add tag"** button. Clicking a tag name opens its member list, where you
+  bulk add/remove records (at scale).
 - **Bulk tagging at scale (both directions):**
   1. *Tag-centric* — from the Tags page, open a tag and bulk add/remove records via a
      searchable multi-select of vendors (or executives), showing which already have it.
