@@ -62,6 +62,9 @@ sequence, and the verification gates. It says what is already done and verified
 
 [`MVP_SCOPE.md`](MVP_SCOPE.md) carves the bare-bones v1 (accept money, book
 meetings, onboard executives) out of the three briefs and lists what is deferred.
+[`PRODUCTION_READINESS.md`](PRODUCTION_READINESS.md) is the run-in-production build
+plan and launch checklist (integrations, observability, security, CI), tracked as
+tickable tasks; clear it plus the SECURITY pre-launch checklist before go-live.
 
 **Portal layout/visual source of truth:** [`PORTAL_LAYOUT_BLUEPRINT.md`](PORTAL_LAYOUT_BLUEPRINT.md)
 locks how every portal screen is laid out (HR Partner density on `--portal-*`

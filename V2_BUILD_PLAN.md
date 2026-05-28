@@ -32,6 +32,7 @@ lists them), ask Issy a recommendation-first question; do not guess.
 | v1 scope cut | [`MVP_SCOPE.md`](MVP_SCOPE.md) |
 | Workflows per portal | the three `*_PORTAL_BRIEF.md` |
 | Change safety | [`CHANGE_SAFETY.md`](CHANGE_SAFETY.md) + `apps/platform/CLAUDE.md` |
+| Production readiness (run-in-prod build + launch checklist) | [`PRODUCTION_READINESS.md`](PRODUCTION_READINESS.md) |
 | Visual references | [`inspiration/hr-partner/`](inspiration/hr-partner/) |
 
 The HR Partner screenshots are the layout reference; the exec mockup at
@@ -242,8 +243,12 @@ Plus, once Supabase is connected:
 7. Email/notification sender (section 5).
 8. Portal module build to `PORTAL_LAYOUT_BLUEPRINT.md`, module by module, each
    passing the blueprint's acceptance checklist and the gates above.
-9. Final pass: all gates green, invariants tie out, Issy approves go-live behind a
-   feature flag off by default.
+9. Production readiness: work [`PRODUCTION_READINESS.md`](PRODUCTION_READINESS.md)
+   (integrations, observability, security, CI) in its phases alongside and after
+   the feature build. Its launch gate plus the SECURITY pre-launch checklist must
+   clear before go-live.
+10. Final pass: all gates green, invariants tie out, Issy approves go-live behind a
+    feature flag off by default.
 
 ## 10. Definition of done for v2
 
