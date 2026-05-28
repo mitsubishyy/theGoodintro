@@ -1,7 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { giftSplitForHeldMeeting } from "@thegoodintro/pricing";
+import { giftSplitForHeldMeeting, SCHEDULE_VERSION } from "@thegoodintro/pricing";
 import {
   canOverbook,
+  cycleEndsAt,
   earliestUncreditedSchedule,
   paymentDueAt,
 } from "@thegoodintro/pricing/ledger";
@@ -123,6 +124,90 @@ export async function confirmMeeting(
   return { ok: true, detail: creditLotId ? "reserved" : "overcommit" };
 }
 
+/** The vendor's cycle ordinal (1-based) for a cycle starting at `startedAtIso`. */
+async function cycleOrdinal(
+  supabase: SupabaseClient,
+  vendorId: string,
+  startedAtIso: string,
+): Promise<number> {
+  const { count } = await supabase
+    .from("cycle")
+    .select("id", { count: "exact", head: true })
+    .eq("vendor_id", vendorId)
+    .lte("started_at", startedAtIso);
+  return count ?? 1;
+}
+
+/**
+ * Resolve the band cycle that `now` falls in (DEC-4). The band tier runs on a
+ * rolling 12-month window anchored on the vendor's FIRST cycle (their first
+ * payment), independent of the access window (billing.ts re-purchase only extends
+ * access, never creates a band cycle). Lazy renewal: if no existing cycle's
+ * half-open `[started_at, ends_at)` contains `now`, a 12-month boundary was
+ * crossed, so we materialise the window that contains `now` by stepping forward
+ * from the anchor, with `held_meetings_count = 0` (the band resets to band 1).
+ */
+async function resolveBandCycle(
+  supabase: SupabaseClient,
+  vendorId: string,
+  now: Date,
+): Promise<{ id: string; heldBefore: number; cycleNumber: number }> {
+  const nowIso = now.toISOString();
+
+  // 1. An existing cycle whose window contains `now`.
+  const { data: containing } = await supabase
+    .from("cycle")
+    .select("id, started_at, held_meetings_count")
+    .eq("vendor_id", vendorId)
+    .lte("started_at", nowIso)
+    .gt("ends_at", nowIso)
+    .order("started_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (containing) {
+    return {
+      id: containing.id as string,
+      heldBefore: (containing.held_meetings_count as number) ?? 0,
+      cycleNumber: await cycleOrdinal(supabase, vendorId, containing.started_at as string),
+    };
+  }
+
+  // 2. Renewal (or no cycle yet): anchor on the first cycle and step 12-month
+  //    windows until one contains `now`. Anchor at `now` if there is no cycle.
+  const { data: first } = await supabase
+    .from("cycle")
+    .select("started_at")
+    .eq("vendor_id", vendorId)
+    .order("started_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  let start = first ? new Date(first.started_at as string) : new Date(now);
+  let end = cycleEndsAt(start);
+  let guard = 0;
+  while (end <= now && guard++ < 1000) {
+    start = end;
+    end = cycleEndsAt(start);
+  }
+
+  const { data: created } = await supabase
+    .from("cycle")
+    .insert({
+      vendor_id: vendorId,
+      started_at: start.toISOString(),
+      ends_at: end.toISOString(),
+      held_meetings_count: 0,
+    })
+    .select("id")
+    .single();
+
+  return {
+    id: created!.id as string,
+    heldBefore: 0,
+    cycleNumber: await cycleOrdinal(supabase, vendorId, start.toISOString()),
+  };
+}
+
 /** Meeting held: consume the credit, lock the gift split, advance the band. */
 export async function markHeld(
   supabase: SupabaseClient,
@@ -133,6 +218,8 @@ export async function markHeld(
   if (!ctx) return { ok: false, error: "not_found" };
   const { meeting, vendorId } = ctx;
 
+  const now = new Date();
+
   const { data: flipped } = await supabase
     .from("meeting")
     .update({ status: "held", outcome_source: source })
@@ -141,15 +228,11 @@ export async function markHeld(
     .select("id");
   if (!flipped?.length) return { ok: false, error: "bad_state" };
 
-  const { data: cycle } = await supabase
-    .from("cycle")
-    .select("id, held_meetings_count")
-    .eq("vendor_id", vendorId)
-    .order("started_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  const heldBefore = (cycle?.held_meetings_count as number) ?? 0;
+  // DEC-4: the band cycle containing `now` (renews lazily across a 12-month boundary).
+  const cycle = await resolveBandCycle(supabase, vendorId, now);
+  const heldBefore = cycle.heldBefore;
   const split = giftSplitForHeldMeeting(heldBefore);
+  const positionN = heldBefore + 1;
 
   // Consume the reserved credit.
   if (meeting.credit_lot_id) {
@@ -164,14 +247,14 @@ export async function markHeld(
       .eq("id", meeting.credit_lot_id);
   }
 
-  if (cycle) {
-    await supabase
-      .from("cycle")
-      .update({ held_meetings_count: heldBefore + 1 })
-      .eq("id", cycle.id);
-  }
+  await supabase
+    .from("cycle")
+    .update({ held_meetings_count: heldBefore + 1 })
+    .eq("id", cycle.id);
 
-  // One canonical gift record per held meeting (meeting_id is unique).
+  // One canonical gift record per held meeting (meeting_id is unique), with the
+  // DEC-3 snapshot columns: sat_date (held date), the cycle + position it sits in,
+  // and the band-schedule version frozen at completion.
   await supabase.from("gift_record").insert({
     meeting_id: meetingId,
     charity_id: meeting.charity_id,
@@ -179,6 +262,10 @@ export async function markHeld(
     charity_amount_cents: split.charityCents,
     admin_fee_cents: split.adminCents,
     status: "released",
+    sat_date: now.toISOString().slice(0, 10),
+    cycle_number: cycle.cycleNumber,
+    position_n: positionN,
+    schedule_version: SCHEDULE_VERSION,
   });
 
   await supabase.from("notification").insert([

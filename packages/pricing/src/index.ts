@@ -15,6 +15,14 @@ export type BandNumber = 1 | 2 | 3 | 4;
 /** Matches the DB enum `gift_band`. */
 export type GiftBandKey = "band_1" | "band_2" | "band_3" | "band_4";
 
+/**
+ * Version of the band schedule (CHARITY_BANDS) in force. Stamped onto every gift
+ * at "held" (the DATA_MODEL snapshot rule / DEC-3 gift_record.schedule_version),
+ * so a later rate change never rewrites a historical gift's basis. Bump when the
+ * bands change; old gifts keep the version they were frozen under.
+ */
+export const SCHEDULE_VERSION = "v1";
+
 export interface CharityBand {
   band: BandNumber;
   /** Inclusive lower bound: held-meeting count in the cycle where this band starts. */
