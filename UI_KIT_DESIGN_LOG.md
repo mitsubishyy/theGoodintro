@@ -51,7 +51,20 @@ Claude Design file: `claude.ai/design` "Admin Dashboard v2". Layout:
 - Note: the Gifts-Sent dollar figures in the mock are placeholder; real values come
   from `@thegoodintro/pricing` + `lib/reporting.ts`, never hardcoded.
 
-### Admin Meetings list (T3) — designing next
+### Admin Meetings list (T3) — LOCKED
+Dual view (Calendar + List toggle), same kit as the dashboard.
+- Stat ribbon (3): upcoming meetings, pending requests, meetings satisfied.
+- **Calendar:** month grid with per-day meeting chips, a status colour legend
+  (Confirmed / Held / Needs attention / Proposed / Cancelled-No-show, cancelled
+  shown strikethrough), "today" highlight, "+N more" overflow, Month/Week/Day.
+- **List (T3 DataTable):** columns Vendor · Executive (avatar) · Date · Status
+  (pill) · Credit · Gift. Filter popover with per-status counts; pagination.
+- **Credit column rule (money-accurate, do not regress):** a credit is a flat
+  $1,500. Proposed = "None"; Confirmed = "Reserved · $1,500"; Held = "Consumed ·
+  $1,500"; confirmed-but-unpaid overcommit = "Awaiting payment". Never any other
+  amount.
+- **Gift column:** the frozen charity amount only on Held rows, a dash otherwise.
+- Filter/ribbon/pagination numbers reconciled to one consistent set.
 ### Admin Vendor detail (T4) — to do
 ### Admin New Executive form (T5) — to do
 ### Vendor Get-started checklist (T6) — to do
