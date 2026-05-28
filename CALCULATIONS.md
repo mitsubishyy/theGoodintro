@@ -11,6 +11,14 @@ House rule: no em or en dashes in prose. All money is AUD.
 Related docs: tier math also summarised in [ADMIN_PORTAL_BRIEF.md](ADMIN_PORTAL_BRIEF.md);
 charity-flow model and open tax questions in [CHARITY_FLOW.md](CHARITY_FLOW.md).
 
+**Terminology bridge (the code and the other docs use these names).** This document
+says `Sat`; the implemented meeting status is `held`. `Scheduled` here is
+`confirmed`. `Pending` here is a `submitted` request / `proposed` meeting. The
+implemented machine (see STATE_MACHINES.md) also has `proposed`, `no_show`,
+`cancelled`, and `reversed` meeting states and `released` / `paid` / `voided` gift
+states. The maths is unchanged by the naming: "a gift is created when a meeting is
+`Sat`" means the same event as "when a meeting becomes `held`".
+
 ---
 
 ## 0. Foundations (read this first)

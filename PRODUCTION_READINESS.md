@@ -34,22 +34,19 @@ engineering tasks; they need you and outside professionals.
       happens, given the founder is non-technical (a technical maintainer or a tight
       ops runbook + on-call).
 
-## 2. Open scope decisions (confirm before building the tagged task)
+## 2. Scope decisions (DECIDED 2026-05-28)
 
-Each materially changes v1 scope and ongoing cost. My recommendation is the
-default; change it before the tagged task is built.
+Issy chose full scope on all three forks; these are now committed v1 build tasks.
 
-- **D-1 Meeting outcome detection (tasks A5).** *Recommended: manual for v1.* Issy
-  marks held / no-show in the admin portal (the control already exists); defer the
-  Zoom/Teams attendance webhook to v1.1. Building the dual Zoom + Teams attendance
-  integration is weeks of work plus maintenance.
-- **D-2 Calendar depth (task A6).** *Recommended: one-way push for v1.* Write and
-  update invites to Google/Outlook and push reschedules/cancels; defer the
-  "detect a direct edit in the exec's own calendar and raise a flag" reverse-sync
-  (the expensive half) to later.
-- **D-3 Transactional email provider (task A1).** *Recommended: Resend* (cleanest
-  Next integration, low cost). Postmark is the alternative. Easily swapped.
-- **D-4 Error monitoring (task B1).** *Recommended: Sentry* (free tier covers v1).
+- **D-1 Meeting outcome: BUILD the Zoom/Teams attendance integration in v1.**
+  Automatic held / no-show via signature-verified webhooks (manual override kept
+  as a fallback). Tasks A5 + C2.
+- **D-2 Calendar: FULL bidirectional sync in v1.** Invites + free/busy reads +
+  detect-a-direct-edit-and-flag reverse sync (Google + Microsoft Graph). Task A6.
+- **D-3 Transactional email provider: Resend.** Task A1.
+- **D-4 Error monitoring: Sentry.** Task B1.
+- **Follow-up cadence: the full three-step sequence (~days 4/8/12) in v1.** Task A8.
+  Also resolves the open item in V2_BUILD_PLAN section 7.
 
 ---
 
@@ -74,14 +71,23 @@ Email deliverability is the highest risk: the exec request email is the product.
       idempotency keyed on invoice id, links the CreditLot, manual-reconcile
       fallback. *Done when:* a signed test event unlocks credits exactly once on
       replay, and a forged event is rejected.
-- [ ] **A5 Meeting outcome** (see D-1). v1: a clean admin held / no-show control with
-      an audit entry. *Done when:* marking held creates the GiftRecord via the
-      pricing engine and marking no-show releases the reservation.
-- [ ] **A6 Calendar invites** (see D-2). v1: push invites with the meeting link to
-      both parties; reschedule/cancel updates the invite. *Done when:* confirming a
-      meeting creates calendar invites and a reschedule updates them.
+- [ ] **A5 Meeting outcome: Zoom/Teams attendance integration** (D-1). Signature-
+      verified attendance webhooks set held / no-show automatically; an admin manual
+      override stays as a fallback. *Done when:* a signed attendance event marks the
+      meeting held (creating the GiftRecord via the pricing engine) or no-show
+      (releasing the reservation), and a forged event is rejected.
+- [ ] **A6 Calendar: full bidirectional sync** (D-2). Push invites with the join link
+      to both parties (Google + Microsoft Graph), read free/busy to propose times,
+      and detect a direct edit/cancel in a party's own calendar to raise a rebook
+      flag for Issy (the platform stays system of record). *Done when:* confirming
+      creates invites, a reschedule updates them, and an external direct edit raises
+      a flag instead of silently overriding.
 - [ ] **A7 Calendly vetting link + the single Slack new-signup alert.** *Done when:*
       a new signup posts one Slack message and the vetting link is wired.
+- [ ] **A8 Executive follow-up sequence (three steps, ~days 4/8/12)** (D-1 follow-up
+      decision). While a request sits unanswered, a scheduled job sends the three
+      nudges from NOTIFICATION_TEMPLATES and stops on accept/decline/close. *Done
+      when:* the sequence fires on schedule in staging and halts on a response.
 
 ## 4. B. Observability, backups, and a reconciliation job that RUNS
 

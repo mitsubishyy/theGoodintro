@@ -207,8 +207,8 @@ from STATE_MACHINES.md, and a test (section 8).
 These block correct implementation and are Issy's calls:
 - The accountant items in CALCULATIONS.md section 5 (cash vs accrual, GST tax point,
   when the donation deduction is claimed, breakage on unused credits).
-- v1 follow-up cadence: MVP_SCOPE defers the 3-step chase but NOTIFICATION_TEMPLATES
-  specs three; confirm how many nudges ship in v1.
+- v1 follow-up cadence: DECIDED 2026-05-28, the full three-step sequence (~days
+  4/8/12) ships in v1 (build task A8 in PRODUCTION_READINESS.md).
 - POSITIONING.md principle 2 ("we never touch donations") contradicts the chosen
   donation model in CHARITY_FLOW.md; reconcile the public copy.
 - Exec consent binding mechanism for an email-first user (EMAIL_ACTIONS open item).

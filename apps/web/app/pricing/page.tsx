@@ -22,7 +22,7 @@ const ANNUAL_ROWS = [
 ];
 
 const TICKS = [
-  "Charity share paid to the chosen charity within 14 days",
+  "The gift to the chosen charity is paid after the meeting and confirmed in writing",
   "Every nominated charity is DGR-endorsed and listed on the public register",
   "The rate applies within each band, never retroactively",
 ];
@@ -73,11 +73,11 @@ export default function Pricing() {
             <p className="font-mono text-[11px] uppercase tracking-[0.18em]" style={{ color: "var(--primary)" }}>
               Pricing · For vendors
             </p>
-            <p className="mt-5 text-lg md:text-xl leading-relaxed text-foreground/80">
+            <h2 className="mt-5 text-2xl md:text-3xl font-semibold leading-tight tracking-tight text-foreground">
               A flat fee per meeting. The share that reaches the charity the
               executive chooses rises with the number of meetings you take
               across the year.
-            </p>
+            </h2>
           </div>
 
           <div
