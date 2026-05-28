@@ -102,8 +102,9 @@ Rules for the package:
 
 - **Colour:** only `--portal-*` and the base tokens. Emerald (`--primary`,
   `--emerald-deep`, `--primary-bright`) on the **sidebar only**. Headline metrics
-  live in the dark `--portal-ribbon`, never as white stat cards. Amber
-  (`--portal-amber`, `--portal-amber-soft`, `--portal-amber-ink`) is the single
+  live in the dark `--portal-ribbon`, never as white stat cards. The antique-gold /
+  soft-champagne accent `oklch(0.78 0.07 85)` (`--portal-amber` — name kept, value is
+  now antique gold — plus `--portal-amber-soft`, `--portal-amber-ink`) is the single
   accent: badges, links, status dots, warnings.
 - **Type ramp:** Inter 13 to 14px body/cells; JetBrains Mono 11px uppercase
   `tracking-[0.18em]` for widget/section titles and micro labels; Inter 18 to 20px

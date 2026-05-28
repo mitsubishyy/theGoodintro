@@ -63,9 +63,10 @@ Current canonical model (still verify against the source before shipping copy):
 
 - Never use the word **"marketplace."** Use "network," "invite-only network," or
   "two-sided platform."
-- Marketing site (`apps/web`) is **emerald-only**, no amber. The platform/portals
-  (`apps/platform`) add **amber** as a sanctioned single accent, emerald on the
-  sidebar only.
+- Marketing site (`apps/web`) is **emerald-only**, no gold/amber. The platform/portals
+  (`apps/platform`) add a single **antique-gold / soft-champagne accent**
+  (`--portal-amber`, value `oklch(0.78 0.07 85)`; the token name is kept but it is no
+  longer the old amber), emerald on the sidebar only.
 - **No em or en dashes in prose.** En dashes only inside numeric ranges.
 
 When unsure about a fact not listed here, check the source doc named in

@@ -110,7 +110,7 @@ fonts. We use `--portal-*` tokens and the type ramp below, full stop.
 | muted / secondary text | `--muted-foreground` |
 | hairline borders | `--portal-line` |
 | sidebar fill (emerald, sidebar ONLY) | `--primary` on `--primary-foreground` |
-| accent: badges, links, status dots, warnings | `--portal-amber`, soft `--portal-amber-soft`, ink `--portal-amber-ink` |
+| accent, antique gold / soft champagne `oklch(0.78 0.07 85)`: badges, links, status dots, warnings | `--portal-amber` (name kept; value is now antique gold), soft `--portal-amber-soft`, ink `--portal-amber-ink` |
 | primary buttons | ink (`--portal-ink`), light text |
 
 Emerald appears **only** on the sidebar. Stat cards are **never** plain white

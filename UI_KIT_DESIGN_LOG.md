@@ -34,6 +34,13 @@ first, then port (the established workflow).
   an action, e.g. "All clear"), loading (real shimmer skeletons, no spinners), error
   (inline "Could not load… other widgets unaffected" + Retry + last-refresh time).
 
+- **Accent colour (updated 2026-05-28):** the single portal accent is now **antique
+  gold / soft champagne `oklch(0.78 0.07 85)`**, replacing the old amber everywhere
+  (notification/count badges, links, status dots, warnings, proportion bars). The
+  token NAME stays `--portal-amber`; only the value changed (soft/ink re-derived to
+  match). Source of truth: `packages/tokens/src/portal.css`. Apply across every
+  screen.
+
 ## Features surfaced during design
 
 - **Tags (admin-only)** — full spec in `TAGS_FEATURE.md`. Free-form labels on
@@ -78,7 +85,16 @@ Dual view (Calendar + List toggle), same kit as the dashboard.
   amount.
 - **Gift column:** the frozen charity amount only on Held rows, a dash otherwise.
 - Filter/ribbon/pagination numbers reconciled to one consistent set.
-### Admin Vendor detail (T4) — to do
+### Admin Vendor detail (T4) — LOCKED
+Header: identity + status pill + **structured chips only** (Tier, ID, Renewal due),
+NO tags in the header; trimmed to ~4 key facts. Body: left module rail (Overview /
+Users & Seats / Requests / Meetings / Billing & Credits / Checklist / Tags / Notes,
+with amber attention badges) + centre active module + right **append-only Activity
+feed**. **Tags module** (in the rail): current tags as removable chips + multi-select
+add (typeahead + create-new) + a bulk-apply control + an append-only tag-change
+history. Credits block uses the locked credit money rule (1 credit = $1,500 flat).
+Money note: the per-meeting charity in the mock is illustrative ($1,100 flat); the
+build pulls the real per-band frozen amount, never a flat figure.
 ### Admin New Executive form (T5) — to do
 ### Vendor Get-started checklist (T6) — to do
 ### Vendor dashboard + Exec dashboard — to do (these introduce the per-portal sidebar colours)

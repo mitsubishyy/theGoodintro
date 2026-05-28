@@ -5,7 +5,7 @@
    cockpit shares the same warm-cream + ink + amber language. The marketing
    site stays emerald-only; the platform is deliberately warmer: emerald is
    kept ONLY on the sidebar, the page is warm cream, the metrics ribbon and
-   primary buttons are dark ink, and amber is the single small accent.
+   primary buttons are dark ink, and antique gold is the single small accent.
 
    Tweak the platform palette here, in one place. Both apps/platform and any
    future shared UI package consume these values.
@@ -43,8 +43,13 @@
   --portal-header: oklch(0.964 0.014 84);
   --portal-ribbon: oklch(0.205 0.012 70);
   --portal-ink: oklch(0.17 0.006 70);
-  --portal-amber: oklch(0.66 0.115 64);
-  --portal-amber-soft: oklch(0.93 0.05 76);
-  --portal-amber-ink: oklch(0.46 0.09 60);
+  /* Accent: antique gold / soft champagne (replaced the old amber 2026-05-28).
+     Token NAME kept as --portal-amber so existing references do not break; only the
+     value changed. Used for notification/count badges, links, status dots, warnings,
+     proportion bars. soft = light tint (chip/badge fills); ink = readable dark gold
+     for accent text. */
+  --portal-amber: oklch(0.78 0.07 85);
+  --portal-amber-soft: oklch(0.94 0.035 85);
+  --portal-amber-ink: oklch(0.52 0.06 82);
   --portal-line: color-mix(in oklch, oklch(0.17 0.006 70) 9%, transparent);
 }
