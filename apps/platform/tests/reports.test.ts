@@ -13,6 +13,10 @@ import {
   revenuePlCsv,
   gstBasCsv,
   deferredRevenueCsv,
+  meetingsCsv,
+  vendorCycleBandCsv,
+  vendorFinancialsCsv,
+  pendingCancelledCsv,
 } from "../lib/reports";
 
 /**
@@ -125,5 +129,46 @@ describe("report engine (CALCULATIONS §6) ties out to the seed", () => {
     const csv = await deferredRevenueCsv(sb);
     expect(lineWith(csv, "Alpha")).toContain("3000");
     expect(totalRow(csv)).toContain("3000");
+  });
+
+  it("meetings: held meetings total gift $2,700 / keep $1,800; Sat + Pending categories present", async () => {
+    const csv = await meetingsCsv(sb);
+    expect(csv).toContain(",Sat,"); // the 3 held seed meetings
+    expect(csv).toContain(",Pending,"); // the confirmed seed meeting
+    // Robust: only the seed's held meetings carry a gift (other suites clean theirs up).
+    expect(totalRow(csv)).toContain("2700");
+    expect(totalRow(csv)).toContain("1800");
+  });
+
+  it("vendor cycle and band: Alpha cycle 1, 3 held this cycle, Band 1, 1 credit left", async () => {
+    const csv = await vendorCycleBandCsv(sb);
+    // Parse Alpha's row (no commas in any field, so split is safe). Robust to
+    // other suites leaving extra vendors (the report correctly lists them all).
+    // cols: vendor, cycle_start, current_cycle, held_this_cycle, current_band, rate, credits
+    const alpha = lineWith(csv, "Alpha").split(",");
+    expect(alpha[2]).toBe("1"); // current cycle
+    expect(alpha[3]).toBe("3"); // held this cycle
+    expect(alpha[4]).toBe("Band 1"); // current band (held+1 = 4th = band 1)
+    expect(alpha[6]).toBe("1"); // credits remaining
+  });
+
+  it("vendor financials: Alpha paid $7,500, GST $750, deferred $3,000, charity $2,700", async () => {
+    const csv = await vendorFinancialsCsv(sb);
+    const alpha = lineWith(csv, "Alpha");
+    expect(alpha).toContain("7500");
+    expect(alpha).toContain("750");
+    expect(alpha).toContain("3000");
+    expect(alpha).toContain("2700");
+    expect(totalRow(csv)).toContain("7500");
+  });
+
+  it("pending and cancelled: includes pending seed requests, excludes completed (held) ones", async () => {
+    const csv = await pendingCancelledCsv(sb);
+    // Seed: 5201/5203 submitted and 4a4 (accepted, meeting confirmed) are Pending;
+    // 4a1/4a2/4a3 (accepted, meeting held) are Completed and must be excluded.
+    expect(csv).toContain("00000000-0000-0000-0000-000000005201"); // submitted -> Pending
+    expect(csv).toContain("00000000-0000-0000-0000-0000000004a4"); // confirmed -> Pending
+    expect(csv).not.toContain("00000000-0000-0000-0000-0000000004a1"); // held -> Completed, excluded
+    expect(csv).not.toContain("Completed");
   });
 });

@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { bandForMeetingNumber } from "@thegoodintro/pricing";
 import { toCsv, type CsvColumn } from "@thegoodintro/pricing/csv";
 import {
   charityOwed,
@@ -329,6 +330,208 @@ export async function deferredRevenueCsv(supabase: SupabaseClient): Promise<stri
   );
 }
 
+// ── §6.2 Operational reports (need meeting / cycle / credit / request data) ──
+
+function one<T>(v: unknown): T | undefined {
+  return (Array.isArray(v) ? v[0] : v) as T | undefined;
+}
+const d10 = (iso: string | null | undefined) => (iso ? String(iso).slice(0, 10) : "");
+
+function meetingCategory(status: string): "Sat" | "Pending" | "Cancelled" {
+  if (status === "held") return "Sat";
+  if (status === "proposed" || status === "confirmed") return "Pending";
+  return "Cancelled"; // no_show, cancelled, reversed
+}
+
+/** Meetings: one row per meeting, with its gift/keep (held only) and status category. */
+export async function meetingsCsv(supabase: SupabaseClient): Promise<string> {
+  const [{ data }, vendors, execs] = await Promise.all([
+    supabase.from("meeting").select(`
+      id, status, scheduled_at, created_at,
+      request:request_id ( vendor_id, executive_id ),
+      gift_record ( charity_amount_cents, admin_fee_cents )
+    `),
+    vendorNames(supabase),
+    execNames(supabase),
+  ]);
+  type Row = {
+    meetingId: string; date: string; vendor: string; exec: string;
+    status: string; category: string; giftCents: number; keepCents: number;
+  };
+  const rows: Row[] = (data ?? []).map((m) => {
+    const req = one<{ vendor_id: string; executive_id: string }>(m.request);
+    const gift = one<{ charity_amount_cents: number; admin_fee_cents: number }>(m.gift_record);
+    return {
+      meetingId: m.id as string,
+      date: d10((m.scheduled_at as string) ?? (m.created_at as string)),
+      vendor: vendors.get(req?.vendor_id as string) ?? (req?.vendor_id as string) ?? "",
+      exec: execs.get(req?.executive_id as string) ?? (req?.executive_id as string) ?? "",
+      status: m.status as string,
+      category: meetingCategory(m.status as string),
+      giftCents: gift?.charity_amount_cents ?? 0,
+      keepCents: gift?.admin_fee_cents ?? 0,
+    };
+  });
+  return toCsv(
+    rows,
+    [
+      { header: "meeting_id", value: (r) => r.meetingId },
+      { header: "date", value: (r) => r.date },
+      { header: "vendor", value: (r) => r.vendor },
+      { header: "executive", value: (r) => r.exec },
+      { header: "status", value: (r) => r.status },
+      { header: "category", value: (r) => r.category },
+      { header: "gift", value: (r) => r.giftCents, money: true },
+      { header: "keep", value: (r) => r.keepCents, money: true },
+    ],
+    { title: "Meetings", filter: "all meetings (category: Sat / Pending / Cancelled)" },
+  );
+}
+
+interface CycleRow { vendor_id: string; started_at: string; ends_at: string; held_meetings_count: number }
+
+/** Resolve a vendor's current cycle (window containing now, else latest) + its ordinal. */
+function currentCycle(cycles: CycleRow[], now: number): { cycle: CycleRow; ordinal: number } | null {
+  if (cycles.length === 0) return null;
+  const sorted = [...cycles].sort((a, b) => a.started_at.localeCompare(b.started_at));
+  let idx = sorted.findIndex((c) => Date.parse(c.started_at) <= now && now < Date.parse(c.ends_at));
+  if (idx === -1) idx = sorted.length - 1; // none contains now: the latest
+  return { cycle: sorted[idx], ordinal: idx + 1 };
+}
+
+/** Vendor cycle and band: per vendor, current cycle/band + credits remaining. */
+export async function vendorCycleBandCsv(supabase: SupabaseClient): Promise<string> {
+  const now = Date.now();
+  const [{ data: vendorRows }, { data: cycleRows }, { data: lotRows }] = await Promise.all([
+    supabase.from("vendor").select("id, name"),
+    supabase.from("cycle").select("vendor_id, started_at, ends_at, held_meetings_count"),
+    supabase.from("credit_lot").select("vendor_id, quantity_remaining"),
+  ]);
+  const cyclesByVendor = new Map<string, CycleRow[]>();
+  for (const c of (cycleRows ?? []) as CycleRow[]) {
+    const arr = cyclesByVendor.get(c.vendor_id) ?? [];
+    arr.push(c);
+    cyclesByVendor.set(c.vendor_id, arr);
+  }
+  const creditsByVendor = new Map<string, number>();
+  for (const l of lotRows ?? []) creditsByVendor.set(l.vendor_id as string, (creditsByVendor.get(l.vendor_id as string) ?? 0) + (l.quantity_remaining as number));
+
+  type Row = { vendor: string; cycleStart: string; cycleNumber: number | string; held: number; band: number; rateCents: number; credits: number };
+  const rows: Row[] = (vendorRows ?? []).map((v) => {
+    const resolved = currentCycle(cyclesByVendor.get(v.id as string) ?? [], now);
+    const held = resolved?.cycle.held_meetings_count ?? 0;
+    const band = bandForMeetingNumber(held + 1);
+    return {
+      vendor: (v.name as string) ?? (v.id as string),
+      cycleStart: resolved ? d10(resolved.cycle.started_at) : "",
+      cycleNumber: resolved ? resolved.ordinal : "",
+      held,
+      band: band.band,
+      rateCents: band.rateCents,
+      credits: creditsByVendor.get(v.id as string) ?? 0,
+    };
+  });
+  return toCsv(
+    rows,
+    [
+      { header: "vendor", value: (r) => r.vendor },
+      { header: "cycle_start", value: (r) => r.cycleStart },
+      { header: "current_cycle", value: (r) => r.cycleNumber },
+      { header: "held_this_cycle", value: (r) => r.held },
+      { header: "current_band", value: (r) => `Band ${r.band}` },
+      { header: "current_band_rate", value: (r) => r.rateCents, money: true },
+      { header: "credits_remaining", value: (r) => r.credits },
+    ],
+    { title: "Vendor cycle and band", filter: "current cycle (window containing now, else latest)" },
+  );
+}
+
+/** Vendor financials: per vendor, total paid, GST paid, credits remaining, deferred, charity contributed. */
+export async function vendorFinancialsCsv(supabase: SupabaseClient): Promise<string> {
+  const [{ data: vendorRows }, purchases, gifts, { data: lotRows }] = await Promise.all([
+    supabase.from("vendor").select("id, name"),
+    loadPurchaseLedger(supabase),
+    loadGiftLedger(supabase),
+    supabase.from("credit_lot").select("vendor_id, quantity_remaining"),
+  ]);
+  const credits = new Map<string, number>();
+  for (const l of lotRows ?? []) credits.set(l.vendor_id as string, (credits.get(l.vendor_id as string) ?? 0) + (l.quantity_remaining as number));
+
+  type Row = { vendor: string; paid: number; gst: number; credits: number; deferred: number; charity: number };
+  const rows: Row[] = (vendorRows ?? []).map((v) => {
+    const id = v.id as string;
+    const vp = purchases.filter((p) => p.vendorId === id);
+    const vg = gifts.filter((g) => g.vendorId === id && g.giftStatus !== "voided");
+    const purchased = vp.reduce((s, p) => s + p.quantity, 0);
+    const held = vg.length;
+    return {
+      vendor: (v.name as string) ?? id,
+      paid: vp.reduce((s, p) => s + p.feeExGstCents, 0),
+      gst: vp.reduce((s, p) => s + p.gstCents, 0),
+      credits: credits.get(id) ?? 0,
+      deferred: Math.max(0, purchased - held) * 150_000,
+      charity: vg.reduce((s, g) => s + g.giftCents, 0),
+    };
+  });
+  return toCsv(
+    rows,
+    [
+      { header: "vendor", value: (r) => r.vendor },
+      { header: "total_paid_ex_gst", value: (r) => r.paid, money: true },
+      { header: "gst_paid", value: (r) => r.gst, money: true },
+      { header: "credits_remaining", value: (r) => r.credits },
+      { header: "deferred_value", value: (r) => r.deferred, money: true },
+      { header: "charity_contributed", value: (r) => r.charity, money: true },
+    ],
+    { title: "Vendor financials", filter: "lifetime per vendor" },
+  );
+}
+
+/** Pending and cancelled: one row per request that is pending or cancelled (excludes completed). */
+export async function pendingCancelledCsv(supabase: SupabaseClient): Promise<string> {
+  const [{ data }, vendors, execs] = await Promise.all([
+    supabase.from("request").select("id, status, created_at, vendor_id, executive_id, meeting ( status )"),
+    vendorNames(supabase),
+    execNames(supabase),
+  ]);
+  const category = (reqStatus: string, meetingStatus?: string): "Pending" | "Cancelled" | "Completed" => {
+    if (reqStatus === "declined" || reqStatus === "closed") return "Cancelled";
+    if (reqStatus === "submitted") return "Pending";
+    if (!meetingStatus) return "Pending"; // accepted, awaiting a time
+    if (meetingStatus === "held") return "Completed";
+    if (["no_show", "cancelled", "reversed"].includes(meetingStatus)) return "Cancelled";
+    return "Pending"; // proposed / confirmed
+  };
+  type Row = { requestId: string; created: string; vendor: string; exec: string; reqStatus: string; meetingStatus: string; category: string };
+  const rows: Row[] = (data ?? [])
+    .map((r) => {
+      const m = one<{ status: string }>(r.meeting);
+      return {
+        requestId: r.id as string,
+        created: d10(r.created_at as string),
+        vendor: vendors.get(r.vendor_id as string) ?? (r.vendor_id as string),
+        exec: execs.get(r.executive_id as string) ?? (r.executive_id as string),
+        reqStatus: r.status as string,
+        meetingStatus: m?.status ?? "",
+        category: category(r.status as string, m?.status),
+      };
+    })
+    .filter((r) => r.category !== "Completed");
+  return toCsv(
+    rows,
+    [
+      { header: "request_id", value: (r) => r.requestId },
+      { header: "created", value: (r) => r.created },
+      { header: "vendor", value: (r) => r.vendor },
+      { header: "executive", value: (r) => r.exec },
+      { header: "request_status", value: (r) => r.reqStatus },
+      { header: "meeting_status", value: (r) => r.meetingStatus },
+      { header: "category", value: (r) => r.category },
+    ],
+    { title: "Pending and cancelled", filter: "requests not completed (Pending or Cancelled)" },
+  );
+}
+
 // ── Registry (the /admin/reports screen will list these as downloads) ────────
 
 export interface ReportDescriptor {
@@ -350,6 +553,8 @@ export const REPORTS: ReportDescriptor[] = [
   { key: "revenue-pl", label: "Revenue / P&L", kind: "summary", build: (sb, w) => revenuePlCsv(sb, w) },
   { key: "gst-bas", label: "GST / BAS", kind: "summary", build: (sb, w) => gstBasCsv(sb, w) },
   { key: "deferred-revenue", label: "Deferred revenue", kind: "summary", build: (sb) => deferredRevenueCsv(sb) },
-  // TODO (next installment, need meeting/cycle/credit/request queries):
-  // meetings, vendor cycle & band, vendor financials, pending & cancelled.
+  { key: "meetings", label: "Meetings", kind: "summary", build: (sb) => meetingsCsv(sb) },
+  { key: "vendor-cycle-band", label: "Vendor cycle and band", kind: "summary", build: (sb) => vendorCycleBandCsv(sb) },
+  { key: "vendor-financials", label: "Vendor financials", kind: "summary", build: (sb) => vendorFinancialsCsv(sb) },
+  { key: "pending-cancelled", label: "Pending and cancelled", kind: "summary", build: (sb) => pendingCancelledCsv(sb) },
 ];
