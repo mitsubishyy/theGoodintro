@@ -34,6 +34,7 @@ lists them), ask Issy a recommendation-first question; do not guess.
 | Change safety | [`CHANGE_SAFETY.md`](CHANGE_SAFETY.md) + `apps/platform/CLAUDE.md` |
 | Production readiness (run-in-prod build + launch checklist) | [`PRODUCTION_READINESS.md`](PRODUCTION_READINESS.md) |
 | Cold-start gaps, decisions, required artifacts (clear these or you will guess) | [`COLD_START_GAPS.md`](COLD_START_GAPS.md) |
+| Tags feature (admin-only; schema + staff-only RLS + admin UI) | [`TAGS_FEATURE.md`](TAGS_FEATURE.md) |
 | Visual references | [`inspiration/hr-partner/`](inspiration/hr-partner/) |
 
 The HR Partner screenshots are the layout reference; the exec mockup at

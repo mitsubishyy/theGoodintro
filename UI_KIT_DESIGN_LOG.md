@@ -34,6 +34,16 @@ first, then port (the established workflow).
   an action, e.g. "All clear"), loading (real shimmer skeletons, no spinners), error
   (inline "Could not load… other widgets unaffected" + Retry + last-refresh time).
 
+## Features surfaced during design
+
+- **Tags (admin-only)** — full spec in `TAGS_FEATURE.md`. Free-form labels on
+  vendors and (separately) executives; add/remove individually on a detail page and
+  in bulk from a list. **Visible ONLY in the admin portal; staff-only at the RLS
+  layer** so vendors/execs can never read their own tags via the API. Tags are
+  distinct from structured chips (Tier, ID, derived "Renewal due"), which are NOT
+  tags. New schema (tag / vendor_tag / executive_tag) + admin UI; the build must
+  implement it.
+
 ## Screens
 
 ### Admin Dashboard — LOCKED (pending the wordmark call)
