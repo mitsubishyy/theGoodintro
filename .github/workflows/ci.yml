@@ -1,0 +1,74 @@
+# CI for the monorepo (PRODUCTION_READINESS D1/D2).
+#
+# Runs the four standard gates on every PR + on pushes to the long-lived branches,
+# with a REAL local Postgres (Supabase CLI in the runner) so the DB-backed
+# state-machine + RLS tests actually run (not skipped). Mirrors scripts/test-db.sh.
+#
+# D5 (branch protection: require this check before merge to main) is a GitHub
+# repo setting, configured in Settings -> Branches, not in this file.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main, platform/v2-foundation]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start local Supabase (applies migrations + seed)
+        run: supabase start
+
+      - name: Export local Supabase env for the build + tests
+        run: |
+          ENV_OUT="$(supabase status -o env)"
+          get() { printf '%s\n' "$ENV_OUT" | sed -n "s/^$1=\"\(.*\)\"$/\1/p"; }
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=$(get API_URL)"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$(get PUBLISHABLE_KEY)"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$(get SECRET_KEY)"
+            echo "EMAIL_TOKEN_SECRET=ci-local-not-a-secret"
+            echo "NEXT_PUBLIC_APP_URL=http://localhost:3001"
+          } >> "$GITHUB_ENV"
+
+      # Scope: apps/platform + shared packages only. apps/web is the separately
+      # deployed marketing site (its own Vercel project) and currently has
+      # pre-existing lint debt this v2 build must not touch or be blocked by, per
+      # the website/product separation principle. Broaden these filters if you
+      # later want this workflow to also gate apps/web.
+      - name: check:copy (brand + pricing guard; enforced on platform)
+        run: npm run check:copy
+
+      - name: lint (platform)
+        run: npx turbo run lint --filter=@thegoodintro/platform
+
+      - name: build (platform + its package deps)
+        run: npx turbo run build --filter=@thegoodintro/platform
+
+      - name: test (pricing + DB-backed platform state-machine/RLS)
+        run: npx turbo run test --filter=@thegoodintro/platform --filter=@thegoodintro/pricing
+
+      - name: Stop local Supabase
+        if: always()
+        run: supabase stop || true

@@ -49,6 +49,7 @@ live.
 | From | Event | To | Side effects |
 |---|---|---|---|
 | (start) | Request accepted | `proposed` | Issy arranging a time. **No credit reserved yet** |
+| `proposed` | Cancelled before a time is confirmed (via Issy) | `cancelled` | Request withdrawn after acceptance but before a time is set. **No credit was reserved at `proposed`, so nothing to release** (money-safe); notify vendor + exec |
 | `proposed` | Issy confirms a time | `confirmed` | Calendar invite to exec + both vendor emails. **If a credit is available, reserve it** (vendor's available balance drops now). **If none (overcommit), the meeting is set ≥30 days out and `payment_due_at` = 30 days before the meeting**; reminders queued (at booking and ~7 days before due) |
 | `confirmed` | Reschedule (via Issy) | `confirmed` | New `scheduled_at`; invite updated. If uncredited, `payment_due_at` recomputes to the new date. **Unlimited reschedules, no cap or flag** |
 | `confirmed` | Exec attended, per Zoom/Teams API | `held` | **Consume the credit**; create **GiftRecord** (`released`), amount locked from the band reached now |

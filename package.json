@@ -13,6 +13,11 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "test:pricing": "npm run test --workspace=@thegoodintro/pricing",
+    "test:platform": "npm run test --workspace=@thegoodintro/platform",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "test:db": "bash scripts/test-db.sh",
     "build:web": "turbo run build --filter=@thegoodintro/web",
     "build:platform": "turbo run build --filter=@thegoodintro/platform",
     "dev:web": "turbo run dev --filter=@thegoodintro/web",
@@ -21,6 +26,7 @@
     "check:copy": "node scripts/check-copy.js"
   },
   "devDependencies": {
+    "supabase": "^2.101.0",
     "turbo": "^2.5.0"
   }
 }

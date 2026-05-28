@@ -5,6 +5,8 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["tests/**/*.test.ts"],
+    // Load apps/platform/.env.local into process.env (Vitest does not by default).
+    setupFiles: ["./tests/setup.env.ts"],
     testTimeout: 30000,
     hookTimeout: 30000,
     // Integration tests share one staging DB; run files serially to avoid
