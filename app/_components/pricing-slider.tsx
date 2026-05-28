@@ -4,14 +4,22 @@ import { useState } from "react";
 
 const FEE = 1500;
 const MIN = 1;
-const MAX = 25;
+// The worked example caps at 20 so every band is a clean run of five
+// meetings (1–5, 6–10, 11–15, 16–20). Band 4 is actually 16+ in the pricing
+// model; beyond 20 the rate simply stays at the band-4 figure.
+const MAX = 20;
 
 const BANDS = [
   { label: "Band 1", range: "1–5", rate: 900, lo: 1, hi: 5, fill: "oklch(0.62 0.11 158)" },
   { label: "Band 2", range: "6–10", rate: 1000, lo: 6, hi: 10, fill: "oklch(0.54 0.13 158)" },
   { label: "Band 3", range: "11–15", rate: 1100, lo: 11, hi: 15, fill: "oklch(0.47 0.13 158)" },
-  { label: "Band 4", range: "16+", rate: 1200, lo: 16, hi: Infinity, fill: "oklch(0.40 0.13 158)" },
+  { label: "Band 4", range: "16–20", rate: 1200, lo: 16, hi: Infinity, fill: "oklch(0.40 0.13 158)" },
 ];
+
+// Partnership level shown beside the slider.
+// NOTE: these four level names ("Supporter" to "Major partner") are a first
+// pass; rename to match brand language once locked.
+const TIER_NAMES = ["Supporter", "Partner", "Lead partner", "Major partner"];
 
 const money = (n: number) => "$" + n.toLocaleString("en-US");
 
@@ -21,7 +29,7 @@ function countInBand(meetings: number, lo: number, hi: number) {
 }
 
 export function PricingSlider() {
-  const [meetings, setMeetings] = useState(10);
+  const [meetings, setMeetings] = useState(1);
 
   const rows = BANDS.map((b) => {
     const count = countInBand(meetings, b.lo, b.hi);
@@ -32,6 +40,7 @@ export function PricingSlider() {
   const sharePct = Math.round((charity / pay) * 100);
   const currentBand =
     meetings <= 5 ? 1 : meetings <= 10 ? 2 : meetings <= 15 ? 3 : 4;
+  const tier = TIER_NAMES[currentBand - 1];
   const pct = ((meetings - MIN) / (MAX - MIN)) * 100;
 
   return (
@@ -41,9 +50,9 @@ export function PricingSlider() {
     >
       {/* ── Left: the headline figure + the control ─────────────────── */}
       <div>
-        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+        <h3 className="text-base md:text-lg font-semibold tracking-tight text-foreground">
           Charity receives
-        </div>
+        </h3>
         <div
           className="mt-2 display-serif leading-none tabular-nums"
           style={{ color: "var(--primary)", fontSize: "clamp(3rem, 7vw, 4.75rem)" }}
@@ -54,12 +63,12 @@ export function PricingSlider() {
           className="mt-3 font-mono text-[11px] uppercase tracking-[0.16em]"
           style={{ color: "var(--primary)" }}
         >
-          {sharePct}% of your fees reach charity
+          {sharePct}% of your fees reach charity at this volume
         </div>
         <p className="mt-4 text-[14px] leading-relaxed text-foreground/70 max-w-sm">
-          Across {meetings} {meetings === 1 ? "meeting" : "meetings"} in the year,
-          to the charities the executives choose. Paid to the chosen charity
-          within 14 days of each meeting.
+          Donated across {meetings} {meetings === 1 ? "meeting" : "meetings"} to
+          the charities your executives choose. Each gift is paid after the
+          meeting and confirmed in writing.
         </p>
 
         <div className="mt-10 flex items-baseline justify-between">
@@ -69,8 +78,11 @@ export function PricingSlider() {
               meetings / year
             </span>
           </div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-            Band {currentBand}
+          <div
+            className="font-mono text-[10px] uppercase tracking-[0.18em]"
+            style={{ color: "var(--primary)" }}
+          >
+            {tier}
           </div>
         </div>
 
@@ -87,11 +99,10 @@ export function PricingSlider() {
           }}
         />
 
-        {/* Ticks sit at each value's true track position, not even
-            visual intervals — 16→25 spans 9 steps, the rest span 5, so
-            evenly-spaced labels would misrepresent where the thumb is. */}
+        {/* Ticks sit at each value's true track position. With MAX = 20 the
+            five bands divide evenly, so 1/5/10/15/20 mark the band edges. */}
         <div className="relative mt-3 h-4 font-mono text-[11px] tabular-nums text-muted-foreground">
-          {[1, 6, 11, 16, 25].map((n) => {
+          {[1, 5, 10, 15, 20].map((n) => {
             const left = ((n - MIN) / (MAX - MIN)) * 100;
             return (
               <span
@@ -114,19 +125,14 @@ export function PricingSlider() {
         </div>
       </div>
 
-      {/* ── Right: where the figure comes from, band by band ────────── */}
+      {/* ── Right: how the giving builds across the year, band by band ── */}
       <div
         className="rounded-2xl border p-6 md:p-7"
         style={{ background: "var(--paper-white)", borderColor: "var(--hair)" }}
       >
-        <div className="flex items-baseline justify-between gap-4">
-          <h3 className="font-bold text-[15px] tracking-[-0.01em]">
-            Where the {money(charity)} comes from
-          </h3>
-          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground whitespace-nowrap">
-            Total · {money(charity)}
-          </span>
-        </div>
+        <h3 className="font-bold text-[15px] tracking-[-0.01em]">
+          How the giving builds across the year
+        </h3>
 
         {/* segmented bar */}
         <div className="mt-4 flex h-3 gap-0.5 rounded-full overflow-hidden">
@@ -156,11 +162,11 @@ export function PricingSlider() {
                   style={{ background: r.fill }}
                 />
                 <div className="min-w-0">
-                  <div className="text-[13px] font-semibold leading-snug">
-                    {r.label} · {r.range} × {money(r.rate)}
+                  <div className="text-[14px] font-semibold leading-snug">
+                    Meetings {r.range}
                   </div>
                   <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-                    {r.count} {r.count === 1 ? "meeting" : "meetings"} counted
+                    {money(r.rate)} each
                   </div>
                 </div>
               </div>
@@ -173,31 +179,6 @@ export function PricingSlider() {
             </li>
           ))}
         </ul>
-
-        <div
-          className="mt-4 pt-4 border-t flex items-end justify-between"
-          style={{ borderColor: "var(--border)" }}
-        >
-          <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-              You pay
-            </div>
-            <div className="font-black text-xl tabular-nums tracking-[-0.02em]">
-              {money(pay)}
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-              Charity receives
-            </div>
-            <div
-              className="font-black text-xl tabular-nums tracking-[-0.02em]"
-              style={{ color: "var(--primary)" }}
-            >
-              {money(charity)}
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
