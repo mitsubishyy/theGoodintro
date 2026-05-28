@@ -33,6 +33,7 @@ lists them), ask Issy a recommendation-first question; do not guess.
 | Workflows per portal | the three `*_PORTAL_BRIEF.md` |
 | Change safety | [`CHANGE_SAFETY.md`](CHANGE_SAFETY.md) + `apps/platform/CLAUDE.md` |
 | Production readiness (run-in-prod build + launch checklist) | [`PRODUCTION_READINESS.md`](PRODUCTION_READINESS.md) |
+| Cold-start gaps, decisions, required artifacts (clear these or you will guess) | [`COLD_START_GAPS.md`](COLD_START_GAPS.md) |
 | Visual references | [`inspiration/hr-partner/`](inspiration/hr-partner/) |
 
 The HR Partner screenshots are the layout reference; the exec mockup at
@@ -234,7 +235,14 @@ Plus, once Supabase is connected:
 
 ## 9. Build sequence (dependency-first; gate after each)
 
-1. Add `./reporting` + `./csv` exports to `packages/pricing/package.json`.
+0. Clear [`COLD_START_GAPS.md`](COLD_START_GAPS.md) first: it holds the resolved
+   contradictions, the engineering decisions (DEC-1 to DEC-11, implement as
+   written), and the required artifacts (ART-1 consolidated schema, ART-3
+   integration contracts, ART-4 test DB, ART-5 the `packages/ui` kit + reference
+   screens). ART-5 is also PORTAL_LAYOUT_BLUEPRINT section 0 and gates all module
+   work. Do not start a tagged piece while its gap is open.
+1. Add `./reporting` + `./csv` exports to `packages/pricing/package.json` (already
+   present; confirm).
 2. Migrations (section 3) on a branch, applied to staging.
 3. Maths consumption fixes (section 4), especially cycle renewal and FY.
 4. `lib/reporting.ts` + repoint dashboards (section 6.1, 6.2).

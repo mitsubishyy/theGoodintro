@@ -65,6 +65,10 @@ meetings, onboard executives) out of the three briefs and lists what is deferred
 [`PRODUCTION_READINESS.md`](PRODUCTION_READINESS.md) is the run-in-production build
 plan and launch checklist (integrations, observability, security, CI), tracked as
 tickable tasks; clear it plus the SECURITY pre-launch checklist before go-live.
+[`COLD_START_GAPS.md`](COLD_START_GAPS.md) holds the gaps a fresh session would
+otherwise guess at: resolved contradictions, engineering decisions (DEC-1 to
+DEC-11), and required artifacts (ART-1 to ART-5, including the `packages/ui` kit).
+Clear it before/while building; do not fill a gap with a guess.
 
 **Portal layout/visual source of truth:** [`PORTAL_LAYOUT_BLUEPRINT.md`](PORTAL_LAYOUT_BLUEPRINT.md)
 locks how every portal screen is laid out (HR Partner density on `--portal-*`

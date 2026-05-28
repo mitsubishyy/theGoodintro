@@ -43,6 +43,45 @@ Partner model," open the named file and copy the **structure**, never the skin.
 
 ---
 
+## 0. Build-order gate (do this BEFORE any module screen)
+
+A cold audit found the reason v1 looked thin: the shared component kit this
+blueprint assumes DOES NOT EXIST. The shell is hand-rolled three times and has
+already diverged (three sidebars, two `Widget` shells, raw Lucide icons in exec),
+and the dashboards reference undefined `--cream-*` tokens so muted text renders
+broken. Building modules before the kit exists guarantees the thin, inconsistent
+result again. So, in order, before any module screen is built:
+
+1. **Build `packages/ui`** (new) as the real, imported component kit: `PortalShell`,
+   `PortalSidebar`, `PortalTopbar`, `PortalPage`, `MetricsRibbon`, `Widget`,
+   `DataTable`, `RecordDetail`, `RecordForm`, `Checklist`, plus primitives `Button`,
+   `Badge`, `StatusDot`, `Avatar`, `EmptyState`, `Skeleton`, `ErrorInline`, `Field`,
+   `Tabs`. Documented props. **Every state rendered:** default, hover, focus,
+   disabled, selected, loading (skeleton), empty, error.
+2. **Delete the three hand-rolled `_components` shells** (admin/vendor/exec) and have
+   every screen import from `packages/ui`. A second sidebar implementation is a bug.
+3. **Fix the token layer.** Define the `--cream-*` tokens the existing dashboards use
+   (or replace every usage with real `--portal-*` / `--muted-foreground`), and publish
+   an exact token-to-Tailwind mapping so screens stop inline-styling every colour.
+4. **Build one polished reference screen per template** (T1 to T6) on the real
+   `--portal-*` tokens (the exec mockup is already the T7 reference). These are what
+   newcomers clone for structure AND quality, replacing the foreign-product HR Partner
+   screenshots as the working reference.
+
+Iterate the kit and reference screens in Claude Design (live preview), lock them,
+then port into `packages/ui`. Only after this gate is met does module-by-module
+building (section 4) begin.
+
+### Polish rubric ("comparable to a successful platform")
+
+The section 6 checklist proves the rules were followed; it does not prove quality. A
+screen is also done only when: spacing is on a consistent rhythm with optical
+alignment; there is one radius and one shadow scale; loading uses real skeletons not
+spinners; focus rings are visible; every interactive row/button has a hover state;
+empty states have considered typography, not a bare line; and density matches the
+rest of the product. If it would look out of place next to Linear, Stripe, or HR
+Partner, it is not done.
+
 ## 1. The locked register (resolves the brief contradiction)
 
 The three briefs disagreed: admin said "no marketing craft," vendor said "carry
@@ -359,6 +398,9 @@ These are layout/structure fixes. Data sparsity is fine; the empty states carry 
       missing.
 - [ ] Responsive: usable single-column on mobile, sidebar collapses.
 - [ ] Tables paginate; detail pages have the module rail + activity feed.
+- [ ] Built from the `packages/ui` kit (section 0), not a hand-rolled shell.
+- [ ] Passes the section 0 **polish rubric** (optical spacing, all states, focus
+      rings, real skeletons), not only the rule checks above.
 - [ ] Built behind a feature flag OFF by default; staging first; Issy approves
       go-live (CHANGE_SAFETY.md).
 

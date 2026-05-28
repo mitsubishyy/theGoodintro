@@ -50,7 +50,10 @@ Current canonical model (still verify against the source before shipping copy):
 - Headline phrasing: "between $900 and $1,200 of each $1,500 reaches the charity
   the executive chooses," rising to about 70% of fees by 20 cumulative meetings.
   The rate applies within each band, never retroactively. Credits roll over; the
-  tier resets each calendar year at the $900 band.
+  charity tier runs on a **rolling 12-month cycle anchored on the vendor's first
+  payment (NOT the calendar year)** and resets to the $900 band at each 12-month
+  renewal. (Per CALCULATIONS.md 0.4 / 2.7 / 2.11 and DATA_MODEL.md; the live
+  pricing page's "calendar year" wording is a known copy bug to fix.)
 - Charity-flow model: the **donation model** (TheGoodIntro earns the $1,500,
   donates the band amount, claims the deduction, charges GST on the full fee; the
   vendor gets a business-expense receipt, not a gift receipt). See

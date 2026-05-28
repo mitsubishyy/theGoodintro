@@ -58,8 +58,10 @@ In scope (minimum):
 - **Access window + expiry:** buying **any** credits unlocks the **whole platform
   for 12 months**. If a vendor **uses all credits and has not bought more before
   the 12-month expiry**, the platform **hides the executive view** until they buy
-  again. Credits **roll over**, but the **charity tier resets each calendar year**
-  (a leftover credit is charged at the **lowest charity band**).
+  again. Credits **roll over**, but the **charity tier resets at each 12-month
+  renewal of the vendor's cycle** (anchored on first payment, NOT the calendar
+  year), so a leftover credit used in the new cycle is charged at the **lowest
+  charity band**.
 - **On payment, unlock immediately:** the executive list shows, the **credit
   balance** appears, and the vendor can start requesting.
 - **A credit is reserved when a meeting is booked** (so the vendor's available
@@ -212,7 +214,8 @@ is the v1 path).
   an application form; Issy approves to unlock payment.
 - **Payments:** Xero invoicing, auto-triggers unlock on payment (Stripe later).
 - **Price:** $1,500 AUD per meeting / credit; tiered charity share per the pricing
-  page; credits roll over, tier resets yearly.
+  page; credits roll over, tier resets at each 12-month cycle renewal (from first
+  payment, not the calendar year).
 - **Org model:** work email only, first sign-up is Owner, Owner invites users
   (max 6); generic domains blocked.
 - **Exec email actions:** signed, single-use, expiring links with a confirm page.

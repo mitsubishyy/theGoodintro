@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { PageHero, PrimaryCta, ClosingCta } from "../_components/ui";
+import { PageHero, PrimaryCta, ClosingCta, SectionLabel } from "../_components/ui";
 import { IconCheck } from "../_components/icons";
 import { PricingSlider } from "../_components/pricing-slider";
 import { pageMetadata } from "@/lib/metadata";
@@ -68,11 +68,9 @@ export default function Pricing() {
 
       {/* ── Pricing card — same light tone as the hero ───────────────── */}
       <section style={{ background: "var(--paper-white)" }}>
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 pb-24 md:pb-32 pt-4 md:pt-8">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 pb-24 md:pb-32 pt-16 md:pt-28">
           <div className="max-w-2xl mb-12">
-            <p className="font-mono text-[11px] uppercase tracking-[0.18em]" style={{ color: "var(--primary)" }}>
-              Pricing · For vendors
-            </p>
+            <SectionLabel>Pricing · For vendors</SectionLabel>
             <h2 className="mt-5 text-2xl md:text-3xl font-semibold leading-tight tracking-tight text-foreground">
               A flat fee per meeting. The share that reaches the charity the
               executive chooses rises with the number of meetings you take
