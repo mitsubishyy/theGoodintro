@@ -67,10 +67,14 @@ via `private.is_staff()`, exactly like `expense`. No vendor/exec read policy exi
 
 ## UI (admin portal only)
 
-- **Individual:** on the admin **vendor detail** and admin **executive detail**, a
-  Tags area using the kit `Badge` chip (amber-soft), each removable, plus an
-  "+ Add tag" control that creates a new tag or picks an existing one, scoped to that
-  entity type.
+- **Individual:** tags are NOT shown in the profile header. They live in a **"Tags"
+  item in the record's left module rail** (the T4 rail, alongside Overview / Users &
+  Seats / Requests / Meetings / Billing & Credits / Checklist / Notes), with a small
+  count badge. Selecting it shows the tag manager in the centre panel: the record's
+  current tags as removable amber-soft `Badge` chips, plus an "+ Add tag" control
+  that creates a new tag or picks an existing one (scoped to that entity type), with
+  the existing-tags / create-new dropdown. The header keeps only the structured chips
+  (Tier, ID, derived indicators), never tags.
 - **Bulk ("at scale"):** in the admin **vendors list** and **executives list**,
   select multiple rows (the T3 table multi-select) and apply or remove a tag across
   all selected.

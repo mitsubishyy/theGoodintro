@@ -37,7 +37,8 @@ first, then port (the established workflow).
 ## Features surfaced during design
 
 - **Tags (admin-only)** — full spec in `TAGS_FEATURE.md`. Free-form labels on
-  vendors and (separately) executives; add/remove individually on a detail page and
+  vendors and (separately) executives; add/remove via a **"Tags" item in the record's
+  left module rail** (NOT the profile header, which keeps only structured chips), and
   in bulk from a list. **Visible ONLY in the admin portal; staff-only at the RLS
   layer** so vendors/execs can never read their own tags via the API. Tags are
   distinct from structured chips (Tier, ID, derived "Renewal due"), which are NOT
