@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { PageHero, PrimaryCta, ClosingCta, SectionLabel } from "../_components/ui";
+import { PageHero, ClosingCta, SectionLabel } from "../_components/ui";
 import { IconCheck } from "../_components/icons";
 import { PricingSlider } from "../_components/pricing-slider";
 import { pageMetadata } from "@/lib/metadata";
@@ -12,13 +12,13 @@ export const metadata = pageMetadata({
   path: "/pricing",
 });
 
-// Cumulative position at the end of each band (and 20 = into band 4).
-// charity / pay are the running totals to that meeting; pct = charity ÷ pay.
+// Total charged to the vendor at four annual volumes (meetings × the flat
+// $1,500 fee). The charity split lives in the worked-example slider below.
 const ANNUAL_ROWS = [
-  { vol: "5 meetings", band: "End of band 1", charity: "$4,500", pct: 60, pay: "$7,500" },
-  { vol: "10 meetings", band: "End of band 2", charity: "$9,500", pct: 63, pay: "$15,000" },
-  { vol: "15 meetings", band: "End of band 3", charity: "$15,000", pct: 67, pay: "$22,500" },
-  { vol: "20 meetings", band: "Into band 4", charity: "$21,000", pct: 70, pay: "$30,000" },
+  { vol: "5 meetings", pay: "$7,500" },
+  { vol: "10 meetings", pay: "$15,000" },
+  { vol: "15 meetings", pay: "$22,500" },
+  { vol: "20 meetings", pay: "$30,000" },
 ];
 
 const TICKS = [
@@ -57,7 +57,7 @@ export default function Pricing() {
             <span className="serif-italic" style={{ color: "var(--primary)" }}>
               Good
             </span>{" "}
-            the more you meet.
+            the more you meet<span style={{ color: "var(--primary)" }}>.</span>
           </>
         }
         lede="Every meeting costs $1,500 AUD. The more meetings you take, the more goes to a charity the executive chooses."
@@ -115,10 +115,6 @@ export default function Pricing() {
                   </li>
                 ))}
               </ul>
-
-              <div className="mt-8">
-                <PrimaryCta>Apply to be a vendor</PrimaryCta>
-              </div>
             </div>
 
             {/* right: annual volume, charity-led — in its own bubble */}
@@ -127,15 +123,12 @@ export default function Pricing() {
                 className="rounded-2xl border p-6 md:p-7"
                 style={{ background: "var(--paper-white)", borderColor: "var(--hair)" }}
               >
-              <div className="grid grid-cols-[1fr_auto] sm:grid-cols-[140px_1fr_90px] gap-x-6 pb-4 border-b" style={{ borderColor: "var(--border)" }}>
+              <div className="grid grid-cols-[1fr_auto] gap-x-6 sm:gap-x-10 pb-4 border-b" style={{ borderColor: "var(--border)" }}>
                 <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
                   Annual volume
                 </div>
-                <div className="hidden sm:block font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                  Charity receives
-                </div>
                 <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground text-right">
-                  You pay
+                  Total charged
                 </div>
               </div>
 
@@ -143,47 +136,26 @@ export default function Pricing() {
                 <div
                   key={r.vol}
                   className={
-                    "grid grid-cols-[1fr_auto] sm:grid-cols-[140px_1fr_90px] gap-x-6 items-center py-6 " +
+                    "grid grid-cols-[1fr_auto] gap-x-6 sm:gap-x-10 items-center py-6 " +
                     (i < ANNUAL_ROWS.length - 1 ? "border-b" : "")
                   }
                   style={i < ANNUAL_ROWS.length - 1 ? { borderColor: "var(--border)" } : undefined}
                 >
                   {/* volume */}
-                  <div className="flex items-start gap-2.5">
+                  <div className="flex items-center gap-2.5">
                     <span
-                      className="mt-1.5 size-2 rounded-full shrink-0"
+                      className="size-2 rounded-full shrink-0"
                       style={{ background: "var(--primary)" }}
                       aria-hidden="true"
                     />
-                    <div>
-                      <div className="text-[15px] font-semibold leading-tight">{r.vol}</div>
-                      <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-                        {r.band}
-                      </div>
-                    </div>
+                    <div className="text-[15px] font-semibold leading-tight">{r.vol}</div>
                   </div>
 
-                  {/* charity receives + bar (full width on mobile) */}
-                  <div className="col-span-2 sm:col-span-1 mt-3 sm:mt-0">
-                    <div className="display-serif text-3xl md:text-[2rem] leading-none tabular-nums" style={{ color: "var(--primary)" }}>
-                      {r.charity}
+                  {/* total charged to the vendor */}
+                  <div className="text-right self-center">
+                    <div className="display-serif text-2xl md:text-[1.75rem] leading-none tabular-nums">
+                      {r.pay}
                     </div>
-                    <div
-                      className="mt-2.5 h-2 rounded-full overflow-hidden"
-                      style={{ background: "var(--mint-tint)" }}
-                      role="img"
-                      aria-label={`${r.pct} percent of fees reach charity`}
-                    >
-                      <div className="h-full rounded-full" style={{ width: `${r.pct}%`, background: "var(--primary)" }} />
-                    </div>
-                    <div className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-                      {r.pct}% of fees reach charity
-                    </div>
-                  </div>
-
-                  {/* you pay */}
-                  <div className="text-right tabular-nums text-sm text-muted-foreground self-start sm:self-center">
-                    {r.pay}
                   </div>
                 </div>
               ))}

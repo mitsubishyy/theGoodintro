@@ -104,7 +104,7 @@ export default function Vendors() {
             <div
               className="mt-6 flex gap-1.5 h-24 rounded-2xl overflow-hidden"
               role="img"
-              aria-label="Of every 1,500 dollar meeting, 900 to 1,200 dollars goes to the leader's chosen charity and 300 to 600 dollars runs the network."
+              aria-label="Of every 1,500 dollar meeting, 900 to 1,200 dollars goes to the leader's chosen charity, and the remainder runs the network."
             >
               <div
                 className="flex flex-col justify-center px-6 rounded-l-2xl"
@@ -120,14 +120,7 @@ export default function Vendors() {
               <div
                 className="flex flex-col justify-center px-4 rounded-r-2xl"
                 style={{ flexGrow: 25, background: "var(--stone)", color: "var(--cream-11)" }}
-              >
-                <span className="font-black text-base md:text-lg tracking-[-0.02em] tabular-nums">
-                  $300 to $600
-                </span>
-                <span className="text-[11px] md:text-xs" style={{ color: "var(--cream-10)" }}>
-                  runs the network
-                </span>
-              </div>
+              />
             </div>
 
             <p

@@ -10,9 +10,9 @@ export default function HeroSection() {
       </h1>
 
       <p className="hp-lede">
-        A handful of relevant conversations, on your terms. Each one sends a
-        real gift to an Australian charity you choose. No cold pitches, no
-        hard sells, no obligation to take the next one.
+        A few relevant conversations, on your terms, each funding a real gift
+        to a charity you choose. Access is earned, not bought, so nothing
+        reaches your calendar without a reason.
       </p>
 
       <div className="hp-cta-row">
