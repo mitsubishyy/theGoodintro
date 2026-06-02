@@ -84,3 +84,10 @@ engineering calls. Do not silently ship a smaller version of what was specced.
 Monorepo: `apps/web` (marketing) + `apps/platform` (this) + `packages/` (shared),
 npm workspaces + Turborepo, two independent Vercel projects. **Supabase on AWS
 Sydney (ap-southeast-2).** Keep the two apps fully isolated.
+
+## 7. Model + effort routing
+
+For which window and which model to use on which task, see the **Model routing
+and effort** section in [`../../CLAUDE.md`](../../CLAUDE.md). The platform's
+money, state-machine, reports, and migrations work always warrants **Opus 4.8
+at `max` or `xhigh`**. That is the floor here. Do not downshift.

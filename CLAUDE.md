@@ -258,6 +258,61 @@ scripts/
 next.config.ts            — Unsplash whitelisted; security headers + CSP
 ```
 
+## Model routing and effort
+
+Routing happens in two layers. **First: which window. Second: which model in
+that window.** A task in the wrong window is worse than a task on the wrong model.
+
+| Window | What runs there |
+|---|---|
+| The Supabase-connected build chat | Schema migrations, RLS, real DB queries, anything that hits production data |
+| Claude Design (claude.ai/design) | All visual iteration, with live preview |
+| Planning/translation chats (no DB) | Strategy, doc edits, copy review, brief writing, build plans, translating the build chat's output for Issy |
+
+Pick the model and effort level by the **cost of being wrong**, not the size of
+the task. The platform handles real money, GST, and donations; under-effort on
+correctness work costs more than over-spend on a model call ever will.
+
+| Work type | Model + effort | Why |
+|---|---|---|
+| Money, state machine, reports, migrations (anywhere under `apps/platform` or `packages/pricing`) | **Opus 4.8 at `max` or `xhigh`** | A bug here costs a real refund, a GST mistake, or a wrong charity amount. Spend the tokens. |
+| Long autonomous build chunks against a V2_BUILD_PLAN.md section | Opus 4.8 at `xhigh`, long-running | Designed for exactly this: holds direction across many gates, reports honestly when stuck. |
+| Planning chats and multi-doc reading (like this one) | Opus 4.x at the 1M context size | Lets the assistant hold every brief plus the relevant code in one head. |
+| Mechanical sweeps across many independent files (legacy lowercase "theGoodintro", stale copy, footer wiring, `.docx` regen) | Sonnet 4.6, single session | `npm run check:copy` verifies. Don't burn Opus on text edits. |
+| Routine `apps/web` copy tweaks, IndexNow pings, README touches | Sonnet 4.6, or Opus Fast Mode if already in an Opus session | Low stakes; speed matters more than reasoning. |
+| Throwaway one-shots (rename a variable, regenerate a single brief) | Haiku 4.5 | The fastest model that will do it correctly. |
+| Design iteration | Done in Claude Design at claude.ai/design with live preview, **not** in Claude Code | Existing rule: design there, port here. |
+| Anything DB-connected (migrations, RLS, real Supabase queries) | Whatever model the **Supabase-connected window** is on; the rule is the window, not the model | The MCP scope is what matters. |
+
+**The non-negotiable.** Effort level does not replace verification gates.
+"Max effort" never means "ship without `npm test && npm run lint && npm run
+build && npm run check:copy`." The Section 8 gates in
+[`V2_BUILD_PLAN.md`](V2_BUILD_PLAN.md) remain the definition of done.
+
+**Dynamic Workflows** (Anthropic's research-preview fan-out, up to 16 concurrent
+agents, 1,000 per run) is a fit ONLY for embarrassingly parallel work: the
+legacy brand/pricing sweep, the 12 reports, regenerating the 6 `.docx` briefs.
+Never for anything that touches shared files (`globals.css` tokens, `ui.tsx`
+primitives, the footer, the alternating white/oat background rhythm); subagents
+will collide. Prove it on a low-risk sweep before trusting it with build work.
+
+**Cost discipline.** If a task looks small and mechanical, downshift the model
+before starting; don't run Opus on something Sonnet would finish in one pass.
+If a task touches money or state, upshift; never run Sonnet on a state-machine
+transition or a CALCULATIONS.md figure.
+
+**Policy is Issy's, not Claude's.** Claude writes code that implements decisions;
+it does not make decisions that bind the business. Specifically off-limits:
+
+- Tax and accountant calls (cash vs accrual, GST tax point, when the donation
+  deduction is claimed, breakage on unused credits; see CALCULATIONS.md §5)
+- The per-meeting charity override binding mechanism
+- Anything in V2_BUILD_PLAN.md §7 ("ask Issy, do not guess")
+- Privacy, legal, ACNC, ABN, or charity-status questions
+
+If a build chunk is blocked on one of these, stop and surface a
+recommendation-first question to Issy. Do not guess.
+
 ## Conventions
 
 - Use Tailwind v4 utility classes in JSX. The shadcn-style design tokens
