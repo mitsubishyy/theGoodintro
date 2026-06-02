@@ -77,11 +77,13 @@ items below are what was not.
       9 migrations. **Gate: before any schema work.**
 - [x] **ART-2 Complete `.env.example`.** Every required env var, created this pass at
       `apps/platform/.env.example`. (Was only 3 Supabase vars before.)
-- [ ] **ART-3 Per-integration contracts.** For Xero, Zoom, Microsoft Graph (Teams +
+- [~] **ART-3 Per-integration contracts.** For Xero, Zoom, Microsoft Graph (Teams +
       Outlook), Google Calendar, Resend, Calendly, Slack: the webhook payload shape,
       signature/verification, OAuth scopes + encrypted token storage, and env vars.
       Written against the real APIs in the connected window. **Until written, treat
-      each integration as not-implementable** (no guessing payloads).
+      each integration as not-implementable** (no guessing payloads). **Gmail subset
+      written 2026-05-31 in [`GMAIL_INTEGRATION_CONTRACT.md`](GMAIL_INTEGRATION_CONTRACT.md)**;
+      remaining integrations still pending.
 - [ ] **ART-4 Test DB + CI.** A migrate+seed script and a CI workflow so the
       DB-backed tests run (Supabase CLI local or an ephemeral project; the seed is
       currently applied by hand via MCP). **Gate: PRODUCTION_READINESS D1/D2, Phase 1.**
@@ -91,10 +93,26 @@ items below are what was not.
       one polished reference screen per template T1 to T6. **Gate: Phase 0 in
       PORTAL_LAYOUT_BLUEPRINT.md, before any module build.** This is the single
       biggest fix for the "looks thin / inconsistent" problem.
+- [x] **ART-6 Admin Inbox specification.** Written 2026-05-31 in
+      [`ADMIN_INBOX_SPEC.md`](ADMIN_INBOX_SPEC.md). Defines the screen Issy uses to
+      read and reply to every customer email, with HR Partner density, progressive
+      disclosure (filters behind a button), the Reply / Internal Note composer, and
+      the AI Prompt button (visible only in Internal Note mode). Consumes ART-3
+      Gmail. **Gate: messaging module build cannot begin without this spec; the build
+      chat MUST follow it component-for-component.**
+- [x] **ART-7 Messaging AI Draft specification.** Written 2026-05-31 in
+      [`MESSAGING_AI_DRAFT_SPEC.md`](MESSAGING_AI_DRAFT_SPEC.md). Defines the AI
+      Prompt drawer: the data points surfaced about the contact, the three-draft
+      generation pattern, the money-token resolver (figures come from the pricing
+      engine, never the model), the post-generation guardrails, and the audit trail.
+      Anthropic Claude as the provider. **Gate: cannot wire AI drafting into the
+      composer without this spec; hard guardrails (Section 11) are non-negotiable.**
 
 ## 4. Order
 
 Contradictions (section 1) and ART-2 are done. Then ART-5 (Phase 0 design kit) and
 ART-1 + ART-4 (Phase 1 foundation) before feature modules. ART-3 contracts are
-written as each integration is built. The section-2 decisions are implemented at the
-point their code is written. Nothing in section 3 may be skipped with a guess.
+written as each integration is built (Gmail done). ART-6 and ART-7 are required
+before the messaging module is built; they are the source of truth for that
+module's UX, plumbing, and AI behaviour. The section-2 decisions are implemented at
+the point their code is written. Nothing in section 3 may be skipped with a guess.

@@ -439,17 +439,48 @@ costs alongside revenue. Full math in [CALCULATIONS.md](CALCULATIONS.md) section
   the dashboard never mistakes prepaid cash or unpaid gifts for profit.
 - Everything in this module exports to CSV (see CALCULATIONS.md section 6).
 
-### Comms
+### Comms (the Inbox module)
 
-- Shared-inbox style: conversation list on the left, thread on the right, assign
-  to a staffer, internal notes, jump in.
-- Powered by vendors emailing `support@thegoodintro.com`, which auto-forwards
-  into the shared inbox surfaced here. A tool like Front or Help Scout can power
-  it under the hood.
-- **Executive replies land here too.** An exec who wants to ask a question or say
-  "not now" simply **replies to the request email the normal way**; that reply
-  routes into this shared inbox for Issy to handle (no special UI for the exec).
+> **Full spec lives in [`ADMIN_INBOX_SPEC.md`](ADMIN_INBOX_SPEC.md), the
+> Gmail plumbing in [`GMAIL_INTEGRATION_CONTRACT.md`](GMAIL_INTEGRATION_CONTRACT.md),
+> the AI Prompt drawer in [`MESSAGING_AI_DRAFT_SPEC.md`](MESSAGING_AI_DRAFT_SPEC.md).
+> The summary here is the brief view; the specs are the build-ready truth.**
+
+- Two-pane layout: conversation list on the left, open thread on the right.
+  HR Partner density throughout. Filters, bulk actions, and system status hide
+  behind explicit buttons (progressive disclosure; see ADMIN_INBOX_SPEC §3).
+- **Powered by a native two-way Gmail sync** to one dedicated business mailbox
+  (`{platform_mailbox}` on the TheGoodIntros Workspace; Issy picks the address
+  later). Inbound: a vendor or exec emails the mailbox, the platform sees it
+  within seconds, links it to the right record, and shows it here. Outbound:
+  Issy replies in the platform, the email goes out as the mailbox and appears
+  in Gmail's Sent folder in the same thread. Issy can work from either the
+  platform or Gmail directly and both stay in sync.
+- The previously-floated shared-inbox tools (Front, Help Scout) are
+  **superseded**; native Gmail sync is the chosen path because the platform's
+  AI agents need full context (band, credits, request answers, history) that a
+  third-party shared inbox cannot reach into.
+- Every conversation is linked to a vendor, executive, or EA record where
+  possible (via thread continuation, signed-token reply, exact email match, or
+  domain match). Unmatched conversations land in an "Unmatched" filter for
+  Issy to link manually.
+- **Executive replies land here too.** An exec who wants to ask a question or
+  say "not now" simply **replies to the request email the normal way**; that
+  reply routes into this same inbox (no special UI for the exec).
 - This inbox is also where a **vendor-reported no-show** arrives.
+- **Composer modes:** Reply (sends an email to the contact via Gmail) and
+  Internal Note (team-only, never sent). When Internal Note is active, an
+  **AI Prompt button** appears next to the toggle. Clicking it opens a side
+  drawer showing every data point the platform knows about the contact (band,
+  credits, recent meetings, charity choice, original request answers, open
+  flags) plus three AI-drafted replies. "Use draft" copies the chosen draft
+  into the composer and flips back to Reply for Issy to edit and send.
+- **Hard rules** (enforced in code, not just prompt): AI never sends; AI never
+  invents money figures (they come from the pricing engine via tokens like
+  `{{charity_amount}}`); AI never contacts a customer without Issy's click on
+  Send. Full guardrail list in MESSAGING_AI_DRAFT_SPEC §11.
+- **Sensitive-scope verification (Google CASA Tier 2)** is a real lead-time
+  item before launch (6 to 10 weeks). Track in PRODUCTION_READINESS.
 
 ### Clients (Vendors & Executives)
 
