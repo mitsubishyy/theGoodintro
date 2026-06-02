@@ -131,6 +131,10 @@ Most of the posture is in `SECURITY_AND_COMPLIANCE.md`; these are the build task
       OAIC if required). Owner: Issy.
 - [ ] **C10 DIY OWASP / ASVS review** done before launch; external pen-test budgeted
       (~AUD $6k to $10k) for the scaling milestone.
+- [ ] **C11 Password reset flow.** Email-based token, single-use, with expiry.
+      *Done when:* a user can request a reset link from `/login`, click the email,
+      and set a new password; the link is single-use and invalid after expiry; the
+      flow is rate-limited and logged. **Pre-launch must.**
 
 ## 6. D. Test and CI infrastructure
 

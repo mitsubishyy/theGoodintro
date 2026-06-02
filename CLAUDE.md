@@ -70,6 +70,12 @@ otherwise guess at: resolved contradictions, engineering decisions (DEC-1 to
 DEC-11), and required artifacts (ART-1 to ART-5, including the `packages/ui` kit).
 Clear it before/while building; do not fill a gap with a guess.
 
+[`BUILD_HEALTH.md`](BUILD_HEALTH.md) is the current-state audit snapshot: what
+is verified-strong (do not rebuild), what is still weak (priority tiers
+referencing PRODUCTION_READINESS item codes), and what is deliberately not
+being built. Read it after V2_BUILD_PLAN.md so you know what to skip and what
+to push on.
+
 **Portal layout/visual source of truth:** [`PORTAL_LAYOUT_BLUEPRINT.md`](PORTAL_LAYOUT_BLUEPRINT.md)
 locks how every portal screen is laid out (HR Partner density on `--portal-*`
 tokens, one template per screen, every module specified). The briefs own workflows;
