@@ -75,7 +75,7 @@ export function PricingSlider() {
           <div className="font-mono text-sm tracking-[0.02em]">
             <span className="text-foreground font-bold text-base">{meetings}</span>{" "}
             <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-              meetings / year
+              {meetings === 1 ? "meeting" : "meetings"} / year
             </span>
           </div>
           <div

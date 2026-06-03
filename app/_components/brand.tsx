@@ -24,7 +24,7 @@ export default function Brand({ className }: BrandProps) {
         color: "var(--foreground)",
       }}
     >
-      the
+      The
       <span
         style={{
           fontFamily: "var(--font-fraunces), Georgia, serif",
@@ -36,7 +36,7 @@ export default function Brand({ className }: BrandProps) {
       >
         Good
       </span>
-      intro
+      Intro
     </span>
   );
 }

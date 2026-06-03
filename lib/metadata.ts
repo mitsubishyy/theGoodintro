@@ -23,7 +23,7 @@ export function pageMetadata({
       title,
       description,
       url,
-      siteName: "theGoodintro",
+      siteName: "TheGoodIntro",
       locale: "en_AU",
       type: "website",
     },

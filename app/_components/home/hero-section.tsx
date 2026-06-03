@@ -10,9 +10,10 @@ export default function HeroSection() {
       </h1>
 
       <p className="hp-lede">
-        A few relevant conversations, on your terms, each funding a real gift
-        to a charity you choose. Access is earned, not bought, so nothing
-        reaches your calendar without a reason.
+        TheGoodIntro is an invite-only network where vetted vendors can request
+        a short meeting with a senior leader, but only when they have a
+        specific, relevant reason. Executives take the few worth their time,
+        and each one sends a real gift to an Australian charity they choose.
       </p>
 
       <div className="hp-cta-row">

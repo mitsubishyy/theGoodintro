@@ -20,7 +20,7 @@ import { FOUNDER_LINKEDIN } from "@/lib/config";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
-  title: "How it works. theGoodintro.",
+  title: "How it works. TheGoodIntro.",
   description:
     "The whole model in the open: how a relevant conversation becomes a real gift, and who is building it.",
   path: "/how-it-works",
@@ -84,7 +84,7 @@ export default function HowItWorks() {
                 {hasFounderPhoto ? (
                   <Image
                     src="/founder.jpg"
-                    alt="Isobel Hardwick, founder of theGoodintro"
+                    alt="Isobel Hardwick, founder of TheGoodIntro"
                     fill
                     sizes="(min-width: 768px) 33vw, 100vw"
                     className="object-cover object-top"
@@ -127,7 +127,7 @@ export default function HowItWorks() {
                 Isobel Hardwick
               </h2>
               <div className="mt-2 text-sm text-muted-foreground">
-                Founder · theGoodintro · Australia
+                Founder · TheGoodIntro · Australia
               </div>
               <Quote className="mt-8 size-7 text-muted-foreground/40" />
               <p className="mt-4 text-lg md:text-xl leading-relaxed">
@@ -139,7 +139,7 @@ export default function HowItWorks() {
                 and make the conversation worth something beyond the deal.
               </p>
               <p className="mt-5 text-lg md:text-xl leading-relaxed">
-                theGoodintro is that rule, built into a place. Every
+                TheGoodIntro is that rule, built into a place. Every
                 conversation here sends a{" "}
                 <span className="serif-italic">real</span> gift to a cause the
                 leader chooses. That is the whole point.

@@ -27,7 +27,7 @@ export default function SiteFooter() {
           <Link href="/" className="hp-brand">
             <span className="hp-brand-mark" aria-hidden="true" />
             <span>
-              the<span className="it">Good</span>intro
+              The<span className="it">Good</span>Intro
             </span>
           </Link>
           <p className="hp-footer-tag">
@@ -56,7 +56,7 @@ export default function SiteFooter() {
             issy@thegoodintros.com
           </a>
           <p className="hp-footer-meta">ABN pending registration</p>
-          <p className="hp-footer-meta">&copy; 2026 theGoodintro Pty Ltd</p>
+          <p className="hp-footer-meta">&copy; 2026 TheGoodIntro Pty Ltd</p>
         </div>
       </div>
     </footer>

@@ -34,7 +34,7 @@ export default function SiteHeader() {
       <Link href="/" className="hp-brand">
         <span className="hp-brand-mark" aria-hidden="true" />
         <span>
-          the<span className="it">Good</span>intro
+          The<span className="it">Good</span>Intro
         </span>
       </Link>
 

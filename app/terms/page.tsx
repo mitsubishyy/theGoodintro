@@ -2,8 +2,8 @@ import { SectionLabel } from "../_components/ui";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
-  title: "Terms. theGoodintro.",
-  description: "The terms for using this early theGoodintro site.",
+  title: "Terms. TheGoodIntro.",
+  description: "The terms for using this early TheGoodIntro site.",
   path: "/terms",
 });
 
@@ -25,7 +25,7 @@ export default function Terms() {
             About this site
           </h2>
           <p className="text-muted-foreground">
-            This is an early information site for theGoodintro. It describes
+            This is an early information site for TheGoodIntro. It describes
             an idea that is still being shaped with a small founding group.
             Nothing here is an offer, a contract, or a guarantee of a
             meeting, a donation amount, or availability.
@@ -51,7 +51,7 @@ export default function Terms() {
           </h2>
           <p className="text-muted-foreground">
             Please use the site lawfully and do not attempt to disrupt it.
-            The name, wording and design are the property of theGoodintro.
+            The name, wording and design are the property of TheGoodIntro.
             Booking a call simply starts a conversation and creates no
             obligation on either side.
           </p>

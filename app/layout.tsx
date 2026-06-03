@@ -77,19 +77,19 @@ const mono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "theGoodintro. Meetings that fund what matters.",
+  title: "TheGoodIntro. Meetings that fund what matters.",
   description: SITE_DESCRIPTION,
   openGraph: {
-    title: "theGoodintro. Meetings that fund what matters.",
+    title: "TheGoodIntro. Meetings that fund what matters.",
     description: SITE_DESCRIPTION,
     url: SITE_URL,
-    siteName: "theGoodintro",
+    siteName: "TheGoodIntro",
     locale: "en_AU",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "theGoodintro. Meetings that fund what matters.",
+    title: "TheGoodIntro. Meetings that fund what matters.",
     description: SITE_DESCRIPTION,
   },
   robots: { index: true, follow: true },

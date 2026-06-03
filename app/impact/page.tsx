@@ -11,7 +11,7 @@ import { DGR_CHARITY_EXAMPLES } from "@/lib/config";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
-  title: "Impact. theGoodintro.",
+  title: "Impact. TheGoodIntro.",
   description:
     "Every executive gets a public, shareable impact page showing how much they have directed to charity. This is a preview of what each page will show. No real figures exist yet.",
   path: "/impact",

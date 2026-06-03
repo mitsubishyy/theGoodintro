@@ -8,7 +8,7 @@ import RsvpClient from "./rsvp-client";
 // for why (email link scanners).
 
 export const metadata: Metadata = {
-  title: "Thank you · theGoodintro",
+  title: "Thank you · TheGoodIntro",
   robots: { index: false, follow: false },
 };
 
@@ -40,7 +40,7 @@ export default async function RsvpPage({
           </h1>
           <p className="mt-3 text-[15px] text-muted-foreground leading-relaxed">
             It may have been copied incompletely or it has expired. If you meant
-            to reply, just hit reply on the email and let me know — that works
+            to reply, just hit reply on the email and let me know, that works
             perfectly too.
           </p>
         </div>

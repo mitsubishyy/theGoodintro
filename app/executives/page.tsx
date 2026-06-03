@@ -13,7 +13,7 @@ import { Avatar } from "../mockup/_components/avatar";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
-  title: "For executives. theGoodintro.",
+  title: "For executives. TheGoodIntro.",
   description:
     "Free for senior leaders. You decide what is relevant, take only the conversations worth your time, and a real gift goes to a charity you choose every meeting.",
   path: "/executives",
@@ -30,7 +30,7 @@ export default function Executives() {
         </h1>
 
         <p className="hp-lede">
-          You are senior enough that your calendar is a target. theGoodintro
+          You are senior enough that your calendar is a target. TheGoodIntro
           turns the few conversations worth having into a real gift for a cause
           you choose.
         </p>
@@ -90,11 +90,6 @@ export default function Executives() {
               body="You have one focused conversation, and a real gift goes to your chosen DGR-endorsed charity."
             />
           </div>
-          <p className="mt-12 text-center text-base text-muted-foreground italic max-w-3xl mx-auto">
-            A vendor states a specific need, you approve only what fits, you
-            have one short conversation, and a real gift goes to your chosen
-            charity.
-          </p>
         </div>
       </section>
 

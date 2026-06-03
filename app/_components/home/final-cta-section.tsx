@@ -27,58 +27,7 @@ type Bubble = {
   hideSm?: boolean;
 };
 
-const BUBBLES: Bubble[] = [
-  {
-    size: 140,
-    position: { left: "4%", top: "16%" },
-    dy: -36,
-    dx: 12,
-    name: "Sarah Chen",
-    role: "CFO · ASX 200 industrials",
-  },
-  {
-    size: 110,
-    position: { left: "10%", top: "50%" },
-    dy: 28,
-    dx: -9,
-    name: "Michael Reed",
-    role: "COO · regional bank",
-  },
-  {
-    size: 100,
-    position: { right: "5%", top: "26%" },
-    dy: -30,
-    dx: -15,
-    name: "Priya Patel",
-    role: "CFO · Series B fintech",
-  },
-  {
-    size: 130,
-    position: { right: "9%", top: "58%" },
-    dy: 34,
-    dx: 10,
-    name: "James Walker",
-    role: "MD · healthcare group",
-  },
-  {
-    size: 90,
-    hideSm: true,
-    position: { left: "22%", bottom: "4%" },
-    dy: -20,
-    dx: 18,
-    name: "Emma Taylor",
-    role: "COO · ASX 100 logistics",
-  },
-  {
-    size: 165,
-    hideSm: true,
-    position: { right: "14%", top: "4%" },
-    dy: 36,
-    dx: -18,
-    name: "Dan Sullivan",
-    role: "CFO · infrastructure",
-  },
-];
+const BUBBLES: Bubble[] = [];
 
 const DICEBEAR_BG = "F4ECDC,E7DBC2,D8E6D4,E3D8C1";
 
@@ -239,10 +188,6 @@ export default function FinalCtaSection() {
             </span>
           </Link>
         </div>
-        <p className="hp-cta-disclaimer">
-          Illustrative founding-cohort placeholders. Real names with permission,
-          on launch.
-        </p>
       </div>
     </section>
   );

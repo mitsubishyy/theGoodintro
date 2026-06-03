@@ -6,7 +6,7 @@ import { PricingSlider } from "../_components/pricing-slider";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
-  title: "Pricing. theGoodintro.",
+  title: "Pricing. TheGoodIntro.",
   description:
     "$1,500 AUD per meeting. Between $900 and $1,200 of that reaches the charity the executive chooses, rising with the number of meetings you take across the year.",
   path: "/pricing",

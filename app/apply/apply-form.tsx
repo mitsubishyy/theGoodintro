@@ -365,7 +365,7 @@ export default function ApplyForm() {
 
     if (!consent)
       return setError(
-        "Please confirm you're happy for your answers to be used to shape theGoodintro.",
+        "Please confirm you're happy for your answers to be used to shape TheGoodIntro.",
       );
 
     setSubmitting(true);
@@ -483,7 +483,7 @@ export default function ApplyForm() {
                 onClick={() => {
                   if (typeof navigator !== "undefined" && navigator.share) {
                     navigator
-                      .share({ title: "theGoodintro", url: shareUrl })
+                      .share({ title: "TheGoodIntro", url: shareUrl })
                       .catch(() => {});
                   } else {
                     copyShareLink();
@@ -640,7 +640,7 @@ export default function ApplyForm() {
             />
           </Field>
 
-          <Field label="Is there a cause that sits close to you that you would want supported on theGoodintro?">
+          <Field label="Is there a cause that sits close to you that you would want supported on TheGoodIntro?">
             <MultiSelectDropdown
               placeholder="Select all that apply"
               options={CHARITY_THEMES}

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { UserAvatar } from "./_components/avatar";
 
 export const metadata: Metadata = {
-  title: "Mockup preview · theGoodintro",
+  title: "Mockup preview · TheGoodIntro",
   description: "Internal mockup preview. Not the live product.",
   robots: { index: false, follow: false },
 };
@@ -70,7 +70,7 @@ function AppTopBar() {
               <span className="text-[11px] font-semibold" style={{ color: "var(--primary-foreground)" }}>tG</span>
             </span>
             <span className="text-sm font-semibold tracking-tight">
-              theGoodintro
+              TheGoodIntro
             </span>
           </a>
           <nav className="hidden md:flex items-center gap-1 text-[13px]">

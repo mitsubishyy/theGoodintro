@@ -35,7 +35,7 @@ export function MeetingRequestEmail({
 }) {
   return (
     <EmailFrame
-      from="theGoodintro <introductions@thegoodintro.com>"
+      from="TheGoodIntro <introductions@thegoodintro.com>"
       to="Jane Allen <jane.allen@hexagon.com.au>"
       cc="Emma Roy (EA) <emma.roy@hexagon.com.au>"
       subject="Lachlan Smith (Acme) wants 45 minutes"
@@ -342,7 +342,7 @@ export function EmailFooter({ showAppLink = true }: { showAppLink?: boolean }) {
     >
       <div className="flex items-center gap-2">
         <Calendar className="size-3.5" />
-        <span>theGoodintro · invite-only · Australia</span>
+        <span>TheGoodIntro · invite-only · Australia</span>
       </div>
       <div className="flex items-center gap-3">
         {showAppLink && (

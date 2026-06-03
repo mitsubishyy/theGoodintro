@@ -246,7 +246,7 @@ export default function CharityGallerySection() {
         ref={scroller}
         className="hp-gallery-viewport"
         role="region"
-        aria-label="Charities funded via theGoodintro"
+        aria-label="Charities funded via TheGoodIntro"
         onPointerEnter={() => {
           hovering.current = true;
         }}

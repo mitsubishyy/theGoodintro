@@ -2,7 +2,7 @@
 
 export const SITE_URL = "https://thegoodintro.vercel.app";
 
-export const SITE_NAME = "theGoodintro";
+export const SITE_NAME = "TheGoodIntro";
 
 export const SITE_DESCRIPTION =
   "Relevant, qualified introductions with senior leaders. Every meeting sends a real donation to a charity they choose. Invite only, Australia first.";

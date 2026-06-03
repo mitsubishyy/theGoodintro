@@ -4,14 +4,14 @@ import ApplyForm from "./apply-form";
 import Brand from "../_components/brand";
 
 const APPLY_DESC =
-  "A short, honest set of questions for senior leaders to pressure-test theGoodintro: qualified vendor meetings where every meeting funds a charity the executive chooses.";
+  "A short, honest set of questions for senior leaders to pressure-test TheGoodIntro: qualified vendor meetings where every meeting funds a charity the executive chooses.";
 
 export const metadata: Metadata = {
-  title: "Help shape theGoodintro.",
+  title: "Help shape TheGoodIntro.",
   description: APPLY_DESC,
   robots: { index: false, follow: false },
-  openGraph: { title: "Help shape theGoodintro.", description: APPLY_DESC },
-  twitter: { title: "Help shape theGoodintro.", description: APPLY_DESC },
+  openGraph: { title: "Help shape TheGoodIntro.", description: APPLY_DESC },
+  twitter: { title: "Help shape TheGoodIntro.", description: APPLY_DESC },
 };
 
 // Rendered per request so the bare header/footer (no nav on the survey)
@@ -77,7 +77,7 @@ export default function ApplyPage() {
               <div className="shrink-0">
                 <Image
                   src="/issy.jpg"
-                  alt="Isobel Hardwick, founder of theGoodintro"
+                  alt="Isobel Hardwick, founder of TheGoodIntro"
                   width={128}
                   height={160}
                   className="rounded-xl object-cover object-top"

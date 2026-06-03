@@ -26,7 +26,7 @@ import {
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
-  title: "Giving. theGoodintro.",
+  title: "Giving. TheGoodIntro.",
   description:
     "Exactly how the giving works: every meeting sends a real gift to a deductible gift recipient (DGR) endorsed Australian charity the executive chooses, the terms it runs on, and how to verify all of it.",
   path: "/giving",
@@ -97,7 +97,7 @@ export default function Giving() {
             <FlowArrow />
             <FlowStep
               icon={IconNetwork}
-              label="theGoodintro"
+              label="TheGoodIntro"
               detail="Sends the charity its share, keeps the rest to run the network"
             />
             <FlowArrow />
@@ -338,9 +338,10 @@ export default function Giving() {
             <div className="lg:col-span-8">
               <Faq q="What is DGR, in plain terms?" open>
                 Deductible gift recipient is an endorsement from the
-                Australian Taxation Office. A charity that holds it can issue
-                a place on its public register. Not every registered charity
-                has it, which is why we require it.
+                Australian Taxation Office. A charity that holds it appears on
+                the ATO&apos;s public register, and gifts to it are tax
+                deductible. Not every registered charity has it, which is why
+                we require it.
               </Faq>
               <Faq q="Can an executive pick a charity that is not DGR-endorsed?">
                 No. The choice is restricted to DGR-endorsed Australian
@@ -357,7 +358,7 @@ export default function Giving() {
               <Faq q="Are the charities shown here your partners?">
                 No. The names shown are well-known examples to illustrate the
                 kind of organisation that qualifies. They have no affiliation
-                with theGoodintro. The executive chooses, and it can be any
+                with TheGoodIntro. The executive chooses, and it can be any
                 DGR-endorsed Australian charity.
               </Faq>
               <Faq q="How do I know the money arrived?">

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ArrowRight, Check, Heart, Mail, X } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Cold RSVP flow · theGoodintro mockup",
+  title: "Cold RSVP flow · TheGoodIntro mockup",
   robots: { index: false, follow: false },
 };
 
@@ -105,7 +105,7 @@ function ColdEmail() {
       <div className="px-6 py-6" style={{ color: "var(--foreground)" }}>
         <p className="text-[15px] leading-relaxed">Hi Jane,</p>
         <p className="mt-3 text-[15px] leading-relaxed">
-          I&apos;m building theGoodintro: an invite-only network where senior
+          I&apos;m building TheGoodIntro: an invite-only network where senior
           leaders take a handful of genuinely relevant meetings, and every
           meeting sends <strong>$1,000</strong> to a charity they choose.
         </p>
@@ -147,7 +147,7 @@ function ColdEmail() {
           style={{ borderColor: "var(--border)" }}
         >
           <p>Warmly,</p>
-          <p className="mt-1 font-medium">Issy Hardwick · Founder, theGoodintro</p>
+          <p className="mt-1 font-medium">Issy Hardwick · Founder, TheGoodIntro</p>
         </div>
       </div>
     </div>
@@ -213,7 +213,7 @@ function YesCard() {
       </h1>
       <p className="mt-3 text-[15px] text-muted-foreground leading-relaxed">
         That&apos;s all I needed. I&apos;ll be in touch shortly with the next
-        step — a quick five-minute call to set you up, nothing to fill in.
+        step, a quick five-minute call to set you up, nothing to fill in.
       </p>
       <div
         className="mt-6 flex items-start gap-3 rounded-xl border p-4"
@@ -228,7 +228,7 @@ function YesCard() {
             Notice how easy that was? Giving is just as effortless.
           </p>
           <p className="mt-1 text-[13px] leading-relaxed">
-            Every meeting you take through theGoodintro sends{" "}
+            Every meeting you take through TheGoodIntro sends{" "}
             <span className="serif-italic" style={{ color: "var(--primary)" }}>
               $1,000
             </span>{" "}
@@ -259,7 +259,7 @@ function NoCard() {
         No problem, Jane.
       </h1>
       <p className="mt-3 text-[15px] text-muted-foreground leading-relaxed">
-        Thanks for letting me know — I won&apos;t follow up. If the timing
+        Thanks for letting me know. I won&apos;t follow up. If the timing
         changes down the track, the door stays open.
       </p>
       <SiteCta>Curious to know more? You&apos;re welcome to look around our site</SiteCta>

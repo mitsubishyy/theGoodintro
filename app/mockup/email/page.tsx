@@ -11,7 +11,7 @@ import {
 } from "../../_components/meeting-request-email";
 
 export const metadata: Metadata = {
-  title: "Email flow · theGoodintro mockup",
+  title: "Email flow · TheGoodIntro mockup",
   robots: { index: false, follow: false },
 };
 
@@ -89,7 +89,7 @@ export default function EmailMockup() {
 function LinkedInShareEmail() {
   return (
     <EmailFrame
-      from="theGoodintro <impact@thegoodintro.com>"
+      from="TheGoodIntro <impact@thegoodintro.com>"
       to="Jane Allen <jane.allen@hexagon.com.au>"
       subject="Your meeting funded $1,000 to Beyond Blue"
       preview="Beyond Blue confirmed receipt. Want to share this on LinkedIn?"
@@ -197,7 +197,7 @@ function LinkedInPostPreview() {
         <br />
         <br />
         I&apos;m taking meetings through{" "}
-        <span style={{ color: "#0a66c2" }}>@theGoodintro</span>, an invite-only
+        <span style={{ color: "#0a66c2" }}>@TheGoodIntro</span>, an invite-only
         network that turns my time into funded outcomes for DGR-endorsed
         Australian charities. If you&apos;d like to direct your own
         conversations toward causes that matter, ping me.
@@ -273,7 +273,7 @@ function OnboardingCapture() {
         <CaptureRow
           label="Calendar"
           value="Connected: jane.allen@hexagon.com.au (Google)"
-          subnote="theGoodintro can hold 45-minute slots; calendar invites sent automatically."
+          subnote="TheGoodIntro can hold 45-minute slots; calendar invites sent automatically."
         />
         <CaptureRow
           label="EA / delegate"

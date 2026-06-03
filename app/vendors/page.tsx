@@ -5,7 +5,7 @@ import { VendorsFlow } from "../_components/vendors-flow";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
-  title: "For vendors. theGoodintro.",
+  title: "For vendors. TheGoodIntro.",
   description:
     "A qualified introduction to a vetted, hard-to-reach senior audience. Every meeting you book sends a real gift to the leader's chosen charity. Australia first, invite only.",
   path: "/vendors",
@@ -26,7 +26,7 @@ export default function Vendors() {
       <PageHero
         eyebrow="For vendors"
         title="From request to"
-        italicWord="gift."
+        italicWord="gift"
         lede="A genuinely qualified introduction to a vetted, hard-to-reach senior audience. Earned by being relevant, not by buying a list and sending more cold email."
         primaryCta="Apply as a founding vendor"
         pill="Founding vendor applications open"
@@ -127,8 +127,9 @@ export default function Vendors() {
               className="mt-6 text-[15px] leading-relaxed max-w-2xl"
               style={{ color: "var(--cream-9)" }}
             >
-              The charity share rises with the number of meetings you take
-              across the year. Full tier table on the{" "}
+              We keep the rest to run the network: vetting, matching, and
+              operations. The charity share rises with the number of meetings
+              you take across the year. Full tier table on the{" "}
               <Link
                 href="/pricing"
                 className="underline underline-offset-4 hover:text-primary"

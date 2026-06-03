@@ -38,7 +38,7 @@ export default function TwoSidesSection() {
       <div className="hp-do-grid">
         <Link
           className="hp-do-card"
-          href="/about"
+          href="/executives"
           aria-labelledby="card-exec-title"
         >
           <span className="hp-do-card-icon" aria-hidden="true">

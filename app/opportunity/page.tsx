@@ -17,9 +17,9 @@ import {
 import { OpportunityIllustration } from "../_components/illustrations";
 
 export const metadata = pageMetadata({
-  title: "Partner with me. theGoodintro.",
+  title: "Partner with me. TheGoodIntro.",
   description:
-    "theGoodintro is early. An invite-only network where senior leaders take only relevant meetings and every one sends a real gift to a charity they choose. I am looking for one person to build it into a company.",
+    "TheGoodIntro is early. An invite-only network where senior leaders take only relevant meetings and every one sends a real gift to a charity they choose. I am looking for one person to build it into a company.",
   path: "/opportunity",
 });
 
@@ -30,7 +30,7 @@ export default function Opportunity() {
         eyebrow="The opportunity"
         title="Build this"
         italicWord="with me"
-        lede="theGoodintro is early. An invite-only network where senior leaders take only the meetings worth their time, and every one sends a real gift to a charity they choose. The idea is on the page. I am looking for one person to build it into a company."
+        lede="TheGoodIntro is early. An invite-only network where senior leaders take only the meetings worth their time, and every one sends a real gift to a charity they choose. The idea is on the page. I am looking for one person to build it into a company."
         primaryCta="Start a conversation"
         pill="Honest about the stage · Australia first"
         bg="var(--cream-6)"
@@ -43,7 +43,7 @@ export default function Opportunity() {
           <SectionHead
             label="Why this is worth building"
             title="Two broken sides, one fix."
-            lede="Senior leaders ignore most outreach because almost none of it is relevant. Vendors spend heavily to reach them and mostly fail. Neither side has a reason to make the exchange worth anything beyond the deal. theGoodintro changes the incentive: a meeting happens only when it is genuinely relevant, and when it does, real money goes to a cause the leader chose."
+            lede="Senior leaders ignore most outreach because almost none of it is relevant. Vendors spend heavily to reach them and mostly fail. Neither side has a reason to make the exchange worth anything beyond the deal. TheGoodIntro changes the incentive: a meeting happens only when it is genuinely relevant, and when it does, real money goes to a cause the leader chose."
           />
         </div>
       </section>

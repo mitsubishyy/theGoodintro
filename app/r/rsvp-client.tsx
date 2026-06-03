@@ -62,7 +62,7 @@ export default function RsvpClient({
         </h1>
         <p className="mt-3 text-[15px] text-muted-foreground leading-relaxed">
           That&apos;s all I needed. I&apos;ll be in touch shortly with the next
-          step — a quick five-minute call to set you up, nothing to fill in.
+          step, a quick five-minute call to set you up, nothing to fill in.
         </p>
         <div
           className="mt-6 flex items-start gap-3 rounded-xl border p-4"
@@ -77,7 +77,7 @@ export default function RsvpClient({
               Notice how easy that was? Giving is just as effortless.
             </p>
             <p className="mt-1 text-[13px] leading-relaxed">
-              Every meeting you take through theGoodintro sends{" "}
+              Every meeting you take through TheGoodIntro sends{" "}
               <span className="serif-italic" style={{ color: "var(--primary)" }}>
                 $1,000
               </span>{" "}
@@ -112,7 +112,7 @@ export default function RsvpClient({
         No problem{hi}.
       </h1>
       <p className="mt-3 text-[15px] text-muted-foreground leading-relaxed">
-        Thanks for letting me know — I won&apos;t follow up. If the timing
+        Thanks for letting me know. I won&apos;t follow up. If the timing
         changes down the track, the door stays open.
       </p>
       <Footer
