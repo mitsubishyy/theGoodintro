@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -24,11 +25,14 @@ export default function SiteFooter() {
     <footer className="hp-footer">
       <div className="hp-footer-grid">
         <div className="hp-footer-brand">
-          <Link href="/" className="hp-brand">
-            <span className="hp-brand-mark" aria-hidden="true" />
-            <span>
-              The<span className="it">Good</span>Intro
-            </span>
+          <Link href="/" className="hp-brand" aria-label="TheGoodIntro home">
+            <Image
+              src="/brand/wordmark.png"
+              alt="TheGoodIntro"
+              width={750}
+              height={168}
+              className="h-8 w-auto"
+            />
           </Link>
           <p className="hp-footer-tag">
             Senior introductions that fund Australian charities.

@@ -1,10 +1,18 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
+export const runtime = "nodejs";
 export const alt = "TheGoodIntro. Meetings that fund what matters.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OpengraphImage() {
+export default async function OpengraphImage() {
+  const logoData = await readFile(
+    join(process.cwd(), "public/brand/email-signature.png"),
+  );
+  const logoSrc = `data:image/png;base64,${logoData.toString("base64")}`;
+
   return new ImageResponse(
     (
       <div
@@ -19,21 +27,9 @@ export default function OpengraphImage() {
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ fontSize: 36, fontWeight: 700, display: "flex" }}>
-          <span>The</span>
-          <span
-            style={{
-              color: "#1f7a47",
-              fontFamily: "Georgia, 'Times New Roman', serif",
-              fontWeight: 700,
-              letterSpacing: "0.01em",
-            }}
-          >
-            Good
-          </span>
-          <span>Intro</span>
-        </div>
-        <div style={{ fontSize: 64, fontWeight: 700, marginTop: 24 }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={logoSrc} alt="TheGoodIntro" width={420} height={94} />
+        <div style={{ fontSize: 64, fontWeight: 700, marginTop: 48 }}>
           Meetings that fund what matters.
         </div>
         <div style={{ fontSize: 28, marginTop: 24 }}>

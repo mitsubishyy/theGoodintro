@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -31,11 +32,15 @@ export default function SiteHeader() {
 
   return (
     <nav className="hp-topnav" aria-label="Primary">
-      <Link href="/" className="hp-brand">
-        <span className="hp-brand-mark" aria-hidden="true" />
-        <span>
-          The<span className="it">Good</span>Intro
-        </span>
+      <Link href="/" className="hp-brand" aria-label="TheGoodIntro home">
+        <Image
+          src="/brand/wordmark.png"
+          alt="TheGoodIntro"
+          width={750}
+          height={168}
+          priority
+          className="h-7 w-auto"
+        />
       </Link>
 
       {!bare && (

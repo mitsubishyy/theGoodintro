@@ -22,21 +22,38 @@ type Bubble = {
   position: { left?: string; right?: string; top?: string; bottom?: string };
   dy: number;
   dx: number;
-  name: string;
-  role: string;
+  seed: string;
   hideSm?: boolean;
+  // Optional override for the DiceBear mouth pick. When set, replaces the
+  // happy01–happy18 random set with this exact mouth (e.g. "happy07" shows
+  // teeth).
+  mouth?: string;
 };
 
-const BUBBLES: Bubble[] = [];
+const BUBBLES: Bubble[] = [
+  { size: 140, position: { left: "4%", top: "16%" }, dy: -36, dx: 12, seed: "exec-1" },
+  { size: 110, position: { left: "10%", top: "50%" }, dy: 28, dx: -9, seed: "exec-2" },
+  { size: 100, position: { right: "5%", top: "26%" }, dy: -30, dx: -15, seed: "exec-3" },
+  { size: 130, position: { right: "9%", top: "58%" }, dy: 34, dx: 10, seed: "exec-4", mouth: "happy07" },
+  { size: 90, hideSm: true, position: { left: "22%", bottom: "4%" }, dy: -20, dx: 18, seed: "exec-5" },
+  { size: 165, hideSm: true, position: { right: "14%", top: "4%" }, dy: 36, dx: -18, seed: "exec-6" },
+];
 
 const DICEBEAR_BG = "F4ECDC,E7DBC2,D8E6D4,E3D8C1";
 
-function avatarUrl(name: string) {
+const HAPPY_MOUTHS =
+  "happy01,happy02,happy03,happy04,happy05,happy06,happy07,happy08,happy09,happy10,happy11,happy12,happy13,happy14,happy15,happy16,happy17,happy18";
+
+function avatarUrl(seed: string, mouth?: string) {
   const u = new URL("https://api.dicebear.com/9.x/lorelei/svg");
-  u.searchParams.set("seed", name);
+  u.searchParams.set("seed", seed);
   u.searchParams.set("backgroundColor", DICEBEAR_BG);
   u.searchParams.set("backgroundType", "solid");
   u.searchParams.set("radius", "50");
+  // Without a mouth pin DiceBear picks from the full Lorelei set including
+  // sad variants, so default to the happy list. A bubble can override with a
+  // specific mouth (e.g. happy07 shows teeth).
+  u.searchParams.set("mouth", mouth ?? HAPPY_MOUTHS);
   return u.toString();
 }
 
@@ -149,11 +166,7 @@ export default function FinalCtaSection() {
           >
             <div className="hp-cta-bubble-avatar">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img alt="" loading="lazy" src={avatarUrl(b.name)} />
-            </div>
-            <div className="hp-cta-bubble-caption">
-              <span className="hp-cta-bubble-name">{b.name}</span>
-              <span className="hp-cta-bubble-role">{b.role}</span>
+              <img alt="" loading="lazy" src={avatarUrl(b.seed, b.mouth)} />
             </div>
           </div>
         ))}
