@@ -52,4 +52,28 @@
   --portal-amber-soft: oklch(0.94 0.035 85);
   --portal-amber-ink: oklch(0.52 0.06 82);
   --portal-line: color-mix(in oklch, oklch(0.17 0.006 70) 9%, transparent);
+
+  /* Per-portal sidebar palette (locked 2026-06-05 in UI_KIT_DESIGN_LOG).
+     Admin sidebar = brand emerald (--primary / --emerald-deep, defined above).
+     Vendor sidebar = deep teal-pine. Exec sidebar = TBD (clay/bronze candidate). */
+  --vendor-sidebar: oklch(0.32 0.045 195);
+  --vendor-sidebar-soft: oklch(0.42 0.06 195);
+  --vendor-sidebar-ink: oklch(0.96 0.02 195);
+
+  /* Reading / form / list-card surface: brighter white than --portal-card so a
+     vendor T3 list or T5 form card reads as the primary content plane against
+     the warm-cream page. Hover wash sits between page and card for row hovers. */
+  --portal-card-reading: oklch(0.998 0.002 84);
+  --portal-card-hover: oklch(0.985 0.010 84);
+
+  /* TEMPORARY alias bridge: the legacy hand-rolled dashboards (admin/_components
+     widgets, vendor/_components dashboard) reference --cream-3/6/9/10, which were
+     never defined here; muted text and chip fills currently fall back to inherited
+     colour and render wrong. Aliased to the canonical tokens so they render
+     correctly until those shells are replaced by @thegoodintro/ui. Delete this
+     block when admin/vendor/exec _components are removed (UI_KIT_BRIEF §3). */
+  --cream-3: var(--muted);
+  --cream-6: var(--border-strong);
+  --cream-9: var(--muted-foreground);
+  --cream-10: var(--portal-ink);
 }

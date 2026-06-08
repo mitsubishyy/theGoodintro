@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "@thegoodintro/tokens/portal.css";
 
+/* Tailwind v4 needs to scan the shared UI kit so its utility classes aren't
+   purged. The kit ships source-only TS from packages/ui/src. */
+@source "../../../packages/ui/src/**/*.{ts,tsx}";
+
 /* Maps the shared design tokens onto Tailwind v4 utility names so the carried
    portal mockups (bg-*, text-*, border-*, font-*, rounded-*) resolve. The token
    VALUES live in @thegoodintro/tokens (packages/tokens/src/portal.css). */
