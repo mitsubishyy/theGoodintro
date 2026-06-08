@@ -24,6 +24,16 @@ export { Skeleton } from "./primitives/Skeleton";
 export type { SkeletonProps, SkeletonVariant } from "./primitives/Skeleton";
 export { ErrorInline } from "./primitives/ErrorInline";
 export type { ErrorInlineProps } from "./primitives/ErrorInline";
+export { Tabs } from "./primitives/Tabs";
+export type { TabsProps, TabsItem } from "./primitives/Tabs";
+export { Field } from "./primitives/Field";
+export type { FieldProps } from "./primitives/Field";
+export { TogglePill } from "./primitives/TogglePill";
+export type { TogglePillProps } from "./primitives/TogglePill";
+export { RadioCard } from "./primitives/RadioCard";
+export type { RadioCardProps, RadioCardOption } from "./primitives/RadioCard";
+export { WhatHappensNext } from "./primitives/WhatHappensNext";
+export type { WhatHappensNextProps } from "./primitives/WhatHappensNext";
 
 // ── Shell ───────────────────────────────────────────────────────────────────
 export { PortalShell } from "./shell/PortalShell";
@@ -40,6 +50,18 @@ export { MetricsRibbon } from "./templates/MetricsRibbon";
 export type { MetricsRibbonProps } from "./templates/MetricsRibbon";
 export { Widget } from "./templates/Widget";
 export type { WidgetProps } from "./templates/Widget";
+export { DataTable } from "./templates/DataTable";
+export type { DataTableProps, DataTableColumn, DataTableDensity, SortState } from "./templates/DataTable";
+export { RecordDetail } from "./templates/RecordDetail";
+export type { RecordDetailProps, DetailModule, DetailFact, ActivityItem } from "./templates/RecordDetail";
+export { RecordForm } from "./templates/RecordForm";
+export type { RecordFormProps, RecordFormVariant, FormSection } from "./templates/RecordForm";
+export { Checklist } from "./templates/Checklist";
+export type { ChecklistProps, ChecklistItem } from "./templates/Checklist";
+export { ExecCardGrid } from "./templates/ExecCardGrid";
+export type { ExecCardGridProps, ExecCard } from "./templates/ExecCardGrid";
+export { InlineFilterBar } from "./templates/InlineFilterBar";
+export type { InlineFilterBarProps, FilterPill } from "./templates/InlineFilterBar";
 
 // ── Shared types ────────────────────────────────────────────────────────────
 export type {
