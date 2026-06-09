@@ -27,9 +27,6 @@ export default function Brand({ className }: BrandProps) {
       The
       <span
         style={{
-          fontFamily: "var(--font-fraunces), Georgia, serif",
-          fontStyle: "italic",
-          fontWeight: 500,
           color: "var(--primary)",
           margin: "0 0.16em",
         }}

@@ -28,8 +28,9 @@ export default function Vendors() {
         title="From request to"
         italicWord="gift"
         lede="A genuinely qualified introduction to a vetted, hard-to-reach senior audience. Earned by being relevant, not by buying a list and sending more cold email."
-        primaryCta="Apply as a founding vendor"
-        pill="Founding vendor applications open"
+        primaryCta="Join the waitlist"
+        primaryHref="/waitlist"
+        pill="Founding vendor waitlist open"
         bg="var(--cream-4)"
         illustration={<VendorsIllustration className="w-full h-auto" />}
       />
@@ -203,7 +204,8 @@ export default function Vendors() {
         title="Be the introduction"
         italicWord="worth taking."
         lede="Reach senior leaders by being relevant, and fund a real gift while you do it. Every meeting you book sends a real gift to the leader's chosen charity."
-        primaryCta="Apply as a founding vendor"
+        primaryCta="Join the waitlist"
+        primaryHref="/waitlist"
         sub="One short call to start · You fund the giving"
         tone="white"
       />

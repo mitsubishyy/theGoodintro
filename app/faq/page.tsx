@@ -17,7 +17,8 @@ export default function FAQ() {
         title="The real"
         italicWord="questions"
         lede="The ones senior leaders ask before they will take this seriously. Straight answers, no hedging. If yours is not here, raise it on the call."
-        primaryCta="Apply as a founding executive"
+        primaryCta="Join the waitlist"
+        primaryHref="/waitlist"
         secondaryLabel="How it works"
         secondaryHref="/how-it-works"
         bg="var(--cream-11)"
@@ -131,7 +132,7 @@ export default function FAQ() {
       <ClosingCta
         title="Still have a"
         italicWord="question?"
-        lede="Apply as a founding executive and ask it on the call. You decide what is relevant, you take only the conversations you want, and the charity you choose receives a real gift each time."
+        lede="Join the waitlist and ask it on the call when the founder gets in touch. Executives decide what is relevant, take only the conversations they want, and the charity they choose receives a real gift each time."
         secondaryLabel="See the giving"
         secondaryHref="/giving"
       />

@@ -45,7 +45,8 @@ export default function HowItWorks() {
         title="The whole model,"
         italicWord="in the open"
         lede="One requirement keeps it honest: a vendor must say why a conversation is relevant before a leader ever sees it. Everything else, including the giving, follows from that."
-        primaryCta="Apply as a founding executive"
+        primaryCta="Join the waitlist"
+        primaryHref="/waitlist"
         secondaryLabel="See the giving"
         secondaryHref="/giving"
         bg="var(--cream-5)"
@@ -216,7 +217,7 @@ export default function HowItWorks() {
       <ClosingCta
         title="See it work"
         italicWord="for you."
-        lede="Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives a real gift each time."
+        lede="Join the waitlist. Executives decide what is relevant, take only the conversations they want, and the charity they choose receives a real gift each time."
         secondaryLabel="For vendors"
         secondaryHref="/vendors"
         tone="oat"

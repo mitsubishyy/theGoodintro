@@ -61,7 +61,8 @@ export default function Pricing() {
           </>
         }
         lede="Every meeting costs $1,500 AUD. The more meetings you take, the more goes to a charity the executive chooses."
-        primaryCta="Apply as a founding vendor"
+        primaryCta="Join the waitlist"
+        primaryHref="/waitlist"
         secondaryLabel="See how it works"
         secondaryHref="/how-it-works"
       />
@@ -257,7 +258,8 @@ export default function Pricing() {
         title="Be the introduction"
         italicWord="worth taking."
         lede="Reach senior leaders by being relevant, and fund a real gift while you do it. Every meeting you book sends a real gift to the leader's chosen charity."
-        primaryCta="Apply to be a vendor"
+        primaryCta="Join the waitlist"
+        primaryHref="/waitlist"
         sub="Limited to ~20 vendor seats at any time · One short call to start"
         tone="oat"
       />

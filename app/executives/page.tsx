@@ -36,9 +36,9 @@ export default function Executives() {
         </p>
 
         <div className="hp-cta-row">
-          <a className="hp-btn-primary">
+          <a className="hp-btn-primary" href="/waitlist">
             <span className="pulse" aria-hidden="true" />
-            Apply as a founding executive
+            Join the waitlist
           </a>
           <Link className="hp-btn-ghost" href="/how-it-works">
             How it works
@@ -191,7 +191,7 @@ export default function Executives() {
         tone="oat"
         title="Conversations worth"
         italicWord="your time."
-        lede="Apply as a founding executive. You decide what is relevant, you take only the conversations you want, and the charity you choose receives a real gift each time."
+        lede="Join the waitlist. Executives decide what is relevant, take only the conversations they want, and the charity they choose receives a real gift each time."
         secondaryLabel="See how it works"
         secondaryHref="/how-it-works"
       />
