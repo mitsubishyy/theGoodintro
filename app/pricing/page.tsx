@@ -194,6 +194,39 @@ export default function Pricing() {
         </div>
       </section>
 
+      {/* ── Credits — light band, two-paragraph explainer ───────────── */}
+      <section style={{ background: "var(--paper-white)" }}>
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <div className="max-w-2xl">
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em]" style={{ color: "var(--primary)" }}>
+              Credits
+            </p>
+            <h2 className="mt-5 text-3xl md:text-5xl font-extrabold tracking-[-0.02em] leading-[1.05]">
+              Pay per meeting, or{" "}
+              <span className="serif-italic" style={{ color: "var(--primary)" }}>
+                buy ahead
+              </span>
+              .
+            </h2>
+            <p className="mt-6 text-[15px] md:text-base leading-relaxed text-foreground/75">
+              A credit is one prepaid meeting at the flat $1,500. Buy them one
+              at a time or in a block, whichever suits your finance team. A
+              credit is only spent when a meeting is actually held, so a
+              no-show from either side costs nothing and the credit returns to
+              your balance.
+            </p>
+            <p className="mt-5 text-[15px] md:text-base leading-relaxed text-foreground/75">
+              Buying ahead is a convenience, not a discount. A block of credits
+              does not move you up the charity tiers; the share that reaches
+              the chosen charity still builds as you hold meetings and cross
+              each band. Unused credits never expire and carry into the next
+              year, though the tier count resets each year, so carried credits
+              begin again at the first band.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* ── Questions on the spend — light band, accordion grid ──────── */}
       <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 md:py-28">

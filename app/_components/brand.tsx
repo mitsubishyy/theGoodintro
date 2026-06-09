@@ -3,7 +3,7 @@ type BrandProps = {
 };
 
 /**
- * theGoodintro wordmark. "Good" is the brand accent — rendered in Fraunces
+ * TheGoodIntro wordmark. "Good" is the brand accent — rendered in Fraunces
  * italic emerald, matching the hp-brand-mark dot at the same emerald hue.
  *
  * The optional brand mark (a small emerald disc with a cream centre) is shown

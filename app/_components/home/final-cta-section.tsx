@@ -182,10 +182,10 @@ export default function FinalCtaSection() {
           <span className="hp-serif-italic">making a difference</span>.
         </h2>
         <div className="hp-cta-row">
-          <a className="hp-btn-primary" href="/waitlist">
+          <Link className="hp-btn-primary" href="/apply">
             <span className="pulse" aria-hidden="true" />
             Join the waitlist
-          </a>
+          </Link>
           <Link className="hp-btn-ghost" href="/how-it-works">
             Learn more
             <span className="circle" aria-hidden="true">

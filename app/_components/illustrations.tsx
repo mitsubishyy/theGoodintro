@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────────────────
-   Brand illustrations for theGoodintro.
+   Brand illustrations for TheGoodIntro.
    Multi-color, slightly isometric, Employment-Hero-style depth. All
    inline SVG using brand tokens so colors stay coherent and assets
    ship at zero weight.

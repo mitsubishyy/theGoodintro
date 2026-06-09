@@ -25,19 +25,17 @@ export function SectionLabel({ children }: { children: React.ReactNode }) {
 
 /** Solid emerald pill with the live pulse dot. */
 export function PrimaryCta({
-  href,
+  href = "/apply",
   children,
 }: {
   href?: string;
   children: React.ReactNode;
 }) {
-  // No href yet (Apply destination pending): render an inert button-styled
-  // element rather than a link to nowhere.
   return (
-    <a {...(href ? { href } : {})} className="hp-btn-primary">
+    <Link href={href} className="hp-btn-primary">
       <span className="pulse" aria-hidden="true" />
       {children}
-    </a>
+    </Link>
   );
 }
 
