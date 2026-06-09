@@ -10,9 +10,9 @@ import type { AccountChip, IdentityCard, NavItem, Portal } from "../types";
 /**
  * Per-portal sidebar (LOCKED in UI_KIT_DESIGN_LOG global decisions).
  * Each portal's identity is its sidebar colour:
- *   admin  = brand emerald (--primary / --emerald-deep)
- *   vendor = deep teal-pine (--vendor-sidebar)
- *   exec   = TBD (clay/bronze candidate; not yet assigned)
+ *   admin  = brand emerald (`--portal-emerald-sidebar`, re-locked 2026-06-09)
+ *   vendor = deep teal-pine (`--vendor-sidebar`, 2026-06-05)
+ *   exec   = charcoal ink (`--exec-sidebar`, 2026-06-08)
  *
  * Locked anatomy:
  *   - Wordmark block at top (Fraunces TheGoodIntro with The/Good/Intro colour split).
@@ -58,10 +58,10 @@ interface Palette {
 
 const PALETTES: Record<Portal, Palette> = {
   admin: {
-    bg: "var(--emerald-deep)",
-    active: "var(--primary-bright)",
-    activeInk: "var(--emerald-deep)",
-    ink: "rgba(255,255,255,0.82)",
+    bg: "var(--portal-emerald-sidebar)",
+    active: "var(--portal-emerald-sidebar-active)",
+    activeInk: "var(--portal-emerald-sidebar-text)",
+    ink: "var(--portal-emerald-sidebar-text)",
     hair: "rgba(255,255,255,0.10)",
   },
   vendor: {
@@ -72,12 +72,10 @@ const PALETTES: Record<Portal, Palette> = {
     hair: "color-mix(in oklch, var(--vendor-sidebar-ink) 10%, transparent)",
   },
   exec: {
-    // Placeholder until the exec dashboard locks a palette. Re-uses admin tones so
-    // the kit compiles; SWAP when UI_KIT_DESIGN_LOG records the exec sidebar colour.
-    bg: "var(--emerald-deep)",
-    active: "var(--primary-bright)",
-    activeInk: "var(--emerald-deep)",
-    ink: "rgba(255,255,255,0.82)",
+    bg: "var(--exec-sidebar)",
+    active: "var(--exec-sidebar-active)",
+    activeInk: "var(--exec-sidebar-text)",
+    ink: "var(--exec-sidebar-text)",
     hair: "rgba(255,255,255,0.10)",
   },
 };
@@ -153,7 +151,7 @@ export function PortalSidebar({ portal, brand, groups, identity, account, onSign
             {(account.name || "?").trim().split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase()}
           </span>
           <div className="leading-tight min-w-0">
-            <div className="text-[13px] font-medium truncate" style={{ color: p.activeInk === "var(--emerald-deep)" ? "#fff" : p.activeInk }}>
+            <div className="text-[13px] font-medium truncate" style={{ color: p.activeInk }}>
               {account.name}
             </div>
             {(signOutSlot || onSignOut) && (
@@ -162,7 +160,7 @@ export function PortalSidebar({ portal, brand, groups, identity, account, onSign
                   type="button"
                   onClick={onSignOut}
                   className="text-[10px] uppercase tracking-[0.16em] opacity-70 hover:opacity-100"
-                  style={{ color: p.activeInk === "var(--emerald-deep)" ? "#fff" : p.activeInk }}
+                  style={{ color: p.activeInk }}
                 >
                   Sign out
                 </button>
@@ -178,15 +176,36 @@ export function PortalSidebar({ portal, brand, groups, identity, account, onSign
 function NavRow({ item, pathname, palette }: { item: NavItem; pathname: string; palette: Palette }) {
   const active = isActive(pathname, item.href);
   return (
-    <a
-      href={item.href}
-      className="flex items-center gap-3 px-3 py-2 rounded-xl text-[13.5px]"
-      style={active ? { background: palette.active, color: palette.activeInk, fontWeight: 600 } : { color: palette.ink }}
-    >
-      <Icon name={item.icon} />
-      <span className="flex-1 truncate">{item.label}</span>
-      {item.badgeCount && item.badgeCount > 0 && <Badge tone="amber" count={item.badgeCount} />}
-      {item.locked && <Icon name="padlock" size={12} className="opacity-60" />}
-    </a>
+    <>
+      <a
+        href={item.href}
+        className="flex items-center gap-3 px-3 py-2 rounded-xl text-[13.5px]"
+        style={active ? { background: palette.active, color: palette.activeInk, fontWeight: 600 } : { color: palette.ink }}
+      >
+        <Icon name={item.icon} />
+        <span className="flex-1 truncate">{item.label}</span>
+        {item.badgeCount && item.badgeCount > 0 && <Badge tone="amber" count={item.badgeCount} />}
+        {item.locked && <Icon name="padlock" size={12} className="opacity-60" />}
+      </a>
+      {item.children && item.children.length > 0 && (
+        <div className="mt-0.5 mb-1 ml-7 space-y-0.5">
+          {item.children.map((child) => {
+            const childActive = isActive(pathname, child.href);
+            return (
+              <a
+                key={child.label}
+                href={child.href}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[12.5px]"
+                style={childActive ? { background: palette.active, color: palette.activeInk, fontWeight: 600 } : { color: palette.ink, opacity: 0.9 }}
+              >
+                <span className="flex-1 truncate">{child.label}</span>
+                {child.badgeCount && child.badgeCount > 0 && <Badge tone="amber" count={child.badgeCount} />}
+                {child.locked && <Icon name="padlock" size={12} className="opacity-60" />}
+              </a>
+            );
+          })}
+        </div>
+      )}
+    </>
   );
 }

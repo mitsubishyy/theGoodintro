@@ -54,11 +54,24 @@
   --portal-line: color-mix(in oklch, oklch(0.17 0.006 70) 9%, transparent);
 
   /* Per-portal sidebar palette (locked 2026-06-05 in UI_KIT_DESIGN_LOG).
-     Admin sidebar = brand emerald (--primary / --emerald-deep, defined above).
-     Vendor sidebar = deep teal-pine. Exec sidebar = TBD (clay/bronze candidate). */
+     Admin sidebar = brand emerald (re-locked 2026-06-09 on Admin Dashboard
+     README with refined values lighter than --emerald-deep so the cream nav
+     ink + sage-mint wordmark accent stay readable on the surface).
+     Vendor sidebar = deep teal-pine. Exec sidebar = charcoal ink. */
+  --portal-emerald-sidebar: oklch(0.45 0.10 158);
+  --portal-emerald-sidebar-text: oklch(0.972 0.012 80);
+  --portal-emerald-sidebar-muted: color-mix(in oklch, oklch(0.972 0.012 80) 60%, transparent);
+  --portal-emerald-sidebar-active: oklch(0.38 0.09 158);
+  --portal-emerald-sidebar-good: oklch(0.82 0.12 158);
+
   --vendor-sidebar: oklch(0.32 0.045 195);
   --vendor-sidebar-soft: oklch(0.42 0.06 195);
   --vendor-sidebar-ink: oklch(0.96 0.02 195);
+
+  --exec-sidebar: oklch(0.22 0.008 70);
+  --exec-sidebar-text: oklch(0.95 0.005 70);
+  --exec-sidebar-muted: oklch(0.68 0.005 70);
+  --exec-sidebar-active: oklch(0.30 0.008 70);
 
   /* Reading / form / list-card surface: brighter white than --portal-card so a
      vendor T3 list or T5 form card reads as the primary content plane against

@@ -46,7 +46,11 @@ export interface AccountChip {
 /** One stat group inside a <MetricsRibbon>. */
 export interface RibbonStat {
   value: string;
+  /** Inline unit beside the number (vendor "2 available · 0 reserved" pattern). */
   unit?: string;
+  /** Sub-line under the number (admin Dashboard "38 in the next 7 days" pattern,
+   *  Admin Dashboard README 2026-06-09). Use this OR `unit`, not both. */
+  sub?: string;
   /** Bigger weight for headline numbers like "to charity / FY". */
   big?: boolean;
 }

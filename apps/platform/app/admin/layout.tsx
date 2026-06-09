@@ -1,8 +1,31 @@
+import Image from "next/image";
 import { requireStaff } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
-import { Sidebar } from "./_components/sidebar";
-import { TopBar } from "./_components/topbar";
+import { signOutAction } from "@/app/login/actions";
+import {
+  PortalShell,
+  PortalSidebar,
+  PortalTopbar,
+  StatusDot,
+  Wordmark,
+  type NavItem,
+} from "@thegoodintro/ui";
 
+/**
+ * Admin portal shell — ported from the hand-rolled three-file shell to
+ * @thegoodintro/ui per the Admin Dashboard re-lock 2026-06-09 + UI_KIT_BRIEF §0.
+ *
+ *   - PortalShell composes sidebar + topbar + the page slot the route fills.
+ *   - PortalSidebar uses the re-locked admin emerald palette
+ *     (--portal-emerald-sidebar oklch(0.45 0.10 158)) with the cream wordmark
+ *     + sage-mint "Good" + 24px circle mark inserted from /brand-logo.png.
+ *   - PortalTopbar carries the command-K search and the locked
+ *     "All systems operational" status block in its context slot. The page H1
+ *     lives in <PortalPage>, not the topbar.
+ *
+ * The admin_shell feature flag gates the surface and stays OFF by default
+ * (CHANGE_SAFETY.md).
+ */
 export default async function AdminLayout({
   children,
 }: {
@@ -13,9 +36,17 @@ export default async function AdminLayout({
 
   if (!enabled) {
     return (
-      <main className="flex min-h-screen items-center justify-center px-6 text-center" style={{ background: "var(--portal-page)", color: "var(--foreground)" }}>
+      <main
+        className="flex min-h-screen items-center justify-center px-6 text-center"
+        style={{ background: "var(--portal-page)", color: "var(--foreground)" }}
+      >
         <div className="max-w-md">
-          <p className="font-mono text-xs uppercase tracking-[0.18em]" style={{ color: "var(--portal-amber-ink)" }}>Feature flag off</p>
+          <p
+            className="font-mono text-xs uppercase tracking-[0.18em]"
+            style={{ color: "var(--portal-amber-ink)" }}
+          >
+            Feature flag off
+          </p>
           <h1 className="mt-2 text-xl font-semibold">Admin shell is not enabled</h1>
           <p className="mt-2 text-sm" style={{ color: "var(--muted-foreground)" }}>
             Turn on the <code>admin_shell</code> flag in <code>feature_flag</code> to view the cockpit.
@@ -25,20 +56,121 @@ export default async function AdminLayout({
     );
   }
 
-  const [{ count: reqCount }, { count: propCount }] = await Promise.all([
-    supabase.from("request").select("id", { count: "exact", head: true }).eq("status", "submitted"),
-    supabase.from("meeting").select("id", { count: "exact", head: true }).eq("status", "proposed"),
+  // Sidebar badge counts. Mirrors the data sources table in the Admin Dashboard
+  // README: Meetings = confirmed + proposed; Vendors = in onboarding; Inbox =
+  // unread; Pending requests sub-nav = submitted requests.
+  const head = { count: "exact" as const, head: true };
+  const [confirmedC, proposedC, vendorsOnboarding, submittedC] = await Promise.all([
+    supabase.from("meeting").select("id", head).eq("status", "confirmed"),
+    supabase.from("meeting").select("id", head).eq("status", "proposed"),
+    supabase.from("vendor").select("id", head).in("status", ["signed_up", "approved", "onboarding"]),
+    supabase.from("request").select("id", head).eq("status", "submitted"),
   ]);
-  const pending = (reqCount ?? 0) + (propCount ?? 0);
-  const month = new Intl.DateTimeFormat("en-AU", { month: "long", year: "numeric", timeZone: "Australia/Sydney" }).format(new Date());
+  const meetingsBadge = (confirmedC.count ?? 0) + (proposedC.count ?? 0);
+  const vendorsBadge = vendorsOnboarding.count ?? 0;
+  const pendingRequestsBadge = submittedC.count ?? 0;
+  // Inbox is wired through the Admin Inbox port (separate); placeholder until then.
+  const inboxBadge = 0;
+
+  const operations: NavItem[] = [
+    { label: "Dashboard", href: "/admin", icon: "grid" },
+    {
+      label: "Meetings",
+      href: "/admin/meetings",
+      icon: "calendar",
+      badgeCount: meetingsBadge,
+      children: [
+        { label: "Scheduled", href: "/admin/meetings?status=scheduled", icon: "calendar" },
+        { label: "Pending requests", href: "/admin/requests", icon: "inbox", badgeCount: pendingRequestsBadge },
+        { label: "Completed", href: "/admin/meetings?status=completed", icon: "calendar" },
+        { label: "Cancellations", href: "/admin/meetings?status=cancelled", icon: "calendar" },
+      ],
+    },
+    { label: "Vendors", href: "/admin/vendors", icon: "box", badgeCount: vendorsBadge },
+    { label: "Executives", href: "/admin/executives", icon: "user" },
+    { label: "Checklists", href: "/admin/checklists", icon: "grid" },
+    { label: "Gifts & Charities", href: "/admin/giving", icon: "heart" },
+  ];
+
+  const communication: NavItem[] = [
+    { label: "Inbox", href: "/admin/inbox", icon: "inbox", badgeCount: inboxBadge },
+    { label: "Templates", href: "/admin/templates", icon: "chat" },
+  ];
+
+  const configure: NavItem[] = [
+    { label: "Reports", href: "/admin/reports", icon: "grid" },
+    { label: "Tags", href: "/admin/tags", icon: "gift" },
+    { label: "Settings", href: "/admin/settings", icon: "cog" },
+  ];
+
+  const brand = (
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center gap-3.5">
+        <Image
+          src="/brand-logo.png"
+          alt=""
+          width={24}
+          height={24}
+          className="rounded-full shrink-0"
+          priority
+        />
+        <Wordmark
+          size={20}
+          surface="dark"
+          goodColor="var(--portal-emerald-sidebar-good)"
+        />
+      </div>
+      <span
+        className="text-[10px] font-mono uppercase tracking-[0.18em] pl-[37.5px]"
+        style={{ color: "var(--portal-emerald-sidebar-muted)" }}
+      >
+        ADMIN · PRODUCTION
+      </span>
+    </div>
+  );
+
+  const topbarContext = (
+    <div className="hidden md:flex items-center gap-2 text-[12px]" style={{ color: "var(--muted-foreground)" }}>
+      <StatusDot tone="green" size={8} />
+      <span>All systems operational</span>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen flex font-sans" style={{ background: "var(--portal-page)", color: "var(--foreground)" }}>
-      <Sidebar staffName={staff.name} pendingBadge={pending} />
-      <div className="flex-1 min-w-0 flex flex-col">
-        <TopBar month={month} />
-        <main className="flex-1 px-8 py-7 w-full max-w-[1280px]">{children}</main>
-      </div>
-    </div>
+    <PortalShell
+      sidebar={
+        <PortalSidebar
+          portal="admin"
+          brand={brand}
+          groups={[
+            { heading: "Operations", items: operations },
+            { heading: "Communication", items: communication },
+            { heading: "Configure", items: configure },
+          ]}
+          account={{ name: staff.name as string, role: "Owner" }}
+          signOutSlot={
+            <form action={signOutAction}>
+              <button
+                type="submit"
+                className="text-[10px] uppercase tracking-[0.16em] opacity-70 hover:opacity-100"
+                style={{ color: "var(--portal-emerald-sidebar-text)" }}
+              >
+                Sign out
+              </button>
+            </form>
+          }
+        />
+      }
+      topbar={
+        <PortalTopbar
+          searchPlaceholder="Search meetings, executives, vendors, charities"
+          context={topbarContext}
+          unreadCount={inboxBadge}
+          account={{ name: staff.name as string }}
+        />
+      }
+    >
+      {children}
+    </PortalShell>
   );
 }

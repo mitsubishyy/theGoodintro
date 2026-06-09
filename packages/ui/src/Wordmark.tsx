@@ -19,12 +19,19 @@ export interface WordmarkProps {
   size?: number;
   /** Light surface (default, ink + emerald) or dark surface (light ink). */
   surface?: "light" | "dark";
+  /** Override the "Good" accent colour. Defaults to brand emerald (`--primary`)
+   *  on every surface, which is correct on cream pages. The admin sidebar's
+   *  re-locked emerald-on-emerald case needs the dark-bg variant
+   *  (`var(--portal-emerald-sidebar-good)`, sage-mint) so "Good" stays
+   *  readable; pass it via this prop (Admin Dashboard README 2026-06-09). */
+  goodColor?: string;
   className?: string;
   style?: CSSProperties;
 }
 
-export function Wordmark({ size = 18, surface = "light", className, style }: WordmarkProps) {
+export function Wordmark({ size = 18, surface = "light", goodColor, className, style }: WordmarkProps) {
   const ink = surface === "dark" ? "var(--portal-card)" : "var(--portal-ink)";
+  const good = goodColor ?? "var(--primary)";
   return (
     <span
       className={className}
@@ -40,7 +47,7 @@ export function Wordmark({ size = 18, surface = "light", className, style }: Wor
       aria-label="TheGoodIntro"
     >
       <span>The</span>
-      <span style={{ color: "var(--primary)" }}>Good</span>
+      <span style={{ color: good }}>Good</span>
       <span>Intro</span>
     </span>
   );

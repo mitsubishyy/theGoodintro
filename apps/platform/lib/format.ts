@@ -8,6 +8,15 @@ export function formatAud(cents: number): string {
   }).format(cents / 100);
 }
 
+/** AUD cents -> "$1.28M" / "$186.2K" / "$8,400" — compact form for ribbon
+ *  headline numbers (Admin Dashboard metric ribbon 2026-06-09 lock). */
+export function formatAudCompact(cents: number): string {
+  const dollars = cents / 100;
+  if (dollars >= 1_000_000) return `$${(dollars / 1_000_000).toFixed(2)}M`;
+  if (dollars >= 10_000) return `$${(dollars / 1000).toFixed(1)}K`;
+  return formatAud(cents);
+}
+
 /** Relative age like "4d" / "3h" / "20m", plus the whole-day count. */
 export function ageShort(iso: string): { label: string; days: number } {
   const ms = Date.now() - new Date(iso).getTime();

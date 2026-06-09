@@ -15,12 +15,15 @@ import { StatusDot } from "../primitives/StatusDot";
  */
 
 export interface PortalTopbarProps {
-  title: string;
+  /** Optional title H1. Admin Dashboard 2026-06-09 owns the title in
+   *  <PortalPage> instead; vendor + exec keep it in the topbar. */
+  title?: string;
   /** Mono-uppercase eyebrow rendered to the right of the title. */
   eyebrow?: string;
-  /** Optional inline search trigger. */
+  /** Optional inline search trigger. Renders a ⌘K hint chip when set. */
   searchPlaceholder?: string;
-  /** Optional context widget (env label, credit balance, acting-for). */
+  /** Optional context widget (env label, credit balance, acting-for,
+   *  "All systems operational" status block). */
   context?: ReactNode;
   /** Show an amber dot on the bell when unread > 0. */
   unreadCount?: number;
@@ -35,22 +38,47 @@ export function PortalTopbar({ title, eyebrow, searchPlaceholder, context, unrea
       className="h-16 shrink-0 px-8 flex items-center justify-between border-b"
       style={{ background: "var(--portal-header)", color: "var(--foreground)", borderColor: "var(--portal-line)" }}
     >
-      <div className="flex items-baseline gap-3 min-w-0">
-        <h1 className="text-[18px] font-semibold tracking-tight truncate">{title}</h1>
-        {eyebrow && (
-          <span className="text-[11px] uppercase tracking-[0.18em] truncate" style={{ color: "var(--muted-foreground)" }}>
-            {eyebrow}
-          </span>
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        {title && (
+          <div className="flex items-baseline gap-3 min-w-0">
+            <h1 className="text-[18px] font-semibold tracking-tight truncate">{title}</h1>
+            {eyebrow && (
+              <span className="text-[11px] uppercase tracking-[0.18em] truncate" style={{ color: "var(--muted-foreground)" }}>
+                {eyebrow}
+              </span>
+            )}
+          </div>
+        )}
+        {!title && searchPlaceholder && (
+          <div
+            className="hidden md:flex items-center gap-2 h-9 px-3 rounded-full text-[12.5px] max-w-[420px] flex-1"
+            style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}
+          >
+            <Icon name="search" />
+            <span className="flex-1 truncate">{searchPlaceholder}</span>
+            <kbd
+              className="text-[10px] font-mono px-1.5 py-0.5 rounded shrink-0"
+              style={{ background: "var(--portal-card)", color: "var(--portal-ink)", border: "1px solid var(--portal-line)" }}
+            >
+              ⌘K
+            </kbd>
+          </div>
         )}
       </div>
       <div className="flex items-center gap-3">
-        {searchPlaceholder && (
+        {title && searchPlaceholder && (
           <div
             className="hidden md:flex items-center gap-2 h-9 px-3 rounded-full text-[12.5px]"
             style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}
           >
             <Icon name="search" />
             <span>{searchPlaceholder}</span>
+            <kbd
+              className="text-[10px] font-mono px-1.5 py-0.5 rounded"
+              style={{ background: "var(--portal-card)", color: "var(--portal-ink)", border: "1px solid var(--portal-line)" }}
+            >
+              ⌘K
+            </kbd>
           </div>
         )}
         {context}
