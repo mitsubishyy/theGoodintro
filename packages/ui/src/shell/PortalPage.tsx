@@ -27,10 +27,14 @@ export interface PortalPageProps {
   action?: ReactNode;
   /** Inline-eyebrow under the title (small mono-uppercase tag). */
   eyebrow?: string;
+  /** Mono-uppercase count rendered to the right of the title on admin list
+   *  surfaces, e.g. "14 active / 17 all" (locked across Admin Vendors / Execs /
+   *  Meetings / Templates / Giving / Requests list headers). */
+  count?: ReactNode;
   children: ReactNode;
 }
 
-export function PortalPage({ title, back, breadcrumb, action, eyebrow, children }: PortalPageProps) {
+export function PortalPage({ title, back, breadcrumb, action, eyebrow, count, children }: PortalPageProps) {
   return (
     <main className="flex-1 min-w-0 px-8 py-6">
       {back && (
@@ -60,10 +64,18 @@ export function PortalPage({ title, back, breadcrumb, action, eyebrow, children 
         </nav>
       )}
       <div className="mt-3 flex items-baseline justify-between gap-4">
-        <div className="min-w-0">
+        <div className="min-w-0 flex items-baseline gap-3">
           <h1 className="text-[20px] font-semibold tracking-tight truncate" style={{ color: "var(--portal-ink)" }}>
             {title}
           </h1>
+          {count && (
+            <span
+              className="text-[11px] font-mono uppercase tracking-[0.18em] whitespace-nowrap"
+              style={{ color: "var(--muted-foreground)" }}
+            >
+              {count}
+            </span>
+          )}
           {eyebrow && (
             <p className="mt-1 text-[11px] uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
               {eyebrow}
