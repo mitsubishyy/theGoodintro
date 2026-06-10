@@ -1,19 +1,78 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { bandForMeetingNumber, MEETING_FEE_CENTS } from "@thegoodintro/pricing";
+import { PortalPage } from "@thegoodintro/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
-import { formatAud, formatDate } from "@/lib/format";
+import { ageShort, formatAud, formatDate } from "@/lib/format";
 import {
-  approveVendorAction,
-  issueInvoiceAction,
-  simulatePaidAction,
-} from "../actions";
+  VendorDetailView,
+  type ActivityRow,
+  type CreditLotSubRow,
+  type InvoiceSubRow,
+  type MeetingSubRow,
+  type RequestSubRow,
+  type UserRow,
+  type VendorDetailRow,
+  type VetState,
+} from "./_detail-view";
+
+/**
+ * Admin Vendor detail (T4) — port of the locked T4 (UI_KIT_DESIGN_LOG
+ * "Admin Vendor detail" 2026-06-04). Chunk A 2026-06-10.
+ *
+ * The page owns data fetching and shaping; the client view owns RecordDetail
+ * composition + the module rail. Server actions for vetting + payment
+ * (approve, issue invoice, simulate paid) are imported by the client view
+ * and attached to forms; Next wires them transparently.
+ *
+ * Modules:
+ *  - Live: Overview / Users & Seats / Requests / Meetings / Billing & Credits.
+ *  - Placeholder ("Awaiting <schema>"): Checklist / Tags / Notes — wired in
+ *    a follow-up commit once each schema migration lands.
+ *
+ * Per-vendor Tier comes from cycle.held_meetings_count via bandForMeetingNumber,
+ * matching the Vendors list (no vendor.tier schema yet per Issy 2026-06-08).
+ *
+ * Activity feed = audit_entry rows targeting this vendor (top 20).
+ */
 
 export const metadata: Metadata = {
   title: "Vendor — TheGoodIntro admin",
   robots: { index: false, follow: false },
 };
+
+function one<T>(v: unknown): T | undefined {
+  return (Array.isArray(v) ? v[0] : v) as T | undefined;
+}
+
+type VendorStatusEnum =
+  | "signed_up"
+  | "call_booked"
+  | "approved"
+  | "paid"
+  | "active"
+  | "dormant"
+  | "churned";
+
+function statusDisplay(s: VendorStatusEnum): VendorDetailRow["status"] {
+  switch (s) {
+    case "active":
+      return "Active";
+    case "dormant":
+      return "Dormant";
+    case "churned":
+      return "Churned";
+    default:
+      return "Onboarding";
+  }
+}
+
+function execTitleCompany(e?: { title?: string | null; company?: string | null }): string {
+  if (!e) return "";
+  const parts = [e.title, e.company].filter(Boolean) as string[];
+  return parts.join(" · ");
+}
 
 export default async function VendorDetailPage({
   params,
@@ -23,113 +82,212 @@ export default async function VendorDetailPage({
   const { id } = await params;
   const supabase = await createClient();
   const payments = await getFlag("vendor_payments");
+  const now = new Date();
+  const nowIso = now.toISOString();
 
-  const [{ data: vendor }, { data: applications }, { data: invoices }, { data: lots }] =
-    await Promise.all([
-      supabase.from("vendor").select("*").eq("id", id).maybeSingle(),
-      supabase.from("application").select("*").eq("vendor_id", id).order("created_at", { ascending: false }),
-      supabase.from("invoice").select("*").eq("vendor_id", id).order("created_at", { ascending: false }),
-      supabase.from("credit_lot").select("quantity_remaining").eq("vendor_id", id),
-    ]);
+  const [
+    vendorResp,
+    creditLotsResp,
+    applicationsResp,
+    invoicesResp,
+    usersResp,
+    requestsResp,
+    meetingsResp,
+    cycleResp,
+    activityResp,
+  ] = await Promise.all([
+    supabase
+      .from("vendor")
+      .select(
+        "id, name, email_domain, status, owner_user_id, access_expires_at, cycle_started_at, created_at, owner:owner_user_id ( name, email )",
+      )
+      .eq("id", id)
+      .is("deleted_at", null)
+      .maybeSingle(),
+    supabase
+      .from("credit_lot")
+      .select("id, quantity, quantity_remaining, purchased_at")
+      .eq("vendor_id", id)
+      .order("purchased_at", { ascending: false }),
+    supabase
+      .from("application")
+      .select("id, outcome, answers")
+      .eq("vendor_id", id)
+      .order("created_at", { ascending: false })
+      .limit(1),
+    supabase
+      .from("invoice")
+      .select("id, xero_invoice_id, amount_cents, status, created_at")
+      .eq("vendor_id", id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("vendor_user")
+      .select("id, name, email, role, status")
+      .eq("vendor_id", id)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("request")
+      .select(
+        "id, status, created_at, executive:executive_id ( name, title, company )",
+      )
+      .eq("vendor_id", id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("meeting")
+      .select(
+        "id, scheduled_at, status, request:request_id!inner ( vendor_id, executive:executive_id ( name, title, company ) )",
+      )
+      .eq("request.vendor_id", id)
+      .order("scheduled_at", { ascending: false, nullsFirst: false }),
+    supabase
+      .from("cycle")
+      .select("held_meetings_count")
+      .eq("vendor_id", id)
+      .lte("started_at", nowIso)
+      .gt("ends_at", nowIso)
+      .maybeSingle(),
+    supabase
+      .from("audit_entry")
+      .select("id, action, actor_type, created_at")
+      .eq("target_type", "vendor")
+      .eq("target_id", id)
+      .order("created_at", { ascending: false })
+      .limit(20),
+  ]);
 
+  const vendor = vendorResp.data;
   if (!vendor) notFound();
 
-  const remaining = (lots ?? []).reduce(
-    (s, l) => s + (l.quantity_remaining as number),
-    0,
-  );
-  const latestApp = (applications ?? [])[0];
-  const canApprove = ["signed_up", "call_booked"].includes(vendor.status as string);
+  // ── Header shape ─────────────────────────────────────────────────────────
+  const owner = one<{ name: string | null; email: string | null }>(vendor.owner);
+  const statusEnum = vendor.status as VendorStatusEnum;
+  const currentCycleHeld = (cycleResp.data?.held_meetings_count as number | undefined) ?? null;
+  const tier =
+    currentCycleHeld === null ? null : bandForMeetingNumber(currentCycleHeld + 1).band;
+
+  const creditLots: CreditLotSubRow[] = (creditLotsResp.data ?? []).map((lot) => ({
+    id: lot.id as string,
+    quantity: lot.quantity as number,
+    remaining: lot.quantity_remaining as number,
+    purchasedLabel: formatDate(lot.purchased_at as string),
+  }));
+  const creditsRemaining = creditLots.reduce((s, l) => s + l.remaining, 0);
+
+  // Lifetime meetings held (held meetings across all the vendor's requests).
+  const meetingsHeldLifetime = (meetingsResp.data ?? []).filter(
+    (m) => m.status === "held",
+  ).length;
+
+  const detailRow: VendorDetailRow = {
+    id: vendor.id as string,
+    shortId: `VEN-${(vendor.id as string).slice(-4).toUpperCase()}`,
+    name: vendor.name as string,
+    emailDomain: vendor.email_domain as string,
+    status: statusDisplay(statusEnum),
+    tier,
+    ownerName: owner?.name ?? null,
+    ownerEmail: owner?.email ?? null,
+    joinedLabel: formatDate(vendor.created_at as string),
+    renewsLabel: formatDate(vendor.access_expires_at as string | null),
+    cycleAnchorLabel: formatDate(vendor.cycle_started_at as string | null),
+    creditsRemaining,
+    meetingsHeldLifetime,
+  };
+
+  // ── Modules data ─────────────────────────────────────────────────────────
+
+  const users: UserRow[] = (usersResp.data ?? []).map((u) => ({
+    id: u.id as string,
+    name: u.name as string,
+    email: u.email as string,
+    role: u.role as "owner" | "member",
+    status: u.status as "invited" | "active" | "removed",
+  }));
+
+  const requests: RequestSubRow[] = (requestsResp.data ?? []).map((r) => {
+    const e = one<{ name: string; title: string; company: string }>(r.executive);
+    const a = ageShort(r.created_at as string);
+    return {
+      id: r.id as string,
+      execName: e?.name ?? "—",
+      execTitleCompany: execTitleCompany(e),
+      status: r.status as RequestSubRow["status"],
+      ageLabel: a.label,
+      stale: a.days >= 3,
+    };
+  });
+  const pendingRequestCount = requests.filter((r) => r.status === "submitted").length;
+
+  const meetings: MeetingSubRow[] = (meetingsResp.data ?? []).map((m) => {
+    const req = one<{ executive: unknown }>(m.request);
+    const e = one<{ name: string; title: string; company: string }>(req?.executive);
+    const status = m.status as MeetingSubRow["status"];
+    const creditLabel =
+      status === "confirmed"
+        ? `Reserved · ${formatAud(MEETING_FEE_CENTS)}`
+        : status === "held"
+          ? `Consumed · ${formatAud(MEETING_FEE_CENTS)}`
+          : "—";
+    return {
+      id: m.id as string,
+      execName: e?.name ?? "—",
+      execTitleCompany: execTitleCompany(e),
+      scheduledLabel: formatDate(m.scheduled_at as string | null),
+      status,
+      creditLabel,
+    };
+  });
+
+  const invoices: InvoiceSubRow[] = (invoicesResp.data ?? []).map((inv) => ({
+    id: inv.id as string,
+    xeroInvoiceId: (inv.xero_invoice_id as string | null) ?? null,
+    amountLabel: formatAud(inv.amount_cents as number),
+    status: inv.status as InvoiceSubRow["status"],
+    createdLabel: formatDate(inv.created_at as string),
+  }));
+
+  const latestApp = applicationsResp.data?.[0];
+  const vetting: VetState = {
+    paymentsFlag: payments,
+    canApprove: ["signed_up", "call_booked"].includes(statusEnum),
+    latestApplication: latestApp
+      ? {
+          id: latestApp.id as string,
+          outcome: latestApp.outcome as "pending" | "approved" | "declined",
+          answers: latestApp.answers,
+        }
+      : null,
+  };
+
+  const activity: ActivityRow[] = (activityResp.data ?? []).map((a) => ({
+    id: a.id as string,
+    action: a.action as string,
+    actorType: a.actor_type as ActivityRow["actorType"],
+    createdAtLabel: formatDate(a.created_at as string),
+  }));
 
   return (
-    <div className="max-w-3xl">
-      <Link href="/admin/vendors" className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-        ← Vendors
-      </Link>
-      <div className="mt-2 mb-1 flex items-center gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight">{vendor.name}</h1>
-        <span className="rounded-full px-2 py-0.5 text-xs" style={{ background: "var(--portal-amber-soft)", color: "var(--portal-amber-ink)" }}>
-          {vendor.status}
-        </span>
-      </div>
-      <p className="mb-8 text-sm" style={{ color: "var(--muted-foreground)" }}>
-        {vendor.email_domain} · {remaining} credits remaining
-      </p>
-
-      {!payments ? (
-        <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-          Vetting and payment actions are off (turn on <code>vendor_payments</code>).
-        </p>
-      ) : (
-        <>
-          <section className="mb-10">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide" style={{ color: "var(--muted-foreground)" }}>
-              Vetting
-            </h2>
-            {latestApp ? (
-              <div className="rounded-xl border p-4 text-sm" style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }}>
-                <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--portal-amber-ink)" }}>
-                  Application · {latestApp.outcome as string}
-                </div>
-                <pre className="whitespace-pre-wrap break-words font-sans">
-                  {JSON.stringify(latestApp.answers, null, 2)}
-                </pre>
-              </div>
-            ) : (
-              <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>No application submitted yet.</p>
-            )}
-            {canApprove ? (
-              <form action={approveVendorAction} className="mt-3">
-                <input type="hidden" name="vendor_id" value={vendor.id} />
-                <button type="submit" className="rounded-lg px-4 py-2 text-sm font-semibold" style={{ background: "var(--portal-ink)", color: "var(--portal-card)" }}>
-                  Approve (unlock payment)
-                </button>
-              </form>
-            ) : null}
-          </section>
-
-          <section className="mb-10">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide" style={{ color: "var(--muted-foreground)" }}>
-              Payment
-            </h2>
-            <form action={issueInvoiceAction} className="mb-4 flex items-end gap-3">
-              <input type="hidden" name="vendor_id" value={vendor.id} />
-              <label className="flex flex-col gap-1.5">
-                <span className="font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>Credits</span>
-                <input name="credits" type="number" min={1} defaultValue={5} className="w-24 rounded-lg border px-3 py-2.5 text-sm" style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }} />
-              </label>
-              <button type="submit" className="rounded-lg border px-4 py-2.5 text-sm" style={{ borderColor: "var(--portal-line)", background: "var(--portal-card)" }}>
-                Issue invoice
-              </button>
-            </form>
-
-            <div className="flex flex-col gap-2">
-              {(invoices ?? []).map((inv) => (
-                <div key={inv.id as string} className="flex items-center justify-between rounded-lg border px-4 py-3 text-sm" style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }}>
-                  <span>
-                    {formatAud(inv.amount_cents as number)}{" "}
-                    <span className="font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--muted-foreground)" }}>
-                      {inv.status as string} · {formatDate(inv.created_at as string)}
-                    </span>
-                  </span>
-                  {inv.status !== "paid" ? (
-                    <form action={simulatePaidAction}>
-                      <input type="hidden" name="vendor_id" value={vendor.id} />
-                      <input type="hidden" name="xero_invoice_id" value={inv.xero_invoice_id as string} />
-                      <button type="submit" className="rounded-lg px-3 py-1.5 text-xs font-semibold" style={{ background: "var(--portal-ink)", color: "var(--portal-card)" }}>
-                        Simulate paid
-                      </button>
-                    </form>
-                  ) : null}
-                </div>
-              ))}
-              {(invoices ?? []).length === 0 ? (
-                <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>No invoices yet.</p>
-              ) : null}
-            </div>
-          </section>
-        </>
-      )}
-    </div>
+    <PortalPage
+      title={detailRow.name}
+      back={{ href: "/admin/vendors" }}
+      breadcrumb={[
+        { label: "Home", href: "/admin" },
+        { label: "Vendors", href: "/admin/vendors" },
+        { label: detailRow.shortId },
+      ]}
+    >
+      <VendorDetailView
+        vendor={detailRow}
+        users={users}
+        requests={requests}
+        meetings={meetings}
+        invoices={invoices}
+        creditLots={creditLots}
+        vetting={vetting}
+        activity={activity}
+        pendingRequestCount={pendingRequestCount}
+      />
+    </PortalPage>
   );
 }
