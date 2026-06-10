@@ -12,9 +12,17 @@ This document is the brief. It is NOT the built kit. Per the locked design workf
 This brief defines the inventory, the prop APIs, the token mapping, and the
 acceptance bar that the Claude Design pass and the port must satisfy.
 
-Source-of-truth precedence: FACTS.md (brand, pricing) > PORTAL_LAYOUT_BLUEPRINT.md
-(layout, visual register) > this brief (component API detail). Where this brief and
-the blueprint disagree on anything visual, the blueprint wins.
+Source-of-truth precedence: FACTS.md (brand, pricing) >
+UI_KIT_DESIGN_LOG.md (locked visual decisions from Claude Design) >
+PORTAL_LAYOUT_BLUEPRINT.md (layout, visual register) > this brief (component
+API detail). Where this brief disagrees with the design log on anything
+visual, **the design log wins** — that's where Claude Design locks land
+and supersede earlier brief wording. As of 2026-06-08 the design log has
+locked 36 screens and a stack of patterns (per-portal sidebar colours,
+photo-primary avatars, modal-only charity-change, "Band" vendor vocab,
+the wordmark, the editorial concierge register for the exec portal, etc.)
+that update or extend this brief. **Port from the design log, not from
+this brief in isolation.**
 
 ---
 
@@ -100,12 +108,20 @@ Rules for the package:
 
 ## 2. Design register the kit must wear (from the blueprint, restated as the bar)
 
-- **Colour:** only `--portal-*` and the base tokens. Emerald (`--primary`,
-  `--emerald-deep`, `--primary-bright`) on the **sidebar only**. Headline metrics
-  live in the dark `--portal-ribbon`, never as white stat cards. The antique-gold /
-  soft-champagne accent `oklch(0.78 0.07 85)` (`--portal-amber` — name kept, value is
-  now antique gold — plus `--portal-amber-soft`, `--portal-amber-ink`) is the single
-  accent: badges, links, status dots, warnings.
+- **Colour:** only `--portal-*` and the base tokens. The sidebar uses a
+  **per-portal colour** (LOCKED — admin emerald `--primary`, vendor
+  teal-pine `--vendor-sidebar oklch(0.32 0.045 195)`, exec charcoal
+  `--exec-sidebar oklch(0.22 0.008 70)`); see
+  [`UI_KIT_DESIGN_LOG.md`](UI_KIT_DESIGN_LOG.md) Global decisions for the
+  full token set including each portal's companion tokens. Headline metrics
+  live in the dark `--portal-ribbon`, never as white stat cards. The
+  antique-gold / soft-champagne accent `oklch(0.78 0.07 85)` (`--portal-amber`
+  — name kept, value is now antique gold — plus `--portal-amber-soft`,
+  `--portal-amber-ink`) is the single accent: badges, links, status dots,
+  warnings. **Exec portal** screens follow an additional "editorial concierge"
+  register that suppresses status pills, count chips, and mono uppercase
+  eyebrows in favour of Fraunces section heads and italic Inter labels —
+  again, see the design log Global decisions.
 - **Type ramp:** Inter 13 to 14px body/cells; JetBrains Mono 11px uppercase
   `tracking-[0.18em]` for widget/section titles and micro labels; Inter 18 to 20px
   semibold page H1; ribbon number Inter semibold 22 to 28px (Fraunces allowed for
@@ -174,10 +190,14 @@ interface PortalShellProps {
   children: ReactNode;  // the page (usually <PortalPage>)
 }
 
-// PortalSidebar: emerald fill, ~240px, fixed full height; org block top, nav
-// middle, account block pinned bottom. Active item: lighter emerald wash + left
-// indicator. Items with pending work show an amber count badge. Parents expand to
-// indented children (admin "Clients").
+// PortalSidebar: per-portal colour fill (admin emerald `--primary`, vendor
+// teal-pine `--vendor-sidebar`, exec charcoal `--exec-sidebar`), ~240px,
+// fixed full height; org block top, nav middle, account block pinned bottom.
+// Active item: lighter wash of the sidebar colour + left indicator (exec uses
+// `--exec-sidebar-active` bg + 3px `--portal-emerald` left border). Items with
+// pending work show an amber count badge (exec portal currently uses zero
+// count badges — concierge calm). Parents expand to indented children
+// (admin "Clients").
 interface NavItem {
   label: string;
   href: string;

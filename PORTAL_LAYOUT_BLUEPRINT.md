@@ -109,14 +109,33 @@ fonts. We use `--portal-*` tokens and the type ramp below, full stop.
 | primary ink text | `--portal-ink` / `--foreground` |
 | muted / secondary text | `--muted-foreground` |
 | hairline borders | `--portal-line` |
-| sidebar fill (emerald, sidebar ONLY) | `--primary` on `--primary-foreground` |
+| sidebar fill (per portal, see below) | admin `--primary` · vendor `--vendor-sidebar` · exec `--exec-sidebar` |
 | accent, antique gold / soft champagne `oklch(0.78 0.07 85)`: badges, links, status dots, warnings | `--portal-amber` (name kept; value is now antique gold), soft `--portal-amber-soft`, ink `--portal-amber-ink` |
 | primary buttons | ink (`--portal-ink`), light text |
 
-Emerald appears **only** on the sidebar. Stat cards are **never** plain white
-boxes; the headline metrics live in the dark ribbon. Amber is the single accent
-and is a sanctioned exception to the marketing site's emerald-only rule, portals
-only.
+**Per-portal sidebar colour** (updated 2026-06-08; supersedes the old "emerald
+sidebar only" rule):
+
+- **Admin** sidebar = brand emerald `oklch(0.42 0.13 158)` (LOCKED).
+- **Vendor** sidebar = deep teal-pine `oklch(0.32 0.045 195)` (LOCKED
+  2026-06-05). Companion tokens `--vendor-sidebar-soft oklch(0.42 0.06 195)`
+  for hover/active wash, `--vendor-sidebar-ink oklch(0.96 0.02 195)` for text.
+- **Exec** sidebar = charcoal ink `oklch(0.22 0.008 70)` (LOCKED 2026-06-08).
+  Companion tokens `--exec-sidebar-text oklch(0.95 0.005 70)`,
+  `--exec-sidebar-muted oklch(0.68 0.005 70)`,
+  `--exec-sidebar-active oklch(0.30 0.008 70)` (active nav bg, with 3px
+  `--portal-emerald` left border).
+- **Forbidden for any portal:** purple/violet, blue, pink, bright yellow.
+
+Stat cards are **never** plain white boxes; the headline metrics live in the
+dark ribbon. Amber is the single accent and is a sanctioned exception to the
+marketing site's emerald-only rule, portals only.
+
+The exec portal has additional register rules (Fraunces section heads, italic
+Inter eyebrows, mono uppercase in only two places per screen, no status pills,
+no count chips, topbar content-empty on the right) — see
+[`UI_KIT_DESIGN_LOG.md`](UI_KIT_DESIGN_LOG.md) Global decisions §"Editorial
+concierge register for the exec portal".
 
 ### Type ramp (operational, not editorial)
 
@@ -153,7 +172,7 @@ frame everywhere; only the sidebar items and the topbar widgets differ.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│ SIDEBAR (emerald)    │ TOPBAR  search · context widget · bell · avatar │
+│ SIDEBAR (per portal) │ TOPBAR  search · context widget · bell · avatar │
 │ ┌──────────────────┐ ├─────────────────────────────────────────────────┤
 │ │ ◐ logo / org     │ │  PAGE TITLE ROW   [breadcrumb]      [page action]│
 │ │                  │ │                                                  │
@@ -170,7 +189,9 @@ frame everywhere; only the sidebar items and the topbar widgets differ.
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-**Sidebar (`<PortalSidebar>`):** emerald fill, ~240px wide, fixed full height.
+**Sidebar (`<PortalSidebar>`):** per-portal colour fill (admin emerald, vendor
+teal-pine `--vendor-sidebar`, exec charcoal `--exec-sidebar`), ~240px wide,
+fixed full height.
 Org/logo block at top. Nav items are icon + label rows; the active item gets a
 lighter emerald wash and a left indicator. Items that hold pending work show an
 **amber count badge** on the right. Parent items (admin "Clients") expand to
@@ -185,6 +206,26 @@ notification bell with an amber dot when unread, then the user avatar menu.
 **Page frame (`<PortalPage>`):** owns the title row (H1 + optional breadcrumb on
 the left, optional primary page action button on the right) and the content slot.
 Every module screen renders inside this frame.
+
+**Back button (top-left, deeper-than-first-level routes only, added 2026-06-04).**
+Any route deeper than the first-level sidebar item (vendor detail, executive
+detail, meeting detail, template editor, new-meeting / new-executive forms, etc.)
+renders a 32px thin row ABOVE the breadcrumb containing a `← Back` ghost button.
+20px chevron-left outline icon (1.6px stroke, `--portal-ink`) + 8px gap + `Back`
+label (Inter 14px semibold, `--portal-ink`). No fill, no border; hover = subtle
+`--portal-card-hover` background; focus ring visible. Click navigates to the
+**parent route** (the first-level sidebar item for that section, derived from
+the breadcrumb's penultimate item — e.g. `/admin/vendors/VEN-1044` Back →
+`/admin/vendors`). **NOT browser history** — deterministic, so the same page
+always has the same Back destination regardless of how the user arrived.
+In-page tabs (Settings sub-tabs like `/admin/settings/integrations`) do NOT
+count as deeper levels; back button is hidden on them. Inbox conversation
+deep-links (`/admin/inbox/{conv_id}`) also do NOT count (same route, just
+reading-pane swap). The existing in-editor right-side "← Back to list" buttons
+on Templates editor / New Meeting / New Executive stay (Issy's call: both
+affordances coexist; the global top-left button is canonical going forward but
+no retroactive strip). Lives in the shared `<PortalPage>` component — never
+re-implement per screen.
 
 **Reuse, do not re-roll:** `<PortalSidebar>`, `<PortalTopbar>`, `<PortalPage>` are
 defined once. A second sidebar implementation is a bug.
@@ -389,8 +430,11 @@ These are layout/structure fixes. Data sparsity is fine; the empty states carry 
 - [ ] Uses the shared shell (`<PortalSidebar>`/`<PortalTopbar>`/`<PortalPage>`),
       no re-rolled sidebar.
 - [ ] Matches its template from section 3 and the named HR Partner reference.
-- [ ] Only `--portal-*` tokens; emerald on sidebar only; ribbon dark, not white
-      cards; amber is the only accent.
+- [ ] Only `--portal-*` tokens; per-portal sidebar colour (admin emerald,
+      vendor `--vendor-sidebar`, exec `--exec-sidebar`); ribbon dark, not
+      white cards; amber is the only accent. Exec portal screens follow the
+      additional "editorial concierge" register rules (see
+      [`UI_KIT_DESIGN_LOG.md`](UI_KIT_DESIGN_LOG.md)).
 - [ ] Type ramp respected (Inter body, mono uppercase labels, no Fraunces in
       bodies).
 - [ ] HR Partner density (44px rows, tight cards, no marketing whitespace).

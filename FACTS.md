@@ -19,8 +19,20 @@ those mistakes. Check here first, not the surrounding code.
   **legacy and is not authoritative for copy.** Do not bulk-rename code, paths, or
   domains (that breaks things and is not wanted), but **never emit lowercase
   "theGoodintro" in generated copy or UI.**
-- Wordmark: the "Good" is the emerald highlight. In rich brand contexts the
-  capital "Good" carries the emerald accent.
+- Wordmark: **TheGoodIntro** one word, written as `<ink>The</ink><emerald>Good</emerald><ink>Intro</ink>`
+  — "The" + "Intro" in dark ink, "Good" in brand emerald `oklch(0.42 0.13 158)`. Locked
+  colour split, applies wherever the wordmark renders (marketing site, platform,
+  emails, signup, every portal sidebar header).
+- Wordmark font: **Fraunces semibold** (heavy serif) for the wordmark text itself.
+  This is the brand exception to the rule that Fraunces is "italic emphasis + big
+  numbers only" — the wordmark renders in Fraunces semibold across all surfaces.
+- Logo mark: a circular emerald mark with a stylised cream-white "G" inside (a
+  curl / interlocking shape). Lives at [`apps/web/public/brand-logo.png`](apps/web/public/brand-logo.png).
+  Mark sits to the LEFT of the wordmark with ~12-16px gap, vertically centred.
+  Mark colour: emerald `oklch(0.42 0.13 158)` background, cream `oklch(0.97 0.01 80)` G shape.
+  This logo lock was made 2026-06-07 and applies to all NEW screens going forward.
+  Existing locked screens are NOT being retroactively redesigned for the new mark
+  (Issy's call); the build chat will swap the mark when porting any locked screen.
 - Domain: **thegoodintro.com** (singular). The Google workspace is
   thegoodintros.com (plural). This mismatch is known and intentional; do not flag it.
 
@@ -66,7 +78,20 @@ Current canonical model (still verify against the source before shipping copy):
 - Marketing site (`apps/web`) is **emerald-only**, no gold/amber. The platform/portals
   (`apps/platform`) add a single **antique-gold / soft-champagne accent**
   (`--portal-amber`, value `oklch(0.78 0.07 85)`; the token name is kept but it is no
-  longer the old amber), emerald on the sidebar only.
+  longer the old amber).
+- **Per-portal sidebar colour** (updated 2026-06-08; supersedes the old "emerald
+  sidebar only" rule):
+  - **Admin** sidebar = brand emerald `oklch(0.42 0.13 158)` (LOCKED).
+  - **Vendor** sidebar = deep teal-pine `oklch(0.32 0.045 195)` (LOCKED
+    2026-06-05). Companion tokens `--vendor-sidebar-soft`,
+    `--vendor-sidebar-ink`.
+  - **Exec** sidebar = charcoal ink `oklch(0.22 0.008 70)` (LOCKED
+    2026-06-08). Companion tokens `--exec-sidebar-text`,
+    `--exec-sidebar-muted`, `--exec-sidebar-active`.
+  - FORBIDDEN for any portal: purple/violet (reads as MeetMagic), blue, pink,
+    bright yellow.
+  - Full spec lives in [`UI_KIT_DESIGN_LOG.md`](UI_KIT_DESIGN_LOG.md) Global
+    decisions. Build chat ports from the log, not from this entry alone.
 - **No em or en dashes in prose.** En dashes only inside numeric ranges.
 
 When unsure about a fact not listed here, check the source doc named in
