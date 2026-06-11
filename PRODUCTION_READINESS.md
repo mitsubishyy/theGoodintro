@@ -54,11 +54,15 @@ Issy chose full scope on all three forks; these are now committed v1 build tasks
 
 Email deliverability is the highest risk: the exec request email is the product.
 
-- [ ] **A1 Email sender.** Build `apps/platform/lib/email/` that drains the existing
+- [x] **A1 Email sender.** Build `apps/platform/lib/email/` that drains the existing
       `notification` queue (today rows are queued and nothing sends) through the
       provider (D-3), idempotent per notification id, writing back sent/bounced
       status. *Done when:* a queued notification is delivered to a real inbox in
-      staging and its row flips to `sent`.
+      staging and its row flips to `sent`. *Done 2026-06-11:* Resend wired
+      (test mode), exec request email delivered to a real inbox with status
+      write-back, no-double-send proven by DB tests, all three buttons verified
+      by Issy. Live sending still gated on A2 (DNS) and EMAIL_MODE=live, both
+      founder actions.
 - [ ] **A2 Sending-domain authentication.** SPF + DKIM + DMARC on a dedicated
       subdomain (e.g. `send.thegoodintro.com`). *Done when:* a mail-tester / inbox
       placement check scores clean and a test exec email lands in the inbox, not
