@@ -5,7 +5,7 @@
  * from the brand. Every dynamic value is HTML-escaped.
  */
 
-import { SIGNATURE_ATTACHMENTS, SIGNATURE_HTML, SIGNATURE_TEXT } from "./signature";
+import { getSignature } from "./signature";
 import type { EmailAttachment } from "./transport";
 
 export type ComposedEmail = {
@@ -101,6 +101,7 @@ export function execRequestEmail(c: {
   const toEa = `${c.confirmUrl}?intent=send_to_ea`;
   const eaLabel = c.eaFirstName ? `Send to ${c.eaFirstName} (EA)` : "Send to my EA";
 
+  const signature = getSignature();
   const q1Preview = c.q1.length > 90 ? `${c.q1.slice(0, 90).replace(/\s+\S*$/, "")}...` : c.q1;
   const preview = `${q1Preview} ${c.indicativeAmount} will direct to ${c.charityName}.`;
 
@@ -172,9 +173,10 @@ ${sectionLabel("Why it is relevant to you")}
 </div>
 <p style="margin:8px 0 0;font-size:11px;color:${E.muted}">These buttons open a short confirm page. Nothing is accepted or declined until you confirm there.</p>
 
-<p style="margin:1.5em 0 1em">Best,</p>
+<p style="margin:1.5em 0 0">No pressure either way, and no obligation to take the next one.</p>
+<p style="margin:1em 0 1em">Best,</p>
 <div style="margin:0 0 1.5em">
-${SIGNATURE_HTML}
+${signature.html}
 </div>
 
 <p style="margin:0;font-size:11px;color:${E.muted}">TheGoodIntro · invite-only · Australia</p>
@@ -203,14 +205,16 @@ ${SIGNATURE_HTML}
     ``,
     `These links open a short confirm page. Nothing is accepted or declined until you confirm there.`,
     ``,
+    `No pressure either way, and no obligation to take the next one.`,
+    ``,
     `Best,`,
     ``,
-    SIGNATURE_TEXT,
+    signature.text,
     ``,
     `TheGoodIntro · invite-only · Australia`,
   ].join("\n");
 
-  return { subject, html, text, attachments: SIGNATURE_ATTACHMENTS, fromKind: "personal" };
+  return { subject, html, text, fromKind: "personal" };
 }
 
 /** A1 · New sign-up, the admin alert (to Issy, from the brand). */

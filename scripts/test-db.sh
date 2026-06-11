@@ -39,7 +39,7 @@ fi
 # regeneration, or the one manual setup step evaporates on every test run.
 PRESERVED=""
 if [ -f apps/platform/.env.local ]; then
-  PRESERVED="$(grep -E '^(RESEND_API_KEY|EMAIL_MODE|EMAIL_TEST_RECIPIENT|EMAIL_FROM_PERSONAL|EMAIL_FROM_BRAND|EMAIL_REPLY_TO|EMAIL_ADMIN_ALERTS)=' apps/platform/.env.local || true)"
+  PRESERVED="$(grep -E '^(RESEND_API_KEY|EMAIL_MODE|EMAIL_TEST_RECIPIENT|EMAIL_FROM_PERSONAL|EMAIL_FROM_BRAND|EMAIL_REPLY_TO|EMAIL_ADMIN_ALERTS|EMAIL_SIGNATURE_PHONE)=' apps/platform/.env.local || true)"
 fi
 
 cat > apps/platform/.env.local <<EOF

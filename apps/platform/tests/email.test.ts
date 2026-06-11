@@ -14,6 +14,7 @@ const TEST_INBOX = "delivered@resend.dev";
 // Force deterministic test mode regardless of what .env.local says.
 process.env.EMAIL_MODE = "test";
 delete process.env.EMAIL_TEST_RECIPIENT;
+process.env.EMAIL_SIGNATURE_PHONE = "+61 414 442 687";
 
 async function signIn(email: string): Promise<SupabaseClient> {
   const c = createClient(URL, KEY, { auth: { persistSession: false } });
@@ -85,25 +86,24 @@ describe("email queue drain (A1)", () => {
     expect(msg.html).toContain("What they want to talk about");
     expect(msg.html).toContain("Why it is relevant to you");
     expect(msg.html).toContain("OzHarvest"); // Riley's chosen charity
-    expect(msg.html).not.toContain("No pressure either way"); // removed per Issy 2026-06-11
-    expect(msg.html).toContain("Best,"); // sign-off per Issy 2026-06-11
-    // Her real signature (2026-06-11): bold name | Founder | mobile, then the lockup.
+    // Closing per Issy 2026-06-11 (second pass): no-pressure line restored
+    // above "Best," and the signature.
+    expect(msg.html).toContain("No pressure either way, and no obligation to take the next one.");
+    expect(msg.html).toContain("Best,");
+    // Signature: bold name | Founder | phone (phone from EMAIL_SIGNATURE_PHONE),
+    // then the text-only wordmark.
     expect(msg.html).toContain("<strong>Isobel Hardwick</strong> | Founder | +61 414 442 687");
+    expect(msg.html).toContain('The<span style="color:#06623f">Good</span>Intro');
+    expect(msg.text).toContain("No pressure either way");
     expect(msg.text).toContain("Best,");
     expect(msg.text).toContain("Isobel Hardwick | Founder | +61 414 442 687");
-    // Email-client constraints: no CSS vars, no Tailwind classes, and no
-    // REMOTE images (the signature logo is allowed as an inline cid: image —
-    // it travels inside the email, so nothing is fetched from a server).
+    // Email-client constraints: no CSS vars, no Tailwind classes, and NO
+    // images of any kind in v1 (deliverability rule; the signature lockup is
+    // styled text, not the logo png).
     expect(msg.html).not.toContain("var(--");
     expect(msg.html).not.toContain('class="');
-    expect(msg.html).not.toMatch(/<img[^>]+src="https?:/);
-    expect(msg.html).toContain('src="cid:brand-logo"');
-    expect(msg.attachments?.length).toBe(1);
-    expect(msg.attachments?.[0]).toMatchObject({
-      contentId: "brand-logo",
-      contentType: "image/png",
-      filename: "thegoodintro-logo.png",
-    });
+    expect(msg.html).not.toContain("<img");
+    expect(msg.attachments).toBeUndefined();
     // FACTS.md: brand casing, no em or en dashes anywhere in either part.
     expect(msg.html).toContain("TheGoodIntro");
     expect(msg.html).not.toContain("theGoodintro");
@@ -250,6 +250,34 @@ describe("email queue drain (A1)", () => {
     expect(calls[0].to).toBe(TEST_INBOX);
 
     await admin.from("notification").delete().eq("id", inserted!.id);
+  });
+
+  it("unsetting EMAIL_SIGNATURE_PHONE drops the number with no code change", async () => {
+    const { execRequestEmail } = await import("../lib/email/templates");
+    const compose = () =>
+      execRequestEmail({
+        execFirstName: "Riley",
+        requesterName: "Alex Alpha",
+        vendorCompany: "Alpha Pty Ltd",
+        q1: "x",
+        q2: "y",
+        indicativeAmount: "$900",
+        charityName: "OzHarvest",
+        confirmUrl: "http://localhost:3001/e/t",
+      });
+
+    const withPhone = compose();
+    expect(withPhone.html).toContain("<strong>Isobel Hardwick</strong> | Founder | +61 414 442 687");
+
+    delete process.env.EMAIL_SIGNATURE_PHONE;
+    try {
+      const without = compose();
+      expect(without.html).toContain("<strong>Isobel Hardwick</strong> | Founder");
+      expect(without.html).not.toContain("+61 414 442 687");
+      expect(without.text).toContain("Isobel Hardwick | Founder\n");
+    } finally {
+      process.env.EMAIL_SIGNATURE_PHONE = "+61 414 442 687";
+    }
   });
 
   it("a request with no active token fails the row instead of sending", async () => {
