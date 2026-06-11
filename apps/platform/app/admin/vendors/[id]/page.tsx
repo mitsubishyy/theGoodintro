@@ -269,7 +269,6 @@ export default async function VendorDetailPage({
 
   return (
     <PortalPage
-      title={detailRow.name}
       back={{ href: "/admin/vendors" }}
       breadcrumb={[
         { label: "Home", href: "/admin" },

@@ -19,7 +19,9 @@ export interface BreadcrumbItem {
 }
 
 export interface PortalPageProps {
-  title: string;
+  /** The page H1. Omit on record-detail screens where RecordDetail renders its
+   *  own header band as the single H1 (the back-row + breadcrumb still show). */
+  title?: string;
   /** Set to render the locked Back-row. Caller derives the parent route from the breadcrumb. */
   back?: { label?: string; href: string };
   breadcrumb?: BreadcrumbItem[];
@@ -63,27 +65,31 @@ export function PortalPage({ title, back, breadcrumb, action, eyebrow, count, ch
           ))}
         </nav>
       )}
-      <div className="mt-3 flex items-baseline justify-between gap-4">
-        <div className="min-w-0 flex items-baseline gap-3">
-          <h1 className="text-[20px] font-semibold tracking-tight truncate" style={{ color: "var(--portal-ink)" }}>
-            {title}
-          </h1>
-          {count && (
-            <span
-              className="text-[11px] font-mono uppercase tracking-[0.18em] whitespace-nowrap"
-              style={{ color: "var(--muted-foreground)" }}
-            >
-              {count}
-            </span>
-          )}
-          {eyebrow && (
-            <p className="mt-1 text-[11px] uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
-              {eyebrow}
-            </p>
-          )}
+      {(title || action) && (
+        <div className="mt-3 flex items-baseline justify-between gap-4">
+          <div className="min-w-0 flex items-baseline gap-3">
+            {title && (
+              <h1 className="text-[20px] font-semibold tracking-tight truncate" style={{ color: "var(--portal-ink)" }}>
+                {title}
+              </h1>
+            )}
+            {count && (
+              <span
+                className="text-[11px] font-mono uppercase tracking-[0.18em] whitespace-nowrap"
+                style={{ color: "var(--muted-foreground)" }}
+              >
+                {count}
+              </span>
+            )}
+            {eyebrow && (
+              <p className="mt-1 text-[11px] uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
+                {eyebrow}
+              </p>
+            )}
+          </div>
+          {action && <div className="shrink-0">{action}</div>}
         </div>
-        {action && <div className="shrink-0">{action}</div>}
-      </div>
+      )}
       <div className="mt-5">{children}</div>
     </main>
   );
