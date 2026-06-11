@@ -5,7 +5,7 @@ import { requireStaff } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
 import { applyPaidInvoice } from "@/lib/billing";
-import { MEETING_FEE_CENTS } from "@thegoodintro/pricing";
+import { MEETING_FEE_CENTS, gstCentsForCredits } from "@thegoodintro/pricing";
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
 
@@ -30,7 +30,15 @@ export async function approveVendorAction(fd: FormData): Promise<void> {
   revalidatePath(`/admin/vendors/${id}`);
 }
 
-/** Issue a Xero invoice (stub) for N credits. Admin fee is its own named line. */
+/**
+ * Issue a Xero invoice (stub) for N credits: a flat $1,500 ex-GST per credit
+ * plus its GST, and the purchase-ledger columns reporting reads.
+ *
+ * No "admin fee" line: the vendor always pays the flat fee, and the per-meeting
+ * keep ($600/$500/$400/$300 by band) is band-dependent and frozen onto each
+ * gift_record only when a meeting is held (CALCULATIONS.md 0.1 / 1), so it is
+ * never knowable or charged at purchase time.
+ */
 export async function issueInvoiceAction(fd: FormData): Promise<void> {
   const { staff, supabase } = await requireStaff();
   if (!(await getFlag("vendor_payments"))) return;
@@ -38,17 +46,29 @@ export async function issueInvoiceAction(fd: FormData): Promise<void> {
   const credits = Math.max(1, parseInt(str(fd, "credits") || "0", 10));
   if (!id || !credits) return;
 
-  const amount = credits * MEETING_FEE_CENTS;
+  const feeExGst = credits * MEETING_FEE_CENTS;
+  const gst = gstCentsForCredits(credits);
   const xeroId = `STUB-${id.slice(-4)}-${Date.now()}`;
+  const purchaseDate = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
   await supabase.from("invoice").insert({
     vendor_id: id,
     xero_invoice_id: xeroId,
     kind: "credit_purchase",
     line_items: [
-      { name: `Meeting credits x${credits}`, quantity: credits, amount_cents: amount },
-      { name: "Admin fee", amount_cents: 0 },
+      { name: `Meeting credits x${credits}`, quantity: credits, amount_cents: feeExGst },
+      { name: "GST (10%)", amount_cents: gst },
     ],
-    amount_cents: amount,
+    // amount_cents stays the ex-GST fee total (the platform's ex-GST
+    // convention; reporting/credit-granting never depend on it). GST is held in
+    // gst_cents for the BAS/GST report and is never revenue.
+    amount_cents: feeExGst,
+    // Purchase-ledger / GST-BAS columns (SCHEMA invoice v2 §3). Without these,
+    // loadPurchaseLedger (which filters quantity is not null) skips the paid
+    // invoice entirely, so cash-collected + GST reports would miss the sale.
+    fee_ex_gst_cents: feeExGst,
+    gst_cents: gst,
+    quantity: credits,
+    purchase_date: purchaseDate,
     status: "sent",
   });
   await logAudit(supabase, staff.id, {
