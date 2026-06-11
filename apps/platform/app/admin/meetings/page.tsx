@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/format";
 import { confirmMeetingAction, markHeldAction, releaseMeetingAction } from "./actions";
+import { CopyAcceptLink } from "./copy-link";
 
 export const metadata: Metadata = {
   title: "Meetings — TheGoodIntro admin",
@@ -26,6 +27,14 @@ function names(r: Row) {
   return { execLabel: exec ? `${exec.title}, ${exec.company}` : "—", vendor: vendor?.name ?? "—" };
 }
 
+type PendingRequest = {
+  id: string;
+  created_at: string;
+  executive: { title: string; company: string } | { title: string; company: string }[] | null;
+  vendor: { name: string } | { name: string }[] | null;
+  tokens: { token: string; status: string }[];
+};
+
 export default async function MeetingsPage() {
   const supabase = await createClient();
   const { data } = await supabase
@@ -35,6 +44,16 @@ export default async function MeetingsPage() {
     .order("created_at", { ascending: true });
   const rows = (data ?? []) as unknown as Row[];
 
+  // Submitted requests with their signed accept link. The token is staff-only
+  // under RLS; surfacing it here lets the admin hand-deliver the /e/<token>
+  // link until the email sender exists (MVP_GAP_AUDIT step 4, A1 stopgap).
+  const { data: pendingData } = await supabase
+    .from("request")
+    .select("id, created_at, executive:executive_id(title,company), vendor:vendor_id(name), tokens:email_action_token(token, status)")
+    .eq("status", "submitted")
+    .order("created_at", { ascending: true });
+  const pending = (pendingData ?? []) as unknown as PendingRequest[];
+
   return (
     <div className="max-w-3xl">
       <h1 className="text-2xl font-semibold tracking-tight">Meetings</h1>
@@ -42,6 +61,38 @@ export default async function MeetingsPage() {
         Confirm times and record outcomes. A held meeting consumes a credit and
         records the gift.
       </p>
+
+      {pending.length > 0 ? (
+        <div className="mb-8">
+          <h2 className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--muted-foreground)" }}>
+            Awaiting exec response
+          </h2>
+          <div className="flex flex-col gap-3">
+            {pending.map((p) => {
+              const exec = Array.isArray(p.executive) ? p.executive[0] : p.executive;
+              const vendorRel = Array.isArray(p.vendor) ? p.vendor[0] : p.vendor;
+              const execLabel = exec ? `${exec.title}, ${exec.company}` : "—";
+              const vendor = vendorRel?.name ?? "—";
+              const active = p.tokens.find((t) => t.status === "active");
+              return (
+                <div key={p.id} className="rounded-xl border p-4" style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }}>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-medium">{vendor} → {execLabel}</div>
+                    <span className="font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--muted-foreground)" }}>
+                      Submitted {formatDate(p.created_at)}
+                    </span>
+                  </div>
+                  {active ? (
+                    <CopyAcceptLink path={`/e/${active.token}`} />
+                  ) : (
+                    <p className="mt-2 text-xs" style={{ color: "var(--muted-foreground)" }}>No active link for this request.</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
 
       <div className="flex flex-col gap-3">
         {rows.map((r) => {
