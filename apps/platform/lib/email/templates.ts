@@ -5,6 +5,8 @@
  * from the brand. Every dynamic value is HTML-escaped.
  */
 
+import { SIGNATURE_HTML, SIGNATURE_TEXT } from "./signature";
+
 export type ComposedEmail = {
   subject: string;
   html: string;
@@ -168,7 +170,8 @@ ${sectionLabel("Why it is relevant to you")}
 </div>
 <p style="margin:8px 0 0;font-size:11px;color:${E.muted}">These buttons open a short confirm page. Nothing is accepted or declined until you confirm there.</p>
 
-<p style="margin:1.5em 0 1.5em">Issy</p>
+<p style="margin:1.5em 0 0">Best,</p>
+<p style="margin:1em 0 1.5em">${SIGNATURE_HTML}</p>
 
 <p style="margin:0;font-size:11px;color:${E.muted}">TheGoodIntro · invite-only · Australia</p>
 </div></body></html>`;
@@ -196,7 +199,9 @@ ${sectionLabel("Why it is relevant to you")}
     ``,
     `These links open a short confirm page. Nothing is accepted or declined until you confirm there.`,
     ``,
-    `Issy`,
+    `Best,`,
+    ``,
+    SIGNATURE_TEXT,
     ``,
     `TheGoodIntro · invite-only · Australia`,
   ].join("\n");
