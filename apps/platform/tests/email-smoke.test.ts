@@ -60,11 +60,20 @@ describe.skipIf(!ARMED)("live Resend smoke (EMAIL_SMOKE=1)", () => {
       .single();
     expect(row?.status).toBe("sent");
     expect(row?.provider_message_id).toBeTruthy();
+
+    // The request is deliberately KEPT (no cleanup): the buttons in the
+    // delivered email point at /e/<token> on NEXT_PUBLIC_APP_URL, and they
+    // only work while this request and its token are live in the local DB.
+    // The next `supabase db reset` clears it.
+    const { data: tok } = await admin
+      .from("email_action_token")
+      .select("token")
+      .eq("request_id", reqId)
+      .single();
     console.log(
-      `SMOKE OK: Resend message ${row?.provider_message_id} delivered to ${row?.sent_to}. ` +
+      `SMOKE OK: Resend message ${row?.provider_message_id} delivered to ${row?.sent_to}.\n` +
+        `Confirm page for the email's buttons: ${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3001"}/e/${tok?.token}\n` +
         `Check the Resend dashboard (Emails) or that inbox.`,
     );
-
-    await admin.from("request").delete().eq("id", reqId);
   });
 });

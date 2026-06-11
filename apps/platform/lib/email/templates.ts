@@ -34,56 +34,175 @@ ${bodyHtml}
 </div></body></html>`;
 }
 
-/** B1 · Request submitted, the first touch (to the executive, from Issy). */
+/* ── B1 exec request email palette: email-safe hex stand-ins for the site
+   tokens (no CSS variables in email HTML). Emerald approximates the brand
+   oklch(0.42 0.13 158); cream/mint/border approximate --cream-3 / --mint-tint
+   / --border. Georgia stands in for Fraunces (no webfonts in email). */
+const E = {
+  ink: "#1c1b15",
+  muted: "#6f6a5e",
+  emerald: "#06623f",
+  mint: "#e7f2ea",
+  cream: "#f5f0e6",
+  border: "#e2dccd",
+  giftBg: "#edf3eb",
+  white: "#fffdf8",
+};
+const SANS =
+  "-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif";
+const SERIF = "Georgia,'Times New Roman',serif";
+
+function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((p) => p[0]!)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
+function sectionLabel(label: string): string {
+  return `<div style="margin:24px 0 6px;font-family:${SANS};font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:${E.muted}">${esc(label)}</div>`;
+}
+
+/**
+ * B1 · Request submitted, the first touch (to the executive, from Issy).
+ * Mirrors the public promise on /executives
+ * (apps/web/app/_components/meeting-request-email.tsx) in email-safe HTML:
+ * inline styles, tables/divs, no images, no icons, no webfonts. Lines the
+ * platform cannot yet back with data (LinkedIn, ABN verified) render only
+ * when the data exists; lines promising unbuilt mechanics (reply-CHARITY
+ * override, automatic calendar invites) are deliberately not made.
+ */
 export function execRequestEmail(c: {
   execFirstName: string;
-  vendorName: string;
+  requesterName: string;
+  requesterTitle?: string | null;
+  vendorCompany: string;
+  linkedinUrl?: string | null;
+  abnVerified?: boolean;
   q1: string;
   q2: string;
   indicativeAmount: string; // already formatted, e.g. "$900"
   charityName: string;
+  eaFirstName?: string | null;
   confirmUrl: string; // the signed /e/<token> link
 }): ComposedEmail {
-  const subject = "An introduction worth your time";
+  const subject = `${c.requesterName} (${c.vendorCompany}) wants 45 minutes`;
   const accept = `${c.confirmUrl}?intent=accept`;
   const decline = `${c.confirmUrl}?intent=decline`;
   const toEa = `${c.confirmUrl}?intent=send_to_ea`;
+  const eaLabel = c.eaFirstName ? `Send to ${c.eaFirstName} (EA)` : "Send to my EA";
+
+  const q1Preview = c.q1.length > 90 ? `${c.q1.slice(0, 90).replace(/\s+\S*$/, "")}...` : c.q1;
+  const preview = `${q1Preview} ${c.indicativeAmount} will direct to ${c.charityName}.`;
+
+  const intro = c.requesterTitle
+    ? `<strong>${esc(c.requesterName)}</strong>, ${esc(c.requesterTitle)} at <strong>${esc(c.vendorCompany)}</strong>, has requested 45 minutes with you.`
+    : `<strong>${esc(c.requesterName)}</strong> from <strong>${esc(c.vendorCompany)}</strong> has requested 45 minutes with you.`;
+  const introText = c.requesterTitle
+    ? `${c.requesterName}, ${c.requesterTitle} at ${c.vendorCompany}, has requested 45 minutes with you.`
+    : `${c.requesterName} from ${c.vendorCompany} has requested 45 minutes with you.`;
+
+  const metaBits = ["Founder reviewed"];
+  if (c.abnVerified) metaBits.unshift("ABN verified");
+  const metaHtml = c.linkedinUrl
+    ? `${metaBits.join(" · ")} · <a href="${esc(c.linkedinUrl)}" style="color:${E.emerald};text-decoration:underline">${esc(c.linkedinUrl.replace(/^https?:\/\//, ""))}</a>`
+    : metaBits.join(" · ");
+
+  const roleLine = c.requesterTitle
+    ? `${esc(c.requesterTitle)} · ${esc(c.vendorCompany)}`
+    : esc(c.vendorCompany);
+
+  const button = (href: string, label: string, solid: boolean) =>
+    `<a href="${esc(href)}" style="display:inline-block;margin:0 8px 8px 0;padding:11px 22px;border-radius:9999px;font-family:${SANS};font-size:13px;font-weight:600;text-decoration:none;${
+      solid
+        ? `background:${E.ink};color:${E.white};border:1px solid ${E.ink}`
+        : `background:transparent;color:${E.ink};border:1px solid #cfc8b8`
+    }">${esc(label)}</a>`;
+
+  const html = `<!doctype html>
+<html><body style="margin:0;padding:0;background:${E.cream}">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all">${esc(preview)}</div>
+<div style="max-width:560px;margin:0 auto;padding:32px 24px;font-family:${SANS};font-size:15px;line-height:1.6;color:${E.ink}">
+<div style="background:#ffffff;border:1px solid ${E.border};border-radius:16px;padding:28px 26px">
+
+<p style="margin:0 0 12px">Hi ${esc(c.execFirstName)},</p>
+<p style="margin:0">${intro} They have been vetted and reviewed. Here is what you need to know.</p>
+
+<!-- Vendor block -->
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-top:22px;background:${E.cream};border:1px solid ${E.border};border-radius:14px">
+<tr>
+<td style="padding:18px 0 18px 18px;vertical-align:top;width:56px">
+  <div style="width:56px;height:56px;border-radius:50%;background:${E.mint};border:1px solid ${E.border};text-align:center;line-height:56px;font-family:${SANS};font-size:19px;font-weight:600;color:${E.emerald}">${esc(initials(c.requesterName))}</div>
+</td>
+<td style="padding:18px;vertical-align:top">
+  <div style="font-family:${SANS};font-size:15px;font-weight:600;color:${E.ink}">${esc(c.requesterName)}
+    <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:9999px;background:${E.mint};color:${E.emerald};font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;vertical-align:middle">Verified</span>
+  </div>
+  <div style="margin-top:2px;font-size:12px;color:${E.muted}">${roleLine}</div>
+  <div style="margin-top:8px;font-size:11px;color:${E.muted}">${metaHtml}</div>
+</td>
+</tr>
+</table>
+
+${sectionLabel("What they want to talk about")}
+<p style="margin:0;font-size:14px">${esc(c.q1)}</p>
+
+${sectionLabel("Why it is relevant to you")}
+<p style="margin:0;font-size:14px">${esc(c.q2)}</p>
+
+<!-- Gift callout -->
+<div style="margin-top:24px;background:${E.giftBg};border:1px solid ${E.emerald};border-radius:12px;padding:14px 16px">
+  <div style="font-size:13px;font-weight:600;color:${E.ink}">If you accept, <span style="font-family:${SERIF};font-style:italic;font-size:16px;color:${E.emerald}">${esc(c.indicativeAmount)}</span> directs to <strong>${esc(c.charityName)}</strong></div>
+  <div style="margin-top:4px;font-size:12px;color:${E.muted}">The charity you chose. The full gift is sent after the meeting takes place.</div>
+</div>
+
+<!-- CTAs -->
+<div style="margin-top:24px">
+  ${button(accept, "Accept", true)}
+  ${button(decline, "Decline", false)}
+  ${button(toEa, eaLabel, false)}
+</div>
+<p style="margin:10px 0 0;font-size:11px;color:${E.muted}">These buttons open a short confirm page. Nothing is accepted or declined until you confirm there.</p>
+
+<p style="margin:24px 0 0">No pressure either way, and no obligation to take the next one.</p>
+<p style="margin:12px 0 0">Issy</p>
+
+<div style="margin-top:28px;padding-top:16px;border-top:1px solid ${E.border};font-size:11px;color:${E.muted}">TheGoodIntro · invite-only · Australia</div>
+</div>
+</div></body></html>`;
 
   const text = [
     `Hi ${c.execFirstName},`,
     ``,
-    `${c.vendorName} asked to meet you, and the reason is a strong one.`,
+    `${introText} They have been vetted and reviewed. Here is what you need to know.`,
     ``,
-    `What they would like to talk about: ${c.q1}`,
+    `${c.requesterName} (Verified)`,
+    roleLine.replaceAll("&amp;", "&"),
+    metaBits.join(" / ") + (c.linkedinUrl ? ` / ${c.linkedinUrl}` : ""),
     ``,
-    `Why they think it is relevant to you: ${c.q2}`,
+    `What they want to talk about:`,
+    c.q1,
     ``,
-    `It is one 45-minute conversation, on your terms. If you take it, ${c.vendorName} sends ${c.indicativeAmount} to ${c.charityName}, the charity you chose.`,
+    `Why it is relevant to you:`,
+    c.q2,
+    ``,
+    `If you accept, ${c.indicativeAmount} directs to ${c.charityName}, the charity you chose. The full gift is sent after the meeting takes place.`,
     ``,
     `Accept: ${accept}`,
     `Decline: ${decline}`,
-    `Send to my EA: ${toEa}`,
+    `${eaLabel}: ${toEa}`,
+    ``,
+    `These links open a short confirm page. Nothing is accepted or declined until you confirm there.`,
     ``,
     `No pressure either way, and no obligation to take the next one.`,
     ``,
     `Issy`,
+    ``,
+    `TheGoodIntro · invite-only · Australia`,
   ].join("\n");
-
-  const html = shell(`
-<p>Hi ${esc(c.execFirstName)},</p>
-<p><strong>${esc(c.vendorName)}</strong> asked to meet you, and the reason is a strong one.</p>
-<p style="margin-bottom:2px"><strong>What they would like to talk about</strong></p>
-<p style="margin-top:0">${esc(c.q1)}</p>
-<p style="margin-bottom:2px"><strong>Why they think it is relevant to you</strong></p>
-<p style="margin-top:0">${esc(c.q2)}</p>
-<p style="background:#f3e8cf;border-radius:8px;padding:12px 16px">It is one 45-minute conversation, on your terms. If you take it, ${esc(c.vendorName)} sends <strong>${esc(c.indicativeAmount)}</strong> to ${esc(c.charityName)}, the charity you chose.</p>
-<p style="margin:24px 0">
-  <a href="${esc(accept)}" style="${BUTTON_SOLID}">Accept</a>&nbsp;&nbsp;
-  <a href="${esc(decline)}" style="${BUTTON_OUTLINE}">Decline</a>&nbsp;&nbsp;
-  <a href="${esc(toEa)}" style="${BUTTON_OUTLINE}">Send to my EA</a>
-</p>
-<p>No pressure either way, and no obligation to take the next one.</p>
-<p>Issy</p>`);
 
   return { subject, html, text, fromKind: "personal" };
 }

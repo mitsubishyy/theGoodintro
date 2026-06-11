@@ -91,9 +91,10 @@ async function composeExecRequest(
   const { data: req } = await supabase
     .from("request")
     .select(
-      `id, q1_what, q2_why, vendor_id,
+      `id, q1_what, q2_why, vendor_id, attendee,
        vendor:vendor_id(name),
-       executive:executive_id(name, primary_email, charity:default_charity_id(name)),
+       requester:requested_by_user_id(name),
+       executive:executive_id(name, primary_email, charity:default_charity_id(name), ea:ea_id(name)),
        tokens:email_action_token(token, status)`,
     )
     .eq("id", row.request_id)
@@ -101,11 +102,23 @@ async function composeExecRequest(
   if (!req) throw new ComposeError("request not found");
 
   const vendor = one<{ name: string }>(req.vendor);
-  const exec = one<{ name: string; primary_email: string; charity: unknown }>(req.executive);
+  const requester = one<{ name: string }>(req.requester);
+  const exec = one<{ name: string; primary_email: string; charity: unknown; ea: unknown }>(
+    req.executive,
+  );
   const charity = one<{ name: string }>(exec?.charity);
+  const ea = one<{ name: string }>(exec?.ea);
   const token = (req.tokens as { token: string; status: string }[]).find((t) => t.status === "active");
   if (!exec?.primary_email) throw new ComposeError("executive has no primary email");
   if (!token) throw new ComposeError("no active action token for request");
+
+  // The person in the vendor block is whoever will sit the meeting: the
+  // on-behalf-of attendee when one was named, else the requesting user.
+  // vendor_user has no title column, so the role line degrades to company-only
+  // unless the attendee carried one.
+  const attendee = (req.attendee ?? null) as { name?: string; title?: string } | null;
+  const requesterName = attendee?.name?.trim() || requester?.name || vendor?.name || "A member vendor";
+  const requesterTitle = attendee?.title?.trim() || null;
 
   // Indicative amount: same computation as the /e/[token] confirm page (the
   // latest cycle's held count + 1), read live from the pricing engine.
@@ -123,11 +136,14 @@ async function composeExecRequest(
     to: exec.primary_email,
     email: execRequestEmail({
       execFirstName: (exec.name ?? "").split(" ")[0] || "there",
-      vendorName: vendor?.name ?? "A member vendor",
+      requesterName,
+      requesterTitle,
+      vendorCompany: vendor?.name ?? "A member vendor",
       q1: req.q1_what as string,
       q2: req.q2_why as string,
       indicativeAmount: indicative,
       charityName: charity?.name ?? "your chosen charity",
+      eaFirstName: ea?.name ? ea.name.split(" ")[0] : null,
       confirmUrl: `${appBaseUrl()}/e/${token.token}`,
     }),
   };

@@ -71,14 +71,33 @@ describe("email queue drain (A1)", () => {
     const msg = calls[0];
     expect(msg.to).toBe(TEST_INBOX); // test-mode guard: never the exec's real address
     expect(msg.from).toContain("onboarding@resend.dev");
-    expect(msg.subject).toBe("An introduction worth your time");
+    // Subject mirrors the public /executives mockup: "<Name> (<Company>) wants 45 minutes".
+    expect(msg.subject).toBe("Alex Alpha (Alpha Pty Ltd) wants 45 minutes");
     expect(msg.html).toContain(`/e/${tok!.token}?intent=accept`);
     expect(msg.html).toContain("?intent=decline");
     expect(msg.html).toContain("?intent=send_to_ea");
     expect(msg.text).toContain(`/e/${tok!.token}`);
     expect(msg.html).toContain("Budget pacing tools");
+    // The mockup's structural elements, in email-safe form.
+    expect(msg.html).toContain("Verified");
+    expect(msg.html).toContain("Founder reviewed");
+    expect(msg.html).toContain("AA"); // initials monogram for Alex Alpha
+    expect(msg.html).toContain("What they want to talk about");
+    expect(msg.html).toContain("Why it is relevant to you");
+    expect(msg.html).toContain("OzHarvest"); // Riley's chosen charity
+    expect(msg.html).toContain("No pressure either way");
+    // Email-client constraints: no CSS vars, no Tailwind classes, no images.
+    expect(msg.html).not.toContain("var(--");
+    expect(msg.html).not.toContain('class="');
+    expect(msg.html).not.toContain("<img");
+    // FACTS.md: brand casing, no em or en dashes anywhere in either part.
+    expect(msg.html).toContain("TheGoodIntro");
+    expect(msg.html).not.toContain("theGoodintro");
+    expect(msg.html).not.toMatch(/[–—]/);
+    expect(msg.text).not.toMatch(/[–—]/);
     // Alpha's seeded cycle has 1 held meeting, so the next is meeting 2: $900.
     expect(msg.html).toContain("$900");
+    expect(msg.text).toContain("$900");
     expect(msg.idempotencyKey).toBeTruthy();
 
     const { data: row } = await admin
@@ -107,6 +126,25 @@ describe("email queue drain (A1)", () => {
       .eq("request_id", reqId)
       .eq("channel", "in_app");
     expect(inApp?.every((n) => n.status === "queued")).toBe(true);
+
+    await admin.from("request").delete().eq("id", reqId);
+  });
+
+  it("an on-behalf-of attendee takes over the subject and vendor block", async () => {
+    await preclear(admin);
+    const { data: reqId } = await alex.rpc("submit_request", {
+      p_executive_id: RILEY,
+      p_q1: "Attendee path probe.",
+      p_q2: "Attendee path probe.",
+      p_attendee: { name: "Casey Counsel", title: "GM Finance", email: "" },
+    });
+
+    const calls: EmailMessage[] = [];
+    const summary = await drainEmailQueue(admin, fakeTransport(calls));
+    expect(summary).toMatchObject({ sent: 1 });
+    expect(calls[0].subject).toBe("Casey Counsel (Alpha Pty Ltd) wants 45 minutes");
+    expect(calls[0].html).toContain("GM Finance · Alpha Pty Ltd");
+    expect(calls[0].html).toContain("CC"); // initials monogram for Casey Counsel
 
     await admin.from("request").delete().eq("id", reqId);
   });
