@@ -111,7 +111,13 @@ export default async function AdminLayout({
           alt=""
           width={24}
           height={24}
-          className="rounded-full shrink-0"
+          className="rounded-full shrink-0 object-cover"
+          // brand-logo.png is the wide 750x168 wordmark, not a square icon
+          // mark. Pin both rendered dims to 24px (overriding Tailwind preflight
+          // `height:auto`, the warning's real trigger) and object-cover so it
+          // is neither distorted nor warns. TODO(issy): supply a square
+          // logomark asset for this 24px slot; this center-crops the wordmark.
+          style={{ width: 24, height: 24 }}
           priority
         />
         <Wordmark
