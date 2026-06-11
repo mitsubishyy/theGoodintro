@@ -593,16 +593,24 @@ function BillingModule({
 function humanizeAction(action: string): string {
   // Map known actor-action codes to short human strings. Falls back to the raw
   // dotted key so unknown actions still render readably.
+  // Every key here is an action code some part of the system genuinely emits
+  // (lib/audit.ts callers + the SECURITY DEFINER functions in migrations
+  // 0006/0007/0008). The previous map carried four codes nothing emits
+  // (vendor.created, credit.purchased/reserved/consumed) which implied
+  // features that do not exist; they are removed. request.* are emitted with
+  // target_type='request', so they surface here only once the activity query
+  // is broadened beyond target_type='vendor' (tracked separately) — mapped now
+  // so the vocabulary is complete and correct wherever the feed is reused.
   const map: Record<string, string> = {
+    "vendor.signed_up": "Vendor signed up",
     "vendor.approved": "Approved vendor",
+    "application.submitted": "Application submitted",
     "invoice.issued": "Issued invoice",
     "invoice.simulated_paid": "Marked invoice as paid",
-    "vendor.created": "Vendor created",
-    "vendor.signed_up": "Vendor signed up",
-    "application.submitted": "Application submitted",
-    "credit.purchased": "Credits purchased",
-    "credit.reserved": "Credit reserved",
-    "credit.consumed": "Credit consumed",
+    "request.submitted": "Request submitted",
+    "request.forwarded_to_ea": "Request forwarded to EA",
+    "request.accepted": "Request accepted",
+    "request.declined": "Request declined",
   };
   return map[action] ?? action;
 }

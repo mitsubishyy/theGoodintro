@@ -80,9 +80,12 @@ export default async function AdminLayout({
       icon: "calendar",
       badgeCount: meetingsBadge,
       children: [
-        { label: "Scheduled", href: "/admin/meetings?status=scheduled", icon: "calendar" },
+        // status params must be real meeting_status enum values
+        // (proposed/confirmed/held/no_show/cancelled/reversed); the labels stay
+        // operator-friendly.
+        { label: "Scheduled", href: "/admin/meetings?status=confirmed", icon: "calendar" },
         { label: "Pending requests", href: "/admin/requests", icon: "inbox", badgeCount: pendingRequestsBadge },
-        { label: "Completed", href: "/admin/meetings?status=completed", icon: "calendar" },
+        { label: "Completed", href: "/admin/meetings?status=held", icon: "calendar" },
         { label: "Cancellations", href: "/admin/meetings?status=cancelled", icon: "calendar" },
       ],
     },

@@ -100,7 +100,13 @@ export function ViewToggle({ left, right }: { left: string; right: string }) {
 
 /* ── Pending Requests (4-col, locked tone mapping) ────────────────────── */
 
-export type RequestTone = "review" | "match" | "exec" | "block";
+// The locked dashboard imagined a review/match/exec/block triage, but
+// request_status only expresses submitted/accepted/declined/closed and there
+// is no triage sub-state column. This widget shows *submitted* (pending)
+// requests, which are all awaiting admin review, so the only driveable tone is
+// "review". The other three were never assigned by any caller; restore them
+// only alongside a real schema column.
+export type RequestTone = "review";
 export interface PendingRequestRow {
   vendor: string;
   exec: string;
@@ -108,13 +114,8 @@ export interface PendingRequestRow {
   tone: RequestTone;
 }
 
-/** Locked Admin Dashboard 2026-06-09 mapping. Do not re-debate per screen.
- *  Each entry maps to a Badge tone the kit already ships. */
 const REQUEST_TONE: Record<RequestTone, { tone: Tone; label: string }> = {
   review: { tone: "amber", label: "Review" },
-  match: { tone: "muted", label: "Match" },     // neutral grey
-  exec: { tone: "neutral", label: "Exec" },     // ink (closest stand-in for "gold" pill)
-  block: { tone: "danger", label: "Block" },
 };
 
 export function PendingRequestsList({ rows }: { rows: PendingRequestRow[] }) {

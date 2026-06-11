@@ -31,8 +31,9 @@ export interface VendorRow {
   creditsRemaining: number | null;
   renewsLabel: string;
   joinedLabel: string;
-  /** Locked display bucket (mapped from `vendor.status` enum upstream). */
-  statusDisplay: "Active" | "Onboarding" | "Dormant" | "Paused" | "Churned";
+  /** Locked display bucket (mapped from `vendor.status` enum upstream). The
+   *  enum has no 'paused' value, so there is no Paused bucket. */
+  statusDisplay: "Active" | "Onboarding" | "Dormant" | "Churned";
 }
 
 interface AdminVendorsTableProps {
@@ -153,7 +154,6 @@ function StatusPill({ display }: { display: VendorRow["statusDisplay"] }) {
   //     in this kit version; differentiated by label until --portal-gold
   //     lands as a separate token)
   //   Dormant → muted dot · muted pill (lower opacity)
-  //   Paused  → muted dot · muted pill
   //   Churned → muted dot · muted pill (row opacity handled upstream)
   if (display === "Active" || display === "Onboarding") {
     return (
