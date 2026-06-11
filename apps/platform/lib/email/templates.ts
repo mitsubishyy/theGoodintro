@@ -168,8 +168,7 @@ ${sectionLabel("Why it is relevant to you")}
 </div>
 <p style="margin:8px 0 0;font-size:11px;color:${E.muted}">These buttons open a short confirm page. Nothing is accepted or declined until you confirm there.</p>
 
-<p style="margin:1.5em 0 1em">No pressure either way, and no obligation to take the next one.</p>
-<p style="margin:0 0 1.5em">Issy</p>
+<p style="margin:1.5em 0 1.5em">Issy</p>
 
 <p style="margin:0;font-size:11px;color:${E.muted}">TheGoodIntro · invite-only · Australia</p>
 </div></body></html>`;
@@ -196,8 +195,6 @@ ${sectionLabel("Why it is relevant to you")}
     `${eaLabel}: ${toEa}`,
     ``,
     `These links open a short confirm page. Nothing is accepted or declined until you confirm there.`,
-    ``,
-    `No pressure either way, and no obligation to take the next one.`,
     ``,
     `Issy`,
     ``,

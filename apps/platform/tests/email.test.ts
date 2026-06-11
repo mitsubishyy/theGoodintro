@@ -85,7 +85,8 @@ describe("email queue drain (A1)", () => {
     expect(msg.html).toContain("What they want to talk about");
     expect(msg.html).toContain("Why it is relevant to you");
     expect(msg.html).toContain("OzHarvest"); // Riley's chosen charity
-    expect(msg.html).toContain("No pressure either way");
+    expect(msg.html).not.toContain("No pressure either way"); // removed per Issy 2026-06-11
+    expect(msg.html).toContain("Issy"); // the sign-off stays
     // Email-client constraints: no CSS vars, no Tailwind classes, no images.
     expect(msg.html).not.toContain("var(--");
     expect(msg.html).not.toContain('class="');
