@@ -20,6 +20,16 @@ when conventions change.
 > (branch, feature flag off by default, staging first, Issy approves every
 > go-live); when unsure, ask Issy a recommendation-first question, don't guess.
 
+> **HARD RULE — out-of-bounds paths.** Never modify, stage, or commit anything in
+> `apps/web`, `outreach/`, `brand/`, or `exec-pipeline/` during platform sessions.
+> Even when those paths show uncommitted changes, leave them exactly as found and
+> stage your own work by explicit path (`git add <path>`), never `git add -A` / `git add .`.
+>
+> **HARD RULE — local DB only.** Never migrate, reseed, or flag-change the cloud
+> Supabase project (it is the staging/demo deploy). All schema, seed, and test
+> work runs on the local Supabase CLI stack: `npm run test:db` to boot/reset it,
+> `npm run test:platform` for the DB-backed suite.
+
 ## What this is
 
 A validation marketing site for theGoodintro: an Australian-first, invite-only
