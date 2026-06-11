@@ -10,6 +10,7 @@ import {
 } from "../_components/ui";
 import { VendorsFlow } from "../_components/vendors-flow";
 import { MeetingConfirmedCard } from "../_components/meeting-confirmed-card";
+import { FaqJsonLd } from "../_components/json-ld";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
@@ -28,9 +29,52 @@ const HERO_STATS = [
   { value: "45 min", label: "One focused conversation, led by the leader" },
 ];
 
+// Single source for the visible FAQ and the FAQPage JSON-LD. `a` is the plain
+// answer for structured data; `node` is the optional rich render shown on the
+// page. Keep `a` in sync with the rendered copy.
+const VENDOR_FAQS: { q: string; a: string; node?: React.ReactNode }[] = [
+  {
+    q: "How does a vendor get accepted?",
+    a: "You apply, you are interviewed, and you are vetted before you can request a single meeting. We are looking for a specific reason to talk to senior leaders, not a list to blast. Acceptance is not automatic and it is not for sale. Vendors who repeatedly miss relevance, or who behave badly in meetings, lose access.",
+  },
+  {
+    q: "Will executives actually accept my requests?",
+    a: "That is the entire design. Leaders here opted in, stated their topics, and see your specific reason before deciding. Requests that match a stated priority get accepted at a rate cold outreach never will, and requests that don't match never reach them, so you are not burning goodwill either way. We cap vendors at a 10:1 executive ratio so no one is competing in a flooded inbox.",
+  },
+  {
+    q: "What exactly do I pay?",
+    a: "One flat fee of $1,500 per held meeting. No subscriptions, no seat fee, no hidden costs. Between $900 and $1,200 of every meeting goes to the charity the leader chooses, rising with the number of meetings you take across the year, and we publish the exact split at every tier. Pricing is on the pricing page.",
+    node: (
+      <>
+        One flat fee of $1,500 per held meeting. No subscriptions, no seat fee,
+        no hidden costs. Between $900 and $1,200 of every meeting goes to the
+        charity the leader chooses, rising with the number of meetings you take
+        across the year, and we publish the exact split at every tier. Pricing
+        is on the{" "}
+        <Link
+          href="/pricing"
+          className="underline underline-offset-4 hover:text-primary"
+        >
+          pricing page
+        </Link>
+        .
+      </>
+    ),
+  },
+  {
+    q: "How do we know the gift reaches the charity?",
+    a: "Every nominated charity holds deductible gift recipient (DGR) endorsement and is listed on the public register, so it is independently verifiable before the meeting is confirmed. Once the meeting is held, the gift is paid to the chosen charity and confirmed in writing.",
+  },
+  {
+    q: "What if the meeting does not lead anywhere?",
+    a: "Once the meeting happens, the donation is committed and is paid to the charity within 14 days regardless of the commercial outcome. That is deliberate. It keeps the gift honest and stops anyone gaming it. You are buying a qualified, relevant conversation and a real gift, not a guaranteed deal.",
+  },
+];
+
 export default function Vendors() {
   return (
     <>
+      <FaqJsonLd items={VENDOR_FAQS} />
       <PageHero
         eyebrow="For vendors"
         title="The meetings cold outreach can't"
@@ -312,11 +356,12 @@ export default function Vendors() {
               className="mt-6 text-[15px] leading-relaxed max-w-2xl"
               style={{ color: "var(--cream-9)" }}
             >
-              What that looks like in the real world: by OzHarvest&apos;s own
-              published figures, $1 delivers two meals, so a single meeting at
-              the $900 tier funds around 1,800 meals for Australians doing it
-              tough. Different charities, different impact, always the
-              leader&apos;s choice, always confirmed in writing.
+              What that looks like in the real world: the leader directs $900
+              to $1,200 from your meeting to a charity they choose, from the
+              Royal Flying Doctor Service&apos;s aeromedical care to
+              headspace&apos;s youth mental health services. Always the
+              leader&apos;s choice, always paid within 14 days, always
+              confirmed in writing.
             </p>
           </div>
         </div>
@@ -337,51 +382,11 @@ export default function Vendors() {
               />
             </div>
             <div className="lg:col-span-8">
-              <Faq q="How does a vendor get accepted?" open>
-                You apply, you are interviewed, and you are vetted before you
-                can request a single meeting. We are looking for a specific
-                reason to talk to senior leaders, not a list to blast.
-                Acceptance is not automatic and it is not for sale. Vendors
-                who repeatedly miss relevance, or who behave badly in
-                meetings, lose access.
-              </Faq>
-              <Faq q="Will executives actually accept my requests?">
-                That is the entire design. Leaders here opted in, stated their
-                topics, and see your specific reason before deciding. Requests
-                that match a stated priority get accepted at a rate cold
-                outreach never will, and requests that don&apos;t match never
-                reach them, so you are not burning goodwill either way. We cap
-                vendors at a 10:1 executive ratio so no one is competing in a
-                flooded inbox.
-              </Faq>
-              <Faq q="What exactly do I pay?">
-                One flat fee of $1,500 per held meeting. No subscriptions, no
-                seat fee, no hidden costs. Between $900 and $1,200 of every
-                meeting goes to the charity the leader chooses, rising with the
-                number of meetings you take across the year, and we publish the
-                exact split at every tier. Pricing is on the{" "}
-                <Link
-                  href="/pricing"
-                  className="underline underline-offset-4 hover:text-primary"
-                >
-                  pricing page
-                </Link>
-                .
-              </Faq>
-              <Faq q="How do we know the gift reaches the charity?">
-                Every nominated charity holds deductible gift recipient (DGR)
-                endorsement and is listed on the public register, so it is
-                independently verifiable before the meeting is confirmed. Once
-                the meeting is held, the gift is paid to the chosen charity and
-                confirmed in writing.
-              </Faq>
-              <Faq q="What if the meeting does not lead anywhere?">
-                Once the meeting happens, the donation is committed and is
-                paid to the charity within 14 days regardless of the
-                commercial outcome. That is deliberate. It keeps the gift
-                honest and stops anyone gaming it. You are buying a qualified,
-                relevant conversation and a real gift, not a guaranteed deal.
-              </Faq>
+              {VENDOR_FAQS.map((f, i) => (
+                <Faq key={f.q} q={f.q} open={i === 0}>
+                  {f.node ?? f.a}
+                </Faq>
+              ))}
             </div>
           </div>
         </div>

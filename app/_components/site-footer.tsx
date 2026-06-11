@@ -9,6 +9,8 @@ const NAV = [
   { href: "/executives", label: "Executives" },
   { href: "/vendors", label: "Vendors" },
   { href: "/giving", label: "Giving" },
+  { href: "/charities", label: "Charities" },
+  { href: "/ledger", label: "Ledger" },
   { href: "/pricing", label: "Pricing" },
 ];
 
@@ -59,8 +61,9 @@ export default function SiteFooter() {
           >
             issy@thegoodintros.com
           </a>
-          <p className="hp-footer-meta">ABN pending registration</p>
-          <p className="hp-footer-meta">&copy; 2026 TheGoodIntro Pty Ltd</p>
+          <p className="hp-footer-meta">
+            &copy; 2026 TheGoodIntro &middot; ABN 59 398 447 638
+          </p>
         </div>
       </div>
     </footer>

@@ -7,6 +7,7 @@ import SiteHeader from "./_components/site-header";
 import SiteFooter from "./_components/site-footer";
 import PageTransition from "./_components/PageTransition";
 import PageShell from "./_components/page-shell";
+import { OrganizationJsonLd } from "./_components/json-ld";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -56,6 +57,7 @@ export default function RootLayout({
       className={`${fraunces.variable} ${inter.variable} ${mono.variable}`}
     >
       <body suppressHydrationWarning className="text-foreground bg-background antialiased">
+        <OrganizationJsonLd />
         <PageShell>
           <SiteHeader />
           <main>

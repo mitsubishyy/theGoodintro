@@ -10,6 +10,7 @@ import {
 } from "../_components/ui";
 import { MeetingRequestEmail } from "../_components/meeting-request-email";
 import { Avatar } from "../mockup/_components/avatar";
+import { FaqJsonLd } from "../_components/json-ld";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
@@ -19,9 +20,47 @@ export const metadata = pageMetadata({
   path: "/executives",
 });
 
+// Single source for the visible FAQ and the FAQPage JSON-LD. Keep `a` in sync
+// with the rendered answer copy below.
+const EXEC_FAQS: { q: string; a: string }[] = [
+  {
+    q: "Is this just a sales meeting in disguise?",
+    a: "No. A vendor cannot reach you without writing the specific initiative or problem they want to discuss, and that reason is shown to you in plain language before anything is scheduled. The conversation is led by your priorities, not a pitch. Vendors who treat it as a cold sell lose access. The model only works if executives genuinely want to be here, so it is built around your interests, not theirs.",
+  },
+  {
+    q: "What actually counts as relevant?",
+    a: "You define it. You tell us the priorities, initiatives, and problems you would take a conversation about, and you can be as broad or as narrow as you like. Anything outside that scope never reaches you. You can update or pause your topics at any time, and a vendor still has to state a specific reason that fits before a request is shown to you.",
+  },
+  {
+    q: "How many requests will I get? Will I be flooded?",
+    a: "No. We hold a deliberate 10:1 balance, at least ten executives for every vendor we admit, so no leader is ever the whole room. For a typical founding executive that is two to four requests a quarter that actually fit, not a daily inbox to manage.",
+  },
+  {
+    q: "What happens if I decline?",
+    a: "Nothing. Declining is the normal case, not the exception. There is no penalty, no score, no follow-up, and no explanation required. You see the stated reason first precisely so that saying no is fast and free. A vendor cannot contact you again about a declined request.",
+  },
+  {
+    q: "Which charities can I choose?",
+    a: "You choose from our curated shortlist of DGR-endorsed Australian charities, and you can nominate any other DGR-endorsed charity, which we verify and add before your first meeting. You can change it at any time, and nominate a different one for each meeting. That is exactly where your meeting's gift goes, and you receive written confirmation that it was made.",
+  },
+  {
+    q: "What does it cost an executive?",
+    a: "Nothing, ever. Joining, setting your topics, declining requests, taking meetings, and leaving are all free. Vendors fund both the platform and the donation. There is no future tier where executives are charged, and the founding cohort is grandfathered against any change.",
+  },
+  {
+    q: "How much of my time is this, realistically?",
+    a: "One short, focused conversation per request you accept, typically 45 minutes. No preparation, no homework, and no obligation to continue after the call. You only take the meetings you choose.",
+  },
+  {
+    q: "Is my information sold or shared?",
+    a: "No. Your details are not sold, traded, or shared publicly. Vendors only see what you choose to make visible, and a request is only ever shown to you, never the other way around, until you accept it.",
+  },
+];
+
 export default function Executives() {
   return (
     <>
+      <FaqJsonLd items={EXEC_FAQS} />
       {/* ── Hero — big bold text, no graphics ────────────────────── */}
       <section className="hp-hero" aria-labelledby="exec-headline">
         <h1 className="hp-headline" id="exec-headline">
@@ -211,63 +250,11 @@ export default function Executives() {
               </span>
             </div>
             <div className="lg:col-span-8">
-              <Faq name="exec-faq" q="Is this just a sales meeting in disguise?">
-                No. A vendor cannot reach you without writing the specific
-                initiative or problem they want to discuss, and that reason
-                is shown to you in plain language before anything is
-                scheduled. The conversation is led by your priorities, not a
-                pitch. Vendors who treat it as a cold sell lose access. The
-                model only works if executives genuinely want to be here, so
-                it is built around your interests, not theirs.
-              </Faq>
-              <Faq name="exec-faq" q="What actually counts as relevant?">
-                You define it. You tell us the priorities, initiatives, and
-                problems you would take a conversation about, and you can be
-                as broad or as narrow as you like. Anything outside that
-                scope never reaches you. You can update or pause your topics
-                at any time, and a vendor still has to state a specific
-                reason that fits before a request is shown to you.
-              </Faq>
-              <Faq name="exec-faq" q="How many requests will I get? Will I be flooded?">
-                No. We hold a deliberate 10:1 balance, at least ten
-                executives for every vendor we admit, so no leader is ever
-                the whole room. For a typical founding executive that is two
-                to four requests a quarter that actually fit, not a daily
-                inbox to manage.
-              </Faq>
-              <Faq name="exec-faq" q="What happens if I decline?">
-                Nothing. Declining is the normal case, not the exception.
-                There is no penalty, no score, no follow-up, and no
-                explanation required. You see the stated reason first
-                precisely so that saying no is fast and free. A vendor cannot
-                contact you again about a declined request.
-              </Faq>
-              <Faq name="exec-faq" q="Which charities can I choose?">
-                Any Australian charity that holds deductible gift recipient
-                (DGR) endorsement. You name it, you can change it at any
-                time, and you can nominate a different one for each meeting.
-                That is exactly where your meeting&apos;s gift goes, and you
-                receive written confirmation that it was made.
-              </Faq>
-              <Faq name="exec-faq" q="What does it cost an executive?">
-                Nothing, ever. Joining, setting your topics, declining
-                requests, taking meetings, and leaving are all free. Vendors
-                fund both the platform and the donation. There is no future
-                tier where executives are charged, and the founding cohort is
-                grandfathered against any change.
-              </Faq>
-              <Faq name="exec-faq" q="How much of my time is this, realistically?">
-                One short, focused conversation per request you accept,
-                typically 45 minutes. No preparation, no homework, and
-                no obligation to continue after the call. You only take the
-                meetings you choose.
-              </Faq>
-              <Faq name="exec-faq" q="Is my information sold or shared?">
-                No. Your details are not sold, traded, or shared publicly.
-                Vendors only see what you choose to make visible, and a
-                request is only ever shown to you, never the other way
-                around, until you accept it.
-              </Faq>
+              {EXEC_FAQS.map((f) => (
+                <Faq key={f.q} name="exec-faq" q={f.q}>
+                  {f.a}
+                </Faq>
+              ))}
             </div>
           </div>
         </div>

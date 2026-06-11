@@ -152,8 +152,9 @@ export default function Impact() {
             ariaLabel="Example DGR-endorsed Australian charities"
           />
           <p className="mt-10 text-center text-xs text-muted-foreground italic max-w-2xl mx-auto">
-            Illustrative only. Not partners. Each executive chooses their own
-            DGR-endorsed Australian charity.
+            Illustrative examples, not partners. Executives choose from our
+            curated shortlist and may nominate any DGR-endorsed Australian
+            charity.
           </p>
         </div>
       </section>

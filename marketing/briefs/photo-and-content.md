@@ -82,14 +82,18 @@ The illustration style is defined in [app/_components/illustrations.tsx](../../a
 - Composition reads at 480px wide and remains legible at 240px wide
 - Added as new exports in [app/_components/illustrations.tsx](../../app/_components/illustrations.tsx) and wired into each page via the `illustration` prop on `PageHero`
 
-## 4. Charity partner imagery and logos
+## 4. Charity imagery and logos
 
-[CLAUDE.md](../../CLAUDE.md) flags the homepage charity strip as text-only placeholders (Beyond Blue, OzHarvest, RFDS, Pet Rescue, Smith Family, Black Dog Institute, etc.). Once the first three or four partnerships are confirmed:
+The homepage charity strip resolves logos live with a text-chip fallback.
+HARD RULE: only charities on the CHARITY_FLOW.md shortlist (the table of 15,
+e.g. RFDS, headspace, R U OK?, Cancer Council Australia, Starlight) may be
+named anywhere on the site, always as illustrative examples, never implying
+partnership. To improve the strip:
 
-1. Source the official SVG logo from each charity's brand kit (most DGR-endorsed charities publish one).
+1. Source the official SVG logo from each shortlist charity's brand kit (most DGR-endorsed charities publish one).
 2. Optimise to under 5kb each, single colour where possible.
-3. Drop into `/public/charities/` and update the `LogoMarquee` to render them in place of the text labels.
-4. Where a partnership is not yet confirmed, leave text in place rather than render an unauthorised logo.
+3. Drop into `/public/charities/` using the slugs in that folder's README and the marquee uses them automatically.
+4. Only use logos published for third-party use; otherwise leave the text chip in place rather than render an unauthorised logo.
 
 ## 5. ABN and ACNC verification badges
 

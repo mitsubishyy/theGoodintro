@@ -56,7 +56,7 @@ We publish the split. The full model, including the tax treatment, lives in
 ## Must-keep feature for v1: public impact dashboard
 
 A shareable page per executive showing cumulative donations directed through the
-platform, for example "Sarah has directed $14,000 to Beyond Blue via TheGoodIntro
+platform, for example "Sarah has directed $14,000 to headspace via TheGoodIntro
 meetings". Designed to be shareable on LinkedIn.
 
 This is a primary growth and retention lever, not a nice to have. It drives

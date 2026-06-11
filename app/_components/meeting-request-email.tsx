@@ -39,7 +39,7 @@ export function MeetingRequestEmail({
       to="Jane Allen <jane.allen@hexagon.com.au>"
       cc="Emma Roy (EA) <emma.roy@hexagon.com.au>"
       subject="Lachlan Smith (Acme) wants 45 minutes"
-      preview="Budget pacing tools for finance leaders at scale-ups. $1,000 will direct to Beyond Blue."
+      preview="Budget pacing tools for finance leaders at scale-ups. $1,000 will direct to headspace."
       received="Today, 10:42 am"
       showHeaders={showAddressHeaders}
     >
@@ -127,7 +127,7 @@ export function MeetingRequestEmail({
             <span className="serif-italic" style={{ color: "var(--primary)" }}>
               $1,000
             </span>{" "}
-            directs to <strong>Beyond Blue</strong>
+            directs to <strong>headspace</strong>
           </div>
           <div className="mt-1 text-[12px] text-muted-foreground leading-relaxed">
             Your standing nomination. Reply{" "}

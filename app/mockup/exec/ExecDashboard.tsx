@@ -30,20 +30,22 @@ type Charity = {
   blurb: string;
 };
 
+// Sample data drawn EXCLUSIVELY from the CHARITY_FLOW.md shortlist; ABNs
+// come from that table.
 const CHARITIES: Charity[] = [
   {
-    id: "beyond-blue",
-    name: "Beyond Blue",
-    abn: "87 093 865 840",
-    cause: "Mental health & wellbeing",
-    blurb: "Australia's most trusted mental health support service.",
+    id: "headspace",
+    name: "headspace",
+    abn: "26 137 533 843",
+    cause: "Youth mental health",
+    blurb: "Early intervention mental health support for ages 12 to 25.",
   },
   {
-    id: "ozharvest",
-    name: "OzHarvest",
-    abn: "46 219 931 433",
-    cause: "Food rescue & relief",
-    blurb: "Rescues surplus food and delivers it to people in need.",
+    id: "ruok",
+    name: "R U OK?",
+    abn: "25 138 676 829",
+    cause: "Suicide prevention",
+    blurb: "Suicide prevention through everyday conversations.",
   },
   {
     id: "rfds",
@@ -53,25 +55,25 @@ const CHARITIES: Charity[] = [
     blurb: "Emergency and primary healthcare for remote Australia.",
   },
   {
-    id: "smith-family",
-    name: "The Smith Family",
-    abn: "28 000 030 179",
-    cause: "Education & young people",
-    blurb: "Long-term educational support for disadvantaged children.",
+    id: "starlight",
+    name: "Starlight Children's Foundation",
+    abn: "80 931 522 157",
+    cause: "Seriously ill children",
+    blurb: "Supporting seriously ill children and their families.",
   },
   {
-    id: "black-dog",
-    name: "Black Dog Institute",
-    abn: "12 115 954 197",
-    cause: "Mental health research",
-    blurb: "Research and care for mood disorders and suicide prevention.",
+    id: "leukaemia-foundation",
+    name: "Leukaemia Foundation",
+    abn: "57 057 493 017",
+    cause: "Blood cancer support",
+    blurb: "Support and research for Australians facing blood cancer.",
   },
   {
-    id: "red-cross",
-    name: "Australian Red Cross",
-    abn: "50 169 561 394",
-    cause: "Community & crisis relief",
-    blurb: "Humanitarian aid, blood services, and disaster response.",
+    id: "wwf-australia",
+    name: "WWF-Australia",
+    abn: "57 001 594 074",
+    cause: "Conservation & wildlife",
+    blurb: "Conservation of Australian wildlife and habitats.",
   },
   {
     id: "cancer-council",
@@ -81,11 +83,11 @@ const CHARITIES: Charity[] = [
     blurb: "Funds research, prevention, and support for people with cancer.",
   },
   {
-    id: "acf",
-    name: "Australian Conservation Foundation",
-    abn: "22 007 498 482",
-    cause: "Environment & climate",
-    blurb: "Australia's national environment organisation.",
+    id: "rspca-australia",
+    name: "RSPCA Australia",
+    abn: "99 668 654 249",
+    cause: "Animal welfare",
+    blurb: "The national voice for animal welfare in Australia.",
   },
 ];
 
@@ -147,11 +149,11 @@ type CompletedDonation = {
 };
 
 const RECENT_DONATIONS: CompletedDonation[] = [
-  { date: "18 May", vendor: "Daniel Cho · Notion",    charity: "Beyond Blue",   charityId: "beyond-blue",  status: "confirmed" },
-  { date: "11 May", vendor: "Priya Mehta · Linear",   charity: "OzHarvest",     charityId: "ozharvest",    status: "confirmed" },
-  { date: "4 May",  vendor: "Tom Reilly · Figma",     charity: "Black Dog Institute", charityId: "black-dog", status: "confirmed" },
-  { date: "27 Apr", vendor: "Anika Patel · Vercel",   charity: "Beyond Blue",   charityId: "beyond-blue",  status: "confirmed" },
-  { date: "20 Apr", vendor: "Sam West · Ramp",        charity: "The Smith Family", charityId: "smith-family", status: "pending" },
+  { date: "18 May", vendor: "Daniel Cho · Notion",    charity: "headspace",     charityId: "headspace",    status: "confirmed" },
+  { date: "11 May", vendor: "Priya Mehta · Linear",   charity: "Cancer Council Australia", charityId: "cancer-council", status: "confirmed" },
+  { date: "4 May",  vendor: "Tom Reilly · Figma",     charity: "R U OK?",       charityId: "ruok",         status: "confirmed" },
+  { date: "27 Apr", vendor: "Anika Patel · Vercel",   charity: "headspace",     charityId: "headspace",    status: "confirmed" },
+  { date: "20 Apr", vendor: "Sam West · Ramp",        charity: "Starlight Children's Foundation", charityId: "starlight", status: "pending" },
   { date: "13 Apr", vendor: "Maya Chen · Stripe",     charity: "Royal Flying Doctor Service", charityId: "rfds", status: "confirmed" },
 ];
 
@@ -160,7 +162,7 @@ const RECENT_DONATIONS: CompletedDonation[] = [
    ───────────────────────────────────────────────────────────────── */
 
 export default function ExecDashboard() {
-  const [defaultCharityId, setDefaultCharityId] = useState<string>("beyond-blue");
+  const [defaultCharityId, setDefaultCharityId] = useState<string>("headspace");
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerContext, setPickerContext] = useState<
     { kind: "default" } | { kind: "meeting"; meetingId: string }

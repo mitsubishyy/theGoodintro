@@ -91,8 +91,8 @@ function LinkedInShareEmail() {
     <EmailFrame
       from="TheGoodIntro <impact@thegoodintro.com>"
       to="Jane Allen <jane.allen@hexagon.com.au>"
-      subject="Your meeting funded $1,000 to Beyond Blue"
-      preview="Beyond Blue confirmed receipt. Want to share this on LinkedIn?"
+      subject="Your meeting funded $1,000 to headspace"
+      preview="headspace confirmed receipt. Want to share this on LinkedIn?"
       received="Today, 4:11 pm"
     >
       <p className="text-[15px] leading-relaxed">
@@ -101,7 +101,7 @@ function LinkedInShareEmail() {
       <p className="mt-3 text-[15px] leading-relaxed">
         Your meeting with <strong>Lachlan Smith (Acme)</strong> today funded{" "}
         <span className="serif-italic" style={{ color: "var(--primary)" }}>$1,000</span>{" "}
-        to <strong>Beyond Blue</strong>. The charity has confirmed receipt.
+        to <strong>headspace</strong>. The charity has confirmed receipt.
       </p>
 
       {/* Confirmation strip */}
@@ -122,7 +122,7 @@ function LinkedInShareEmail() {
           <Check className="size-4" />
         </div>
         <div className="min-w-0 text-[13px]">
-          <div className="font-semibold">Beyond Blue receipted $1,000</div>
+          <div className="font-semibold">headspace receipted $1,000</div>
           <div className="text-muted-foreground text-[12px]">
             Lifetime total: $28,000 across 4 charities
           </div>
@@ -192,8 +192,8 @@ function LinkedInPostPreview() {
       </div>
       <div className="px-4 py-4 text-[13.5px] leading-relaxed" style={{ color: "#1f2937" }}>
         I spent 45 minutes today with Lachlan Smith from Acme. As a result,
-        $1,000 has been directed to <strong>Beyond Blue</strong> for mental
-        health support across Australia.
+        $1,000 has been directed to <strong>headspace</strong> for youth
+        mental health support across Australia.
         <br />
         <br />
         I&apos;m taking meetings through{" "}
@@ -267,7 +267,7 @@ function OnboardingCapture() {
         />
         <CaptureRow
           label="Charity of choice"
-          value="Beyond Blue · DGR Item 1 · auto-direct every meeting"
+          value="headspace · DGR endorsed · auto-direct every meeting"
           subnote="Per-meeting override available by email."
         />
         <CaptureRow

@@ -1,3 +1,5 @@
+import { MarqueeLogo, type MarqueeCharity } from "./marquee-logo";
+
 /**
  * Where your gift can go — dark emerald band with a continuous, non-interactive
  * loop of charity logos on clean white chips.
@@ -6,21 +8,28 @@
  * animation translates the track from 0 → -50%, which lands set B in set A's
  * starting position for a seamless loop. It simply always rotates — no hover,
  * pause, or centring logic.
+ *
+ * Names are drawn EXCLUSIVELY from the CHARITY_FLOW.md shortlist. Logos
+ * resolve client-side (local asset → charity's own domain → text chip), so a
+ * chip never renders broken.
  */
-
-// Real brand-colour logos on clean white tiles, so dark-text logos stay legible
-// against the emerald band.
-const CHARITIES = [
-  { name: "Beyond Blue", img: "/charities/beyond-blue.png" },
-  { name: "Cancer Council", img: "/charities/cancer-council.png" },
+const CHARITIES: MarqueeCharity[] = [
   {
     name: "Royal Flying Doctor Service",
     img: "/charities/royal-flying-doctor-service.png",
+    domain: "flyingdoctor.org.au",
   },
-  { name: "The Smith Family", img: "/charities/the-smith-family.png" },
-  { name: "Mission Australia", img: "/charities/mission-australia.png" },
-  { name: "Lifeline", img: "/charities/lifeline.png" },
-  { name: "Foodbank Australia", img: "/charities/foodbank-australia.png" },
+  {
+    name: "Cancer Council Australia",
+    img: "/charities/cancer-council.png",
+    domain: "cancer.org.au",
+  },
+  { name: "headspace", domain: "headspace.org.au" },
+  { name: "R U OK?", domain: "ruok.org.au" },
+  { name: "Starlight Children's Foundation", domain: "starlight.org.au" },
+  { name: "RSPCA Australia", domain: "rspca.org.au" },
+  { name: "WWF-Australia", domain: "wwf.org.au" },
+  { name: "Save the Children Australia", domain: "savethechildren.org.au" },
 ];
 
 export default function CharityMarqueeSection() {
@@ -39,8 +48,7 @@ export default function CharityMarqueeSection() {
         <div className="hp-marquee-track">
           {CHARITIES.map((c) => (
             <span key={`a-${c.name}`} className="hp-marquee-chip">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={c.img} alt={c.name} loading="lazy" draggable={false} />
+              <MarqueeLogo charity={c} />
             </span>
           ))}
           {CHARITIES.map((c) => (
@@ -49,16 +57,16 @@ export default function CharityMarqueeSection() {
               className="hp-marquee-chip"
               aria-hidden="true"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={c.img} alt="" loading="lazy" draggable={false} />
+              <MarqueeLogo charity={c} decorative />
             </span>
           ))}
         </div>
       </div>
 
       <p className="hp-marquee-note">
-        Illustrative Australian charities, all DGR-endorsed. You choose your
-        own.
+        Illustrative examples, not partners. Executives choose from our
+        curated shortlist and may nominate any DGR-endorsed Australian
+        charity.
       </p>
     </section>
   );

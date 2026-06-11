@@ -13,42 +13,47 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * missing file falls back to the abstract shape + name.
  */
 
-const GOAL = "$10,000 goal";
-
+// Names are drawn EXCLUSIVELY from the CHARITY_FLOW.md shortlist.
 // `logo: true` cards show the charity's logo contained on a clean ground;
 // photo cards (logo: false) get the full-bleed B&W-to-colour treatment.
+// A missing asset falls back to the abstract shape + name by design.
 const CHARITIES = [
-  { slug: "beyond-blue", name: "Beyond Blue", cause: "Mental health support", logo: true },
-  { slug: "ozharvest", name: "OzHarvest", cause: "Rescuing surplus food", logo: false },
+  { slug: "headspace", name: "headspace", cause: "Youth mental health", logo: true },
+  {
+    slug: "cancer-council-australia",
+    name: "Cancer Council Australia",
+    cause: "Every area of every cancer",
+    logo: true,
+  },
   {
     slug: "rfds",
     name: "Royal Flying Doctor Service",
     cause: "Remote emergency medical",
     logo: true,
   },
+  { slug: "ruok", name: "R U OK?", cause: "Suicide prevention", logo: true },
   {
-    slug: "smith-family",
-    name: "The Smith Family",
-    cause: "Education for kids in need",
+    slug: "starlight",
+    name: "Starlight Children's Foundation",
+    cause: "Supporting seriously ill children",
     logo: true,
   },
   {
-    slug: "mission-australia",
-    name: "Mission Australia",
-    cause: "Homelessness services",
+    slug: "rspca-australia",
+    name: "RSPCA Australia",
+    cause: "Animal welfare",
     logo: true,
   },
   {
-    slug: "cancer-council",
-    name: "Cancer Council",
-    cause: "Research and patient care",
+    slug: "wwf-australia",
+    name: "WWF-Australia",
+    cause: "Conservation and wildlife",
     logo: true,
   },
-  { slug: "lifeline", name: "Lifeline", cause: "24/7 crisis support", logo: true },
   {
-    slug: "foodbank",
-    name: "Foodbank Australia",
-    cause: "Hunger relief, nationwide",
+    slug: "vinnies",
+    name: "St Vincent de Paul Society",
+    cause: "Poverty and crisis support",
     logo: true,
   },
 ];
@@ -98,13 +103,6 @@ function Card({ c, duplicate = false }: { c: Charity; duplicate?: boolean }) {
       <div className="hp-gallery-card-info">
         <p className="hp-gallery-name">{c.name}</p>
         <p className="hp-gallery-cause">{c.cause}</p>
-        <div className="hp-gallery-bar-row">
-          <span>{GOAL}</span>
-          <span className="pct">0%</span>
-        </div>
-        <div className="hp-gallery-bar">
-          <div className="fill" style={{ width: "0%" }} />
-        </div>
       </div>
     </Link>
   );
@@ -246,7 +244,7 @@ export default function CharityGallerySection() {
         ref={scroller}
         className="hp-gallery-viewport"
         role="region"
-        aria-label="Charities funded via TheGoodIntro"
+        aria-label="Example charities executives can choose"
         onPointerEnter={() => {
           hovering.current = true;
         }}
@@ -262,6 +260,20 @@ export default function CharityGallerySection() {
           )}
         </div>
       </div>
+
+      <p
+        className="text-center text-sm italic text-muted-foreground"
+        style={{
+          fontFamily: "var(--font-fraunces), serif",
+          margin: "clamp(36px, 4vw, 56px) auto 0",
+          padding: "0 clamp(28px, 5vw, 64px)",
+          maxWidth: "60ch",
+        }}
+      >
+        Illustrative examples, not partners. Executives choose from our
+        curated shortlist and may nominate any DGR-endorsed Australian
+        charity.
+      </p>
     </section>
   );
 }

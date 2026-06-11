@@ -218,9 +218,10 @@ These are marked `TODO(lachlan)` in code where applicable:
 5. **Charity partner imagery** in the giving-promise section of
    [`app/page.tsx`](app/page.tsx) — currently a generic Unsplash photo.
    Replace with real charity partner imagery at launch.
-6. **Charity partner logos** in the logo strip — currently text-only
-   placeholders (Beyond Blue, OzHarvest, RFDS, etc.). Swap to real SVG logos
-   once partnerships are confirmed.
+6. **Charity logos** in the logo strip — live-resolved or text-chip
+   placeholders. HARD RULE: only charities on the CHARITY_FLOW.md shortlist
+   (the table of 15) may be named anywhere on the site; never imply
+   partnership. Swap to official SVG assets as they are collected.
 7. **ABN / ACNC verification badges** in hero — currently placeholder text.
    Replace with real verification once theGoodintro Pty Ltd is incorporated and
    registered.

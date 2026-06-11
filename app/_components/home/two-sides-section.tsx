@@ -151,9 +151,9 @@ export default function TwoSidesSection() {
           </p>
           <div className="hp-do-card-footer">
             <div className="hp-do-mini-wms" aria-label="Example charity wordmarks">
-              <span className="hp-do-mini-wm">Beyond Blue</span>
-              <span className="hp-do-mini-wm">OzHarvest</span>
+              <span className="hp-do-mini-wm">headspace</span>
               <span className="hp-do-mini-wm">RFDS</span>
+              <span className="hp-do-mini-wm">R U OK?</span>
             </div>
             <span className="hp-do-arrow" aria-hidden="true">
               <svg viewBox="0 0 14 14" fill="none">

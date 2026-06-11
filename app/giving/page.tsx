@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   PageHero,
   SectionHead,
@@ -47,7 +48,7 @@ const TERMS = [
   "Each meeting is one flat $1,500 fee paid by the vendor. The charity receives $900 to $1,200 of it, rising with the number of meetings the vendor takes across the year, and we publish the split at every tier.",
   "Only deductible gift recipient (DGR) endorsed Australian charities are eligible, so every gift goes to a recognised cause and is publicly verifiable.",
   "The executive receives written confirmation that the gift was made.",
-  "The executive chooses and can change the charity at any time, including a different charity per meeting. We never assign one.",
+  "The executive chooses from our curated shortlist, or nominates any other DGR-endorsed Australian charity, which we verify and add before their first meeting. They can change the choice at any time, including per meeting. We never assign one.",
   "If a vendor behaves badly in a meeting, the gift is still paid in full; the vendor loses access.",
 ];
 
@@ -110,7 +111,7 @@ export default function Giving() {
             />
           </div>
 
-          {/* What a meeting actually does: charity-own equivalences */}
+          {/* What a meeting actually does: describe-only, no invented numbers */}
           <div className="mt-20 md:mt-24">
             <h3
               className="text-2xl md:text-3xl font-extrabold tracking-[-0.02em]"
@@ -122,8 +123,9 @@ export default function Giving() {
               className="mt-3 text-[15px] leading-relaxed max-w-2xl"
               style={{ color: "var(--cream-9)" }}
             >
-              One held meeting, one real gift, in terms you can picture. Each
-              figure below is the charity&apos;s own, attributed and checkable.
+              One held meeting directs $900 to $1,200 to a charity the
+              executive chooses. Here is what that supports at three of the
+              causes leaders can choose.
             </p>
             <div className="mt-10 grid md:grid-cols-3 gap-4">
               <div
@@ -131,12 +133,20 @@ export default function Giving() {
                 style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
               >
                 <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
-                  OzHarvest
+                  Royal Flying Doctor Service
                 </div>
                 <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed">
-                  By their own published figures, $1 delivers two meals, so one
-                  meeting funds around 1,800 to 2,400 meals for Australians
-                  doing it tough.
+                  Emergency and primary health care across rural and remote
+                  Australia. A gift here supports the aeromedical aircraft and
+                  medical equipment that keep the service flying.
+                </p>
+                <p className="mt-4">
+                  <Link
+                    href="/charities/rfds"
+                    className="text-sm font-medium underline underline-offset-4 hover:text-primary"
+                  >
+                    Read the profile
+                  </Link>
                 </p>
               </div>
               <div
@@ -144,12 +154,20 @@ export default function Giving() {
                 style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
               >
                 <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
-                  Beyond Blue
+                  headspace
                 </div>
                 <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed">
-                  Funds their support service: trained counsellors available
-                  around the clock, by phone, webchat and email, for anyone
-                  facing anxiety, depression or a hard moment.
+                  Early intervention mental health support for young people
+                  aged 12 to 25, through headspace centres across Australia
+                  plus online and phone services.
+                </p>
+                <p className="mt-4">
+                  <Link
+                    href="/charities/headspace"
+                    className="text-sm font-medium underline underline-offset-4 hover:text-primary"
+                  >
+                    Read the profile
+                  </Link>
                 </p>
               </div>
               <div
@@ -157,12 +175,20 @@ export default function Giving() {
                 style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
               >
                 <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
-                  RFDS
+                  Cancer Council Australia
                 </div>
                 <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed">
-                  Funds the aeromedical care and medical equipment that keeps
-                  the Royal Flying Doctor Service reaching people across rural
-                  and remote Australia.
+                  Research, prevention and support across every area of every
+                  cancer, including the free, confidential Cancer Council
+                  13 11 20 support service.
+                </p>
+                <p className="mt-4">
+                  <Link
+                    href="/charities/cancer-council-australia"
+                    className="text-sm font-medium underline underline-offset-4 hover:text-primary"
+                  >
+                    Read the profile
+                  </Link>
                 </p>
               </div>
             </div>
@@ -170,9 +196,19 @@ export default function Giving() {
               className="mt-8 text-[15px] leading-relaxed max-w-2xl"
               style={{ color: "var(--cream-9)" }}
             >
-              These are the charities&apos; own numbers, not ours. Every gift is
-              confirmed in writing, and DGR status means you can verify each one
-              on the public register.
+              These descriptions come from the charities&apos; own materials,
+              not ours, and we quote no figures they have not published. Every
+              gift is confirmed in writing, and DGR status means you can verify
+              each one on the public register.
+            </p>
+            <p className="mt-6">
+              <Link
+                href="/ledger"
+                className="inline-flex items-center gap-1.5 text-[15px] font-medium underline underline-offset-4 hover:text-primary"
+              >
+                See the full record
+                <span aria-hidden>&rarr;</span>
+              </Link>
             </p>
           </div>
         </div>
@@ -253,8 +289,10 @@ export default function Giving() {
                 Nominate
               </div>
               <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed">
-                Name any DGR-endorsed Australian charity. The cause is yours to
-                pick, not ours to suggest.
+                Choose from our curated shortlist, or name any other
+                DGR-endorsed Australian charity. We verify and add it before
+                your first meeting. The cause is yours to pick, not ours to
+                suggest.
               </p>
             </div>
             <div
@@ -411,8 +449,10 @@ export default function Giving() {
                 we require it.
               </Faq>
               <Faq q="Can an executive pick a charity that is not DGR-endorsed?">
-                No. The choice is restricted to DGR-endorsed Australian
-                charities. It is a deliberate limit. It keeps every gift
+                No. Executives choose from our curated shortlist of
+                DGR-endorsed Australian charities, and can nominate any other
+                DGR-endorsed charity, which we verify and add before their
+                first meeting. DGR is a deliberate limit. It keeps every gift
                 verifiable on the public register, with no grey area about
                 where money went.
               </Faq>
@@ -425,8 +465,9 @@ export default function Giving() {
               <Faq q="Are the charities shown here your partners?">
                 No. The names shown are well-known examples to illustrate the
                 kind of organisation that qualifies. They have no affiliation
-                with TheGoodIntro. The executive chooses, and it can be any
-                DGR-endorsed Australian charity.
+                with TheGoodIntro. The executive chooses from our curated
+                shortlist, and may nominate any other DGR-endorsed Australian
+                charity.
               </Faq>
               <Faq q="How do I know the money arrived?">
                 You receive written confirmation that the gift was made,
