@@ -39,6 +39,18 @@ describe("request loop (submit -> token -> accept)", () => {
       .single();
     expect(tok?.status).toBe("active");
 
+    // Queue rows must know which request they are about (migration 0013) so
+    // the A1 email sender can compose the exec email from the queue.
+    const { data: queued } = await admin
+      .from("notification")
+      .select("event")
+      .eq("request_id", reqId);
+    expect((queued ?? []).map((n) => n.event).sort()).toEqual([
+      "B1_request_live",
+      "B1_request_sent",
+      "B1_request_submitted",
+    ]);
+
     // Inert read (the confirm page GET), via an unauthenticated client.
     const { data: summary } = await anon.rpc("get_request_for_token", { p_token: tok!.token });
     expect(Array.isArray(summary) && summary.length === 1).toBe(true);
@@ -75,6 +87,14 @@ describe("request loop (submit -> token -> accept)", () => {
       .select("actor, action")
       .eq("request_id", reqId);
     expect(consent).toEqual([{ actor: "executive", action: "accept" }]);
+
+    // The accept notifications carry the request link too.
+    const { data: acceptQueued } = await admin
+      .from("notification")
+      .select("event")
+      .eq("request_id", reqId)
+      .in("event", ["C1_exec_accepted", "C1_confirm_time"]);
+    expect(acceptQueued?.length).toBe(2);
   });
 
   it("a consumed token cannot be re-used", async () => {

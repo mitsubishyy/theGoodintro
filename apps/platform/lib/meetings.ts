@@ -119,6 +119,7 @@ export async function confirmMeeting(
     channel: "email",
     event: creditLotId ? "C2_time_confirmed" : "D1_uncredited_booked",
     status: "queued",
+    request_id: ctx.meeting.request_id,
   });
 
   return { ok: true, detail: creditLotId ? "reserved" : "overcommit" };
@@ -269,8 +270,8 @@ export async function markHeld(
   });
 
   await supabase.from("notification").insert([
-    { recipient_type: "executive", recipient_id: null, channel: "email", event: "C6_meeting_completed", status: "queued" },
-    { recipient_type: "staff", recipient_id: null, channel: "in_app", event: "C5_release_gift", status: "queued" },
+    { recipient_type: "executive", recipient_id: null, channel: "email", event: "C6_meeting_completed", status: "queued", request_id: meeting.request_id },
+    { recipient_type: "staff", recipient_id: null, channel: "in_app", event: "C5_release_gift", status: "queued", request_id: meeting.request_id },
   ]);
 
   return { ok: true, detail: split.bandKey };
