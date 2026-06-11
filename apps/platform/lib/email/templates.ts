@@ -62,8 +62,10 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
+const MONO = "'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace";
+
 function sectionLabel(label: string): string {
-  return `<div style="margin:24px 0 6px;font-family:${SANS};font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:${E.muted}">${esc(label)}</div>`;
+  return `<div style="margin:20px 0 4px;font-family:${MONO};font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:${E.muted}">${esc(label)}</div>`;
 }
 
 /**
@@ -115,63 +117,61 @@ export function execRequestEmail(c: {
     ? `${esc(c.requesterTitle)} · ${esc(c.vendorCompany)}`
     : esc(c.vendorCompany);
 
-  const button = (href: string, label: string, solid: boolean) =>
-    `<a href="${esc(href)}" style="display:inline-block;margin:0 8px 8px 0;padding:11px 22px;border-radius:9999px;font-family:${SANS};font-size:13px;font-weight:600;text-decoration:none;${
-      solid
-        ? `background:${E.ink};color:${E.white};border:1px solid ${E.ink}`
-        : `background:transparent;color:${E.ink};border:1px solid #cfc8b8`
-    }">${esc(label)}</a>`;
+  // Accept is the only solid button; the other two read as quiet bordered links.
+  const acceptButton = `<a href="${esc(accept)}" style="display:inline-block;margin:0 10px 8px 0;padding:10px 20px;border-radius:9999px;font-family:${SANS};font-size:13px;font-weight:600;text-decoration:none;background:${E.ink};color:${E.white};border:1px solid ${E.ink}">Accept</a>`;
+  const quietButton = (href: string, label: string) =>
+    `<a href="${esc(href)}" style="display:inline-block;margin:0 10px 8px 0;padding:8px 16px;border-radius:9999px;font-family:${SANS};font-size:13px;text-decoration:none;background:transparent;color:${E.ink};border:1px solid #cfc8b8">${esc(label)}</a>`;
 
+  // Deliberately styled as a plain personal email: pure white edge to edge, no
+  // page tint, no card frame, no divider rules. The ONLY two designed elements
+  // are the vendor block and the gift callout, matching the site mockup's accents.
   const html = `<!doctype html>
-<html><body style="margin:0;padding:0;background:${E.cream}">
+<html><body style="margin:0;padding:0;background:#ffffff">
 <div style="display:none;max-height:0;overflow:hidden;mso-hide:all">${esc(preview)}</div>
-<div style="max-width:560px;margin:0 auto;padding:32px 24px;font-family:${SANS};font-size:15px;line-height:1.6;color:${E.ink}">
-<div style="background:#ffffff;border:1px solid ${E.border};border-radius:16px;padding:28px 26px">
+<div style="max-width:600px;font-family:${SANS};font-size:14px;line-height:1.5;color:${E.ink}">
 
-<p style="margin:0 0 12px">Hi ${esc(c.execFirstName)},</p>
-<p style="margin:0">${intro} They have been vetted and reviewed. Here is what you need to know.</p>
+<p style="margin:0 0 1em">Hi ${esc(c.execFirstName)},</p>
+<p style="margin:0 0 1em">${intro} They have been vetted and reviewed. Here is what you need to know.</p>
 
-<!-- Vendor block -->
-<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-top:22px;background:${E.cream};border:1px solid ${E.border};border-radius:14px">
+<!-- Vendor block: branded touch 1 of 2 -->
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:16px 0;background:${E.cream};border:1px solid ${E.border};border-radius:12px">
 <tr>
-<td style="padding:18px 0 18px 18px;vertical-align:top;width:56px">
-  <div style="width:56px;height:56px;border-radius:50%;background:${E.mint};border:1px solid ${E.border};text-align:center;line-height:56px;font-family:${SANS};font-size:19px;font-weight:600;color:${E.emerald}">${esc(initials(c.requesterName))}</div>
+<td style="padding:14px 0 14px 14px;vertical-align:top;width:48px">
+  <div style="width:48px;height:48px;border-radius:50%;background:${E.mint};border:1px solid ${E.border};text-align:center;line-height:48px;font-family:${SANS};font-size:16px;font-weight:600;color:${E.emerald}">${esc(initials(c.requesterName))}</div>
 </td>
-<td style="padding:18px;vertical-align:top">
-  <div style="font-family:${SANS};font-size:15px;font-weight:600;color:${E.ink}">${esc(c.requesterName)}
+<td style="padding:14px;vertical-align:top">
+  <div style="font-family:${SANS};font-size:14px;font-weight:600;color:${E.ink}">${esc(c.requesterName)}
     <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:9999px;background:${E.mint};color:${E.emerald};font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;vertical-align:middle">Verified</span>
   </div>
   <div style="margin-top:2px;font-size:12px;color:${E.muted}">${roleLine}</div>
-  <div style="margin-top:8px;font-size:11px;color:${E.muted}">${metaHtml}</div>
+  <div style="margin-top:6px;font-size:11px;color:${E.muted}">${metaHtml}</div>
 </td>
 </tr>
 </table>
 
 ${sectionLabel("What they want to talk about")}
-<p style="margin:0;font-size:14px">${esc(c.q1)}</p>
+<p style="margin:0 0 1em">${esc(c.q1)}</p>
 
 ${sectionLabel("Why it is relevant to you")}
-<p style="margin:0;font-size:14px">${esc(c.q2)}</p>
+<p style="margin:0 0 1em">${esc(c.q2)}</p>
 
-<!-- Gift callout -->
-<div style="margin-top:24px;background:${E.giftBg};border:1px solid ${E.emerald};border-radius:12px;padding:14px 16px">
-  <div style="font-size:13px;font-weight:600;color:${E.ink}">If you accept, <span style="font-family:${SERIF};font-style:italic;font-size:16px;color:${E.emerald}">${esc(c.indicativeAmount)}</span> directs to <strong>${esc(c.charityName)}</strong></div>
-  <div style="margin-top:4px;font-size:12px;color:${E.muted}">The charity you chose. The full gift is sent after the meeting takes place.</div>
+<!-- Gift callout: branded touch 2 of 2 -->
+<div style="margin:16px 0;background:${E.giftBg};border:1px solid ${E.emerald};border-radius:10px;padding:12px 14px">
+  <div style="font-size:13px;font-weight:600;color:${E.ink}">If you accept, <span style="font-family:${SERIF};font-style:italic;font-size:15px;color:${E.emerald}">${esc(c.indicativeAmount)}</span> directs to <strong>${esc(c.charityName)}</strong></div>
+  <div style="margin-top:3px;font-size:12px;color:${E.muted}">The charity you chose. The full gift is sent after the meeting takes place.</div>
 </div>
 
-<!-- CTAs -->
-<div style="margin-top:24px">
-  ${button(accept, "Accept", true)}
-  ${button(decline, "Decline", false)}
-  ${button(toEa, eaLabel, false)}
+<div style="margin:16px 0 0">
+  ${acceptButton}
+  ${quietButton(decline, "Decline")}
+  ${quietButton(toEa, eaLabel)}
 </div>
-<p style="margin:10px 0 0;font-size:11px;color:${E.muted}">These buttons open a short confirm page. Nothing is accepted or declined until you confirm there.</p>
+<p style="margin:8px 0 0;font-size:11px;color:${E.muted}">These buttons open a short confirm page. Nothing is accepted or declined until you confirm there.</p>
 
-<p style="margin:24px 0 0">No pressure either way, and no obligation to take the next one.</p>
-<p style="margin:12px 0 0">Issy</p>
+<p style="margin:1.5em 0 1em">No pressure either way, and no obligation to take the next one.</p>
+<p style="margin:0 0 1.5em">Issy</p>
 
-<div style="margin-top:28px;padding-top:16px;border-top:1px solid ${E.border};font-size:11px;color:${E.muted}">TheGoodIntro · invite-only · Australia</div>
-</div>
+<p style="margin:0;font-size:11px;color:${E.muted}">TheGoodIntro · invite-only · Australia</p>
 </div></body></html>`;
 
   const text = [
