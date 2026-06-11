@@ -1,6 +1,7 @@
 import { describe, it, expect, afterAll } from "vitest";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { confirmMeeting, markHeld, releaseMeeting } from "../lib/meetings";
+import { confirmMeeting, markHeld, releaseMeeting, reverseHeld } from "../lib/meetings";
+import { markGiftPaid } from "../lib/gifts";
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
@@ -110,6 +111,83 @@ describe("meeting money path", () => {
 
     await sb.from("request").delete().eq("id", reqId);
     await sb.from("credit_lot").delete().eq("id", lot!.id);
+  });
+
+  it("reversing a held meeting returns the credit, voids the gift, frees the band position, spawns a rebook", async () => {
+    const sb = await admin();
+    const { data: lot } = await sb
+      .from("credit_lot")
+      .insert({ vendor_id: BETA, quantity: 1, quantity_remaining: 1 })
+      .select("id")
+      .single();
+    const { reqId, meetingId } = await newProposedMeeting(sb);
+    await confirmMeeting(sb, meetingId, new Date(Date.now() + 7 * 864e5).toISOString(), null);
+    await markHeld(sb, meetingId, "admin");
+
+    const reversed = await reverseHeld(sb, meetingId);
+    expect(reversed).toMatchObject({ ok: true, detail: "gift_voided" });
+
+    const { data: m } = await sb.from("meeting").select("status").eq("id", meetingId).single();
+    expect(m?.status).toBe("reversed");
+
+    const { data: gift } = await sb.from("gift_record").select("status").eq("meeting_id", meetingId).single();
+    expect(gift?.status).toBe("voided");
+
+    const { data: l } = await sb.from("credit_lot").select("quantity_remaining").eq("id", lot!.id).single();
+    expect(l?.quantity_remaining).toBe(1);
+
+    const { data: cycle } = await sb.from("cycle").select("held_meetings_count").eq("vendor_id", BETA).single();
+    expect(cycle?.held_meetings_count).toBe(0);
+
+    // The rebook: a fresh proposed meeting on the same request.
+    const { data: rebook } = await sb
+      .from("meeting")
+      .select("id, status")
+      .eq("request_id", reqId)
+      .eq("status", "proposed");
+    expect(rebook?.length).toBe(1);
+
+    // A reversed meeting is terminal — a second reversal is a no-op error.
+    const again = await reverseHeld(sb, meetingId);
+    expect(again.ok).toBe(false);
+
+    await sb.from("request").delete().eq("id", reqId);
+    await sb.from("credit_lot").delete().eq("id", lot!.id);
+    await sb.from("cycle").delete().eq("vendor_id", BETA);
+  });
+
+  it("reversing after the gift was paid keeps the gift (goodwill) but still returns the credit", async () => {
+    const sb = await admin();
+    const { data: staff } = await sb.from("staff").select("id").limit(1).single();
+    const { data: lot } = await sb
+      .from("credit_lot")
+      .insert({ vendor_id: BETA, quantity: 1, quantity_remaining: 1 })
+      .select("id")
+      .single();
+    const { reqId, meetingId } = await newProposedMeeting(sb);
+    await confirmMeeting(sb, meetingId, new Date(Date.now() + 7 * 864e5).toISOString(), null);
+    await markHeld(sb, meetingId, "admin");
+
+    const { data: gift } = await sb.from("gift_record").select("id").eq("meeting_id", meetingId).single();
+    await markGiftPaid(sb, gift!.id as string, staff!.id as string);
+
+    const reversed = await reverseHeld(sb, meetingId);
+    expect(reversed).toMatchObject({ ok: true, detail: "gift_paid_kept" });
+
+    // Paid is terminal: the donation stands, the credit return is goodwill.
+    const { data: g } = await sb.from("gift_record").select("status").eq("meeting_id", meetingId).single();
+    expect(g?.status).toBe("paid");
+
+    const { data: l } = await sb.from("credit_lot").select("quantity_remaining").eq("id", lot!.id).single();
+    expect(l?.quantity_remaining).toBe(1);
+
+    // The paid gift still counts toward the band, so the position is kept.
+    const { data: cycle } = await sb.from("cycle").select("held_meetings_count").eq("vendor_id", BETA).single();
+    expect(cycle?.held_meetings_count).toBe(1);
+
+    await sb.from("request").delete().eq("id", reqId);
+    await sb.from("credit_lot").delete().eq("id", lot!.id);
+    await sb.from("cycle").delete().eq("vendor_id", BETA);
   });
 
   // Defensive: ensure no Beta band cycle leaks out of this file even if a test

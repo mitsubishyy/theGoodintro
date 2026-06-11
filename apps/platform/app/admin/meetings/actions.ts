@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
-import { confirmMeeting, markHeld, releaseMeeting } from "@/lib/meetings";
+import { confirmMeeting, markHeld, releaseMeeting, reverseHeld } from "@/lib/meetings";
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
 
@@ -37,6 +37,24 @@ export async function markHeldAction(fd: FormData): Promise<void> {
     await logAudit(supabase, staff.id, { action: "meeting.held", targetType: "meeting", targetId: id });
   }
   revalidatePath("/admin/meetings");
+}
+
+export async function reverseHeldAction(fd: FormData): Promise<void> {
+  const { staff, supabase } = await requireStaff();
+  if (!(await getFlag("request_loop"))) return;
+  const id = str(fd, "meeting_id");
+  if (!id) return;
+  const r = await reverseHeld(supabase, id);
+  if (r.ok) {
+    await logAudit(supabase, staff.id, {
+      action: "meeting.reversed",
+      targetType: "meeting",
+      targetId: id,
+      metadata: { detail: r.detail },
+    });
+  }
+  revalidatePath("/admin/meetings");
+  revalidatePath("/admin/giving");
 }
 
 export async function releaseMeetingAction(fd: FormData): Promise<void> {

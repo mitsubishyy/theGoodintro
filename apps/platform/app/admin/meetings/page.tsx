@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/format";
-import { confirmMeetingAction, markHeldAction, releaseMeetingAction } from "./actions";
+import { confirmMeetingAction, markHeldAction, releaseMeetingAction, reverseHeldAction } from "./actions";
 import { CopyAcceptLink } from "./copy-link";
+import { ConfirmSubmit } from "./confirm-submit";
 
 export const metadata: Metadata = {
   title: "Meetings — TheGoodIntro admin",
@@ -40,7 +41,7 @@ export default async function MeetingsPage() {
   const { data } = await supabase
     .from("meeting")
     .select("id, status, scheduled_at, credit_lot_id, payment_due_at, request:request_id(executive:executive_id(title,company), vendor:vendor_id(name))")
-    .in("status", ["proposed", "confirmed"])
+    .in("status", ["proposed", "confirmed", "held"])
     .order("created_at", { ascending: true });
   const rows = (data ?? []) as unknown as Row[];
 
@@ -115,6 +116,25 @@ export default async function MeetingsPage() {
                     Confirm time
                   </button>
                 </form>
+              ) : r.status === "held" ? (
+                // Correction path (STATE_MACHINES.md): a wrongly-marked held
+                // meeting is reversed — credit returned, unpaid gift voided,
+                // rebook spawned. Behind a confirm so it can't fire on a stray click.
+                <div className="mt-2">
+                  <div className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+                    {formatDate(r.scheduled_at)} · held{r.credit_lot_id ? " · credit consumed" : ""}
+                  </div>
+                  <form action={reverseHeldAction} className="mt-2">
+                    <input type="hidden" name="meeting_id" value={r.id} />
+                    <ConfirmSubmit
+                      message="Reverse this held meeting? The credit returns to the vendor, the gift is voided if it has not been paid, and a rebook is created with the same executive."
+                      className="rounded-lg border px-3 py-1.5 text-sm"
+                      style={{ borderColor: "var(--portal-line)" }}
+                    >
+                      Reverse held
+                    </ConfirmSubmit>
+                  </form>
+                </div>
               ) : (
                 <div className="mt-2">
                   <div className="text-sm" style={{ color: "var(--muted-foreground)" }}>

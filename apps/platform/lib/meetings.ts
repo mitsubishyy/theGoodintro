@@ -20,7 +20,7 @@ type Result = { ok: true; detail?: string } | { ok: false; error: string };
 async function vendorIdForMeeting(supabase: SupabaseClient, meetingId: string) {
   const { data } = await supabase
     .from("meeting")
-    .select("id, status, credit_lot_id, charity_id, request:request_id(vendor_id)")
+    .select("id, status, request_id, credit_lot_id, charity_id, request:request_id(vendor_id)")
     .eq("id", meetingId)
     .maybeSingle();
   if (!data) return null;
@@ -274,6 +274,90 @@ export async function markHeld(
   ]);
 
   return { ok: true, detail: split.bandKey };
+}
+
+/**
+ * Manual reversal (STATE_MACHINES.md `held → reversed`): the vendor reported a
+ * wrongly-marked meeting. Returns the consumed credit to the lot, voids the
+ * gift while it is still `released` (a `paid` gift is terminal per DEC-6 — the
+ * credit return is then a goodwill cost, surfaced via `detail`), gives the
+ * band position back to the cycle, and spawns the rebook: a fresh `proposed`
+ * meeting on the same request, so the same exec can be rebooked from the
+ * meetings list.
+ */
+export async function reverseHeld(supabase: SupabaseClient, meetingId: string): Promise<Result> {
+  const ctx = await vendorIdForMeeting(supabase, meetingId);
+  if (!ctx) return { ok: false, error: "not_found" };
+  const { meeting, vendorId } = ctx;
+
+  const { data: flipped } = await supabase
+    .from("meeting")
+    .update({ status: "reversed" })
+    .eq("id", meetingId)
+    .eq("status", "held")
+    .select("id");
+  if (!flipped?.length) return { ok: false, error: "bad_state" };
+
+  const { data: voidedRows } = await supabase
+    .from("gift_record")
+    .update({ status: "voided" })
+    .eq("meeting_id", meetingId)
+    .eq("status", "released")
+    .select("id, sat_date");
+  const voided = voidedRows?.[0];
+
+  // Return the credit consumed at held.
+  if (meeting.credit_lot_id) {
+    const { data: lot } = await supabase
+      .from("credit_lot")
+      .select("quantity, quantity_remaining")
+      .eq("id", meeting.credit_lot_id)
+      .single();
+    if (lot) {
+      await supabase
+        .from("credit_lot")
+        .update({
+          quantity_remaining: Math.min(
+            lot.quantity as number,
+            (lot.quantity_remaining as number) + 1,
+          ),
+        })
+        .eq("id", meeting.credit_lot_id);
+    }
+  }
+
+  // Give the band position back. Reporting counts non-voided gifts, so the
+  // cycle counter must drop with the void or the next held meeting lands one
+  // position (possibly one band) too high. A paid gift still counts, so no
+  // decrement in the goodwill case. The cycle is found by the gift's sat_date;
+  // if a 12-month boundary fell on that exact UTC day this picks the later
+  // window — acceptable at MVP volume.
+  if (voided?.sat_date) {
+    const dayStart = `${voided.sat_date as string}T00:00:00Z`;
+    const nextDay = new Date(new Date(dayStart).getTime() + 864e5).toISOString();
+    const { data: cycle } = await supabase
+      .from("cycle")
+      .select("id, held_meetings_count")
+      .eq("vendor_id", vendorId)
+      .lt("started_at", nextDay)
+      .gt("ends_at", dayStart)
+      .order("started_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (cycle && (cycle.held_meetings_count as number) > 0) {
+      await supabase
+        .from("cycle")
+        .update({ held_meetings_count: (cycle.held_meetings_count as number) - 1 })
+        .eq("id", cycle.id);
+    }
+  }
+
+  // Rebook with the same exec: a new proposed meeting on the same request.
+  await supabase
+    .from("meeting")
+    .insert({ request_id: meeting.request_id, charity_id: meeting.charity_id, status: "proposed" });
+
+  return { ok: true, detail: voided ? "gift_voided" : "gift_paid_kept" };
 }
 
 /** No-show or cancellation: release the reservation, no gift. */
