@@ -20,6 +20,7 @@ import {
   issueInvoiceAction,
   simulatePaidAction,
 } from "../actions";
+import { vendorStatusPill, type VendorStatusEnum } from "../_status";
 
 /**
  * Admin Vendor detail T4 view (LOCKED 2026-06-04 per UI_KIT_DESIGN_LOG;
@@ -44,7 +45,7 @@ export interface VendorDetailRow {
   shortId: string;            // "VEN-XXXX" derived from UUID tail
   name: string;
   emailDomain: string;
-  status: "Active" | "Onboarding" | "Dormant" | "Paused" | "Churned";
+  status: VendorStatusEnum;
   tier: 1 | 2 | 3 | 4 | null;
   ownerName: string | null;
   ownerEmail: string | null;
@@ -123,13 +124,6 @@ export interface VendorDetailViewProps {
   vetting: VetState;
   activity: ActivityRow[];
   pendingRequestCount: number;
-}
-
-// ── Locked status pill mapping (mirrors the Vendors list 2026-06-02). ───────
-
-function vendorStatusBadge(s: VendorDetailRow["status"]): { tone: Tone } {
-  if (s === "Active" || s === "Onboarding") return { tone: "amber" };
-  return { tone: "muted" };
 }
 
 function requestStatusBadge(s: RequestSubRow["status"]): { tone: Tone; label: string } {
@@ -637,7 +631,7 @@ export function VendorDetailView({
   activity,
   pendingRequestCount,
 }: VendorDetailViewProps) {
-  const headerBadge = vendorStatusBadge(vendor.status);
+  const headerPill = vendorStatusPill(vendor.status);
 
   const chips: { label: string; tone?: Tone }[] = [];
   if (vendor.tier) chips.push({ label: `Tier ${vendor.tier}`, tone: "amber" });
@@ -711,7 +705,7 @@ export function VendorDetailView({
         avatar: <Avatar name={vendor.name} size={48} />,
         title: vendor.name,
         subtitle: vendor.emailDomain,
-        status: { label: vendor.status, tone: headerBadge.tone, dot: true },
+        status: { label: headerPill.label, tone: headerPill.tone, dot: true },
         chips,
         facts,
       }}

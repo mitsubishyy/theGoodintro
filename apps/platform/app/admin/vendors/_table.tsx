@@ -8,6 +8,7 @@ import {
   StatusDot,
   type DataTableColumn,
 } from "@thegoodintro/ui";
+import { vendorStatusPill, type VendorStatusEnum } from "./_status";
 
 /**
  * Admin Vendors list T3 (LOCKED 2026-06-02; chunk A 2026-06-10). Renders the
@@ -31,9 +32,9 @@ export interface VendorRow {
   creditsRemaining: number | null;
   renewsLabel: string;
   joinedLabel: string;
-  /** Locked display bucket (mapped from `vendor.status` enum upstream). The
-   *  enum has no 'paused' value, so there is no Paused bucket. */
-  statusDisplay: "Active" | "Onboarding" | "Dormant" | "Churned";
+  /** Raw vendor_status enum; the pill label + tone come from vendorStatusPill so
+   *  the list and the detail header never drift. */
+  status: VendorStatusEnum;
 }
 
 interface AdminVendorsTableProps {
@@ -129,7 +130,7 @@ export function AdminVendorsTable({ rows, page, pageCount, rangeLabel }: AdminVe
       key: "status",
       header: "Status",
       width: "128px",
-      render: (r) => <StatusPill display={r.statusDisplay} />,
+      render: (r) => <StatusPill status={r.status} />,
     },
   ];
 
@@ -147,24 +148,14 @@ export function AdminVendorsTable({ rows, page, pageCount, rangeLabel }: AdminVe
   );
 }
 
-function StatusPill({ display }: { display: VendorRow["statusDisplay"] }) {
-  // Locked tones (UI_KIT_DESIGN_LOG "Admin Vendors list (T3)"):
-  //   Active  → gold dot · amber-soft pill
-  //   Onboarding → amber dot · amber-soft pill (visually shares the gold tone
-  //     in this kit version; differentiated by label until --portal-gold
-  //     lands as a separate token)
-  //   Dormant → muted dot · muted pill (lower opacity)
-  //   Churned → muted dot · muted pill (row opacity handled upstream)
-  if (display === "Active" || display === "Onboarding") {
-    return (
-      <Badge tone="amber" dot>
-        {display}
-      </Badge>
-    );
-  }
+function StatusPill({ status }: { status: VendorStatusEnum }) {
+  // Label + tone come from the shared vendorStatusPill mapping (see _status.ts),
+  // so each of the four pre-active states shows its own label instead of one
+  // collapsed "Onboarding" pill, and the detail header stays in lock-step.
+  const { label, tone } = vendorStatusPill(status);
   return (
-    <Badge tone="muted" dot>
-      {display}
+    <Badge tone={tone} dot>
+      {label}
     </Badge>
   );
 }

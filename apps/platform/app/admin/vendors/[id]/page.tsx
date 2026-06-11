@@ -16,6 +16,7 @@ import {
   type VendorDetailRow,
   type VetState,
 } from "./_detail-view";
+import { type VendorStatusEnum } from "../_status";
 
 /**
  * Admin Vendor detail (T4) — port of the locked T4 (UI_KIT_DESIGN_LOG
@@ -44,28 +45,6 @@ export const metadata: Metadata = {
 
 function one<T>(v: unknown): T | undefined {
   return (Array.isArray(v) ? v[0] : v) as T | undefined;
-}
-
-type VendorStatusEnum =
-  | "signed_up"
-  | "call_booked"
-  | "approved"
-  | "paid"
-  | "active"
-  | "dormant"
-  | "churned";
-
-function statusDisplay(s: VendorStatusEnum): VendorDetailRow["status"] {
-  switch (s) {
-    case "active":
-      return "Active";
-    case "dormant":
-      return "Dormant";
-    case "churned":
-      return "Churned";
-    default:
-      return "Onboarding";
-  }
 }
 
 function execTitleCompany(e?: { title?: string | null; company?: string | null }): string {
@@ -184,7 +163,7 @@ export default async function VendorDetailPage({
     shortId: `VEN-${(vendor.id as string).slice(-4).toUpperCase()}`,
     name: vendor.name as string,
     emailDomain: vendor.email_domain as string,
-    status: statusDisplay(statusEnum),
+    status: statusEnum,
     tier,
     ownerName: owner?.name ?? null,
     ownerEmail: owner?.email ?? null,

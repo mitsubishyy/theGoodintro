@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatAudCompact, formatDate } from "@/lib/format";
 import { monthWindow, revenueForPeriod } from "@/lib/reporting";
 import { AdminVendorsTable, type VendorRow } from "./_table";
+import { isOnboardingStatus, type VendorStatusEnum } from "./_status";
 
 /**
  * Admin Vendors list — port of the locked T3 (UI_KIT_DESIGN_LOG +
@@ -41,29 +42,6 @@ interface VendorCreditLot {
   quantity_remaining: number;
 }
 
-type VendorStatusEnum =
-  | "signed_up"
-  | "call_booked"
-  | "approved"
-  | "paid"
-  | "active"
-  | "dormant"
-  | "churned";
-
-function statusDisplayFor(s: VendorStatusEnum): VendorRow["statusDisplay"] {
-  switch (s) {
-    case "active":
-      return "Active";
-    case "dormant":
-      return "Dormant";
-    case "churned":
-      return "Churned";
-    default:
-      // signed_up · call_booked · approved · paid all roll up to "Onboarding"
-      // for the admin list display per the locked status pill mapping.
-      return "Onboarding";
-  }
-}
 
 function one<T>(v: unknown): T | undefined {
   return (Array.isArray(v) ? v[0] : v) as T | undefined;
@@ -140,9 +118,8 @@ export default async function VendorsPage({
     const owner = one<VendorOwner>(v.owner);
     const lots = (v.credit_lot ?? []) as VendorCreditLot[];
     const status = v.status as VendorStatusEnum;
-    const statusDisplay = statusDisplayFor(status);
     const creditsRemaining =
-      lots.length === 0 && statusDisplay === "Onboarding"
+      lots.length === 0 && isOnboardingStatus(status)
         ? null
         : lots.reduce((s, l) => s + (l.quantity_remaining ?? 0), 0);
     return {
@@ -154,7 +131,7 @@ export default async function VendorsPage({
       creditsRemaining,
       renewsLabel: formatDate(v.access_expires_at as string | null),
       joinedLabel: formatDate(v.created_at as string),
-      statusDisplay,
+      status,
     };
   });
 
