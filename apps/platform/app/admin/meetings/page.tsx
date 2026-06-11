@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/format";
-import { confirmMeetingAction, markHeldAction, releaseMeetingAction, reverseHeldAction } from "./actions";
+import { getFlag } from "@/lib/flags";
+import { SUPPORTED_EMAIL_EVENTS } from "@/lib/email/sender";
+import { confirmMeetingAction, markHeldAction, releaseMeetingAction, reverseHeldAction, sendQueuedEmailsAction } from "./actions";
 import { CopyAcceptLink } from "./copy-link";
 import { ConfirmSubmit } from "./confirm-submit";
 
@@ -54,6 +56,22 @@ export default async function MeetingsPage() {
     .eq("status", "submitted")
     .order("created_at", { ascending: true });
   const pending = (pendingData ?? []) as unknown as PendingRequest[];
+
+  // A1 outbox state for the drain block below.
+  const { data: outboxRows } = await supabase
+    .from("notification")
+    .select("status")
+    .eq("channel", "email")
+    .in("event", SUPPORTED_EMAIL_EVENTS as unknown as string[]);
+  const outboxCounts = { queued: 0, failed: 0, sent: 0 };
+  for (const n of outboxRows ?? []) {
+    if (n.status === "queued" || n.status === "sending") outboxCounts.queued += 1;
+    else if (n.status === "failed") outboxCounts.failed += 1;
+    else if (n.status === "sent") outboxCounts.sent += 1;
+  }
+  const emailFlagOn = await getFlag("email_sending");
+  const hasResendKey = Boolean(process.env.RESEND_API_KEY);
+  const emailMode = process.env.EMAIL_MODE === "live" ? "live" : "test";
 
   return (
     <div className="max-w-3xl">
@@ -165,6 +183,31 @@ export default async function MeetingsPage() {
         {rows.length === 0 ? (
           <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>No meetings to schedule.</p>
         ) : null}
+      </div>
+
+      {/* A1 email outbox: manual drain trigger, stopgap until the S6 cron. */}
+      <div className="mt-8">
+        <h2 className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--muted-foreground)" }}>
+          Email outbox
+        </h2>
+        <div className="rounded-xl border p-4" style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }}>
+          <div className="text-sm">
+            {outboxCounts.queued} queued · {outboxCounts.failed} failed (will retry) · {outboxCounts.sent} sent
+          </div>
+          <p className="mt-1 text-xs" style={{ color: "var(--muted-foreground)" }}>
+            Mode: {emailMode} · flag email_sending {emailFlagOn ? "on" : "off"} · Resend key {hasResendKey ? "present" : "missing"}.
+            {emailMode === "test" ? " Test mode sends everything to the Resend test inbox, never to real recipients." : ""}
+          </p>
+          <form action={sendQueuedEmailsAction} className="mt-3">
+            <ConfirmSubmit
+              message={`Send ${outboxCounts.queued + outboxCounts.failed} queued email(s) now (${emailMode} mode)?`}
+              className="rounded-lg px-3 py-1.5 text-sm font-semibold"
+              style={{ background: "var(--portal-ink)", color: "var(--portal-card)" }}
+            >
+              Send queued emails
+            </ConfirmSubmit>
+          </form>
+        </div>
       </div>
     </div>
   );

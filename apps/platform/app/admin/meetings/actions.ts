@@ -5,6 +5,8 @@ import { requireStaff } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
 import { confirmMeeting, markHeld, releaseMeeting, reverseHeld } from "@/lib/meetings";
+import { drainEmailQueue } from "@/lib/email/sender";
+import { resendTransport } from "@/lib/email/transport";
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
 
@@ -36,6 +38,25 @@ export async function markHeldAction(fd: FormData): Promise<void> {
   if (r.ok) {
     await logAudit(supabase, staff.id, { action: "meeting.held", targetType: "meeting", targetId: id });
   }
+  revalidatePath("/admin/meetings");
+}
+
+/**
+ * Manual queue drain (A1). Stopgap trigger until the S6 cron exists; flag-gated
+ * (email_sending, off by default) and a no-op without a Resend key, so it is
+ * inert until Issy completes the provider/DNS setup.
+ */
+export async function sendQueuedEmailsAction(): Promise<void> {
+  const { staff, supabase } = await requireStaff();
+  if (!(await getFlag("email_sending"))) return;
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return;
+  const summary = await drainEmailQueue(supabase, resendTransport(key));
+  await logAudit(supabase, staff.id, {
+    action: "email.drain",
+    targetType: "notification",
+    metadata: { ...summary },
+  });
   revalidatePath("/admin/meetings");
 }
 
