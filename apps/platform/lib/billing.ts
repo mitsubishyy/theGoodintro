@@ -90,6 +90,9 @@ export async function applyPaidInvoice(
       .eq("id", invoice.vendor_id);
   }
 
+  // The receipt is not request-scoped, so the email composer reads the credit
+  // count and amount from the payload (0014), never re-deriving them at send time.
+  const receiptPayload = { credits, amount_cents: invoice.amount_cents };
   await supabase.from("notification").insert([
     {
       recipient_type: "vendor_user",
@@ -97,6 +100,7 @@ export async function applyPaidInvoice(
       channel: "email",
       event: "A4_invoice_paid",
       status: "queued",
+      payload: receiptPayload,
     },
     {
       recipient_type: "staff",
@@ -104,6 +108,7 @@ export async function applyPaidInvoice(
       channel: "in_app",
       event: "A4_invoice_paid_admin",
       status: "queued",
+      payload: receiptPayload,
     },
   ]);
 
