@@ -103,7 +103,7 @@ export default async function AdminDashboard() {
     supabase
       .from("vendor")
       .select("id", head)
-      .in("status", ["signed_up", "approved", "onboarding"]),
+      .in("status", ["signed_up", "call_booked", "approved", "paid"]),
     // Ribbon row 2
     supabase.from("executive").select("id", head).eq("status", "active"),
     supabase.from("executive").select("id", head).eq("status", "paused"),
@@ -152,10 +152,11 @@ export default async function AdminDashboard() {
       .order("created_at", { ascending: true })
       .limit(5),
 
-    // Recent Onboards (vendor users in last 30 days)
+    // Recent Onboards (vendor users in last 30 days). No `photo_url` on
+    // vendor_user (only `executive.photo_url` exists); avatar uses initials.
     supabase
       .from("vendor_user")
-      .select("name, role, created_at, photo_url, vendor:vendor_id ( name )")
+      .select("name, role, created_at, vendor:vendor_id ( name )")
       .gte(
         "created_at",
         new Date(now.getTime() - 30 * 86_400_000).toISOString(),
@@ -402,7 +403,6 @@ export default async function AdminDashboard() {
       })
         .format(created)
         .toUpperCase(),
-      photoUrl: (u.photo_url as string | null) ?? null,
     };
   });
 

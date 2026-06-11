@@ -360,7 +360,6 @@ export interface OnboardRow {
   role: string;
   company: string;
   dateLabel: string; // "05 JUN"
-  photoUrl?: string | null;
 }
 
 export function RecentOnboardsList({ rows }: { rows: OnboardRow[] }) {
@@ -372,7 +371,7 @@ export function RecentOnboardsList({ rows }: { rows: OnboardRow[] }) {
           className="px-5 py-3.5 flex items-center gap-3"
           style={{ borderTop: i === 0 ? "none" : "1px solid var(--portal-line)" }}
         >
-          <Avatar name={r.name} src={r.photoUrl ?? undefined} size={32} />
+          <Avatar name={r.name} size={32} />
           <div className="min-w-0 flex-1">
             <div className="text-[13.5px] font-medium truncate">{r.name}</div>
             <div className="text-[12px] truncate" style={{ color: "var(--muted-foreground)" }}>

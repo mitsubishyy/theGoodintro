@@ -63,7 +63,7 @@ export default async function AdminLayout({
   const [confirmedC, proposedC, vendorsOnboarding, submittedC] = await Promise.all([
     supabase.from("meeting").select("id", head).eq("status", "confirmed"),
     supabase.from("meeting").select("id", head).eq("status", "proposed"),
-    supabase.from("vendor").select("id", head).in("status", ["signed_up", "approved", "onboarding"]),
+    supabase.from("vendor").select("id", head).in("status", ["signed_up", "call_booked", "approved", "paid"]),
     supabase.from("request").select("id", head).eq("status", "submitted"),
   ]);
   const meetingsBadge = (confirmedC.count ?? 0) + (proposedC.count ?? 0);
