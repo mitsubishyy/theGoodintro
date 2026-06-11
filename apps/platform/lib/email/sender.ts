@@ -270,6 +270,7 @@ export async function drainEmailQueue(
         subject: email.subject,
         html: email.html,
         text: email.text,
+        attachments: email.attachments,
         idempotencyKey: row.id,
       });
       if (result.ok) {

@@ -87,13 +87,23 @@ describe("email queue drain (A1)", () => {
     expect(msg.html).toContain("OzHarvest"); // Riley's chosen charity
     expect(msg.html).not.toContain("No pressure either way"); // removed per Issy 2026-06-11
     expect(msg.html).toContain("Best,"); // sign-off per Issy 2026-06-11
-    expect(msg.html).toContain("Issy Hardwick"); // signature block follows
+    // Her real signature (2026-06-11): bold name | Founder | mobile, then the lockup.
+    expect(msg.html).toContain("<strong>Isobel Hardwick</strong> | Founder | +61 414 442 687");
     expect(msg.text).toContain("Best,");
-    expect(msg.text).toContain("Issy Hardwick");
-    // Email-client constraints: no CSS vars, no Tailwind classes, no images.
+    expect(msg.text).toContain("Isobel Hardwick | Founder | +61 414 442 687");
+    // Email-client constraints: no CSS vars, no Tailwind classes, and no
+    // REMOTE images (the signature logo is allowed as an inline cid: image —
+    // it travels inside the email, so nothing is fetched from a server).
     expect(msg.html).not.toContain("var(--");
     expect(msg.html).not.toContain('class="');
-    expect(msg.html).not.toContain("<img");
+    expect(msg.html).not.toMatch(/<img[^>]+src="https?:/);
+    expect(msg.html).toContain('src="cid:brand-logo"');
+    expect(msg.attachments?.length).toBe(1);
+    expect(msg.attachments?.[0]).toMatchObject({
+      contentId: "brand-logo",
+      contentType: "image/png",
+      filename: "thegoodintro-logo.png",
+    });
     // FACTS.md: brand casing, no em or en dashes anywhere in either part.
     expect(msg.html).toContain("TheGoodIntro");
     expect(msg.html).not.toContain("theGoodintro");

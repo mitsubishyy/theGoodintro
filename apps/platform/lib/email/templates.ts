@@ -5,12 +5,14 @@
  * from the brand. Every dynamic value is HTML-escaped.
  */
 
-import { SIGNATURE_HTML, SIGNATURE_TEXT } from "./signature";
+import { SIGNATURE_ATTACHMENTS, SIGNATURE_HTML, SIGNATURE_TEXT } from "./signature";
+import type { EmailAttachment } from "./transport";
 
 export type ComposedEmail = {
   subject: string;
   html: string;
   text: string;
+  attachments?: EmailAttachment[];
   /** Which sender identity to use (NOTIFICATION_TEMPLATES "Conventions"). */
   fromKind: "personal" | "brand";
 };
@@ -170,8 +172,10 @@ ${sectionLabel("Why it is relevant to you")}
 </div>
 <p style="margin:8px 0 0;font-size:11px;color:${E.muted}">These buttons open a short confirm page. Nothing is accepted or declined until you confirm there.</p>
 
-<p style="margin:1.5em 0 0">Best,</p>
-<p style="margin:1em 0 1.5em">${SIGNATURE_HTML}</p>
+<p style="margin:1.5em 0 1em">Best,</p>
+<div style="margin:0 0 1.5em">
+${SIGNATURE_HTML}
+</div>
 
 <p style="margin:0;font-size:11px;color:${E.muted}">TheGoodIntro · invite-only · Australia</p>
 </div></body></html>`;
@@ -206,7 +210,7 @@ ${sectionLabel("Why it is relevant to you")}
     `TheGoodIntro · invite-only · Australia`,
   ].join("\n");
 
-  return { subject, html, text, fromKind: "personal" };
+  return { subject, html, text, attachments: SIGNATURE_ATTACHMENTS, fromKind: "personal" };
 }
 
 /** A1 · New sign-up, the admin alert (to Issy, from the brand). */

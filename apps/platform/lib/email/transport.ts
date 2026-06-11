@@ -5,6 +5,15 @@
  * the queue logic.
  */
 
+export type EmailAttachment = {
+  filename: string;
+  /** Raw file bytes, base64-encoded. */
+  contentBase64: string;
+  contentType: string;
+  /** Set to inline the attachment: the HTML references it as src="cid:<id>". */
+  contentId?: string;
+};
+
 export type EmailMessage = {
   to: string;
   from: string;
@@ -12,6 +21,7 @@ export type EmailMessage = {
   subject: string;
   html: string;
   text: string;
+  attachments?: EmailAttachment[];
   /**
    * Stable per-notification key. Resend deduplicates on it (24h window), so a
    * drain that crashed after the provider accepted the send but before the
@@ -44,6 +54,16 @@ export function resendTransport(apiKey: string): EmailTransport {
           html: msg.html,
           text: msg.text,
           ...(msg.replyTo ? { reply_to: [msg.replyTo] } : {}),
+          ...(msg.attachments?.length
+            ? {
+                attachments: msg.attachments.map((a) => ({
+                  filename: a.filename,
+                  content: a.contentBase64,
+                  content_type: a.contentType,
+                  ...(a.contentId ? { content_id: a.contentId } : {}),
+                })),
+              }
+            : {}),
         }),
       });
       const body = (await res.json().catch(() => null)) as
