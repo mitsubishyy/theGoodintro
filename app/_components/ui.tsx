@@ -25,7 +25,7 @@ export function SectionLabel({ children }: { children: React.ReactNode }) {
 
 /** Solid emerald pill with the live pulse dot. */
 export function PrimaryCta({
-  href = "/apply",
+  href = "/waitlist",
   children,
 }: {
   href?: string;

@@ -53,7 +53,7 @@ export default function SiteHeader() {
             ))}
           </div>
           <div className="hp-nav-actions">
-            <Link className="hp-nav-cta" href="/apply">
+            <Link className="hp-nav-cta" href="/waitlist">
               Join the waitlist
               <span className="arrow" aria-hidden="true">
                 <svg viewBox="0 0 10 10" fill="none">
