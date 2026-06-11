@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { CHARITIES as CHARITY_PROFILES } from "@/lib/charities";
 
 /**
  * Inspiring giving in action — a native horizontal scroller that loops
@@ -60,8 +61,14 @@ const CHARITIES = [
 
 type Charity = (typeof CHARITIES)[number];
 
+// Charities with a published profile page (lib/charities.ts) deep-link to it;
+// the rest anchor into /giving until their profile exists.
+const PROFILED = new Set(CHARITY_PROFILES.map((p) => p.slug));
+
 function Card({ c, duplicate = false }: { c: Charity; duplicate?: boolean }) {
-  const href = `/giving#${c.slug}`;
+  const href = PROFILED.has(c.slug)
+    ? `/charities/${c.slug}`
+    : `/giving#${c.slug}`;
   /**
    * Try a real photo at /charities/photos/<slug>.{webp,jpg}. If neither
    * loads, fall back to the abstract shape + name watermark so the card
@@ -103,6 +110,36 @@ function Card({ c, duplicate = false }: { c: Charity; duplicate?: boolean }) {
       <div className="hp-gallery-card-info">
         <p className="hp-gallery-name">{c.name}</p>
         <p className="hp-gallery-cause">{c.cause}</p>
+      </div>
+    </Link>
+  );
+}
+
+/** Closing tile of each set: routes to the charity profile index. */
+function ViewAllCard({ duplicate = false }: { duplicate?: boolean }) {
+  return (
+    <Link
+      className="hp-gallery-card is-viewall"
+      href="/charities"
+      aria-hidden={duplicate || undefined}
+      tabIndex={duplicate ? -1 : 0}
+      draggable={false}
+    >
+      <div className="hp-gallery-image">
+        <div className="hp-gallery-viewall">
+          <span className="circle" aria-hidden="true">
+            <svg viewBox="0 0 12 12" fill="none">
+              <path
+                d="M3 9 L9 3 M4.5 3 H9 V7.5"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+          <span className="label">View all charity profiles</span>
+        </div>
       </div>
     </Link>
   );
@@ -253,11 +290,14 @@ export default function CharityGallerySection() {
         }}
       >
         <div className="hp-gallery-track">
-          {copies.map((cp) =>
-            CHARITIES.map((c) => (
-              <Card key={`${cp}-${c.slug}`} c={c} duplicate={cp !== 0} />
-            ))
-          )}
+          {copies.map((cp) => (
+            <Fragment key={cp}>
+              {CHARITIES.map((c) => (
+                <Card key={`${cp}-${c.slug}`} c={c} duplicate={cp !== 0} />
+              ))}
+              <ViewAllCard duplicate={cp !== 0} />
+            </Fragment>
+          ))}
         </div>
       </div>
 

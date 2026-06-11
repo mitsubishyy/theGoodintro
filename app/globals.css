@@ -1211,6 +1211,51 @@ body {
   top: -40px; left: -40px;
   transform: rotate(-12deg);
 }
+/* Closing view-all tile: full-height mint wash, always in colour (it is a
+   CTA, not a photo, so the B&W-until-hover treatment would read disabled). */
+.hp-gallery-card.is-viewall {
+  filter: none;
+}
+.hp-gallery-card.is-viewall .hp-gallery-image {
+  height: 100%;
+  background: var(--mint-tint);
+}
+.hp-gallery-viewall {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  text-align: center;
+  padding: 0 28px;
+}
+.hp-gallery-viewall .circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--primary);
+  color: #fff;
+  transition: transform .3s cubic-bezier(.22,.61,.36,1);
+}
+.hp-gallery-viewall .circle svg {
+  width: 16px;
+  height: 16px;
+}
+.hp-gallery-card.is-viewall:hover .circle,
+.hp-gallery-card.is-viewall:focus-visible .circle {
+  transform: rotate(45deg);
+}
+.hp-gallery-viewall .label {
+  font-family: var(--font-fraunces), serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(22px, 2.2vw, 28px);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--primary);
+}
 .hp-gallery-image .wm {
   position: relative;
   z-index: 1;
