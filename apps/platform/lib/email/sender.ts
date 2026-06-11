@@ -1,6 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { charityShareCentsForMeetingNumber } from "@thegoodintro/pricing";
-import { formatAud } from "../format";
+import { indicativeGiftAud } from "../gift-amount";
 import {
   adminSignupAlertEmail,
   execRequestEmail,
@@ -120,8 +119,9 @@ async function composeExecRequest(
   const requesterName = attendee?.name?.trim() || requester?.name || vendor?.name || "A member vendor";
   const requesterTitle = attendee?.title?.trim() || null;
 
-  // Indicative amount: same computation as the /e/[token] confirm page (the
-  // latest cycle's held count + 1), read live from the pricing engine.
+  // Indicative amount: the ONE shared source with the /e/[token] confirm page
+  // (lib/gift-amount.ts), fed the latest cycle's held count, so the email and
+  // the page it links to always show the identical exact figure.
   const { data: cycle } = await supabase
     .from("cycle")
     .select("held_meetings_count")
@@ -129,8 +129,7 @@ async function composeExecRequest(
     .order("started_at", { ascending: false })
     .limit(1)
     .maybeSingle();
-  const held = (cycle?.held_meetings_count as number | undefined) ?? 0;
-  const indicative = formatAud(charityShareCentsForMeetingNumber(held + 1));
+  const indicative = indicativeGiftAud((cycle?.held_meetings_count as number | undefined) ?? 0);
 
   return {
     to: exec.primary_email,

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import { Wordmark } from "@thegoodintro/ui";
 import { createClient } from "@/lib/supabase/server";
-import { charityShareCentsForMeetingNumber } from "@thegoodintro/pricing";
-import { formatAud } from "@/lib/format";
+import { indicativeGiftAud } from "@/lib/gift-amount";
 import { ConfirmForm } from "./confirm-form";
 
 export const metadata: Metadata = {
@@ -13,6 +13,9 @@ function Shell({ children }: { children: React.ReactNode }) {
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-16" style={{ background: "var(--portal-page)", color: "var(--foreground)" }}>
       <div className="w-full max-w-lg rounded-2xl border p-8" style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }}>
+        {/* Same wordmark treatment as the platform header lockup (text only,
+            no image to block rendering). */}
+        <Wordmark size={15} className="mb-5 block" />
         {children}
       </div>
     </main>
@@ -55,7 +58,8 @@ export default async function ConfirmPage({
     );
   }
 
-  const indicative = formatAud(charityShareCentsForMeetingNumber((row.held_count ?? 0) + 1));
+  // One shared source with the email (lib/gift-amount.ts): exact, never "about".
+  const indicative = indicativeGiftAud(row.held_count ?? 0);
   const intentVal: "accept" | "decline" | "send_to_ea" =
     intent === "decline" ? "decline" : intent === "send_to_ea" ? "send_to_ea" : "accept";
 
@@ -65,7 +69,7 @@ export default async function ConfirmPage({
         An introduction worth your time
       </p>
       <h1 className="mt-1 text-xl font-semibold tracking-tight">
-        {row.vendor_name} would like to meet {row.exec_name}
+        {row.vendor_name} would like to meet you
       </h1>
 
       <dl className="mt-5 flex flex-col gap-4 text-sm">
@@ -80,8 +84,8 @@ export default async function ConfirmPage({
       </dl>
 
       <p className="mt-5 rounded-lg px-4 py-3 text-sm" style={{ background: "var(--portal-amber-soft)", color: "var(--portal-amber-ink)" }}>
-        One 45-minute conversation. If you take it, {row.vendor_name} sends about{" "}
-        <strong>{indicative}</strong> to {row.charity_name ?? "your chosen charity"}.
+        One 45-minute conversation. If you accept, <strong>{indicative}</strong>{" "}
+        directs to {row.charity_name ?? "your chosen charity"}, the charity you chose.
       </p>
 
       <div className="mt-6">
