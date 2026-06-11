@@ -4,10 +4,19 @@ import {
   SectionHead,
   Faq,
   ClosingCta,
-  ComparisonRow,
+  MetricCard,
+  FunnelDiagram,
 } from "../_components/ui";
+import {
+  IconBriefcase,
+  IconColdInbox,
+  IconHandshake,
+  IconHeartCircle,
+  IconTag,
+} from "../_components/icons";
 import { FaqJsonLd } from "../_components/json-ld";
 import { pageMetadata } from "@/lib/metadata";
+import ChannelExplorer from "./channel-explorer";
 
 export const metadata = pageMetadata({
   title: "How to get a meeting with a senior executive. TheGoodIntro.",
@@ -26,6 +35,7 @@ export const metadata = pageMetadata({
 const TABLE_ROWS = [
   {
     channel: "Cold outbound",
+    icon: IconColdInbox,
     cost: "An SDR seat runs six figures a year fully loaded",
     time: "Weeks to months",
     why: "Persistence, timing, and luck",
@@ -34,6 +44,7 @@ const TABLE_ROWS = [
   },
   {
     channel: "Events and sponsorships",
+    icon: IconBriefcase,
     cost: "$10,000 to $50,000 and beyond per event",
     time: "Tied to the event calendar",
     why: "They were attending anyway",
@@ -42,6 +53,7 @@ const TABLE_ROWS = [
   },
   {
     channel: "Intent data and lead lists",
+    icon: IconTag,
     cost: "$10,000 to $40,000 a year, plus the outbound to act on it",
     time: "Weeks",
     why: "It does not change why they show up, it only sharpens targeting",
@@ -50,6 +62,7 @@ const TABLE_ROWS = [
   },
   {
     channel: "Warm introductions",
+    icon: IconHandshake,
     cost: "Free in cash, expensive in favours",
     time: "Days, when the connection exists",
     why: "Trust transfers from the person introducing you",
@@ -57,98 +70,13 @@ const TABLE_ROWS = [
   },
   {
     channel: "Charity-funded introductions",
+    icon: IconHeartCircle,
+    ours: true,
     cost: "$1,500 flat per held meeting",
     time: "Days to weeks",
     why: "A vetted, specific reason plus a real gift to a charity they choose",
     breaks:
       "Invite only and Australia first, so coverage is narrower than a list. Wrong tool for high-volume top-of-funnel",
-  },
-];
-
-const CHANNELS = [
-  {
-    name: "Cold outbound",
-    what: "Email, LinkedIn, and phone, run by SDRs or by the founders themselves. The default channel for most B2B teams, and the one whose true cost is hardest to see because it arrives as salaries and tooling rather than a per-meeting invoice.",
-    rows: [
-      { text: "Scales with headcount and works at manager and director seniority" },
-      { text: "You control the message, the volume, and the timing" },
-      {
-        text: "Reply rates collapse at C-level, where unsolicited approaches are filtered by EAs and habit",
-        bad: true,
-      },
-      {
-        text: "The real cost per held executive meeting lands far above what the tooling invoices suggest",
-        bad: true,
-      },
-    ],
-    when: "Choose it when your buyer is a manager or director and volume genuinely helps.",
-  },
-  {
-    name: "Events and sponsorships",
-    what: "Conference booths, sponsored dinners, roundtables, and passes. The oldest channel there is, and still the strongest way to be in the same room as people who chose to show up.",
-    rows: [
-      { text: "Real conversations with attendees who opted in to being there" },
-      { text: "Builds brand and category presence alongside pipeline" },
-      {
-        text: "Five figures per event before travel, and the named executive you need may not attend",
-        bad: true,
-      },
-      {
-        text: "The event opens a door; the actual meeting still has to be won afterwards",
-        bad: true,
-      },
-    ],
-    when: "Choose it when market presence matters as much as any single meeting.",
-  },
-  {
-    name: "Intent data and lead lists",
-    what: "Subscriptions that score accounts, surface contacts, and flag buying signals. Genuinely useful, but it is fuel for outbound rather than a channel of its own, so the costs stack on top of the SDR motion it feeds.",
-    rows: [
-      { text: "Sharpens targeting so outbound spends fewer touches on the wrong accounts" },
-      { text: "Useful early signal at the account level" },
-      {
-        text: "It cannot make an executive want the meeting; it only tells you who to ask",
-        bad: true,
-      },
-      {
-        text: "Senior executives rarely generate intent signals themselves; their teams do the researching",
-        bad: true,
-      },
-    ],
-    when: "Choose it when you already run outbound well and want it more accurate.",
-  },
-  {
-    name: "Warm introductions",
-    what: "A mutual connection, investor, or advisor vouches for you. The highest hit rate of any channel, because trust transfers, and the least repeatable, because every favour is a withdrawal from a finite account.",
-    rows: [
-      { text: "The best conversion of any channel when the connection is real" },
-      { text: "Costs nothing in cash" },
-      {
-        text: "Each ask spends the relationship; asking repeatedly drains it",
-        bad: true,
-      },
-      { text: "Cannot be scheduled, scaled, or forecast", bad: true },
-    ],
-    when: "Choose it when the connection exists and the ask is worth the favour.",
-  },
-  {
-    name: "Charity-funded introductions",
-    what: "A vetted meeting request with a specific, relevant reason, where the vendor's fee funds a real gift to a charity the executive chooses. The executive's time creates value they care about even when the product turns out not to be a fit.",
-    rows: [
-      { text: "The executive has a real reason to show up that is not your product" },
-      {
-        text: "You pay only when the meeting holds: $1,500 flat, no subscriptions, no seat fees",
-      },
-      {
-        text: "Between $900 and $1,200 of every fee reaches the chosen charity, published on a public ledger",
-      },
-      {
-        text: "Invite only and Australia first, so coverage is narrower than a list",
-        bad: true,
-      },
-      { text: "The wrong tool for high-volume top-of-funnel", bad: true },
-    ],
-    when: "Choose it when a handful of named senior executives matter more than a thousand contacts.",
   },
 ];
 
@@ -221,12 +149,30 @@ export default function Compare() {
               </p>
               <p>
                 A charity-funded introduction is the newest of the five: a
-                vetted meeting request where the vendor&apos;s fee funds a real gift
-                to a charity the executive chooses. The executive is paid
+                vetted meeting request where the vendor&apos;s fee funds a real
+                gift to a charity the executive chooses. The executive is paid
                 nothing personally. Their time creates value they care about,
                 so they can take the meeting on merit.
               </p>
             </div>
+          </div>
+
+          <div className="mt-14 grid sm:grid-cols-3 gap-6">
+            <MetricCard
+              value="$1,500"
+              label="Flat fee per held meeting"
+              note="No subscriptions, no seat fees, no retainers. The fee exists only when the meeting does."
+            />
+            <MetricCard
+              value="$1,200"
+              label="To charity at the top band"
+              note="Between $900 and $1,200 of every fee reaches the charity the executive chooses, published on the public ledger."
+            />
+            <MetricCard
+              value="$0"
+              label="When a meeting does not hold"
+              note="No-shows from either side are never billed. You pay for held conversations, not attempts."
+            />
           </div>
         </div>
       </section>
@@ -260,33 +206,75 @@ export default function Compare() {
                 </tr>
               </thead>
               <tbody>
-                {TABLE_ROWS.map((r) => (
-                  <tr
-                    key={r.channel}
-                    className="border-t align-top"
-                    style={{ borderColor: "var(--hair)" }}
-                  >
-                    <th
-                      scope="row"
-                      className="py-5 pr-6 font-semibold text-foreground whitespace-nowrap"
+                {TABLE_ROWS.map((r) => {
+                  const Icon = r.icon;
+                  return (
+                    <tr
+                      key={r.channel}
+                      className={
+                        "border-t align-top transition-colors" +
+                        (r.ours ? "" : " hover:[background:var(--cream-2)]")
+                      }
+                      style={
+                        r.ours
+                          ? {
+                              borderColor: "var(--hair)",
+                              background: "var(--mint-tint)",
+                              boxShadow: "inset 3px 0 0 var(--primary)",
+                            }
+                          : { borderColor: "var(--hair)" }
+                      }
                     >
-                      {r.channel}
-                    </th>
-                    <td className="py-5 pr-6 text-foreground/85">{r.cost}</td>
-                    <td className="py-5 pr-6 text-foreground/85 whitespace-nowrap">
-                      {r.time}
-                    </td>
-                    <td className="py-5 pr-6 text-foreground/85">{r.why}</td>
-                    <td className="py-5 text-foreground/85">{r.breaks}</td>
-                  </tr>
-                ))}
+                      <th
+                        scope="row"
+                        className="py-5 pr-6 pl-3 font-semibold text-foreground whitespace-nowrap"
+                      >
+                        <span className="flex items-center gap-3">
+                          <span
+                            className="size-9 rounded-full grid place-items-center shrink-0"
+                            style={
+                              r.ours
+                                ? {
+                                    background: "var(--primary)",
+                                    color: "var(--cream-1)",
+                                  }
+                                : {
+                                    background: "var(--mint-tint)",
+                                    color: "var(--primary-ink)",
+                                  }
+                            }
+                          >
+                            <Icon size={18} />
+                          </span>
+                          <span>
+                            {r.channel}
+                            {r.ours && (
+                              <span
+                                className="block font-mono text-[10px] uppercase tracking-[0.18em] font-medium"
+                                style={{ color: "var(--primary)" }}
+                              >
+                                Ours
+                              </span>
+                            )}
+                          </span>
+                        </span>
+                      </th>
+                      <td className="py-5 pr-6 text-foreground/85">{r.cost}</td>
+                      <td className="py-5 pr-6 text-foreground/85 whitespace-nowrap">
+                        {r.time}
+                      </td>
+                      <td className="py-5 pr-6 text-foreground/85">{r.why}</td>
+                      <td className="py-5 pr-3 text-foreground/85">{r.breaks}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </div>
       </section>
 
-      {/* ── Channel by channel ────────────────────────────────────────── */}
+      {/* ── Channel by channel (interactive) ──────────────────────────── */}
       <section
         className="border-y"
         style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
@@ -297,39 +285,7 @@ export default function Compare() {
             title="When each one is the right call."
             lede="Every channel on this page earns its place somewhere. The question is whether that somewhere is your shortlist."
           />
-          <div className="mt-12 grid md:grid-cols-2 gap-6">
-            {CHANNELS.map((c, i) => (
-              <div
-                key={c.name}
-                className={
-                  "rounded-3xl border p-8 md:p-10" +
-                  (i === CHANNELS.length - 1 ? " md:col-span-2" : "")
-                }
-                style={{
-                  borderColor: "var(--hair)",
-                  background: "var(--cream-1)",
-                }}
-              >
-                <h3 className="text-lg font-semibold tracking-tight text-foreground">
-                  {c.name}
-                </h3>
-                <p className="mt-3 text-[15px] leading-relaxed text-foreground/80">
-                  {c.what}
-                </p>
-                <ul className="mt-6 space-y-3.5 text-[14px]">
-                  {c.rows.map((r) => (
-                    <ComparisonRow key={r.text} text={r.text} bad={r.bad} />
-                  ))}
-                </ul>
-                <p
-                  className="mt-6 pt-5 border-t text-[14px] font-medium text-foreground"
-                  style={{ borderColor: "var(--hair)" }}
-                >
-                  {c.when}
-                </p>
-              </div>
-            ))}
-          </div>
+          <ChannelExplorer />
         </div>
       </section>
 
@@ -376,6 +332,16 @@ export default function Compare() {
               </p>
             </div>
           </div>
+
+          <FunnelDiagram
+            steps={[
+              "You name the executives and the specific reason",
+              "We vet the request before it reaches them",
+              "The executive accepts on merit",
+              "The meeting holds",
+              "Their chosen charity receives the gift",
+            ]}
+          />
         </div>
       </section>
 
