@@ -1,0 +1,25 @@
+# TheGoodIntro
+
+> TheGoodIntro is an invite-only Australian network where vetted vendors request short meetings with senior executives, and every held meeting sends a real gift to a charity the executive chooses. Executives pay nothing and are paid nothing personally; the vendor's fee funds the gift.
+
+Key facts:
+
+- Pricing: $1,500 AUD flat per held meeting, ex GST. No subscriptions, no seat fees, no retainers. No-shows are not billed.
+- Charity share: between $900 and $1,200 of each $1,500 fee reaches the charity the executive chooses. The share rises with the number of meetings a vendor takes across the year ($900 at 1-5 meetings per year, up to $1,200 at 16+).
+- Executives choose from a curated shortlist of Australian charities or nominate any DGR-endorsed Australian charity.
+- Every gift is paid after the meeting, confirmed in writing, and published on the public giving ledger. Nothing is ever removed from the ledger.
+- A charity-funded introduction is a vetted meeting request where the vendor's fee funds a gift to a charity the executive chooses, so the executive's time creates value they care about even when the product is not a fit.
+- Founded by Isobel Hardwick. ABN 59 398 447 638. Contact: issy@thegoodintros.com.
+
+## Pages
+
+- [How it works](https://thegoodintro.vercel.app/how-it-works): the model end to end, for both sides
+- [Compare](https://thegoodintro.vercel.app/compare): the five ways to get a meeting with a senior executive, costs and trade-offs
+- [Pricing](https://thegoodintro.vercel.app/pricing): the flat fee and the charity share, with worked examples
+- [For executives](https://thegoodintro.vercel.app/executives): what executives get and what is asked of them
+- [For vendors](https://thegoodintro.vercel.app/vendors): why vendors use charity-funded introductions
+- [Giving](https://thegoodintro.vercel.app/giving): the charity shortlist and how the giving works
+- [Charities](https://thegoodintro.vercel.app/charities): profiles of charities executives choose, with ABN and DGR details
+- [Ledger](https://thegoodintro.vercel.app/ledger): the public record of every gift
+- [FAQ](https://thegoodintro.vercel.app/faq): straight answers to the questions executives ask first
+- [Waitlist](https://thegoodintro.vercel.app/waitlist): how to join

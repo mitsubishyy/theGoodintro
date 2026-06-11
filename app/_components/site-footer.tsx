@@ -4,19 +4,40 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const NAV = [
-  { href: "/how-it-works", label: "How it works" },
-  { href: "/executives", label: "Executives" },
-  { href: "/vendors", label: "Vendors" },
-  { href: "/giving", label: "Giving" },
-  { href: "/charities", label: "Charities" },
-  { href: "/ledger", label: "Ledger" },
-  { href: "/pricing", label: "Pricing" },
-];
-
-const LEGAL = [
-  { href: "/privacy", label: "Privacy" },
-  { href: "/terms", label: "Terms" },
+// Labelled link groups. "Learn" is the slot for the citable resource pages
+// (comparison, definitions, money flow); new public pages get a footer link
+// here even when they stay off the top nav.
+const GROUPS: { label: string; links: { href: string; label: string }[] }[] = [
+  {
+    label: "Explore",
+    links: [
+      { href: "/how-it-works", label: "How it works" },
+      { href: "/executives", label: "Executives" },
+      { href: "/vendors", label: "Vendors" },
+      { href: "/pricing", label: "Pricing" },
+      { href: "/faq", label: "FAQ" },
+    ],
+  },
+  {
+    label: "Giving",
+    links: [
+      { href: "/giving", label: "Giving" },
+      { href: "/charities", label: "Charities" },
+      { href: "/ledger", label: "Ledger" },
+      { href: "/impact", label: "Impact" },
+    ],
+  },
+  {
+    label: "Learn",
+    links: [{ href: "/compare", label: "Compare channels" }],
+  },
+  {
+    label: "Legal",
+    links: [
+      { href: "/privacy", label: "Privacy" },
+      { href: "/terms", label: "Terms" },
+    ],
+  },
 ];
 
 export default function SiteFooter() {
@@ -41,18 +62,20 @@ export default function SiteFooter() {
           </p>
         </div>
 
-        <ul className="hp-footer-links" aria-label="Explore">
-          {NAV.map((item) => (
-            <li key={item.href}>
-              <Link href={item.href}>{item.label}</Link>
-            </li>
+        <nav className="hp-footer-cols" aria-label="Footer">
+          {GROUPS.map((group) => (
+            <div className="hp-footer-col" key={group.label}>
+              <p className="hp-footer-col-label">{group.label}</p>
+              <ul className="hp-footer-links">
+                {group.links.map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href}>{item.label}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
-          {LEGAL.map((item) => (
-            <li key={item.href}>
-              <Link href={item.href}>{item.label}</Link>
-            </li>
-          ))}
-        </ul>
+        </nav>
 
         <div className="hp-footer-contact">
           <a
