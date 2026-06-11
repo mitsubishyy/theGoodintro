@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { Fragment, type ReactNode } from "react";
 import { Icon } from "../icons";
 import { Wordmark } from "../Wordmark";
+import { initialsOf } from "../primitives/Avatar";
 import { Badge } from "../primitives/Badge";
 import type { AccountChip, IdentityCard, NavItem, Portal } from "../types";
 
@@ -148,7 +149,7 @@ export function PortalSidebar({ portal, brand, groups, identity, account, onSign
             className="size-8 rounded-full grid place-items-center text-[12px] font-semibold shrink-0"
             style={{ background: p.active, color: p.activeInk }}
           >
-            {(account.name || "?").trim().split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase()}
+            {initialsOf(account.name || "?")}
           </span>
           <div className="leading-tight min-w-0">
             <div className="text-[13px] font-medium truncate" style={{ color: p.activeInk }}>
