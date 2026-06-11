@@ -216,10 +216,9 @@ export function HowItWorksIllustration({ className }: Props) {
       </g>
       <text x="262" y="258" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fontWeight="700" fill="var(--ill-ink)" letterSpacing="0.6">THEGOODINTRO</text>
 
-      {/* arc 2 with 100% */}
+      {/* arc 2 into the charity */}
       <path d="M324 168 Q390 116 456 168" stroke="var(--ill-emerald-deep)" strokeWidth="2.4" strokeDasharray="2 7" strokeLinecap="round" fill="none" opacity="0.55" />
       <path d="M449 160 l8 9 l9 -7" stroke="var(--ill-emerald-deep)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.55" />
-      <text x="390" y="104" textAnchor="middle" fontFamily="sans-serif" fontSize="13" fontWeight="700" fill="var(--ill-ink)" opacity="0.6">100%</text>
 
       {/* node 3: charity */}
       <g transform="translate(456, 178)">

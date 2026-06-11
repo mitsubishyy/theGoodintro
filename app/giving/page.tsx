@@ -109,6 +109,72 @@ export default function Giving() {
               accent
             />
           </div>
+
+          {/* What a meeting actually does: charity-own equivalences */}
+          <div className="mt-20 md:mt-24">
+            <h3
+              className="text-2xl md:text-3xl font-extrabold tracking-[-0.02em]"
+              style={{ color: "var(--cream-11)" }}
+            >
+              What a meeting actually does.
+            </h3>
+            <p
+              className="mt-3 text-[15px] leading-relaxed max-w-2xl"
+              style={{ color: "var(--cream-9)" }}
+            >
+              One held meeting, one real gift, in terms you can picture. Each
+              figure below is the charity&apos;s own, attributed and checkable.
+            </p>
+            <div className="mt-10 grid md:grid-cols-3 gap-4">
+              <div
+                className="rounded-2xl border p-6 md:p-8"
+                style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
+              >
+                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                  OzHarvest
+                </div>
+                <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed">
+                  By their own published figures, $1 delivers two meals, so one
+                  meeting funds around 1,800 to 2,400 meals for Australians
+                  doing it tough.
+                </p>
+              </div>
+              <div
+                className="rounded-2xl border p-6 md:p-8"
+                style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
+              >
+                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                  Beyond Blue
+                </div>
+                <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed">
+                  Funds their support service: trained counsellors available
+                  around the clock, by phone, webchat and email, for anyone
+                  facing anxiety, depression or a hard moment.
+                </p>
+              </div>
+              <div
+                className="rounded-2xl border p-6 md:p-8"
+                style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
+              >
+                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                  RFDS
+                </div>
+                <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed">
+                  Funds the aeromedical care and medical equipment that keeps
+                  the Royal Flying Doctor Service reaching people across rural
+                  and remote Australia.
+                </p>
+              </div>
+            </div>
+            <p
+              className="mt-8 text-[15px] leading-relaxed max-w-2xl"
+              style={{ color: "var(--cream-9)" }}
+            >
+              These are the charities&apos; own numbers, not ours. Every gift is
+              confirmed in writing, and DGR status means you can verify each one
+              on the public register.
+            </p>
+          </div>
         </div>
       </section>
 

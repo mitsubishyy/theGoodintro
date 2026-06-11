@@ -1,13 +1,21 @@
 import Link from "next/link";
-import { PageHero, SectionHead, Faq, ClosingCta } from "../_components/ui";
-import { VendorsIllustration } from "../_components/illustrations";
+import { UserCheck, Target, HeartHandshake } from "lucide-react";
+import {
+  PageHero,
+  SectionHead,
+  StepCard,
+  MetricCard,
+  Faq,
+  ClosingCta,
+} from "../_components/ui";
 import { VendorsFlow } from "../_components/vendors-flow";
+import { MeetingConfirmedCard } from "../_components/meeting-confirmed-card";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
-  title: "For vendors. TheGoodIntro.",
+  title: "Book meetings with senior executives. TheGoodIntro.",
   description:
-    "A qualified introduction to a vetted, hard-to-reach senior audience. Every meeting you book sends a real gift to the leader's chosen charity. Australia first, invite only.",
+    "Get accepted meetings with vetted senior leaders in Australia. One flat $1,500 per held meeting, with $900 to $1,200 funding a charity the executive chooses. No lists, no sequences, no retainer.",
   path: "/vendors",
 });
 
@@ -25,14 +33,25 @@ export default function Vendors() {
     <>
       <PageHero
         eyebrow="For vendors"
-        title="From request to"
-        italicWord="gift"
-        lede="A genuinely qualified introduction to a vetted, hard-to-reach senior audience. Earned by being relevant, not by buying a list and sending more cold email."
+        title="The meetings cold outreach can't"
+        italicWord="get you"
+        lede="Senior leaders who chose to be here, told us exactly what they will take a meeting about, and say yes because every conversation funds a charity they care about. One flat $1,500 per held meeting. No list, no sequences, no retainer."
         primaryCta="Join the waitlist"
         primaryHref="/waitlist"
         pill="Founding vendor waitlist open"
         bg="var(--cream-4)"
-        illustration={<VendorsIllustration className="w-full h-auto" />}
+        illustration={
+          <div>
+            <MeetingConfirmedCard />
+            <p
+              className="mt-5 text-[13px] leading-relaxed italic max-w-md"
+              style={{ color: "var(--cream-9)" }}
+            >
+              The moment you&apos;re paying for. A senior leader said yes,
+              because your reason matched what they asked for.
+            </p>
+          </div>
+        }
       />
 
       {/* ── Hero stat band: the whole argument in one line ───────────── */}
@@ -76,8 +95,157 @@ export default function Vendors() {
         </div>
       </section>
 
+      {/* ── Why leaders say yes (white band) ─────────────────────────── */}
+      <section style={{ background: "var(--paper-white)" }}>
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <SectionHead
+            label="The acceptance problem, solved"
+            title="Why leaders say"
+            italicWord="yes."
+            lede="Every other channel asks a senior leader to give something for nothing. This one doesn't."
+          />
+          <div className="mt-16 grid md:grid-cols-3 gap-4">
+            <StepCard
+              hoverHighlight
+              n="01"
+              icon={UserCheck}
+              title="They opted in"
+              body="Every executive here applied, was vetted, and told us the priorities they will take a meeting about. You are never interrupting. You are answering a question they already asked."
+            />
+            <StepCard
+              hoverHighlight
+              n="02"
+              icon={Target}
+              title="Your reason does the selling"
+              body="Before a request reaches a leader, you state the specific initiative or problem it relates to, in plain language. If it matches what they said they care about, they see it. Relevance is the pitch."
+            />
+            <StepCard
+              hoverHighlight
+              n="03"
+              icon={HeartHandshake}
+              title="Saying yes does good"
+              body="Every meeting a leader accepts sends $900 to $1,200 to a charity they choose, paid by you, confirmed in writing. Accepting your request is one of the easier good things they will do that week."
+            />
+          </div>
+          <p
+            className="mt-12 text-lg leading-relaxed max-w-3xl"
+            style={{ color: "var(--cream-9)" }}
+          >
+            The result is a meeting where the leader chose to be in the room.
+            You will feel the difference in the first five minutes.
+          </p>
+        </div>
+      </section>
+
       {/* ── How it works: 5-step flow (oat band) ─────────────────────── */}
-      <VendorsFlow />
+      <VendorsFlow lede="Five steps from your stated reason to a held meeting. Nothing speculative, no surprises. The leader sees the same words you wrote." />
+
+      {/* ── Do the maths (white band) ────────────────────────────────── */}
+      <section style={{ background: "var(--paper-white)" }}>
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <SectionHead
+            label="The honest comparison"
+            title="Do the maths you already"
+            italicWord="know."
+          />
+          <div
+            className="mt-12 max-w-3xl space-y-6 text-lg leading-relaxed"
+            style={{ color: "var(--cream-9)" }}
+          >
+            <p>
+              If you sell to senior buyers, you already know what a single
+              qualified meeting really costs. An SDR&apos;s salary, the data
+              tools, the sequencing platform, the months of touches for one
+              reply from a CFO, and the meetings that turn out to be the wrong
+              person anyway. Most teams land somewhere well north of $1,500 per
+              genuinely qualified senior meeting, and the number on the invoice
+              never shows it.
+            </p>
+            <p>
+              Here, the cost is one line: $1,500 per held meeting, with an
+              accepted reason, the right person, and no fee if the meeting
+              doesn&apos;t happen. And $900 to $1,200 of it goes somewhere your
+              pipeline spend has never gone before: a charity the leader
+              chooses.
+            </p>
+          </div>
+          <div className="mt-12 grid md:grid-cols-3 gap-4">
+            <MetricCard
+              value="$0"
+              label="Until a meeting is held"
+              note="No fee until a meeting actually happens. If it doesn't, you pay nothing at all."
+            />
+            <MetricCard
+              value="$1,500"
+              label="Flat, per held meeting"
+              note="One price, all in. No retainer, no seat fee, no tooling stack to feed."
+            />
+            <MetricCard
+              value="60 to 80%"
+              label="Funds the giving"
+              note="Of your fee goes to the leader's chosen charity, confirmed in writing."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Founder note, vendor-angled (oat band) ───────────────────── */}
+      <section
+        className="border-y"
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
+      >
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <div className="grid lg:grid-cols-12 gap-12 items-start">
+            <div className="lg:col-span-4">
+              <SectionHead
+                label="Who is behind this"
+                title="Built by someone who sent the"
+                italicWord="cold email."
+              />
+            </div>
+            <div className="lg:col-span-8">
+              <blockquote
+                className="space-y-6 text-lg leading-relaxed"
+                style={{ color: "var(--cream-10)" }}
+              >
+                <p>
+                  I have spent my career in enterprise sales development. I have
+                  built the sequences, bought the data, and sent the thousands
+                  of emails that this product replaces. I know exactly what it
+                  costs to get one real conversation with a senior buyer, and I
+                  know how it feels on both sides of that inbox.
+                </p>
+                <p>
+                  TheGoodIntro is the channel I wished existed: leaders who
+                  actually want to be reached, a reason that has to be real, and
+                  a price where most of the money does good instead of
+                  disappearing into tooling. I vet every vendor personally for
+                  now. If you sell something genuinely relevant to senior
+                  Australian leaders, I would like to talk to you.
+                </p>
+              </blockquote>
+              <figcaption className="mt-8 flex items-center gap-3">
+                <span
+                  className="size-11 rounded-full grid place-items-center text-sm font-bold"
+                  style={{ background: "var(--mint-tint)", color: "var(--primary-ink)" }}
+                  aria-hidden="true"
+                >
+                  IH
+                </span>
+                <span className="text-sm leading-tight">
+                  <span
+                    className="block font-semibold"
+                    style={{ color: "var(--cream-11)" }}
+                  >
+                    Isobel Hardwick
+                  </span>
+                  <span style={{ color: "var(--cream-9)" }}>Founder</span>
+                </span>
+              </figcaption>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ── The money split: where $1,500 goes (white band) ──────────── */}
       <section style={{ background: "var(--paper-white)" }}>
@@ -139,11 +307,22 @@ export default function Vendors() {
               </Link>
               .
             </p>
+
+            <p
+              className="mt-6 text-[15px] leading-relaxed max-w-2xl"
+              style={{ color: "var(--cream-9)" }}
+            >
+              What that looks like in the real world: by OzHarvest&apos;s own
+              published figures, $1 delivers two meals, so a single meeting at
+              the $900 tier funds around 1,800 meals for Australians doing it
+              tough. Different charities, different impact, always the
+              leader&apos;s choice, always confirmed in writing.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* ── FAQ: the four decision questions (oat band) ──────────────── */}
+      {/* ── FAQ: the decision questions (oat band) ───────────────────── */}
       <section
         className="border-y"
         style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
@@ -154,7 +333,7 @@ export default function Vendors() {
               <SectionHead
                 label="Questions"
                 title="Before you apply."
-                lede="The four things vendors weigh first. If yours is not here, raise it on the call."
+                lede="The five things vendors weigh first. If yours is not here, raise it on the call."
               />
             </div>
             <div className="lg:col-span-8">
@@ -165,6 +344,15 @@ export default function Vendors() {
                 Acceptance is not automatic and it is not for sale. Vendors
                 who repeatedly miss relevance, or who behave badly in
                 meetings, lose access.
+              </Faq>
+              <Faq q="Will executives actually accept my requests?">
+                That is the entire design. Leaders here opted in, stated their
+                topics, and see your specific reason before deciding. Requests
+                that match a stated priority get accepted at a rate cold
+                outreach never will, and requests that don&apos;t match never
+                reach them, so you are not burning goodwill either way. We cap
+                vendors at a 10:1 executive ratio so no one is competing in a
+                flooded inbox.
               </Faq>
               <Faq q="What exactly do I pay?">
                 One flat fee of $1,500 per held meeting. No subscriptions, no
@@ -203,7 +391,7 @@ export default function Vendors() {
         eyebrow="The invitation"
         title="Be the introduction"
         italicWord="worth taking."
-        lede="Reach senior leaders by being relevant, and fund a real gift while you do it. Every meeting you book sends a real gift to the leader's chosen charity."
+        lede="A vetted senior audience, a stated reason, and a real gift funded by every meeting you book. If you sell something relevant, this is the easiest yes you will ask for all year."
         primaryCta="Join the waitlist"
         primaryHref="/waitlist"
         sub="One short call to start · You fund the giving"

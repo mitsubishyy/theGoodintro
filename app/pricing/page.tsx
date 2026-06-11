@@ -293,7 +293,7 @@ export default function Pricing() {
         lede="Reach senior leaders by being relevant, and fund a real gift while you do it. Every meeting you book sends a real gift to the leader's chosen charity."
         primaryCta="Join the waitlist"
         primaryHref="/waitlist"
-        sub="Limited to ~20 vendor seats at any time · One short call to start"
+        sub="Limited to ~20 vendor places at any time · One short call to start"
         tone="oat"
       />
     </>
