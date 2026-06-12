@@ -4,9 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// Labelled link groups. "Learn" is the slot for the citable resource pages
-// (comparison, definitions, money flow); new public pages get a footer link
-// here even when they stay off the top nav.
+// Labelled link groups. New public pages get a footer link here even when
+// they stay off the top nav.
 const GROUPS: { label: string; links: { href: string; label: string }[] }[] = [
   {
     label: "Explore",
@@ -26,10 +25,6 @@ const GROUPS: { label: string; links: { href: string; label: string }[] }[] = [
       { href: "/ledger", label: "Ledger" },
       { href: "/impact", label: "Impact" },
     ],
-  },
-  {
-    label: "Learn",
-    links: [{ href: "/compare", label: "Compare channels" }],
   },
   {
     label: "Legal",

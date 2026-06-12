@@ -1758,7 +1758,7 @@ body.hp-is-scrolled .hp-topnav {
 /* Labelled link groups between the brand block and the contact block. */
 .hp-footer-cols {
   display: grid;
-  grid-template-columns: repeat(4, auto);
+  grid-template-columns: repeat(3, auto);
   gap: clamp(24px, 3vw, 56px);
   justify-content: start;
 }

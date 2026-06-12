@@ -14,7 +14,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/charities",
     ...CHARITIES.map((c) => `/charities/${c.slug}`),
     "/faq",
-    "/compare",
     "/impact",
     "/opportunity",
     "/waitlist",

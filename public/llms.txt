@@ -14,7 +14,6 @@ Key facts:
 ## Pages
 
 - [How it works](https://thegoodintro.vercel.app/how-it-works): the model end to end, for both sides
-- [Compare](https://thegoodintro.vercel.app/compare): the five ways to get a meeting with a senior executive, costs and trade-offs
 - [Pricing](https://thegoodintro.vercel.app/pricing): the flat fee and the charity share, with worked examples
 - [For executives](https://thegoodintro.vercel.app/executives): what executives get and what is asked of them
 - [For vendors](https://thegoodintro.vercel.app/vendors): why vendors use charity-funded introductions
