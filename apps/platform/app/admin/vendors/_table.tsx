@@ -101,11 +101,9 @@ export function AdminVendorsTable({
       disabled: true,
       note: "Parked: the vendor welcome template is not written yet.",
     },
-    {
-      label: "Mark vetting call done",
-      disabled: true,
-      note: "Parked: the vendor lifecycle has no call-done state.",
-    },
+    // "Mark vetting call done" removed per Issy 2026-06-12: Approve/Decline on
+    // the vendor profile IS the call outcome (lock amendment recorded by the
+    // planning chat on the admin-vendors-list README).
     {
       label: "Pause vendor",
       disabled: true,
