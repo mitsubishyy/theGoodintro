@@ -81,6 +81,36 @@ export async function issueInvoiceAction(fd: FormData): Promise<void> {
 }
 
 /**
+ * Archive vendors from the list (row overflow / bulk bar, T3 chunk B).
+ * Soft delete only: sets deleted_at, which every list/report query already
+ * filters on, so nothing is destroyed and an unarchive is a column reset.
+ * Gated on the admin_vendors_actions flag (off by default, CHANGE_SAFETY.md).
+ */
+export async function archiveVendorsAction(vendorIds: string[]): Promise<{ archived: number }> {
+  const { staff, supabase } = await requireStaff();
+  if (!(await getFlag("admin_vendors_actions"))) return { archived: 0 };
+  const ids = vendorIds.filter((id) => typeof id === "string" && id.length > 0);
+  if (ids.length === 0) return { archived: 0 };
+
+  const { data } = await supabase
+    .from("vendor")
+    .update({ deleted_at: new Date().toISOString() })
+    .in("id", ids)
+    .is("deleted_at", null)
+    .select("id");
+  const archived = data ?? [];
+  for (const row of archived) {
+    await logAudit(supabase, staff.id, {
+      action: "vendor.archived",
+      targetType: "vendor",
+      targetId: row.id as string,
+    });
+  }
+  revalidatePath("/admin/vendors");
+  return { archived: archived.length };
+}
+
+/**
  * Simulate the Xero "paid" webhook for staging (the real path is the
  * signature-verified webhook + service role). Runs the same applyPaidInvoice.
  */

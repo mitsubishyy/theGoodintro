@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Icon } from "../icons";
+import { Icon, type IconName } from "../icons";
 import { EmptyState } from "../primitives/EmptyState";
 import { ErrorInline } from "../primitives/ErrorInline";
 import { Skeleton } from "../primitives/Skeleton";
@@ -53,14 +53,28 @@ export interface DataTableProps<T> {
   filter?: ReactNode;
   /** Top-right primary action ("+ New X"). */
   newAction?: ReactNode;
-  /** Pagination footer state. */
-  pagination?: { page: number; pageCount: number; onPage: (p: number) => void; rangeLabel?: string };
+  /** Pagination footer state. Rows-per-page dropdown (T3 lock: 10/25/50/100)
+   *  renders when `perPage` + `onPerPage` are provided. */
+  pagination?: {
+    page: number;
+    pageCount: number;
+    onPage: (p: number) => void;
+    rangeLabel?: string;
+    perPage?: number;
+    perPageOptions?: number[];
+    onPerPage?: (n: number) => void;
+  };
   /** Current sort + sort handler (used only when a column has sortable=true). */
   sort?: SortState | null;
   onSort?: (next: SortState) => void;
   state?: LoadState;
+  /** Skeleton rows while loading (T3 lock: header + 8 rows). Default 5. */
+  loadingLines?: number;
   emptyText?: string;
   emptyAction?: ReactNode;
+  /** T3 centred empty state: 48px antique-gold icon + muted body (locked 2026-06-02). */
+  emptyIcon?: IconName;
+  emptyHint?: string;
   onRetry?: () => void;
   errorMessage?: string;
   density?: DataTableDensity;
@@ -82,8 +96,11 @@ export function DataTable<T>({
   sort,
   onSort,
   state = "ready",
+  loadingLines = 5,
   emptyText,
   emptyAction,
+  emptyIcon,
+  emptyHint,
   onRetry,
   errorMessage,
   density = "admin",
@@ -156,7 +173,7 @@ export function DataTable<T>({
         <tbody>
           <tr>
             <td colSpan={columns.length + (selectable ? 1 : 0) + (rowActions ? 1 : 0) + (isVendor && rowHref ? 1 : 0)} className="p-0">
-              <Skeleton variant="row" lines={5} />
+              <Skeleton variant="row" lines={loadingLines} />
             </td>
           </tr>
         </tbody>
@@ -178,7 +195,13 @@ export function DataTable<T>({
         <tbody>
           <tr>
             <td colSpan={columns.length + (selectable ? 1 : 0) + (rowActions ? 1 : 0) + (isVendor && rowHref ? 1 : 0)} className="p-0">
-              <EmptyState title={emptyText ?? "Nothing here yet."} action={emptyAction} />
+              <EmptyState
+                title={emptyText ?? "Nothing here yet."}
+                action={emptyAction}
+                icon={emptyIcon}
+                hint={emptyHint}
+                align={emptyIcon ? "center" : "start"}
+              />
             </td>
           </tr>
         </tbody>
@@ -261,7 +284,26 @@ export function DataTable<T>({
       {pagination && (
         <div className="mt-3 flex items-center justify-between text-[12.5px]" style={{ color: "var(--muted-foreground)" }}>
           {pagination.rangeLabel && <span>{pagination.rangeLabel}</span>}
-          <Pager {...pagination} />
+          <div className="flex items-center gap-4">
+            <Pager {...pagination} />
+            {pagination.perPage !== undefined && pagination.onPerPage && (
+              <label className="flex items-center gap-2">
+                <span>Rows per page</span>
+                <select
+                  value={pagination.perPage}
+                  onChange={(e) => pagination.onPerPage?.(Number(e.target.value))}
+                  className="h-8 rounded-md border px-2 text-[12.5px] bg-[var(--portal-card)] cursor-pointer"
+                  style={{ borderColor: "var(--portal-line)", color: "var(--portal-ink)" }}
+                >
+                  {(pagination.perPageOptions ?? [10, 25, 50, 100]).map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+          </div>
         </div>
       )}
     </div>
