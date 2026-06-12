@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Icon } from "../icons";
 import { Popover } from "./Popover";
@@ -102,9 +103,9 @@ function MenuRow({ item, close }: { item: MenuItemSpec; close: () => void }) {
         <div className="my-1.5 border-t" style={{ borderColor: "var(--portal-line)" }} />
       )}
       {item.href && !item.disabled ? (
-        <a role="menuitem" href={item.href} className={rowCls} onClick={close}>
+        <Link role="menuitem" href={item.href} className={rowCls} onClick={close}>
           {inner}
-        </a>
+        </Link>
       ) : (
         <button
           role="menuitem"

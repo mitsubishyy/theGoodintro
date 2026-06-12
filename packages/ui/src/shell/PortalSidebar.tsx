@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, type ReactNode } from "react";
 import { Icon } from "../icons";
@@ -178,7 +179,7 @@ function NavRow({ item, pathname, palette }: { item: NavItem; pathname: string; 
   const active = isActive(pathname, item.href);
   return (
     <>
-      <a
+      <Link
         href={item.href}
         className="flex items-center gap-3 px-3 py-2 rounded-xl text-[13.5px]"
         style={active ? { background: palette.active, color: palette.activeInk, fontWeight: 600 } : { color: palette.ink }}
@@ -187,13 +188,13 @@ function NavRow({ item, pathname, palette }: { item: NavItem; pathname: string; 
         <span className="flex-1 truncate">{item.label}</span>
         {item.badgeCount && item.badgeCount > 0 && <Badge tone="amber" count={item.badgeCount} />}
         {item.locked && <Icon name="padlock" size={12} className="opacity-60" />}
-      </a>
+      </Link>
       {item.children && item.children.length > 0 && (
         <div className="mt-0.5 mb-1 ml-7 space-y-0.5">
           {item.children.map((child) => {
             const childActive = isActive(pathname, child.href);
             return (
-              <a
+              <Link
                 key={child.label}
                 href={child.href}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[12.5px]"
@@ -202,7 +203,7 @@ function NavRow({ item, pathname, palette }: { item: NavItem; pathname: string; 
                 <span className="flex-1 truncate">{child.label}</span>
                 {child.badgeCount && child.badgeCount > 0 && <Badge tone="amber" count={child.badgeCount} />}
                 {child.locked && <Icon name="padlock" size={12} className="opacity-60" />}
-              </a>
+              </Link>
             );
           })}
         </div>

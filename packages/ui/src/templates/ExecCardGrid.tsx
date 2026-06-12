@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Avatar } from "../primitives/Avatar";
 import { Badge } from "../primitives/Badge";
@@ -95,9 +96,9 @@ function Card({ card }: { card: ExecCard }) {
   );
   if (card.href) {
     return (
-      <a href={card.href} className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--portal-amber)] rounded-xl">
+      <Link href={card.href} className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--portal-amber)] rounded-xl">
         {inner}
-      </a>
+      </Link>
     );
   }
   return inner;

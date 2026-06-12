@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Badge } from "../primitives/Badge";
 import { EmptyState } from "../primitives/EmptyState";
@@ -73,9 +74,9 @@ export function Widget({
           {right}
           {link && (
             link.href ? (
-              <a href={link.href} className="text-[12px] font-medium" style={{ color: "var(--portal-amber-ink)" }}>
+              <Link href={link.href} className="text-[12px] font-medium" style={{ color: "var(--portal-amber-ink)" }}>
                 {link.label} →
-              </a>
+              </Link>
             ) : (
               <span className="text-[12px] font-medium" style={{ color: "var(--portal-amber-ink)" }}>
                 {link.label} →

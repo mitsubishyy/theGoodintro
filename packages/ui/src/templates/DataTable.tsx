@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { Icon, type IconName } from "../icons";
 import { EmptyState } from "../primitives/EmptyState";
@@ -106,6 +107,7 @@ export function DataTable<T>({
   density = "admin",
   className = "",
 }: DataTableProps<T>) {
+  const router = useRouter();
   const isVendor = density === "vendor";
   const rowHeight = isVendor ? "h-[76px]" : "h-11"; // 76px vs 44px
   const cellPad = isVendor ? "px-4" : "px-3";
@@ -218,7 +220,7 @@ export function DataTable<T>({
               key={k}
               className={`${rowHeight} ${rowHover} ${rowHoverShadow} ${href ? "cursor-pointer" : ""}`}
               style={{ borderBottom: "1px solid var(--portal-line)" }}
-              onClick={href ? () => (window.location.href = href) : undefined}
+              onClick={href ? () => router.push(href) : undefined}
             >
               {selectable && (
                 <td className={`${cellPad} py-2.5 w-10`} onClick={(e) => e.stopPropagation()}>

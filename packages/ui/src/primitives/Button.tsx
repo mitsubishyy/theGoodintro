@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 
 /**
@@ -64,9 +65,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   );
   if (href) {
     return (
-      <a href={href} className={cls} aria-disabled={disabled || loading || undefined}>
+      <Link href={href} className={cls} aria-disabled={disabled || loading || undefined}>
         {content}
-      </a>
+      </Link>
     );
   }
   return (

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Avatar, Icon, WhatHappensNext } from "@thegoodintro/ui";
@@ -174,14 +175,14 @@ export function ExecutiveDrawer({ exec }: { exec: ExecListRow }) {
           className="h-[88px] shrink-0 px-6 flex items-center border-t"
           style={{ borderColor: "var(--portal-line)" }}
         >
-          <a
+          <Link
             href={`/vendor/executives/${exec.id}/request`}
             className="w-full h-11 inline-flex items-center justify-center gap-2 rounded-lg text-[13.5px] font-semibold"
             style={{ background: "var(--portal-ink)", color: "var(--portal-card)" }}
           >
             Request a meeting
             <Icon name="arrow-right" size={16} />
-          </a>
+          </Link>
         </footer>
       </aside>
     </div>

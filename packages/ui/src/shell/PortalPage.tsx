@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Icon } from "../icons";
 
@@ -40,14 +41,14 @@ export function PortalPage({ title, back, breadcrumb, action, eyebrow, count, ch
   return (
     <main className="flex-1 min-w-0 px-8 py-6">
       {back && (
-        <a
+        <Link
           href={back.href}
           className="inline-flex items-center gap-2 h-8 text-[14px] font-semibold hover:bg-[var(--portal-card-hover)] rounded-md -ml-2 pl-2 pr-3"
           style={{ color: "var(--portal-ink)" }}
         >
           <Icon name="chevron-left" size={20} />
           {back.label ?? "Back"}
-        </a>
+        </Link>
       )}
       {breadcrumb && breadcrumb.length > 0 && (
         <nav className="mt-2 text-[12px]" style={{ color: "var(--muted-foreground)" }} aria-label="Breadcrumb">
@@ -55,9 +56,9 @@ export function PortalPage({ title, back, breadcrumb, action, eyebrow, count, ch
             <span key={i}>
               {i > 0 && <span className="mx-1.5 opacity-60">/</span>}
               {b.href ? (
-                <a href={b.href} className="hover:text-[var(--portal-ink)]">
+                <Link href={b.href} className="hover:text-[var(--portal-ink)]">
                   {b.label}
-                </a>
+                </Link>
               ) : (
                 <span>{b.label}</span>
               )}

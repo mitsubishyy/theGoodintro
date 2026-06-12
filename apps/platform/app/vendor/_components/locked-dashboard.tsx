@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   Avatar,
   ExecCardGrid,
@@ -143,13 +144,13 @@ export function LockedVendorDashboard(props: {
               <div className="mt-2 text-[11.5px]" style={{ color: "var(--muted-foreground)" }}>
                 {credits.progressNote}
               </div>
-              <a
+              <Link
                 href="/vendor/billing"
                 className="mt-3 inline-block text-[12px] font-medium"
                 style={{ color: "var(--portal-amber-ink)" }}
               >
                 Buy more credits →
-              </a>
+              </Link>
             </div>
           </Widget>
 
