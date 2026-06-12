@@ -391,7 +391,7 @@ vetting + payment gate is passed; gated pages show the unlock-path state, not a
 | **Meetings** | `/vendor/meetings` | T3 → T4 | This vendor's meetings; columns: leader · date · status · gift. Detail shows outcome + the gift funded. *(Route missing today.)* |
 | **Giving** | `/vendor/giving` | T2/T3 | Display and reporting only (no payment UI for vendors here beyond credits). Total funded, per-meeting gift list, charities supported. |
 | **Team** | `/vendor/team` | T3 + T5 | Seats: list users, roles (org admin vs seat), invite. *(Route missing today.)* |
-| **Billing** | `/vendor/billing` | T3 | Credits, invoices (MYOB), top-up. Org-admin only. *(Route missing today.)* |
+| **Billing** | `/vendor/billing` | T3 | Credits, invoices (Xero), top-up. Org-admin only. *(Route missing today.)* |
 | **Settings / Profile** | `/vendor/settings` | T5 | Editable in every account state, including pre-approval. Org and personal profile. |
 | **Application** | `/vendor/application` | T5 | The vetting application form (exists). Part of the gate. |
 

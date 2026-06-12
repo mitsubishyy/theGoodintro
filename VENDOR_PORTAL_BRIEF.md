@@ -455,11 +455,9 @@ auto-credits the account and unlocks the executive list.
   platform **hides the executive view** from the vendor and its users (re-locks to
   the pre-access state) until they buy again. Credits themselves still roll over;
   it is the *access window* that lapses.
-- **Payment runs through MYOB (DEC-12).** A vendor invoice is issued; when it is
-  **paid in MYOB, that auto-updates the account and triggers the downstream
-  workflows** (credits added, list unlocked, notifications). The platform detects
-  payment by polling MYOB (it has no webhooks), so the unlock lands within
-  minutes. No manual "mark as paid" step.
+- **Payment runs through Xero.** A vendor invoice is issued; when it is **paid in
+  Xero, that auto-updates the account and triggers the downstream workflows**
+  (credits added, list unlocked, notifications). No manual "mark as paid" step.
   (Stripe self-serve checkout is a later option, to investigate.)
 - **Credit balance** and history: purchased, open (requested, not yet sat), and
   consumed.

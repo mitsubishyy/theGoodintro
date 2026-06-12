@@ -77,7 +77,7 @@ plan and launch checklist (integrations, observability, security, CI), tracked a
 tickable tasks; clear it plus the SECURITY pre-launch checklist before go-live.
 [`COLD_START_GAPS.md`](COLD_START_GAPS.md) holds the gaps a fresh session would
 otherwise guess at: resolved contradictions, engineering decisions (DEC-1 to
-DEC-12), and required artifacts (ART-1 to ART-5, including the `packages/ui` kit).
+DEC-13), and required artifacts (ART-1 to ART-5, including the `packages/ui` kit).
 Clear it before/while building; do not fill a gap with a guess.
 
 [`BUILD_HEALTH.md`](BUILD_HEALTH.md) is the current-state audit snapshot: what

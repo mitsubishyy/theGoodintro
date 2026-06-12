@@ -437,7 +437,7 @@ Tied to `NOTIFICATION_TEMPLATES.md`. Each event below:
 | Meeting cancelled | admin marks `meeting.status = 'cancelled'` |
 | Meeting held (and credit consumed) | admin marks `meeting.status = 'held'` |
 | Gift sent (post Held) | admin creates `gift_record` row |
-| Payment receipt | MYOB poller confirms invoice paid → credits land (DEC-12) |
+| Payment receipt | Xero webhook confirms invoice paid → credits land |
 | Onboarding checklist item assigned | admin attaches checklist (after vendor pays) |
 | Onboarding reminder | nightly job iff checklist incomplete N days after assignment |
 | Access window expiring | nightly job at 30 / 14 / 7 days before `vendor.access_window_ends_at` |
@@ -462,7 +462,7 @@ the polish surfaces.
 | 6 | **Settings Notifications + Security + Company tabs** | Inherit locked admin patterns. Company tab confirmed by decision §6.5 (sidebar identity card click destination). Vendor logo upload lives here. |
 | 7 | **Request Form Pass B states** | Q3 "Someone else" expansion (Name / Title / Email fields), empty / submitting / content-guard-error states. Note: confirmation modal CUT (decision §6.2 replaced it with toast + redirect to Pending). |
 | 8 | **User menu popover** | Small popover off Sam Patel chip + topbar SP avatar (decision §6.6). 3 items: My profile / Settings / Sign out. ~1 screen of light design work. |
-| 9 | **Get-started checklist (T6) + Team + Billing & credits pages** | Owner-only screens. Get-started clones the locked T6 component. Team is invite/seat management. Billing is credit history + MYOB invoice link + buy more credits flow. |
+| 9 | **Get-started checklist (T6) + Team + Billing & credits pages** | Owner-only screens. Get-started clones the locked T6 component. Team is invite/seat management. Billing is credit history + Xero invoice link + buy more credits flow. |
 | 10 | **Empty / loading / error states across Dashboard widgets, then Executives list, then Request Form** | Priority order per decision §6.6. Every widget ships these three states per the design log rule; coverage hasn't been visualised yet. |
 
 **Cut from Pass B:** the post-submit confirmation modal (replaced by toast + redirect, decision §6.2).

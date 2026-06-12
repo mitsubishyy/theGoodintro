@@ -88,7 +88,7 @@ None — landed cleanly on first iteration.
 ## Open decisions (not silently resolved)
 
 - **Timestamp visibility on hover** — currently the row's hover state shows the "..." overflow icon and the timestamp disappears under it. Build chat can refine: show BOTH timestamp + overflow on hover by stacking them or repositioning. Visual choice.
-- **Sync failures rendering position** — currently hidden from the top 5 (referenced in footer count). Consider surfacing sync failures persistently at the top if they're critical (Gmail / Calendar / MYOB outages). Deferred.
+- **Sync failures rendering position** — currently hidden from the top 5 (referenced in footer count). Consider surfacing sync failures persistently at the top if they're critical (Gmail / Calendar / Xero outages). Deferred.
 - **Per-portal notification mix** — admin sees all types; vendor sees vendor-relevant (request status updates, billing alerts); exec sees exec-relevant (meeting requests, charity choice prompts). The per-portal mix is deferred until vendor/exec portals are designed.
 - **Wordmark** parked across all locked screens.
 

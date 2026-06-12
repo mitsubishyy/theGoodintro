@@ -143,7 +143,7 @@ so a lot carries its own origin. 1 credit = 1 meeting = $1,500.
 | `vendor_id` | vendor_id | |
 | `quantity` | int | Credits purchased in this lot |
 | `quantity_remaining` | int | Unconsumed credits from this lot |
-| `invoice_id` | invoice_id | The MYOB invoice that paid for it |
+| `invoice_id` | invoice_id | The Xero invoice that paid for it |
 | `purchased_at` | timestamp | |
 
 > **Balances (what gates bookings and what the vendor sees):**
@@ -157,13 +157,13 @@ so a lot carries its own origin. 1 credit = 1 meeting = $1,500.
 >   cancelled, or a no-show before it is held.
 
 ### Invoice
-**Purpose:** a MYOB invoice (DEC-12). Paid status, detected by polling MYOB (it
-has no webhooks), triggers the unlock and downstream workflows.
+**Purpose:** a Xero invoice. Paid status (via Xero) auto-triggers the unlock and
+downstream workflows.
 
 | Field | Type | Notes |
 |---|---|---|
 | `vendor_id` | vendor_id | |
-| `xero_invoice_id` | text | Holds the MYOB invoice UID; rename or alias at build time per DEC-12 |
+| `xero_invoice_id` | text | |
 | `kind` | enum | `credit_purchase` / `overcommit_topup` |
 | `line_items` | json | Credits line + **admin fee as its own named line** |
 | `amount_cents` | int | |
@@ -289,7 +289,7 @@ These are the locked v1 decisions. Build the credit/band/gift logic from here.
    vendor uses all credits and has not bought more before the cycle ends, the
    **executive view is hidden** until they buy again. Credits still roll over.
 
-7. **Cash vs gift timing.** Cash is collected **up front** via the MYOB invoice
+7. **Cash vs gift timing.** Cash is collected **up front** via the Xero invoice
    (paid → auto-unlock). The gift owed is **recorded per held meeting** and
    **released manually** by Issy in v1 (no automated custodial disbursement, per
    MVP_SCOPE).

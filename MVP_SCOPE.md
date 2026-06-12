@@ -28,8 +28,7 @@ charity, that depends on the unresolved fund-holding question in
 [POSITIONING.md](POSITIONING.md). For v1:
 
 - We **take the vendor's payment** (meeting credits at $1,500 each + the admin fee)
-  via a **MYOB invoice that triggers** the unlock when paid (DEC-12; the platform
-  detects payment by polling MYOB).
+  via a **Xero invoice that auto-triggers** the unlock when paid.
 - The **gift owed per completed meeting is recorded**, and **released manually**
   by Issy (off-platform or via a giving platform), with the **confirmation logged**
   and shown as a read-only record (Giving view).
@@ -49,10 +48,9 @@ In scope (minimum):
   a vendor books a **Calendly call with Issy** and completes a **short application
   form** (answers auto-pasted into the calendar invite). Issy approves on the call,
   which **unlocks payment**. This is the "no nobodies near the execs" gate.
-- **Payment via MYOB (DEC-12):** an invoice is issued; **paid in MYOB triggers**
-  the unlock and downstream workflows (credits, list access, notifications),
-  detected by polling since MYOB has no webhooks. No manual "mark as paid".
-  (Stripe self-serve is a later option.)
+- **Payment via Xero:** an invoice is issued; **paid in Xero auto-triggers** the
+  unlock and downstream workflows (credits, list access, notifications). No manual
+  "mark as paid". (Stripe self-serve is a later option.)
 - **Price:** **1 credit = 1 meeting = $1,500 AUD**; the charity share is tiered by
   annual volume and the remainder is the admin fee (read the live model from
   [`app/pricing/page.tsx`](app/pricing/page.tsx), never hardcode). Admin fee is its
@@ -167,8 +165,7 @@ v1 simplifications:
   links with a confirm page** (no login).
 - **Calendly + application form** for the vendor vetting gate (answers auto-pasted
   into the calendar invite).
-- **MYOB** for invoicing (paid invoice triggers unlock and workflows, detected
-  by polling; DEC-12).
+- **Xero** for invoicing (paid invoice auto-triggers unlock and workflows).
 - **Admin shell**: dashboard, the vendor and executive records (Clients), the
   vetting + requests + scheduling tasks, and payment visibility.
 - **Vendor shell**: dashboard, profile, executive list, request flow, pending,
@@ -187,7 +184,7 @@ in-app**.)
 | New sign-up | account created |  | Slack + email + dashboard | Issy (prompt vetting call) |
 | Call booked + form | confirmation |  | call + answers on record | Issy (vet on call) |
 | Vendor approved | payment unlocked |  |  | Vendor (pay) |
-| Invoice paid (MYOB) | receipt (email + in-app) |  | notified | Vendor (request) |
+| Invoice paid (Xero) | receipt (email + in-app) |  | notified | Vendor (request) |
 | Request submitted | in-app only (pop-up + Pending) | request email | request visible | Executive |
 | Each follow-up | email update | follow-up email |  | system |
 | 3rd follow-up, no reply | "still chasing" | final follow-up | RED task | Issy (manual) |
@@ -208,15 +205,14 @@ scheduling/declines (manual first; the new-sign-up Slack alert is the one piece 
 Slack that is in), the **document library / custom forms / e-signature**
 capabilities, multi-tier **packages / subscriptions / GST automation**, the public
 **impact dashboard**, **Snoop-style** org analytics, and **automated / custodial
-charity disbursement**. **Stripe self-serve checkout** is also later (MYOB invoicing
-is the v1 path, DEC-12).
+charity disbursement**. **Stripe self-serve checkout** is also later (Xero invoicing
+is the v1 path).
 
 ## Decisions locked for v1
 
 - **Vetting gate:** payment hidden until a vendor books a Calendly call + completes
   an application form; Issy approves to unlock payment.
-- **Payments:** MYOB invoicing (DEC-12), unlock triggered on payment, detected
-  by polling (Stripe later).
+- **Payments:** Xero invoicing, auto-triggers unlock on payment (Stripe later).
 - **Price:** $1,500 AUD per meeting / credit; tiered charity share per the pricing
   page; credits roll over, tier resets at each 12-month cycle renewal (from first
   payment, not the calendar year).

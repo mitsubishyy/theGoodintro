@@ -69,7 +69,8 @@ items below are what was not.
 - **DEC-11 Reversible migrations = paired down-files.** Every `NNNN_name.sql` ships a
   paired `NNNN_name_down.sql` with the reverse DDL. Fix the dangling
   `0001_foundation_down.sql` reference (create it or remove the claim).
-- **DEC-12 Payments integration = MYOB Business API, not Xero (decided 2026-06-12).**
+- **DEC-12 (SUPERSEDED by DEC-13, same day; kept for history) Payments
+  integration = MYOB Business API, not Xero (decided 2026-06-12).**
   Issy's call, recorded after a feasibility spike: MYOB is cheaper and is her
   preferred bookkeeping workflow. This supersedes the Xero assumption baked into
   MVP_SCOPE, OPS_AND_COMPLIANCE, DATA_MODEL, the portal briefs, and the stub
@@ -83,6 +84,22 @@ items below are what was not.
   existing idempotent `applyPaidInvoice`. Follow-ups tracked at build time: sweep
   remaining Xero doc mentions, and rename or alias `invoice.xero_invoice_id`.
   Integration build does not start until Issy gives the go.
+- **DEC-13 Payments integration = Xero after all; supersedes DEC-12 (decided
+  2026-06-12, same day).** Issy's call after attempting the MYOB path: MYOB's
+  developer registration now requires a paid program tier from $110/month with no
+  confirmed free path for a bespoke own-file integration, and MYOB's
+  clarification channels were inaccessible. Xero offers free, instant, self-serve
+  developer access (developer.xero.com) with a free Demo Company for testing; a
+  paid Xero subscription is only needed at launch for the real organisation. The
+  **bookkeeping-platform choice stays open** for Issy's accountant to weigh in on
+  later; this decision covers the integration path only. v1 payment path returns
+  to the original architecture: an ACCREC invoice created via the API (lines at
+  $1,500 ex GST, LineAmountTypes Exclusive, GST computed by Xero), emailed via
+  the API Email endpoint, payment detected by the **"invoice paid" webhook**
+  (signature-verified, idempotent; the existing `api/webhooks/xero` stub route is
+  the right shape and gets the real contract). `invoice.xero_invoice_id` stands,
+  no rename. Contract:
+  [`XERO_INTEGRATION_CONTRACT.md`](XERO_INTEGRATION_CONTRACT.md).
 
 ## 3. Required artifacts (must be BUILT/written; gated)
 
@@ -91,14 +108,16 @@ items below are what was not.
       9 migrations. **Gate: before any schema work.**
 - [x] **ART-2 Complete `.env.example`.** Every required env var, created this pass at
       `apps/platform/.env.example`. (Was only 3 Supabase vars before.)
-- [~] **ART-3 Per-integration contracts.** For MYOB (payments; replaces Xero per
-      DEC-12, polling not webhooks), Zoom, Microsoft Graph (Teams +
-      Outlook), Google Calendar, Resend, Calendly, Slack: the webhook payload shape,
-      signature/verification, OAuth scopes + encrypted token storage, and env vars.
-      Written against the real APIs in the connected window. **Until written, treat
-      each integration as not-implementable** (no guessing payloads). **Gmail subset
-      written 2026-05-31 in [`GMAIL_INTEGRATION_CONTRACT.md`](GMAIL_INTEGRATION_CONTRACT.md)**;
-      remaining integrations still pending.
+- [~] **ART-3 Per-integration contracts.** For Xero (payments, per DEC-13), Zoom,
+      Microsoft Graph (Teams + Outlook), Google Calendar, Resend, Calendly, Slack:
+      the webhook payload shape, signature/verification, OAuth scopes + encrypted
+      token storage, and env vars. Written against the real APIs in the connected
+      window. **Until written, treat each integration as not-implementable** (no
+      guessing payloads). **Gmail subset written 2026-05-31 in
+      [`GMAIL_INTEGRATION_CONTRACT.md`](GMAIL_INTEGRATION_CONTRACT.md)**; **Xero
+      written 2026-06-12 in [`XERO_INTEGRATION_CONTRACT.md`](XERO_INTEGRATION_CONTRACT.md)**
+      (from public docs; verify the webhook ITR handshake and a Demo Company
+      invoice round-trip at build time); remaining integrations still pending.
 - [ ] **ART-4 Test DB + CI.** A migrate+seed script and a CI workflow so the
       DB-backed tests run (Supabase CLI local or an ephemeral project; the seed is
       currently applied by hand via MCP). **Gate: PRODUCTION_READINESS D1/D2, Phase 1.**
