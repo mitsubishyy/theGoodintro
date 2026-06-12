@@ -88,6 +88,11 @@ that there is anything to vet.
 This is the most important honest finding. **There is no Xero integration.
 There is a webhook waiting for a Xero that was never connected.**
 
+> **Update 2026-06-12:** DEC-12 switches the payments provider to **MYOB**. The
+> finding stands unchanged; the fix is now a MYOB **poller** rather than a Xero
+> webhook (MYOB has no webhooks). "Xero" in the bullets below describes the stub
+> as audited.
+
 - "Issue invoice" creates a **database row with a made-up invoice ID**
   (`STUB-...`,
   [vendors/actions.ts:51](apps/platform/app/admin/vendors/actions.ts#L51)).
@@ -223,7 +228,7 @@ the confirmation. Two real defects:
 
 **The shortest honest statement of distance:** the loop is one integration
 (email out) away from being demoable with a real exec, and two integrations
-(email out + Xero in) away from earning real revenue. Everything between
+(email out + MYOB in, per DEC-12) away from earning real revenue. Everything between
 those two edges already works and is tested.
 
 ---
@@ -244,14 +249,15 @@ PRODUCTION_READINESS task IDs. Items marked NEW are not yet tracked there.
 2. **A2 Sending-domain authentication** — SPF/DKIM/DMARC on a dedicated
    subdomain. Founder action (DNS) with lead time; start it the same week as
    A1. An exec request email in spam is worse than no email.
-3. **A4, rescoped: a real Xero connection** — the current task text ("harden
-   the webhook") assumes an integration that does not exist. Recommended v1
-   shape, matching MVP_SCOPE's intent without building an invoicing API:
-   Issy raises the invoice in Xero itself; the platform's "Issue invoice"
-   records the **real** Xero invoice number instead of a `STUB-` id; the
-   webhook gets the real registration handshake and event mapping
-   (`resourceId`/`eventType`, fetch status via the API). Done when a real
-   Xero sandbox payment unlocks credits exactly once on replay.
+3. **A4, rescoped: a real MYOB connection (DEC-12)** — the original task text
+   ("harden the webhook") assumed a Xero integration that does not exist, and
+   DEC-12 has since switched the provider to MYOB, which has no webhooks.
+   Recommended v1 shape, matching MVP_SCOPE's intent: the platform creates the
+   invoice via the MYOB API (or, thinner still, Issy raises it in MYOB and the
+   platform's "Issue invoice" records the **real** MYOB invoice number instead
+   of a `STUB-` id); a scheduled poller checks invoice status (Closed) and
+   calls the same `applyPaidInvoice`. Done when a paid MYOB sandbox invoice
+   unlocks credits exactly once across repeated polls.
 4. **C11 Password reset** + the auth-callback gap (NEW edge from step 1) —
    no production SaaS ships without reset, and the email-confirmation
    dead-end should be closed in the same session since both are auth-flow
@@ -303,10 +309,10 @@ each session ends with the standard gates green):
    records), A3 bounce webhook, A7 Calendly link + Slack alert, inbox
    placement test. After S2 a real exec can receive a real email: the
    demoable milestone.
-3. **S3 — Xero for real (A4 rescoped).** Real invoice number entry, webhook
-   registration handshake, real event mapping, replay test against the Xero
-   sandbox. After S3 a real vendor can pay real money: the revenue-capable
-   milestone.
+3. **S3 — MYOB for real (A4 rescoped, DEC-12).** OAuth connect + rotating
+   refresh-token storage, real invoice creation, the paid-invoice poller,
+   replay test against the MYOB sandbox file. After S3 a real vendor can pay
+   real money: the revenue-capable milestone.
 4. **S4 — Auth completeness.** C11 password reset, the confirmation-callback
    fix, C3 rate limits on login + token endpoints, C4 2FA flipped on staging.
 5. **S5 — Money correctness + the undo paths.** The `paid_date` bug,
@@ -326,7 +332,7 @@ each session ends with the standard gates green):
 9. **S9 — Prove the loop.** D3 Playwright E2E of request → email → accept →
    confirm → held → gift → paid plus reversal, D4 seeded-staging invariants
    as a CI gate, then a full dress rehearsal on staging with a real inbox and
-   the Xero sandbox.
+   the MYOB sandbox file.
 10. **S10 — Launch hygiene.** Tick the stale PRODUCTION_READINESS boxes
     honestly, B3 backups/PITR + restore runbook, C5 secret scan, sweep the
     loop screens for empty/loading/error states, update BUILD_HEALTH, and

@@ -18,10 +18,12 @@ compliance section of [OPS_AND_COMPLIANCE.md](OPS_AND_COMPLIANCE.md). Last updat
 - **Tenant isolation:** Postgres **row-level security** is the hard boundary, a
   vendor user can only ever read their own org's rows; admin is separate. RLS
   policies are part of the test suite, not just assumed.
-- **Webhook signature verification (must-do):** every inbound webhook (Xero
-  "invoice paid", Zoom/Teams attendance) is **verified against its signing
-  secret** before it is trusted. A forged "paid" event must never unlock access
-  or fake a meeting outcome. Handlers are idempotent (keyed off the provider id).
+- **Webhook signature verification (must-do):** every inbound webhook (Zoom/Teams
+  attendance, email bounces) is **verified against its signing secret** before it
+  is trusted. Payments have no inbound webhook: paid status is **polled from
+  MYOB** over authenticated API calls (DEC-12), so a forged "paid" event cannot
+  arrive from outside and must never unlock access. Handlers are idempotent
+  (keyed off the provider id).
 - **Signed email links:** inert on GET, commit on POST (defeats email scanners);
   see [EMAIL_ACTIONS.md](EMAIL_ACTIONS.md). Forwarded-link residual risk is
   acknowledged and accepted for v1.
@@ -37,7 +39,7 @@ compliance section of [OPS_AND_COMPLIANCE.md](OPS_AND_COMPLIANCE.md). Last updat
 - **Security logging:** failed logins, permission denials, and money-path events
   (webhook, credit consume, gift create) are logged and monitored.
 - **Dependencies:** keep dependencies patched; watch for advisories.
-- **PCI scope is minimal:** payment runs through **Xero invoicing**, so the
+- **PCI scope is minimal:** payment runs through **MYOB invoicing**, so the
   platform **never stores or processes card numbers**. This keeps PCI burden low,
   state it plainly to enterprise buyers who ask.
 
@@ -101,7 +103,7 @@ compliance section of [OPS_AND_COMPLIANCE.md](OPS_AND_COMPLIANCE.md). Last updat
 
 - [ ] Supabase project provisioned in AWS Sydney (ap-southeast-2)
 - [ ] RLS policies written + tested
-- [ ] Webhook signature verification on Xero + Zoom/Teams
+- [ ] Webhook signature verification on Zoom/Teams (payments are MYOB polling per DEC-12, no inbound webhook)
 - [ ] Rate limiting on auth + signed-link endpoints
 - [ ] Admin 2FA enforced
 - [ ] DIY OWASP review done; external pen-test budgeted
@@ -112,7 +114,7 @@ compliance section of [OPS_AND_COMPLIANCE.md](OPS_AND_COMPLIANCE.md). Last updat
 
 ## Cross-refs
 
-- Infra baseline, auth, calendar, Xero → [OPS_AND_COMPLIANCE.md](OPS_AND_COMPLIANCE.md)
+- Infra baseline, auth, calendar, MYOB → [OPS_AND_COMPLIANCE.md](OPS_AND_COMPLIANCE.md)
 - Signed-link security + consent → [EMAIL_ACTIONS.md](EMAIL_ACTIONS.md)
 - Safe changes, backups, rollback → [CHANGE_SAFETY.md](CHANGE_SAFETY.md)
 - Records that snapshot their own truth → [DATA_MODEL.md](DATA_MODEL.md)

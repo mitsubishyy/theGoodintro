@@ -547,9 +547,11 @@ This is where a vendor's **access to the full executive list is released**.
   domain, website, LinkedIn; flag competitors / scrapers) presenting Issy a
   recommendation she confirms. Approval flips the vendor to **Verified** (the
   badge shown in the exec email).
-- **Access on payment:** once the **Xero invoice is paid, the executive list
-  auto-unlocks immediately** with the credit balance, and the onboarding checklist
-  attaches (one event, several effects). No manual "mark as paid" step. There is
+- **Access on payment:** once the **MYOB invoice is paid, the executive list
+  auto-unlocks** with the credit balance, and the onboarding checklist
+  attaches (one event, several effects). The platform polls MYOB for paid
+  invoices (DEC-12, MYOB has no webhooks), so the unlock lands within minutes.
+  No manual "mark as paid" step. There is
   **no per-request approval gate** once a vetted vendor is paid and active.
 - **Pipeline status:** Signed up → Call booked → Approved → Paid → Active (or
   Declined), visible at a glance.

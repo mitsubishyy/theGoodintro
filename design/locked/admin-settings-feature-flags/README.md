@@ -47,7 +47,8 @@ introduced.
      `inbox.slack_relay` (Beta, OFF, DEFAULT, 1 Jun).
    - MONEY & STATE: `meetings.auto_cancel_unpaid` (Beta, OFF, DEFAULT,
      28 May) / `meetings.per_meeting_charity_override` (Dev, OFF, DEFAULT,
-     3 Jun) / `gifts.xero_eft_handoff` (Dev, OFF, DEFAULT, 20 May).
+     3 Jun) / `gifts.xero_eft_handoff` (Dev, OFF, DEFAULT, 20 May; renames to
+     `gifts.myob_eft_handoff` per DEC-12 when built, mockup shows the old name).
    - REPORTS: `reports.bas_export` (Beta, OFF, DEFAULT, 4 Jun) /
      `reports.outstanding_invoices` (GA, ON, DEFAULT, 18 Apr).
    - INTEGRATIONS: `integrations.calendly_self_booking` (Dev, OFF, DEFAULT,

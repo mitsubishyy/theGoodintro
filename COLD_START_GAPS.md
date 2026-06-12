@@ -69,6 +69,20 @@ items below are what was not.
 - **DEC-11 Reversible migrations = paired down-files.** Every `NNNN_name.sql` ships a
   paired `NNNN_name_down.sql` with the reverse DDL. Fix the dangling
   `0001_foundation_down.sql` reference (create it or remove the claim).
+- **DEC-12 Payments integration = MYOB Business API, not Xero (decided 2026-06-12).**
+  Issy's call, recorded after a feasibility spike: MYOB is cheaper and is her
+  preferred bookkeeping workflow. This supersedes the Xero assumption baked into
+  MVP_SCOPE, OPS_AND_COMPLIANCE, DATA_MODEL, the portal briefs, and the stub
+  `api/webhooks/xero` route (Xero was never a numbered decision, only an assumed
+  default). v1 payment path: vendor exists as a MYOB Customer; a **Service invoice**
+  is created via the API with lines at $1,500 ex GST carrying the GST 10% tax code
+  (MYOB computes GST per line; never push GST as its own line item the way the stub
+  does); the invoice is emailed through the API Email endpoint with online payments
+  enabled. Payment detection is **polling, not a webhook**: MYOB has no webhooks, so
+  a scheduled job (per DEC-7) polls invoice `Status eq 'Closed'` and calls the
+  existing idempotent `applyPaidInvoice`. Follow-ups tracked at build time: sweep
+  remaining Xero doc mentions, and rename or alias `invoice.xero_invoice_id`.
+  Integration build does not start until Issy gives the go.
 
 ## 3. Required artifacts (must be BUILT/written; gated)
 
@@ -77,7 +91,8 @@ items below are what was not.
       9 migrations. **Gate: before any schema work.**
 - [x] **ART-2 Complete `.env.example`.** Every required env var, created this pass at
       `apps/platform/.env.example`. (Was only 3 Supabase vars before.)
-- [~] **ART-3 Per-integration contracts.** For Xero, Zoom, Microsoft Graph (Teams +
+- [~] **ART-3 Per-integration contracts.** For MYOB (payments; replaces Xero per
+      DEC-12, polling not webhooks), Zoom, Microsoft Graph (Teams +
       Outlook), Google Calendar, Resend, Calendly, Slack: the webhook payload shape,
       signature/verification, OAuth scopes + encrypted token storage, and env vars.
       Written against the real APIs in the connected window. **Until written, treat

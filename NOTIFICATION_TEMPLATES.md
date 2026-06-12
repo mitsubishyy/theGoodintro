@@ -40,7 +40,7 @@ reminders, reversal/rebook, bounces). Companion to the state machines in
   payment is now unlocked. Once you are set up, you can start requesting meetings.
   [Go to your account]
 
-**A4 · Invoice paid (Xero webhook)**
+**A4 · Invoice paid (MYOB poller, DEC-12)**
 - To vendor (email + in-app): _Subject:_ Payment received, thank you.
   Thank you, your payment has cleared. {credits} meeting credits are now on your
   account and the executive list is open. [Start a request]

@@ -38,7 +38,7 @@ Two sections stacked vertically:
 - **Gmail** (32px logo) · "Connected as hello@thegoodintro.com" · Status pill "Connected" (gold dot). SCOPES: GMAIL.READONLY · GMAIL.SEND · GMAIL.MODIFY · GMAIL.LABELS. Manage / Disconnect. Last sync 2 minutes ago.
 - **Google Calendar** (32px logo) · "Read free/busy on 12 calendars" · Status pill "Connected". SCOPES: CALENDAR.EVENTS.READONLY · CALENDAR.FREEBUSY. Last sync 8 minutes ago.
 - **Zoom** (32px logo) · "Generates meeting links as TheGoodIntro" · Status pill "Connected". SCOPES: MEETING.WRITE. Last sync 1 hour ago.
-- **Xero** (32px logo) · "Posts invoices to TheGoodIntro Pty Ltd" · Status pill "Connected · token expiring" (amber dot). SCOPES: ACCOUNTING.TRANSACTIONS · ACCOUNTING.CONTACTS. Amber inline warning banner: "OAuth token expires in 6 days. Reconnect to avoid disruption." Last sync 23 minutes ago.
+- **Xero** (32px logo) · "Posts invoices to TheGoodIntro Pty Ltd" · Status pill "Connected · token expiring" (amber dot). SCOPES: ACCOUNTING.TRANSACTIONS · ACCOUNTING.CONTACTS. Amber inline warning banner: "OAuth token expires in 6 days. Reconnect to avoid disruption." Last sync 23 minutes ago. *(DEC-12: the payments provider is now MYOB; build this card as MYOB with `sme-*` scopes when wired. The token-expiry warning becomes more important, MYOB refresh tokens last about a week. The locked mockup still shows Xero.)*
 
 **AVAILABLE** — 5 to connect:
 - Microsoft Teams · "Generate meeting links for executives who prefer Teams" · "Connect" ink primary button.
@@ -89,7 +89,7 @@ Integration card anatomy (LOCKED):
 - Email signatures tab content
 - Feature flags tab content
 - Staff tab content
-- OAuth flows for non-Gmail providers (Calendar, Zoom, Teams, Xero, Resend, Calendly, Slack) — each gets its own drawer designed when wired
+- OAuth flows for non-Gmail providers (Calendar, Zoom, Teams, MYOB, Resend, Calendly, Slack) — each gets its own drawer designed when wired
 
 Those will be specced in future passes. This viewport locks the SHELL + Integrations tab + Gmail drawer as the reference patterns; the others inherit.
 
@@ -100,7 +100,7 @@ Those will be specced in future passes. This viewport locks the SHELL + Integrat
 ## Open decisions (not silently resolved)
 
 - **Each future tab's content** (Account, Security, Email signatures, Feature flags, Staff) needs its own design pass. Use this shell as the reference.
-- **OAuth drawer pattern** generalises beyond Gmail — non-Gmail providers (Calendar, Zoom, Teams, Xero, Resend, Calendly, Slack) reuse this 3-step pattern (Mailbox/Account → Scopes → Verification/Setup → Authorise footer). Each gets its own drawer designed when wired in.
+- **OAuth drawer pattern** generalises beyond Gmail — non-Gmail providers (Calendar, Zoom, Teams, MYOB, Resend, Calendly, Slack) reuse this 3-step pattern (Mailbox/Account → Scopes → Verification/Setup → Authorise footer). Each gets its own drawer designed when wired in.
 - **CASA Tier 2 assessor** (Section 16 of GMAIL_INTEGRATION_CONTRACT.md) — three Google-approved assessors at AU pricing: Leviathan Security, Bishop Fox, Schellman. Issy picks based on quote and lead time. Pre-launch blocker.
 - **Wordmark** ("The Good Intro" three words vs locked "TheGoodIntro" one word) parked across all locked screens.
 

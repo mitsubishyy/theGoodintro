@@ -36,8 +36,10 @@ These are proven and locked. A new session should consume them, not rebuild.
   [`apps/platform/lib/auth.ts`](apps/platform/lib/auth.ts). The
   `admin_2fa_required` feature flag exists in the schema; enable for launch
   (PRODUCTION_READINESS C4).
-- **Xero webhook signature-verified and idempotent.**
+- **Payment-webhook stub signature-verified and idempotent.**
   [`apps/platform/app/api/webhooks/xero/route.ts`](apps/platform/app/api/webhooks/xero/route.ts).
+  Superseded by DEC-12: the provider is now MYOB, which has no webhooks; the
+  route's downstream `applyPaidInvoice` is reused by the MYOB poller.
 - **Schema discipline.** 12 reversible migrations with a `supabase/down/`
   directory, money stored in integer cents, UTC `timestamptz`, soft deletes
   via `deleted_at`, hard FK constraints with cascade where appropriate.
@@ -68,9 +70,9 @@ Any one open means we cannot charge a vendor.
 - **C11 Password reset flow** (NEW; added to PRODUCTION_READINESS in this
   pass). No flow exists in the codebase today; no production SaaS ships
   without it.
-- **A4 Xero webhook hardened to spec.** Route exists; signature verification
-  is in place; finish idempotency-on-replay and the manual-reconcile
-  fallback.
+- **A4 payment detection to spec.** Now MYOB polling per DEC-12 (the Xero
+  stub route is superseded); build the poller with token rotation,
+  idempotency-on-replay, and the manual-reconcile fallback.
 - **C1 RLS tests run in CI.** Tests exist; nothing runs them automatically
   on PR.
 - **C4 Admin 2FA enforced** (flag flip + staff requirement).
@@ -150,7 +152,7 @@ future session should not treat it as a guarantee.
   before that call. A single forgotten gate would be a hole. A focused
   review pass over `apps/platform/app/**/actions.ts` is warranted before
   launch.
-- Production load patterns (Xero webhook replay storms, Resend rate limits,
+- Production load patterns (MYOB poll failures and token lapses, Resend rate limits,
   concurrent vendor writes) are not exercised; the first month of real
   traffic will surface things this snapshot cannot.
 - There is no money-path incident runbook. PRODUCTION_READINESS section 1

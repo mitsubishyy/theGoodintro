@@ -70,11 +70,14 @@ Email deliverability is the highest risk: the exec request email is the product.
 - [ ] **A3 Bounce / complaint handling.** Provider webhook marks a dead exec address
       and flags it to Issy. *Done when:* a simulated bounce flags the address and
       halts that request.
-- [ ] **A4 Xero "invoice paid" webhook hardened** (route exists at
-      `apps/platform/app/api/webhooks/xero/route.ts`). Signature verification,
-      idempotency keyed on invoice id, links the CreditLot, manual-reconcile
-      fallback. *Done when:* a signed test event unlocks credits exactly once on
-      replay, and a forged event is rejected.
+- [ ] **A4 MYOB "invoice paid" detection built** (DEC-12, replaces the Xero
+      webhook plan; the stub route at
+      `apps/platform/app/api/webhooks/xero/route.ts` is superseded by a
+      scheduled poller because MYOB has no webhooks). OAuth token storage with
+      refresh-token rotation, poll for invoices with Status Closed, idempotency
+      keyed on invoice id, links the CreditLot, manual-reconcile fallback.
+      *Done when:* a paid sandbox invoice unlocks credits exactly once across
+      repeated polls, and a lapsed token alerts Issy.
 - [ ] **A5 Meeting outcome: Zoom/Teams attendance integration** (D-1). Signature-
       verified attendance webhooks set held / no-show automatically; an admin manual
       override stays as a fallback. *Done when:* a signed attendance event marks the
@@ -118,8 +121,9 @@ Most of the posture is in `SECURITY_AND_COMPLIANCE.md`; these are the build task
 - [ ] **C1 RLS policies written AND covered by tests** (the spec demands tests, not
       assumption). *Done when:* a vendor-user test cannot read another org's rows and
       the test runs in CI.
-- [ ] **C2 Webhook signature verification** on Xero and (if built) Zoom/Teams. *Done
-      when:* an unsigned/forged event is rejected.
+- [ ] **C2 Webhook signature verification** on Zoom/Teams (if built); payments
+      have no inbound webhook since MYOB is polled (DEC-12). *Done when:* an
+      unsigned/forged event is rejected.
 - [ ] **C3 Rate limiting** on auth and the signed-link confirm endpoints.
 - [ ] **C4 Admin 2FA enforced from launch** (the `login/mfa` route exists; enforce
       it for staff).

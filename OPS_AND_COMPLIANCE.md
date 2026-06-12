@@ -68,17 +68,21 @@ Times stored UTC, displayed local (AU offsets + DST handled at display).
 - **Channels:** email, in-app, and the single Slack new-signup alert, per the
   MVP_SCOPE notification matrix.
 
-## Payments (Xero) integration
+## Payments (MYOB) integration
 
-- v1 payment path is **Xero invoicing** (Stripe self-serve later).
-- **Trigger:** a Xero **"invoice paid" webhook** is the single signal that
-  unlocks access and fires downstream workflows (credits, list access,
-  notifications). No manual "mark as paid."
-- **Idempotency:** the webhook handler must be idempotent (Xero can resend); key
-  off the Xero invoice id so a replay doesn't double-credit.
-- **Reconciliation:** each CreditLot links to its `xero_invoice_id`; the admin
-  fee is its own named invoice line.
-- **Failure modes:** webhook never arrives (manual reconcile fallback for Issy),
+- v1 payment path is **MYOB invoicing** (DEC-12, replaces Xero; Stripe
+  self-serve later).
+- **Trigger:** a scheduled **poll of MYOB for paid invoices** (Status Closed) is
+  the single signal that unlocks access and fires downstream workflows (credits,
+  list access, notifications). MYOB has no webhooks. No manual "mark as paid."
+- **Idempotency:** the unlock handler must be idempotent (the poller re-sees the
+  same closed invoice on every cycle); key off the MYOB invoice id so a re-read
+  doesn't double-credit.
+- **Reconciliation:** each CreditLot links to its invoice id (the
+  `xero_invoice_id` column holds the MYOB invoice UID until renamed per DEC-12);
+  the admin fee is its own named invoice line.
+- **Failure modes:** poll fails or the OAuth token lapses (MYOB refresh tokens
+  last about a week and rotate; alert Issy, manual reconcile fallback),
   partial/failed payment (no unlock), void/refund (reverse the unlock).
 
 ## Compliance (Australian Privacy Act)
@@ -106,7 +110,7 @@ Times stored UTC, displayed local (AU offsets + DST handled at display).
 | Supabase | DB, Auth, storage | Decided |
 | Google Calendar / Microsoft Graph | Invites, free/busy, sync | Build |
 | Zoom / Teams API | Meeting link + attendance (held vs no-show) | Build |
-| Xero | Invoicing + paid webhook | Build |
+| MYOB | Invoicing + paid-invoice polling (DEC-12) | Build |
 | Calendly | Vendor vetting call booking | Build |
 | Transactional email provider | All platform email | Provider TBD |
 | Slack | New-signup alert (the one Slack piece in v1) | Build |

@@ -162,7 +162,7 @@ is the donor.
 5. **Request the receipt in theGoodintro's name** (theGoodintro Pty Ltd, with our
    ABN). It should show the charity's name and ABN, DGR statement, amount, date,
    and that it is a gift.
-6. **File the receipt and record the expense** in Xero/QuickBooks under Donations,
+6. **File the receipt and record the expense** in MYOB under Donations,
    receipt attached. This is what the accountant uses to claim the deduction.
 7. **Send written confirmation** to the exec (and vendor if desired) that $X went to
    their chosen charity.

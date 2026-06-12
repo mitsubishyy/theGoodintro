@@ -237,7 +237,7 @@ Plus, once Supabase is connected:
 ## 9. Build sequence (dependency-first; gate after each)
 
 0. Clear [`COLD_START_GAPS.md`](COLD_START_GAPS.md) first: it holds the resolved
-   contradictions, the engineering decisions (DEC-1 to DEC-11, implement as
+   contradictions, the engineering decisions (DEC-1 to DEC-12, implement as
    written), and the required artifacts (ART-1 consolidated schema, ART-3
    integration contracts, ART-4 test DB, ART-5 the `packages/ui` kit + reference
    screens). ART-5 is also PORTAL_LAYOUT_BLUEPRINT section 0 and gates all module
