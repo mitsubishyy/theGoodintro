@@ -278,7 +278,7 @@ Row click (in list view) OR chip click (in calendar view) opens the drawer. This
 - Ghost "Request reschedule" — Inter 13.5px semibold `--portal-ink`, white bg, 1px `--portal-line` border, flex 1.
 - Footer button labels are status-aware:
   - Confirmed: Primary "Join meeting in [provider]" + Ghost "Request reschedule".
-  - Held: Primary "View charity impact" (links to Impact list page anchored to this gift) + Ghost "Send a thank you" (links to Inbox composer — Pass B).
+  - Held: ~~Primary "View charity impact" (links to Impact list page anchored to this gift) + Ghost "Send a thank you" (links to Inbox composer — Pass B).~~ **AMENDED 2026-06-12 (v1 scope decision, ratified):** "Send a thank you" is CUT — the exec portal has no composer. The Held footer ships Primary "View charity impact" alone, full width. Revisit only if an exec-side composer is ever scoped.
   - Cancelled: footer hidden entirely.
 
 ## Sample data (LOCKED — every exec screen must align)
@@ -371,7 +371,7 @@ Row click (in list view) OR chip click (in calendar view) opens the drawer. This
 | Drawer pitch context Q1 head + body | `request.q1_head` + `request.q1_text` | Existing fields from Exec Incoming Requests lock |
 | Drawer pitch context Q2 head + body | `request.q2_head` + `request.q2_text` | Existing fields |
 | Drawer footer — Confirmed | Primary "Join meeting in [provider]" links to `meeting.conference_url`; Ghost "Request reschedule" creates admin task | |
-| Drawer footer — Held | Primary "View charity impact" → `/exec/impact#gift_<id>`; Ghost "Send a thank you" → Inbox composer (Pass B) | |
+| Drawer footer — Held | Primary "View charity impact" → `/exec/impact#gift_<id>` ONLY ("Send a thank you" cut from v1 — ratified 2026-06-12) | |
 | Drawer footer — Cancelled | Hidden | |
 
 **No money number is computed in the page.** Every $ figure reads from `@thegoodintro/pricing` or `lib/reporting.ts`. The "$1,000 to RFDS" in the locked drawer sample is illustrative; the build hydrates from `gift_record.charity_amount_cents` (Held) or `bandForMeetingNumber(...)` (Confirmed).
@@ -388,9 +388,9 @@ Existing fields used (no new additions beyond `charity.short_name`):
 ## Open decisions parked (do NOT silently resolve)
 
 - **David Wu charity reconciliation** — Recent Impact on the locked Exec Dashboard shows David Wu's gift as Beyond Blue (override); this page's locked sample renders him as RFDS standing. Pick one (recommend: keep David Wu as RFDS standing on the Meetings List and update the Exec Dashboard's Recent Impact row to RFDS standing too — overrides are over-represented across the sample set). Resolve before build hydrates sample data.
-- **Connected calendar banner** — DISCONNECTED state is locked; CONNECTED state (quiet sync-strip with last-sync timestamp) is NOT designed. Build chat can stub or design ahead of v1 launch.
+- ~~**Connected calendar banner** — DISCONNECTED state is locked; CONNECTED state (quiet sync-strip with last-sync timestamp) is NOT designed. Build chat can stub or design ahead of v1 launch.~~ **RESOLVED 2026-06-12 on Exec Small States Batch** — the connected quiet strip is designed and locked (tint row, provider + last-sync line + "free and busy only, never event details" + "Manage in Profile →"). See `../exec-small-states-batch/README.md` VP1.
 - **Drawer footer for Held meetings** — Primary CTA "View charity impact" assumes the Impact list page has anchor-deep-linking by gift id. Confirm anchor format with the Impact list lock (not yet designed).
-- **Search command palette overlay** — universal topbar search is locked as a chrome affordance; the overlay UI it opens to is Pass B. Defer to the next exec-portal lock that needs search to exist.
+- **Search command palette overlay** — universal topbar search is locked as a chrome affordance; the overlay UI it opens to is Pass B. Defer to the next exec-portal lock that needs search to exist. **AMENDED 2026-06-12 (v1 scope decision, ratified):** the search input ships BEHIND A FEATURE FLAG, default off, until the palette exists — search that opens nothing is worse than no search. The chrome spec is unchanged; the flag only controls render.
 - **Pagination inside Past expanded card** — current spec uses inline pagination ("Showing 7 of 13 · Previous / Page 1 of 2 / Next") inside the expanded card. Alternative: render all 13 rows when expanded (no pagination). Recommend pagination for N > 20; for N ≤ 20 render all. Build chat call.
 - **Per-meeting overrides — how the drawer surfaces a past override** — the meta line says "(overridden)"; the drawer's Your gift section currently says "Your standing nomination" (Mira sample) but should switch to "For this meeting only · Your standing nomination (Royal Flying Doctor Service) stays" when a meeting carries an override. Confirmed mid-iteration but not visually rendered in any locked viewport.
 - **Cancelled meeting drawer footer** — currently hidden. Alternative: show a quiet "View cancellation note" ghost link when `meeting.cancellation_note` exists. Defer; v1 hides the footer.
@@ -437,7 +437,7 @@ Existing fields used (no new additions beyond `charity.short_name`):
 
 ## NOT designed in this pass (deferred)
 
-- Calendar Week view (toggle exists; Week not visually designed).
+- Calendar Week view ~~(toggle exists; Week not visually designed)~~ — **AMENDED 2026-06-12 (v1 scope decision, ratified): the Month | Week toggle is DROPPED from the v1 build entirely** (the mockup's toggle is not ported; calendar header renders Month-only). Reinstate only when a Week view is designed and locked.
 - Calendar TODAY treatment beyond current month (out-of-month tinted dates are designed; jumping months Pass B).
 - Empty states: 0 upcoming / 0 past / 0 cancelled / 0 total (no meetings ever).
 - Loading / skeleton states for the section cards and calendar grid.

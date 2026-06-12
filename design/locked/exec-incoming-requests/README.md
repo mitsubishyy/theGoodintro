@@ -46,7 +46,7 @@ STATE with the sanctioned party-popper emoji + warm Fraunces hero.
 
 Sidebar 240px charcoal ink + companion tokens · 56px topbar with content-empty right side · `--portal-page` warm cream main bg. Sidebar active state on "Home" — this URL (`/exec/requests`) is a child of `/exec` and inherits the parent route's active nav.
 
-**Topbar label**: "Incoming requests" (Inter 14px semibold `--portal-ink` left, nothing on the right).
+**Topbar label**: "Incoming requests" (Inter 14px semibold `--portal-ink` left). ~~Nothing on the right.~~ **AMENDED 2026-06-10 (universal topbar search, locked on Exec Meetings List):** the universal search input (480px, ⌘K chip, italic placeholder) sits center-right on every exec page including this one, applied retroactively at build time — this mockup is not redesigned. The right EDGE stays content-empty (no bell, no help, no date). Full search spec: `../exec-meetings-list/README.md`.
 
 ### Back row (per portal blueprint §2)
 
@@ -207,7 +207,7 @@ NEW data fields required from this lock that the build chat must add:
 - **Q1 + Q2 head curation source** — admin-curates per request, OR an AI step auto-summarises the body into a head at request creation. Build chat decides; Issy's preference is admin curation for tone control.
 - **Dashboard rework cross-reference (RESOLVED 2026-06-09)** — the Exec Dashboard's locked Incoming widget was reworked 2026-06-09 to a compact list view that links HERE. The dashboard's compact widget footer link "Review all four requests →" navigates to `/exec/requests`; each row's "More about [Vendor] →" link navigates to `/exec/requests` anchored to the specific request id. See `design/locked/exec-dashboard/README.md` (re-locked 2026-06-09).
 - **`/exec/requests/[id]` deep-link** — should an individual request have its own URL so email Accept/Decline confirmation links can deep-link to that single request? Default: yes, render the per-ID URL as the same page scrolled and anchored to the right card. Build-chat decision.
-- **Decline with reason flow** — what happens when an exec taps Decline? Current spec: status flip + admin task. A "with reason" modal (small textarea) would give vendors feedback. Deferred to Pass B.
+- ~~**Decline with reason flow** — what happens when an exec taps Decline? Current spec: status flip + admin task. A "with reason" modal (small textarea) would give vendors feedback. Deferred to Pass B.~~ **RESOLVED 2026-06-12 on Exec Request Email + Action Pages** — the portal decline modal is designed and locked (four chips: Not relevant · No capacity · Bad timing · Other with free-text; reasons go to admin to shape the vendor reply, never sent verbatim; the decline itself is never gated on a reason). Email-side twin pages locked in the same file. See `../exec-request-email/README.md` VP5.
 - **Forward to EA acknowledgment** — when an exec taps "Forward to Lena (EA)", what does Lena see? EA Mode banner is queued; the forward affordance assumes Lena can see and act on forwarded requests inside her version of this surface. Cross-design with EA Mode banner Pass B.
 
 ## Anti-list (do not regress)

@@ -64,7 +64,7 @@ Structure top → bottom:
 - Active state: `--exec-sidebar-active` bg + 3px `--portal-emerald` left border + label semibold.
 - Bottom: 32px round Priya Raghavan photo avatar + "Priya Raghavan" Inter 13px semibold + "CFO · Lumen Industries" Inter 11px muted. Below: italic ghost link "Sign out →".
 
-**Topbar** — 56px, `--portal-card` bg, 1px `--portal-line` bottom hairline. Left: "Home" Inter 14px semibold `--portal-ink`. **Right: NOTHING.** No notification bell, no search, no help, no date. This emptiness is deliberate — concierge calm; the exec portal topbar is the quietest of the three.
+**Topbar** — 56px, `--portal-card` bg, 1px `--portal-line` bottom hairline. Left: "Home" Inter 14px semibold `--portal-ink`. ~~**Right: NOTHING.** No notification bell, no search, no help, no date.~~ **PARTIALLY SUPERSEDED 2026-06-10 (universal topbar search, locked on Exec Meetings List):** every exec page topbar now carries the universal search input center-right (480px, italic placeholder "Search meetings, vendors, charities", ⌘K chip, 2px emerald focus ring) — including this dashboard, applied retroactively AT BUILD TIME (this mockup is not redesigned). The right EDGE still stays content-empty: no bell, no help, no date. See `../exec-meetings-list/README.md` for the full search spec. The concierge-calm intent stands; search is the only chrome that joined.
 
 **Page background** — `--portal-page` warm cream.
 
@@ -179,7 +179,7 @@ Three cards stacked, 16px gap. Each card: white `--portal-card-reading` bg, 1px 
 - Right cluster: 24px gap between, all italic ghost links Inter 13px `--portal-ink` with right chevron:
   - "Change charity →" (opens charity picker modal — Pass B)
   - "Request reschedule →" (routes to admin via task — Pass B)
-  - "View detail →" (navigates to meeting detail page — Pass B)
+  - "View detail →" (SUPERSEDED 2026-06-10: navigates to `/exec/meetings?drawer=<meeting_id>` — the Meetings List drawer-as-detail. The standalone meeting detail page was killed by the Exec Meetings List lock.)
 
 Below the three cards, 16px gap, right-aligned italic ghost link "View all meetings →".
 
@@ -386,7 +386,7 @@ This rule **propagates to every future exec-portal screen** — Meetings list, I
 | Upcoming card · "For this meeting only" status line | `gift_record.charity_id != executive.default_charity_id` | Standing if equal |
 | Upcoming card · "Change charity →" | Opens charity picker modal (Pass B) | Sets `gift_record.charity_id` for this meeting |
 | Upcoming card · "Request reschedule →" | Mutation creates an admin task; admin reissues the calendar invite | Per the brief — exec never wrangles a reschedule UI |
-| Upcoming card · "View detail →" | Navigate to `/exec/meetings/[meeting_id]` (Pass B page) | |
+| Upcoming card · "View detail →" | Navigate to `/exec/meetings?drawer=<meeting_id>` — opens the locked Meetings List drawer (drawer-as-detail supersession 2026-06-10) | Standalone `/exec/meetings/[id]` page is dead |
 | Recent Impact rows | `gift_record WHERE executive_id=? ORDER BY sat_date DESC LIMIT 3` joined to `vendor_user`, `vendor`, `charity` | Frozen-at-Held amounts; never recomputed |
 | Recent Impact avatar | `vendor_user.photo_url` | Photo-primary |
 | Footer · "Signed in as" | `auth.user.email` | |
@@ -428,19 +428,19 @@ All 4 align with the locked sample data on the Exec Incoming Requests page (`/ex
 **Recent Impact (3 most recent gifts):**
 1. 02 JUN · Sam Patel · Acme Robotics · $1,000 to Royal Flying Doctor Service · Confirmed
 2. 19 MAY · Aisha Khan · Brightside Analytics · $1,000 to Royal Flying Doctor Service · Confirmed
-3. 03 MAY · David Wu · Northbeam Insights · $1,000 to Beyond Blue · Confirmed
+3. 05 MAY · David Wu · Northbeam Insights · $1,000 to Royal Flying Doctor Service · Confirmed (**RECONCILED 2026-06-11 on Exec Impact List lock** — was previously sampled as Beyond Blue override on 03 MAY; date corrected to 05 MAY to align with locked Meetings List "Mon, 5 May" sample, and charity corrected to RFDS standing. The per-meeting override sample now lives on Liam Patel · Mon 14 Apr · $1,000 to OzHarvest, surfaced via the Meetings List Past section + Impact list. All exec surfaces align on David Wu = RFDS standing.)
 
 **Charity logo placeholder:** RFDS letters on `--portal-amber-soft` circle. Build chat replaces with `charity.logo_url` (scraped from royalflyingdoctor.org.au).
 
 ## Open decisions parked (do NOT silently resolve)
 
 - **Charity scrape source confirmed:** charity's own website only (mission, programmes, stories, photos). NOT ACNC for the "Learn more" modal — those credentials stay on the Direction Card's inline credentials line. Build chat scrape job needs charity website page-mapping + cache TTL (recommendation: weekly re-scrape).
-- **Meeting detail page (Pass B)** — `/exec/meetings/[id]` destination for "View detail →" on Upcoming. Not designed yet.
+- ~~**Meeting detail page (Pass B)** — `/exec/meetings/[id]` destination for "View detail →" on Upcoming. Not designed yet.~~ **RESOLVED 2026-06-10** — the standalone page is dead; "View detail →" opens the locked Meetings List drawer (`/exec/meetings?drawer=<id>`).
 - **Vendor user photo upload control on Vendor Settings/Profile** — see "NEW data field requirement" above. Recommend Pass B addition to the already-locked Vendor Settings/Profile screen.
 - **"Pause requests" footer link** — destination not yet defined. Likely Profile setting; design when Profile is built.
 - **EA mode "Acting for Priya" banner** — when Lena signs in, an EA banner persists at the top of every page. Not designed yet; designed alongside Profile / Meetings.
 - **Per-meeting charity override timing** — current spec: override settable any time before Held. After Held the gift_record snapshot freezes. Confirm with Issy before build.
-- **Compact Incoming widget · empty state (0 pending)** — when count == 0, should the widget hide entirely (collapsing the equal-height grid to single-column), shrink to a quiet "You're all caught up." pill in the right column, or render an empty mini-state? Defer to first build pass; the dedicated /exec/requests page's VP2 (sanctioned 🎉 hero) handles the dedicated empty surface.
+- ~~**Compact Incoming widget · empty state (0 pending)** — when count == 0, should the widget hide entirely (collapsing the equal-height grid to single-column), shrink to a quiet "You're all caught up." pill in the right column, or render an empty mini-state? Defer to first build pass; the dedicated /exec/requests page's VP2 (sanctioned 🎉 hero) handles the dedicated empty surface.~~ **RESOLVED 2026-06-12 on Exec First-Run Empty States** — the widget renders ONE universal empty state (header "Incoming requests · None awaiting" + centered italic "Nothing awaiting your answer." + muted sub-line; "Review all" footer link hidden). Never hidden, never a pill; copy is valid for both a new exec and a cleared queue, so the dashboard needs no first-run/cleared conditional. See `../exec-first-run-empty-states/README.md`.
 
 **RESOLVED in earlier lock cycles** (do not re-debate):
 - Charity picker modal (VP2 + VP3) — designed and locked 2026-06-08.
@@ -450,7 +450,7 @@ All 4 align with the locked sample data on the Exec Incoming Requests page (`/ex
 ## Anti-list (do not regress)
 
 - **Exec sidebar is charcoal ink**, never emerald (admin only) or teal-pine (vendor only).
-- **Topbar is content-empty on the right.** No bell, no search, no help, no date. Concierge calm.
+- **Topbar right EDGE is content-empty.** No bell, no help, no date. Concierge calm. (AMENDED 2026-06-10: the universal topbar search — 480px ⌘K input center-right — applies to every exec page including this one at build time; it is the ONLY chrome allowed in the topbar beyond the page title. See `../exec-meetings-list/README.md`.)
 - **Mono uppercase is forbidden** outside ONE place after the 2026-06-09 rework: Recent Impact row date prefix. (The previous second usage — the scrollable Incoming container's "SHOWING 2 OF 4 · SCROLL TO VIEW THE REST" helper — was removed when the scrollable container was replaced by the compact list widget.) Section heads remain Fraunces semibold 22px; inline labels italic Inter.
 - **No status pills, count chips, progress bars, amber-soft badges** anywhere on the page. Status reads as plain italic text.
 - **No drop shadows.** Hairline borders only. The ONE decorative element is the Direction Card's editorial emerald flourish (which is now BEHIND the charity logo).
