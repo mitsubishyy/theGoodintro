@@ -10,9 +10,17 @@ import type { RibbonGroup } from "../types";
  * share one component. Server-friendly; presentational.
  *
  * Numeral typography is per-screen LOCKED:
- *  - "inter" (default) = Inter semibold 20-22px (vendor + earlier admin).
+ *  - "inter" (default) = Inter semibold 20-22px (earlier admin).
  *  - "fraunces" = Fraunces semibold 28/36px headline numbers
- *    (Admin Dashboard re-lock 2026-06-09).
+ *    (Admin Dashboard re-lock 2026-06-09; Vendor Dashboard 2026-06-05).
+ *
+ * Stat flow inside a group is independent of the numeral font:
+ *  - "stacked" = one stat per line with `sub` sub-lines (Admin Dashboard).
+ *  - "inline"  = stats side by side with `unit` beside each number (Vendor
+ *    Dashboard "2 available · 0 reserved"). Defaults follow the original
+ *    pairings (inter→inline, fraunces→stacked) so existing screens are
+ *    unchanged; the vendor ribbon passes numeralFont="fraunces" +
+ *    layout="inline".
  *
  * When `columns` results in more than one row of groups, a thin horizontal
  * hairline separates each row (Admin Dashboard README "white@5% horizontal
@@ -25,6 +33,8 @@ export interface MetricsRibbonProps {
   columns?: 2 | 3 | 4;
   /** Numeral typography family. See header for per-screen mapping. */
   numeralFont?: "inter" | "fraunces";
+  /** Stat flow inside a group; defaults to the font's original pairing. */
+  layout?: "inline" | "stacked";
   className?: string;
   style?: CSSProperties;
 }
@@ -39,10 +49,12 @@ export function MetricsRibbon({
   groups,
   columns = 4,
   numeralFont = "inter",
+  layout,
   className = "",
   style,
 }: MetricsRibbonProps) {
   const fraunces = numeralFont === "fraunces";
+  const stacked = (layout ?? (fraunces ? "stacked" : "inline")) === "stacked";
   return (
     <section
       className={`rounded-2xl px-6 py-5 mb-5 grid grid-cols-2 ${COLS[columns]} gap-y-6 gap-x-2 ${className}`}
@@ -63,9 +75,9 @@ export function MetricsRibbon({
             <div className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2 opacity-70">
               {g.label}
             </div>
-            <div className={fraunces ? "space-y-1" : "flex flex-wrap gap-x-5 gap-y-1 items-baseline"}>
+            <div className={stacked ? "space-y-1" : "flex flex-wrap gap-x-5 gap-y-1 items-baseline"}>
               {g.stats.map((s, j) => (
-                <div key={j} className={fraunces ? "" : "flex items-baseline gap-1.5"}>
+                <div key={j} className={stacked ? "" : "flex items-baseline gap-1.5"}>
                   <span
                     style={{
                       fontFamily: fraunces ? "var(--font-display), serif" : undefined,
