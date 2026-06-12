@@ -21,6 +21,9 @@ export default async function VendorExecRequestPage({
   if (!result?.user) redirect("/login");
   if (!result.vendorUser) redirect("/vendor");
   if (!(await getFlag("request_loop"))) redirect("/vendor");
+  // Behind vendor_shell the locked T5 form at ./request is the request
+  // surface; this pre-port page only renders while the flag is off.
+  if (await getFlag("vendor_shell")) redirect(`/vendor/executives/${id}/request`);
 
   const supabase = await createClient();
   const { data: exec } = await supabase

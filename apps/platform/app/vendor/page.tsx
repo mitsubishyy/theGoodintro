@@ -252,7 +252,8 @@ export default async function VendorHome() {
       charityName: charity?.name ?? "their chosen charity",
       photoUrl: (e.photo_url as string | null) ?? null,
       requested: openExecIds.has(e.id as string),
-      href: `/vendor/executives/${e.id}`,
+      // whole-card click is the "view detail" affordance → the drawer over the list
+      href: `/vendor/executives?exec=${e.id}`,
     };
   });
 

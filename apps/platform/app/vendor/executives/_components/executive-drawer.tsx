@@ -175,7 +175,7 @@ export function ExecutiveDrawer({ exec }: { exec: ExecListRow }) {
           style={{ borderColor: "var(--portal-line)" }}
         >
           <a
-            href={`/vendor/executives/${exec.id}`}
+            href={`/vendor/executives/${exec.id}/request`}
             className="w-full h-11 inline-flex items-center justify-center gap-2 rounded-lg text-[13.5px] font-semibold"
             style={{ background: "var(--portal-ink)", color: "var(--portal-card)" }}
           >
