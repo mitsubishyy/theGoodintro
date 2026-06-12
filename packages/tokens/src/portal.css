@@ -68,6 +68,13 @@
   --vendor-sidebar-soft: oklch(0.42 0.06 195);
   --vendor-sidebar-ink: oklch(0.96 0.02 195);
 
+  /* Soft-green "Meeting complete" status tone (LOCKED 2026-06-06 on Vendor
+     Executives List). A NEW vendor-portal hue for positive completion states:
+     distinct from emerald (admin sidebar only) and from sage-soft (staff-only
+     / AI signal). bg + ink + matching dot. */
+  --vendor-complete-soft: oklch(0.93 0.04 155);
+  --vendor-complete-ink: oklch(0.38 0.10 155);
+
   --exec-sidebar: oklch(0.22 0.008 70);
   --exec-sidebar-text: oklch(0.95 0.005 70);
   --exec-sidebar-muted: oklch(0.68 0.005 70);

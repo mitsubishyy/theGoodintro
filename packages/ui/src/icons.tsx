@@ -24,6 +24,7 @@ export type IconName =
   | "bell"
   | "padlock"
   | "tag"
+  | "pin"
   // generic
   | "chevron-up"
   | "chevron-down"
@@ -105,6 +106,12 @@ const PATHS: Record<IconName, ReactElement> = {
     <>
       <path d="M3 12V4h8l10 10-8 8L3 12z" />
       <circle cx="7.5" cy="7.5" r="1.2" />
+    </>
+  ),
+  pin: (
+    <>
+      <path d="M12 21s-7-5.4-7-11a7 7 0 0 1 14 0c0 5.6-7 11-7 11z" />
+      <circle cx="12" cy="10" r="2.5" />
     </>
   ),
   // ── Generic ───────────────────────────────────────────────────────────────
