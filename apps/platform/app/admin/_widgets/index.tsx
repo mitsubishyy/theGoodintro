@@ -81,7 +81,17 @@ export function BookedMeetingsCalendar({
   );
 }
 
-export function ViewToggle({ left, right }: { left: string; right: string }) {
+export function ViewToggle({
+  left,
+  right,
+  rightEnabled = true,
+}: {
+  left: string;
+  right: string;
+  /** List view only becomes available once at least one meeting is booked
+   *  (Issy 2026-06-12); until then the right half renders disabled. */
+  rightEnabled?: boolean;
+}) {
   // Presentational toggle; Calendar/List swap wires in a follow-up port.
   return (
     <span
@@ -91,7 +101,16 @@ export function ViewToggle({ left, right }: { left: string; right: string }) {
       <span className="px-2.5 py-1" style={{ background: "var(--portal-ink)", color: "#fff" }}>
         {left}
       </span>
-      <span className="px-2.5 py-1" style={{ color: "var(--muted-foreground)" }}>
+      <span
+        className="px-2.5 py-1"
+        style={
+          rightEnabled
+            ? { color: "var(--muted-foreground)" }
+            : { color: "var(--muted-foreground)", opacity: 0.45, cursor: "not-allowed" }
+        }
+        aria-disabled={!rightEnabled || undefined}
+        title={rightEnabled ? undefined : "List view is available once a meeting is booked"}
+      >
         {right}
       </span>
     </span>

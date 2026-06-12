@@ -462,11 +462,17 @@ export default async function AdminDashboard() {
           <Widget
             title="Booked meetings"
             count={scheduledThisMonth}
-            right={<ViewToggle left="Calendar" right="List" />}
+            right={
+              <ViewToggle
+                left="Calendar"
+                right="List"
+                rightEnabled={scheduledThisMonth > 0}
+              />
+            }
             link={{ label: "See all", href: "/admin/meetings" }}
-            state={scheduledThisMonth === 0 ? "empty" : "ready"}
-            emptyText="No meetings booked this month."
           >
+            {/* The calendar grid always renders, booked or not (Issy
+                2026-06-12) — an empty month reads as the empty state. */}
             <BookedMeetingsCalendar
               bookedDays={bookedDays}
               today={now.getUTCDate()}
