@@ -269,3 +269,113 @@ update public.credit_lot set quantity_remaining = 1
 -- (tests/meetings.test.ts, tests/rls.test.ts), so demo data must not touch it.
 -- The exec's second vendor in the impact list would come from a future seed that
 -- also provisions a third vendor; for now all enrichment stays under Alpha.
+
+-- ─────────────────────────────────────────────────────────────────────────
+-- Vendor portal demo enrichment (vendor_shell port, 2026-06-12). Synthetic,
+-- staging-only. Fills the executive DIRECTORY for the locked Vendor
+-- Executives List (industry / country / bio variety, ten rows) and gives
+-- Alpha request-level life for the status pills.
+--
+-- HARD CONSTRAINT: the reporting tests pin the money invariants to the seed
+-- above (total gifts $2,700 · meetings sat 3 · GST $750 · cash $7,500 ·
+-- deferred $3,000 · Alpha credits remaining 1). This block therefore adds NO
+-- held meetings, NO gift records, NO invoices, and NO credit or cycle
+-- changes, and still leaves Beta pristine. Directory life only.
+--
+-- photo_url stays NULL by design (Issy 2026-06-12): the amber monogram
+-- fallback is the locked production empty-state; photos arrive when real
+-- executives are onboarded. Names/companies follow the locked sample
+-- register from the Vendor screens (UI_KIT_DESIGN_LOG).
+-- ─────────────────────────────────────────────────────────────────────────
+
+-- Directory columns for the two original execs (0016 backfill).
+update public.executive set
+  industry = 'Banking',
+  bio = 'CFO of a mid-tier Australian bank. Focused on payments modernisation, treasury, and the finance data platform that supports both.'
+  where id = '00000000-0000-0000-0000-00000000ec01' and bio is null;
+update public.executive set
+  industry = 'Financial Services',
+  bio = 'COO of a consumer finance business. Scaling operations and workforce tooling across lending and collections.'
+  where id = '00000000-0000-0000-0000-00000000ec02' and bio is null;
+
+-- Final two charities of the locked 8-charity picker set (real AU ABNs).
+insert into public.charity (id, name, abn, dgr_status) values
+  ('00000000-0000-0000-0000-00000000c1a7','Australian Red Cross','50169561394','endorsed'),
+  ('00000000-0000-0000-0000-00000000c1a8','Australian Conservation Foundation','22007498482','endorsed')
+on conflict (id) do nothing;
+
+-- Eight more active executives (locked sample register; all country AU via
+-- the 0016 default; photo_url deliberately NULL).
+insert into public.executive
+  (id, name, title, company, industry, bio, default_charity_id, status, primary_email)
+values
+  ('00000000-0000-0000-0000-00000000ec03','Priya Raghavan','CFO','Lumen Industries',
+   'Financial Services',
+   'CFO of an ASX-listed financial services group. Leads a 120-person finance function through a multi-year operating-model rebuild, with a personal focus on treasury automation and capital discipline.',
+   '00000000-0000-0000-0000-00000000c1a3','active','priya.raghavan@lumen.test'),
+  ('00000000-0000-0000-0000-00000000ec04','Daniel Akers','COO','BigFour Bank',
+   'Banking',
+   'Chief Operating Officer at one of Australia''s big four banks. Owns operations across retail and business banking, and is rebuilding branch and contact-centre workflows around digital service.',
+   '00000000-0000-0000-0000-00000000c1a1','active','daniel.akers@bigfour.test'),
+  ('00000000-0000-0000-0000-00000000ec05','Helena Cho','CMO','Brightline',
+   'Telco',
+   'CMO of a national telco challenger. Runs brand, growth, and customer-base marketing, and is rebuilding the martech stack after a decade of acquisitions.',
+   '00000000-0000-0000-0000-00000000c1a2','active','helena.cho@brightline.test'),
+  ('00000000-0000-0000-0000-00000000ec06','Marcus Vance','MD','Helix Capital',
+   'Investment Management',
+   'Managing Director of a mid-market investment manager. Spends most of his time on portfolio operating performance and capital allocation.',
+   '00000000-0000-0000-0000-00000000c1a4','active','marcus.vance@helix.test'),
+  ('00000000-0000-0000-0000-00000000ec07','Sarah Liu','CTO','Vector',
+   'Logistics SaaS',
+   'CTO of a logistics software scale-up serving 3PL operators across APAC. Leads platform engineering and data, with a current focus on warehouse automation integrations.',
+   '00000000-0000-0000-0000-00000000c1a5','active','sarah.liu@vector.test'),
+  ('00000000-0000-0000-0000-00000000ec08','James Whitfield','CEO','Ironbark Energy',
+   'Energy & Resources',
+   'Chief Executive of an east-coast energy producer. Interested in grid-scale storage, industrial decarbonisation, and operational technology.',
+   '00000000-0000-0000-0000-00000000c1a8','active','james.whitfield@ironbark.test'),
+  ('00000000-0000-0000-0000-00000000ec09','Mei Tanaka','CHRO','Sentinel Group',
+   'Insurance',
+   'Chief People Officer of a national insurer. Leads workforce strategy across 6,000 employees, with current priorities in claims capability and hybrid operating rhythm.',
+   '00000000-0000-0000-0000-00000000c1a6','active','mei.tanaka@sentinel.test'),
+  ('00000000-0000-0000-0000-00000000ec0a','Rohan Mehta','CRO','Bluewater Logistics',
+   'Logistics',
+   'Chief Revenue Officer of a freight and logistics group. Owns enterprise sales and customer success nationally, and is consolidating a fragmented commercial tech stack.',
+   '00000000-0000-0000-0000-00000000c1a7','active','rohan.mehta@bluewater.test')
+on conflict (id) do nothing;
+
+-- Request-level life for Alpha (status pills + Pending widget ages). Money
+-- untouched: submitted/declined requests and a proposed meeting with no
+-- credit lot reserve nothing and sit outside every pinned total.
+insert into public.request
+  (id, vendor_id, requested_by_user_id, executive_id, q1_what, q2_why,
+   meeting_minutes, status, decline_reason, created_at)
+values
+  ('00000000-0000-0000-0000-000000005301','00000000-0000-0000-0000-00000000ad01',
+   '00000000-0000-0000-0000-00000000a5a1','00000000-0000-0000-0000-00000000ec03',
+   'Treasury automation for multi-entity finance teams.',
+   'Your operating-model rebuild is the exact phase where reconciliation effort peaks; we have taken three ASX groups through it.',
+   45,'submitted', null, now() - interval '2 days'),
+  ('00000000-0000-0000-0000-000000005302','00000000-0000-0000-0000-00000000ad01',
+   '00000000-0000-0000-0000-00000000a5a1','00000000-0000-0000-0000-00000000ec07',
+   'Warehouse automation integrations for 3PL platforms.',
+   'Vector''s integration roadmap overlaps with the systems we already connect.',
+   45,'submitted', null, now() - interval '11 days'),
+  ('00000000-0000-0000-0000-000000005303','00000000-0000-0000-0000-00000000ad01',
+   '00000000-0000-0000-0000-00000000a5a1','00000000-0000-0000-0000-00000000ec05',
+   'Martech consolidation after acquisition.',
+   'We helped two telcos retire nine overlapping tools without losing campaign history.',
+   45,'accepted', null, now() - interval '4 days'),
+  ('00000000-0000-0000-0000-000000005304','00000000-0000-0000-0000-00000000ad01',
+   '00000000-0000-0000-0000-00000000a5a1','00000000-0000-0000-0000-00000000ec06',
+   'Portfolio reporting automation.',
+   'Quarterly reporting cycles compress badly at your portfolio size.',
+   45,'declined','Not a fit for this half; happy to revisit next FY.', now() - interval '6 days')
+on conflict (id) do nothing;
+
+-- Helena accepted; the meeting is proposed, time not yet secured, and NO
+-- credit lot is attached (reserve happens at confirm), so credit maths and
+-- meetingsSat stay exactly as the tests pin them.
+insert into public.meeting (id, request_id, charity_id, status) values
+  ('00000000-0000-0000-0000-0000000014a1','00000000-0000-0000-0000-000000005303',
+   '00000000-0000-0000-0000-00000000c1a2','proposed')
+on conflict (id) do nothing;

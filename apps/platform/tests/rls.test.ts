@@ -69,7 +69,8 @@ describe("RLS tenant boundary", () => {
 
   it("paid vendors can read the active executive list", async () => {
     const { data } = await alex.from("executive").select("id");
-    expect(data?.length).toBe(2);
+    // 10 active execs in seed_staging.sql (2 original + 8 directory demo rows).
+    expect(data?.length).toBe(10);
   });
 
   it("a vendor cannot read the staff table", async () => {
