@@ -281,27 +281,39 @@ export function adminSignupAlertEmail(c: {
 }
 
 /**
- * A1 · The vendor welcome (to the vendor, from the brand) — DRAFT pending
- * Issy's sign-off (requested 2026-06-12; "I'll sign off before it's used").
- * NOT wired into the drain: SUPPORTED_EMAIL_EVENTS maps A1_vendor_signed_up
- * to the admin alert only until she approves this copy. Wording from
- * NOTIFICATION_TEMPLATES A1 on the locked email register: white card on warm
- * cream, single emerald accent, no pills, no mono.
+ * A1 · The vendor welcome (to the vendor, from the brand). Copy is
+ * NOTIFICATION_TEMPLATES A1 verbatim (brand-cased per FACTS.md), dressed in the
+ * locked email register (design/locked/exec-request-email/, 2026-06-12): white
+ * card on warm cream, Fraunces colour-split wordmark (Georgia fallback), italic
+ * eyebrow, single emerald accent, italic reply invitation, quiet system footer.
+ * No pills, no mono, no images, no em or en dashes. Sent from the brand (not
+ * personally), so B1's personal-signature open item does NOT apply here.
+ *
+ * Issy signed off the copy + look (italic eyebrow adopted) on 2026-06-13. STILL
+ * NOT wired into the drain: A1_vendor_signed_up composes only the admin alert
+ * until the Book-your-call button is confirmed from a real inbox and the
+ * notify.* DNS is live (see resend-setup-state). Wiring is a separate,
+ * flag-gated step on Issy's go.
  */
 export function vendorWelcomeEmail(c: {
   contactFirstName: string;
   bookCallUrl: string;
 }): ComposedEmail {
   const subject = "Welcome to TheGoodIntro";
+  const italicSerif = `font-family:${SERIF};font-style:italic;color:${E.muted}`;
+  const preview = "Welcome to TheGoodIntro. The next step is a short call.";
   const html = `<!doctype html>
-<html><body style="margin:0;padding:0;background:#f6f2e8">
+<html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f6f2e8">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all">${esc(preview)}</div>
 <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;background:#f6f2e8"><tr><td align="center" style="padding:28px 12px">
 <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:${E.white};border:1px solid ${E.border};border-radius:14px"><tr><td style="padding:28px 24px;font-family:${SANS};font-size:14px;line-height:1.55;color:${E.ink}">
 <div style="font-family:${SERIF};font-size:16px;font-weight:600;letter-spacing:-0.01em;color:${E.ink}">The<span style="color:${E.emerald}">Good</span>Intro</div>
-<p style="margin:18px 0 1em">Hi ${esc(c.contactFirstName)},</p>
+<div style="margin:18px 0 14px"><span style="${italicSerif};font-size:14px">A warm welcome</span></div>
+<p style="margin:0 0 1em">Hi ${esc(c.contactFirstName)},</p>
 <p style="margin:0 0 1em">Welcome to TheGoodIntro. The next step is a short call so we can get to know you and what you are hoping to achieve.</p>
 <p style="margin:20px 0"><a href="${esc(c.bookCallUrl)}" style="display:inline-block;white-space:nowrap;padding:12px 22px;border-radius:9999px;font-family:${SANS};font-size:14px;font-weight:600;text-decoration:none;background:${E.emerald};color:#ffffff;border:1px solid ${E.emerald}">Book your call</a></p>
-<p style="margin:0"><span style="font-family:${SERIF};font-style:italic;font-size:13px;color:${E.muted}">Questions? Just reply to this email. It reaches a real person.</span></p>
+<p style="margin:0"><span style="${italicSerif};font-size:13px">Questions? Just reply to this email. It reaches a real person.</span></p>
 <div style="margin:22px 0 0;border-top:1px solid ${E.border};padding-top:12px;font-size:11px;color:${E.muted}">TheGoodIntro · invite-only · Australia</div>
 </td></tr></table>
 </td></tr></table>
