@@ -372,3 +372,506 @@ export async function loadExecHome(supabase: SupabaseClient, execId: string, now
 export function indicativeFloor(): string {
   return formatAud(charityShareCentsForMeetingNumber(1));
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Exec Incoming Requests — the all-pending batch review surface
+   (design/locked/exec-incoming-requests, LOCKED 2026-06-09; route /exec/requests).
+   The locked twin of the request email (design/locked/exec-request-email): the
+   same request rendered as a portal card. Read surface only — the in-portal
+   accept/decline/forward backend is the consent-gated Phase-2 state-machine work
+   (act_on_request_token is token-bound; the executive-actor + logged-in consent
+   model is deliberately a later migration, see 0011).
+
+   Honest degrades for columns not in schema yet (never drop a widget):
+   - request.proposed_at / conference_provider → "N min · time to be confirmed"
+   - vendor_user.title / linkedin_url → role from request.attendee only; no LinkedIn line
+   - vendor.abn / founder_review / linkedin_verified / trade_references → a single
+     honest "Founder reviewed" stamp derived from vendor.status, detail line pending
+   - charity.logo_url → initials fallback (same as the dashboard Direction Card)
+   ───────────────────────────────────────────────────────────────────────── */
+
+export interface RequestCardData {
+  id: string;
+  name: string;
+  role: string | null;
+  company: string;
+  photoUrl: string | null;
+  credibility: string | null;
+  /** vendor_user.linkedin_url is not in schema yet → null degrades the LinkedIn line away. */
+  linkedinUrl: string | null;
+  requesterFirst: string;
+  /** "Friday, 6 June" from request.created_at (no submitted_at column); rendered "Submitted {x}." */
+  submittedLabel: string | null;
+  /** request.meeting_minutes, e.g. "30 min". proposed_at/conference_provider not in
+   *  schema, so the view renders the time itself as an honest "To be confirmed". */
+  durationLabel: string;
+  /** Derived from vendor.status (no granular verification columns yet). */
+  founderReviewed: boolean;
+  q1Head: string | null;
+  q1: string;
+  q2Head: string | null;
+  q2: string;
+  /** Indicative band amount, formatted; ALWAYS rendered "approximately $N" to an exec. */
+  amount: string;
+  charityName: string;
+  /** charity.logo_url not in schema yet → null falls back to initials. */
+  charityLogoUrl: string | null;
+}
+
+export interface ExecRequestsData {
+  exec: { name: string; title: string | null; company: string | null; email: string; photoUrl: string | null };
+  /** EA first name for the locked "Forward to {EA} (EA)" action; null hides it (named EA or nothing). */
+  eaFirstName: string | null;
+  cards: RequestCardData[];
+  count: number;
+  /** Word form for < 10, numeral for >= 10 (locked hero "Four requests"). */
+  countWord: string;
+}
+
+const NUM_WORDS = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+function countWord(n: number): string {
+  return n >= 0 && n < 10 ? NUM_WORDS[n]! : String(n);
+}
+
+// A vendor that can submit a request has passed founder vetting (A2/A3); these
+// statuses are the honest basis for the "Founder reviewed" stamp.
+const FOUNDER_REVIEWED_STATUSES = new Set(["approved", "paid", "active", "dormant", "churned"]);
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Exec Meetings List — list + calendar + drawer working surface
+   (design/locked/exec-meetings-list, LOCKED 2026-06-10; route /exec/meetings).
+   Read surface; the drawer is the detail (no standalone /exec/meetings/[id]).
+   "Request reschedule" / calendar OAuth are deferred actions.
+
+   Money semantics (CALCULATIONS.md, never computed in the page):
+   - HELD meetings show the EXACT frozen gift from gift_record.charity_amount_cents.
+   - CONFIRMED (pre-Held) meetings show a PROJECTED "approximately $N" from
+     bandForMeetingNumber(held + 1).rateCents — the same money-rule resolution as
+     the request email / Incoming Requests ("approximately $X anywhere pre-Held").
+
+   Honest degrades (columns not in schema; never drop a widget):
+   - meeting.accepted_at → the meta line drops the "Accepted [date]" clause
+   - meeting.cancelled_at / cancelled_by → cancelled rows show "Cancelled" only
+   - meeting duration → request.meeting_minutes; provider → inferred from join_url
+   - vendor_user.linkedin_url → no LinkedIn line in the drawer
+   - charity.logo_url → initials fallback
+   ───────────────────────────────────────────────────────────────────────── */
+
+export type MeetingStatusDisplay = "confirmed" | "held" | "cancelled";
+
+export interface MeetingDrawerData {
+  id: string;
+  statusDisplay: MeetingStatusDisplay;
+  eyebrow: string;
+  name: string;
+  role: string | null;
+  company: string;
+  photoUrl: string | null;
+  credibility: string | null;
+  linkedinUrl: string | null;
+  whenLong: string | null;
+  durationProvider: string;
+  /** meeting.accepted_at not in schema → null hides the historical accepted line. */
+  acceptedLine: string | null;
+  giftAmount: string;
+  /** true for confirmed (projected) → rendered "approximately $N"; false for held (frozen, exact). */
+  giftApprox: boolean;
+  charityName: string;
+  charityLogoUrl: string | null;
+  isOverride: boolean;
+  standingCharityName: string;
+  giftHelper: string;
+  q1Head: string | null;
+  q1: string;
+  q2Head: string | null;
+  q2: string;
+  joinUrl: string | null;
+  provider: "Zoom" | "Teams";
+}
+
+export interface MeetingListRow {
+  id: string;
+  name: string;
+  role: string | null;
+  company: string;
+  photoUrl: string | null;
+  statusDisplay: MeetingStatusDisplay;
+  dateLabel: string;
+  timeLabel: string | null;
+  durationLabel: string;
+  provider: "Zoom" | "Teams" | null;
+  metaLine: string;
+  /** ISO for client-side sort + calendar bucketing; null when unscheduled. */
+  scheduledIso: string | null;
+  drawer: MeetingDrawerData;
+}
+
+export interface ExecMeetingsData {
+  exec: { name: string; title: string | null; company: string | null; email: string; photoUrl: string | null };
+  /** Exec timezone, for client-side calendar bucketing. */
+  tz: string;
+  stats: { heldFy: number; comingUp: number; lifetime: number };
+  calendar: { connected: boolean; provider: string | null; lastSyncedLabel: string | null };
+  upcoming: MeetingListRow[];
+  past: MeetingListRow[];
+  cancelled: MeetingListRow[];
+  pastTotal: number;
+  cancelledTotal: number;
+}
+
+function shortDow(iso: string, tz: string): string {
+  // "Tue, 17 Jun"
+  return new Intl.DateTimeFormat("en-AU", { weekday: "short", day: "numeric", month: "short", timeZone: tz }).format(new Date(iso));
+}
+function longDateTime(iso: string, tz: string): string {
+  // "Tuesday, 17 June · 10:00 AEST"
+  return `${longDate(new Date(iso), tz)} · ${clockLabel(iso, tz)}`;
+}
+
+export async function loadExecMeetings(supabase: SupabaseClient, execId: string, now = new Date()): Promise<ExecMeetingsData | null> {
+  const { data: execRow } = await supabase
+    .from("executive")
+    .select("id, name, title, company, primary_email, photo_url, timezone, default_charity_id, calendar_provider, calendar_connected_at, calendar_last_synced_at")
+    .eq("id", execId)
+    .maybeSingle();
+  if (!execRow) return null;
+
+  const tz = (execRow.timezone as string) || AEST;
+  const defaultCharityId = (execRow.default_charity_id as string) ?? null;
+  const nowIso = now.toISOString();
+  const fy = financialYearWindow(now);
+
+  // Standing charity name (for override comparison + drawer "standing" line).
+  let standingName = "your charity";
+  if (defaultCharityId) {
+    const { data: c } = await supabase.from("charity").select("name").eq("id", defaultCharityId).maybeSingle();
+    if (c?.name) standingName = c.name as string;
+  }
+
+  // Requests for this exec → meeting identity + pitch context + per-vendor band.
+  const { data: reqRows } = await supabase
+    .from("request")
+    .select(
+      "id, vendor_id, attendee, meeting_minutes, q1_head, q1_what, q2_head, q2_why, vendor:vendor_id(name), requester:requested_by_user_id(name, photo_url, bio_one_liner)",
+    )
+    .eq("executive_id", execId);
+  const reqs = reqRows ?? [];
+  const requestIds = reqs.map((r) => r.id as string);
+  if (requestIds.length === 0) {
+    return emptyMeetings(execRow, tz, execRow.calendar_connected_at as string | null, execRow.calendar_provider as string | null, execRow.calendar_last_synced_at as string | null);
+  }
+
+  // Per-vendor held count → projected band amount for confirmed meetings.
+  const vendorIds = [...new Set(reqs.map((r) => r.vendor_id as string))];
+  const heldByVendor = new Map<string, number>();
+  if (vendorIds.length) {
+    const { data: cycles } = await supabase
+      .from("cycle")
+      .select("vendor_id, held_meetings_count, started_at")
+      .in("vendor_id", vendorIds)
+      .order("started_at", { ascending: false });
+    for (const c of cycles ?? []) {
+      if (!heldByVendor.has(c.vendor_id as string)) heldByVendor.set(c.vendor_id as string, (c.held_meetings_count as number) ?? 0);
+    }
+  }
+  const projected = (vendorId: string): string => formatAud(bandForMeetingNumber((heldByVendor.get(vendorId) ?? 0) + 1).rateCents);
+
+  const reqMeta = new Map(
+    reqs.map((r) => {
+      const v = one<{ name: string }>(r.vendor);
+      const u = one<{ name: string; photo_url: string | null; bio_one_liner: string | null }>(r.requester);
+      const attendee = r.attendee as { name?: string; title?: string } | null;
+      const onBehalf = Boolean(attendee?.name?.trim());
+      return [
+        r.id as string,
+        {
+          vendorId: r.vendor_id as string,
+          name: onBehalf ? attendee!.name!.trim() : u?.name ?? v?.name ?? "A vendor",
+          role: attendeeTitle(r.attendee),
+          company: v?.name ?? "",
+          photoUrl: onBehalf ? null : u?.photo_url ?? null,
+          credibility: onBehalf ? null : u?.bio_one_liner ?? null,
+          minutes: (r.meeting_minutes as number) ?? 45,
+          q1Head: (r.q1_head as string) ?? null,
+          q1: (r.q1_what as string) ?? "",
+          q2Head: (r.q2_head as string) ?? null,
+          q2: (r.q2_why as string) ?? "",
+        },
+      ];
+    }),
+  );
+
+  // All meetings for this exec's requests.
+  const { data: mtgRows } = await supabase
+    .from("meeting")
+    .select("id, request_id, charity_id, scheduled_at, join_url, status, charity:charity_id(name, short_name)")
+    .in("request_id", requestIds);
+  const meetings = mtgRows ?? [];
+  const meetingIds = meetings.map((m) => m.id as string);
+
+  // Frozen gift snapshots for held meetings.
+  const giftByMeeting = new Map<string, { amountCents: number; charityId: string | null; charityName: string; charityShort: string; satIso: string | null }>();
+  if (meetingIds.length) {
+    const { data: gifts } = await supabase
+      .from("gift_record")
+      .select("meeting_id, charity_amount_cents, charity_id, sat_date, status, charity:charity_id(name, short_name)")
+      .in("meeting_id", meetingIds)
+      .neq("status", "voided");
+    for (const g of gifts ?? []) {
+      const c = one<{ name: string; short_name: string | null }>(g.charity);
+      giftByMeeting.set(g.meeting_id as string, {
+        amountCents: g.charity_amount_cents as number,
+        charityId: (g.charity_id as string) ?? null,
+        charityName: c?.name ?? standingName,
+        charityShort: c?.short_name ?? c?.name ?? standingName,
+        satIso: (g.sat_date as string) ?? null,
+      });
+    }
+  }
+
+  const buildRow = (m: (typeof meetings)[number]): MeetingListRow => {
+    const meta = reqMeta.get(m.request_id as string)!;
+    const status = m.status as string;
+    const statusDisplay: MeetingStatusDisplay = status === "held" ? "held" : status === "cancelled" || status === "reversed" || status === "no_show" ? "cancelled" : "confirmed";
+    const scheduledIso = (m.scheduled_at as string) ?? null;
+    const provider: "Zoom" | "Teams" | null = m.join_url ? providerFromUrl(m.join_url as string) : null;
+    const mc = one<{ name: string; short_name: string | null }>(m.charity);
+    const gift = giftByMeeting.get(m.id as string);
+
+    // Charity for this meeting: held → gift snapshot; else meeting.charity_id → standing.
+    const charityName = gift?.charityName ?? mc?.name ?? standingName;
+    const charityShort = gift?.charityShort ?? mc?.short_name ?? mc?.name ?? standingName;
+    const overrideCharityId = gift?.charityId ?? (m.charity_id as string) ?? null;
+    const isOverride = Boolean(defaultCharityId && overrideCharityId && overrideCharityId !== defaultCharityId);
+
+    // Gift figure: held = exact frozen; confirmed = projected "approximately".
+    const giftApprox = statusDisplay !== "held";
+    const giftAmount = gift ? formatAud(gift.amountCents) : projected(meta.vendorId);
+
+    let metaLine: string;
+    if (statusDisplay === "held") metaLine = `Gift went to ${charityShort}${isOverride ? " (overridden)" : ""}`;
+    else if (statusDisplay === "cancelled") metaLine = "Cancelled";
+    else metaLine = `Gift will go to ${charityShort}`;
+
+    const eyebrow = statusDisplay === "held" ? "Past meeting · Held" : statusDisplay === "cancelled" ? "Cancelled meeting" : "Confirmed meeting";
+    const giftHelper =
+      statusDisplay === "held"
+        ? "Gift snapshot taken at Held. No longer editable."
+        : "Redirectable any time before the meeting begins.";
+
+    return {
+      id: m.id as string,
+      name: meta.name,
+      role: meta.role,
+      company: meta.company,
+      photoUrl: meta.photoUrl,
+      statusDisplay,
+      dateLabel: scheduledIso ? shortDow(scheduledIso, tz) : "To be confirmed",
+      timeLabel: scheduledIso ? clockLabel(scheduledIso, tz) : null,
+      durationLabel: `${meta.minutes} min`,
+      provider,
+      metaLine,
+      scheduledIso,
+      drawer: {
+        id: m.id as string,
+        statusDisplay,
+        eyebrow,
+        name: meta.name,
+        role: meta.role,
+        company: meta.company,
+        photoUrl: meta.photoUrl,
+        credibility: meta.credibility,
+        linkedinUrl: null,
+        whenLong: scheduledIso ? longDateTime(scheduledIso, tz) : null,
+        durationProvider: `${meta.minutes} min${provider ? ` · ${provider}` : ""}`,
+        acceptedLine: null,
+        giftAmount,
+        giftApprox,
+        charityName,
+        charityLogoUrl: null,
+        isOverride,
+        standingCharityName: standingName,
+        giftHelper,
+        q1Head: meta.q1Head,
+        q1: meta.q1,
+        q2Head: meta.q2Head,
+        q2: meta.q2,
+        joinUrl: (m.join_url as string) ?? null,
+        provider: provider ?? "Zoom",
+      },
+    };
+  };
+
+  const upcoming = meetings
+    .filter((m) => m.status === "confirmed" && m.scheduled_at && (m.scheduled_at as string) >= nowIso)
+    .sort((a, b) => (a.scheduled_at as string).localeCompare(b.scheduled_at as string))
+    .map(buildRow);
+
+  const past = meetings
+    .filter((m) => m.status === "held")
+    .sort((a, b) => String(b.scheduled_at ?? "").localeCompare(String(a.scheduled_at ?? "")))
+    .map(buildRow);
+
+  const cancelled = meetings
+    .filter((m) => m.status === "cancelled" || m.status === "reversed" || m.status === "no_show")
+    .sort((a, b) => String(b.scheduled_at ?? "").localeCompare(String(a.scheduled_at ?? "")))
+    .map(buildRow);
+
+  // Stats: held this FY (gift sat_date in FY), coming up (confirmed future), lifetime held.
+  let heldFy = 0;
+  for (const g of giftByMeeting.values()) {
+    if (g.satIso && g.satIso >= fy.from && g.satIso < fy.to) heldFy += 1;
+  }
+  const stats = { heldFy, comingUp: upcoming.length, lifetime: past.length };
+
+  return {
+    exec: {
+      name: (execRow.name as string) ?? "there",
+      title: (execRow.title as string) ?? null,
+      company: (execRow.company as string) ?? null,
+      email: (execRow.primary_email as string) ?? "",
+      photoUrl: (execRow.photo_url as string) ?? null,
+    },
+    tz,
+    stats,
+    calendar: calendarState(execRow.calendar_connected_at as string | null, execRow.calendar_provider as string | null, execRow.calendar_last_synced_at as string | null, tz),
+    upcoming,
+    past,
+    cancelled,
+    pastTotal: past.length,
+    cancelledTotal: cancelled.length,
+  };
+}
+
+function calendarState(connectedAt: string | null, provider: string | null, lastSynced: string | null, tz: string): ExecMeetingsData["calendar"] {
+  const connected = Boolean(connectedAt);
+  return {
+    connected,
+    provider: connected ? provider ?? null : null,
+    lastSyncedLabel: connected && lastSynced ? shortDateNum(lastSynced, tz) : null,
+  };
+}
+
+function emptyMeetings(
+  execRow: Record<string, unknown>,
+  tz: string,
+  connectedAt: string | null,
+  provider: string | null,
+  lastSynced: string | null,
+): ExecMeetingsData {
+  return {
+    exec: {
+      name: (execRow.name as string) ?? "there",
+      title: (execRow.title as string) ?? null,
+      company: (execRow.company as string) ?? null,
+      email: (execRow.primary_email as string) ?? "",
+      photoUrl: (execRow.photo_url as string) ?? null,
+    },
+    tz,
+    stats: { heldFy: 0, comingUp: 0, lifetime: 0 },
+    calendar: calendarState(connectedAt, provider, lastSynced, tz),
+    upcoming: [],
+    past: [],
+    cancelled: [],
+    pastTotal: 0,
+    cancelledTotal: 0,
+  };
+}
+
+export async function loadExecRequests(supabase: SupabaseClient, execId: string): Promise<ExecRequestsData | null> {
+  const { data: execRow } = await supabase
+    .from("executive")
+    .select("id, name, title, company, primary_email, photo_url, timezone, default_charity_id, ea_id")
+    .eq("id", execId)
+    .maybeSingle();
+  if (!execRow) return null;
+
+  const tz = (execRow.timezone as string) || AEST;
+
+  // Standing charity name (+ logo once charity.logo_url lands; initials until then).
+  let charityName = "your charity";
+  const charityLogoUrl: string | null = null;
+  if (execRow.default_charity_id) {
+    const { data: charity } = await supabase.from("charity").select("name").eq("id", execRow.default_charity_id as string).maybeSingle();
+    if (charity?.name) charityName = charity.name as string;
+  }
+
+  // EA first name for the "Forward to {EA} (EA)" action (named EA or nothing).
+  let eaFirstName: string | null = null;
+  if (execRow.ea_id) {
+    const { data: ea } = await supabase.from("ea").select("name").eq("id", execRow.ea_id as string).maybeSingle();
+    const eaName = (ea?.name as string) ?? "";
+    eaFirstName = eaName.split(/\s+/)[0] || null;
+  }
+
+  // Every pending request for this exec. proposed_at is not in schema, so ordering
+  // degrades from "soonest meeting first" to submission order (created_at asc).
+  const { data: reqRows } = await supabase
+    .from("request")
+    .select(
+      "id, status, vendor_id, attendee, meeting_minutes, created_at, q1_head, q1_what, q2_head, q2_why, vendor:vendor_id(name, status), requester:requested_by_user_id(name, photo_url, bio_one_liner)",
+    )
+    .eq("executive_id", execId)
+    .eq("status", "submitted")
+    .order("created_at", { ascending: true });
+  const reqs = reqRows ?? [];
+
+  // Per-vendor held count → indicative band amount for each card's vendor.
+  const vendorIds = [...new Set(reqs.map((r) => r.vendor_id as string))];
+  const heldByVendor = new Map<string, number>();
+  if (vendorIds.length) {
+    const { data: cycles } = await supabase
+      .from("cycle")
+      .select("vendor_id, held_meetings_count, started_at")
+      .in("vendor_id", vendorIds)
+      .order("started_at", { ascending: false });
+    for (const c of cycles ?? []) {
+      if (!heldByVendor.has(c.vendor_id as string)) heldByVendor.set(c.vendor_id as string, (c.held_meetings_count as number) ?? 0);
+    }
+  }
+  const indicative = (vendorId: string): string => formatAud(bandForMeetingNumber((heldByVendor.get(vendorId) ?? 0) + 1).rateCents);
+
+  const cards: RequestCardData[] = reqs.map((r) => {
+    const v = one<{ name: string; status: string }>(r.vendor);
+    const u = one<{ name: string; photo_url: string | null; bio_one_liner: string | null }>(r.requester);
+    const attendee = r.attendee as { name?: string; title?: string } | null;
+    const onBehalf = Boolean(attendee?.name?.trim());
+    // Q3 on-behalf-of: the NAMED attendee's identity renders instead of the requester's.
+    const displayName = onBehalf ? attendee!.name!.trim() : u?.name ?? v?.name ?? "A vendor";
+    return {
+      id: r.id as string,
+      name: displayName,
+      role: attendeeTitle(r.attendee),
+      company: v?.name ?? "",
+      photoUrl: onBehalf ? null : u?.photo_url ?? null,
+      credibility: onBehalf ? null : u?.bio_one_liner ?? null,
+      linkedinUrl: null,
+      requesterFirst: displayName.split(/\s+/)[0] || displayName,
+      submittedLabel: r.created_at ? longDate(new Date(r.created_at as string), tz) : null,
+      durationLabel: `${(r.meeting_minutes as number) ?? 45} min`,
+      founderReviewed: v ? FOUNDER_REVIEWED_STATUSES.has(v.status) : false,
+      q1Head: (r.q1_head as string) ?? null,
+      q1: (r.q1_what as string) ?? "",
+      q2Head: (r.q2_head as string) ?? null,
+      q2: (r.q2_why as string) ?? "",
+      amount: indicative(r.vendor_id as string),
+      charityName,
+      charityLogoUrl,
+    };
+  });
+
+  const name = (execRow.name as string) ?? "there";
+  return {
+    exec: {
+      name,
+      title: (execRow.title as string) ?? null,
+      company: (execRow.company as string) ?? null,
+      email: (execRow.primary_email as string) ?? "",
+      photoUrl: (execRow.photo_url as string) ?? null,
+    },
+    eaFirstName,
+    cards,
+    count: cards.length,
+    countWord: countWord(cards.length),
+  };
+}
