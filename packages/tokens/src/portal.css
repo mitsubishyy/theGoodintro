@@ -43,6 +43,15 @@
   --portal-header: oklch(0.964 0.014 84);
   --portal-ribbon: oklch(0.205 0.012 70);
   --portal-ink: oklch(0.17 0.006 70);
+  /* Exec-portal single emerald accent. The marketing rule keeps emerald to the
+     sidebar, but the locked exec concierge register (design/locked/exec-dashboard
+     and the exec screens it anchors) sanctions emerald as the one accent on exec
+     surfaces: the sidebar active rule, the Direction Card, gift lines, the Accept
+     button, the Q2 left rule. The exec mockups/locks all name this token; it was
+     referenced before it was defined (exec-shell, home-view, charity-change-modal,
+     incoming requests) so those emerald moments were rendering as an invalid
+     fallback. Aliased to the brand emerald --primary so there is one source. */
+  --portal-emerald: var(--primary);
   /* Accent: antique gold / soft champagne (replaced the old amber 2026-05-28).
      Token NAME kept as --portal-amber so existing references do not break; only the
      value changed. Used for notification/count badges, links, status dots, warnings,
