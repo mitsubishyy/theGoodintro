@@ -379,3 +379,74 @@ insert into public.meeting (id, request_id, charity_id, status) values
   ('00000000-0000-0000-0000-0000000014a1','00000000-0000-0000-0000-000000005303',
    '00000000-0000-0000-0000-00000000c1a2','proposed')
 on conflict (id) do nothing;
+
+-- ════════════════════════════════════════════════════════════════════════════
+-- EXEC PORTAL SCHEMA (migration 0019) — enrichment for the new fields so the
+-- locked exec screens + the schema tests have data. Updates by known seed IDs
+-- (the base inserts above use fixed column lists + on-conflict-do-nothing, so
+-- the new columns are populated here). Nomination history is created by 0019's
+-- backfill (one open row per exec with a standing charity); the locked Priya
+-- two-row Beyond Blue -> RFDS sample is left for the My charity port.
+-- ════════════════════════════════════════════════════════════════════════════
+
+-- Charity short names (the short-mark / "sent to the Flying Doctor" reference).
+update public.charity set short_name = 'Beyond Blue'    where id = '00000000-0000-0000-0000-00000000c1a1';
+update public.charity set short_name = 'OzHarvest'      where id = '00000000-0000-0000-0000-00000000c1a2';
+update public.charity set short_name = 'Flying Doctor'  where id = '00000000-0000-0000-0000-00000000c1a3';
+update public.charity set short_name = 'Smith Family'   where id = '00000000-0000-0000-0000-00000000c1a4';
+update public.charity set short_name = 'Black Dog'      where id = '00000000-0000-0000-0000-00000000c1a5';
+update public.charity set short_name = 'Cancer Council' where id = '00000000-0000-0000-0000-00000000c1a6';
+update public.charity set short_name = 'Red Cross'      where id = '00000000-0000-0000-0000-00000000c1a7';
+update public.charity set short_name = 'ACF'            where id = '00000000-0000-0000-0000-00000000c1a8';
+
+-- Priya Raghavan (ec03) is the locked exec-portal sample: full business context,
+-- LinkedIn, timezone, a connected calendar, and a preferred meeting window.
+update public.executive set
+  linkedin_url      = 'https://www.linkedin.com/in/priya-raghavan',
+  interested_in     = 'Treasury automation, finance operating-model design, and capital discipline at ASX scale.',
+  current_projects  = 'A multi-year finance transformation: consolidating four ERPs and standing up a real-time reconciliation layer.',
+  not_interested_in = 'Generic outsourcing pitches, contingent recruiting, and anything that starts with a demo.',
+  timeline          = 'Actively reviewing this half',
+  seniority_signal  = 'C-suite, ASX-listed',
+  suggested_cadence = 'Up to 2 per month',
+  timezone                = 'Australia/Sydney',
+  calendar_provider       = 'google',
+  calendar_connected_at   = now() - interval '120 days',
+  calendar_last_synced_at = now() - interval '4 minutes',
+  preferred_window_days   = 'weekdays',
+  preferred_window_start  = '09:00',
+  preferred_window_end    = '17:00'
+where id = '00000000-0000-0000-0000-00000000ec03';
+
+-- Vendor users: the one-line credibility bio the request email's vendor card
+-- renders (photo_url left NULL so the initials-monogram fallback shows).
+update public.vendor_user set
+  bio_one_liner = '8 years building treasury tooling at Workday and Snowflake before founding Alpha in 2024.'
+where id = '00000000-0000-0000-0000-00000000a5a1';
+update public.vendor_user set
+  bio_one_liner = 'Led RevOps at two ASX-listed scale-ups; now helps finance teams shorten the close.'
+where id = '00000000-0000-0000-0000-00000000b5b1';
+
+-- Request Q1/Q2 heads (the short Fraunces head above each answer body; shared
+-- one-source/two-renders with the email + the /exec/requests card).
+update public.request set
+  q1_head = 'Treasury automation for multi-entity finance teams',
+  q2_head = 'Your operating-model rebuild is the peak-effort moment'
+where id = '00000000-0000-0000-0000-0000000004a1';
+update public.request set
+  q1_head = 'Treasury automation for multi-entity finance teams',
+  q2_head = 'Built for exactly your reconciliation phase'
+where id = '00000000-0000-0000-0000-000000005301';
+
+-- Nomination history for the synthetic execs. On a fresh test stack, 0019's
+-- backfill ran before these execs existed (migrations precede the seed), so we
+-- seed the equivalent open row here: one current standing nomination per exec
+-- with a default charity, anchored at their created_at. Mirrors exactly what
+-- 0019's backfill produces against an already-populated production DB.
+insert into public.nomination_history (executive_id, charity_id, started_at)
+select e.id, e.default_charity_id, e.created_at
+from public.executive e
+where e.default_charity_id is not null
+  and not exists (
+    select 1 from public.nomination_history nh where nh.executive_id = e.id
+  );
