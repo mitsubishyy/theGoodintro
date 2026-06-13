@@ -90,7 +90,7 @@ async function composeExecRequest(
   const { data: req } = await supabase
     .from("request")
     .select(
-      `id, q1_what, q2_why, vendor_id, attendee,
+      `id, q1_what, q2_why, vendor_id, attendee, meeting_minutes,
        vendor:vendor_id(name),
        requester:requested_by_user_id(name),
        executive:executive_id(name, primary_email, charity:default_charity_id(name), ea:ea_id(name)),
@@ -119,9 +119,10 @@ async function composeExecRequest(
   const requesterName = attendee?.name?.trim() || requester?.name || vendor?.name || "A member vendor";
   const requesterTitle = attendee?.title?.trim() || null;
 
-  // Indicative amount: the ONE shared source with the /e/[token] confirm page
+  // Indicative amount: the ONE shared source with the /e/[token] action pages
   // (lib/gift-amount.ts), fed the latest cycle's held count, so the email and
-  // the page it links to always show the identical exact figure.
+  // the pages it links to always show the identical figure. The locked surface
+  // ALWAYS renders it "approximately $X"; the exact gift locks at Held.
   const { data: cycle } = await supabase
     .from("cycle")
     .select("held_meetings_count")
@@ -138,8 +139,11 @@ async function composeExecRequest(
       requesterName,
       requesterTitle,
       vendorCompany: vendor?.name ?? "A member vendor",
+      // abnVerified stays unpassed until vendor ABN capture lands with the
+      // vetting build; the verification line degrades to "Founder reviewed".
       q1: req.q1_what as string,
       q2: req.q2_why as string,
+      durationMinutes: (req.meeting_minutes as number | null) ?? 45,
       indicativeAmount: indicative,
       charityName: charity?.name ?? "your chosen charity",
       eaFirstName: ea?.name ? ea.name.split(" ")[0] : null,

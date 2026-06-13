@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { requireStaff } from "@/lib/auth";
 import { Button, Widget } from "@thegoodintro/ui";
 import { DistributionsErrorDemo } from "./RetryDemo";
+import { DeclineModalDemo } from "./DeclineModalDemo";
 
 /**
  * Kit reference — the Component States band that the Admin Dashboard 2026-06-09
@@ -71,6 +72,17 @@ export default async function ComponentStatesReference() {
             state="loading"
             link={{ label: "All", href: "/admin/vendors" }}
           />
+        </div>
+
+        <h2 className="mt-12 text-[18px] font-semibold tracking-tight" style={{ color: "var(--portal-ink)" }}>
+          Exec decline modal (VP5, locked 2026-06-12)
+        </h2>
+        <p className="mt-2 text-[13px] max-w-prose" style={{ color: "var(--muted-foreground)" }}>
+          The portal twin of the email decline page, demoed here until its host, the
+          exec incoming-requests port, lands. Four chips; Other expands the textarea.
+        </p>
+        <div className="mt-4">
+          <DeclineModalDemo />
         </div>
       </div>
     </main>

@@ -5,7 +5,6 @@
  * from the brand. Every dynamic value is HTML-escaped.
  */
 
-import { getSignature } from "./signature";
 import type { EmailAttachment } from "./transport";
 
 export type ComposedEmail = {
@@ -27,8 +26,6 @@ function esc(s: string): string {
 
 const BUTTON_SOLID =
   "display:inline-block;padding:10px 18px;border-radius:9999px;background:#1a1a14;color:#fffdf8;text-decoration:none;font-weight:600;font-size:14px";
-const BUTTON_OUTLINE =
-  "display:inline-block;padding:10px 18px;border-radius:9999px;border:1px solid #d8d2c4;color:#1a1a14;text-decoration:none;font-weight:600;font-size:14px";
 
 function shell(bodyHtml: string): string {
   return `<!doctype html>
@@ -66,150 +63,197 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
-const MONO = "'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace";
-
-function sectionLabel(label: string): string {
-  return `<div style="margin:20px 0 4px;font-family:${MONO};font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:${E.muted}">${esc(label)}</div>`;
-}
-
 /**
- * B1 · Request submitted, the first touch (to the executive, from Issy).
- * Mirrors the public promise on /executives
- * (apps/web/app/_components/meeting-request-email.tsx) in email-safe HTML:
- * inline styles, tables/divs, no images, no icons, no webfonts. Lines the
- * platform cannot yet back with data (LinkedIn, ABN verified) render only
- * when the data exists; lines promising unbuilt mechanics (reply-CHARITY
- * override, automatic calendar invites) are deliberately not made.
+ * B1 · The exec request email — the locked surface
+ * (design/locked/exec-request-email/, LOCKED 2026-06-12). White card on warm
+ * cream, editorial italic register, Georgia standing in for Fraunces, no
+ * webfonts, no images, no mono uppercase, no badges or pills. Verification is
+ * an italic line. The gift is ALWAYS "approximately $X" (the band amount at
+ * the vendor's next meeting position); the exact figure locks at Held. Three
+ * actions at most: emerald Accept, ghost Decline, ghost "Send to {EA} (EA)"
+ * only when an EA is linked (never "my EA", never a fourth action). Modules
+ * whose source columns are still queued exec-portal schema work (credibility
+ * line, Q1/Q2 heads, proposed time) render only when their data is passed.
+ *
+ * OPEN ITEMS for Issy at go-live (locked README): final sender address +
+ * subject line (this uses the README's recommended subject), and whether her
+ * personal founder signature joins the quiet system footer (this renders the
+ * locked system footer; lib/email/signature.ts stays available if adopted).
  */
 export function execRequestEmail(c: {
   execFirstName: string;
   requesterName: string;
   requesterTitle?: string | null;
   vendorCompany: string;
+  /** vendor_user.bio_one_liner once that column lands; module renders only when present. */
+  credibilityLine?: string | null;
   linkedinUrl?: string | null;
   abnVerified?: boolean;
+  /** request.q1_head / q2_head once those columns land; heads render only when present. */
+  q1Head?: string | null;
   q1: string;
+  q2Head?: string | null;
   q2: string;
-  indicativeAmount: string; // already formatted, e.g. "$900"
+  /** request.proposed_at once that column lands; the time module renders only when present. */
+  proposedTimeLabel?: string | null;
+  durationMinutes: number;
+  /** e.g. "Zoom"; renders after the duration when present. */
+  conferenceLabel?: string | null;
+  indicativeAmount: string; // formatted band amount, e.g. "$1,000" — ALWAYS rendered "approximately $X"
   charityName: string;
   eaFirstName?: string | null;
   confirmUrl: string; // the signed /e/<token> link
 }): ComposedEmail {
-  const subject = `${c.requesterName} (${c.vendorCompany}) wants 45 minutes`;
+  // Subject per the locked README's recommendation; the final sender address +
+  // subject line are an OPEN ITEM for Issy at go-live (lock 2026-06-12).
+  const subject = `${c.requesterName} (${c.vendorCompany}) has requested ${c.durationMinutes} minutes`;
   const accept = `${c.confirmUrl}?intent=accept`;
   const decline = `${c.confirmUrl}?intent=decline`;
   const toEa = `${c.confirmUrl}?intent=send_to_ea`;
-  const eaLabel = c.eaFirstName ? `Send to ${c.eaFirstName} (EA)` : "Send to my EA";
 
-  const signature = getSignature();
-  const q1Preview = c.q1.length > 90 ? `${c.q1.slice(0, 90).replace(/\s+\S*$/, "")}...` : c.q1;
-  const preview = `${q1Preview} ${c.indicativeAmount} will direct to ${c.charityName}.`;
+  const requesterFirst = c.requesterName.split(/\s+/)[0] || c.requesterName;
+  const lead = c.requesterTitle
+    ? `<strong>${esc(c.requesterName)}</strong>, ${esc(c.requesterTitle)} at <strong>${esc(c.vendorCompany)}</strong>, has requested ${c.durationMinutes} minutes with you. They have been verified and reviewed.`
+    : `<strong>${esc(c.requesterName)}</strong> from <strong>${esc(c.vendorCompany)}</strong> has requested ${c.durationMinutes} minutes with you. They have been verified and reviewed.`;
+  const leadText = c.requesterTitle
+    ? `${c.requesterName}, ${c.requesterTitle} at ${c.vendorCompany}, has requested ${c.durationMinutes} minutes with you. They have been verified and reviewed.`
+    : `${c.requesterName} from ${c.vendorCompany} has requested ${c.durationMinutes} minutes with you. They have been verified and reviewed.`;
 
-  const intro = c.requesterTitle
-    ? `<strong>${esc(c.requesterName)}</strong>, ${esc(c.requesterTitle)} at <strong>${esc(c.vendorCompany)}</strong>, has requested 45 minutes with you.`
-    : `<strong>${esc(c.requesterName)}</strong> from <strong>${esc(c.vendorCompany)}</strong> has requested 45 minutes with you.`;
-  const introText = c.requesterTitle
-    ? `${c.requesterName}, ${c.requesterTitle} at ${c.vendorCompany}, has requested 45 minutes with you.`
-    : `${c.requesterName} from ${c.vendorCompany} has requested 45 minutes with you.`;
-
-  const metaBits = ["Founder reviewed"];
-  if (c.abnVerified) metaBits.unshift("ABN verified");
-  const metaHtml = c.linkedinUrl
-    ? `${metaBits.join(" · ")} · <a href="${esc(c.linkedinUrl)}" style="color:${E.emerald};text-decoration:underline">${esc(c.linkedinUrl.replace(/^https?:\/\//, ""))}</a>`
-    : metaBits.join(" · ");
+  // Verification is an ITALIC LINE, never a badge or pill (lock anti-list).
+  const verifyBits = [];
+  if (c.abnVerified) verifyBits.push("ABN verified");
+  verifyBits.push("Founder reviewed");
+  const verifyHtml = c.linkedinUrl
+    ? `${verifyBits.join(" · ")} · <a href="${esc(c.linkedinUrl)}" style="color:${E.emerald};text-decoration:underline">View ${esc(requesterFirst)} on LinkedIn &#8599;</a>`
+    : verifyBits.join(" · ");
 
   const roleLine = c.requesterTitle
     ? `${esc(c.requesterTitle)} · ${esc(c.vendorCompany)}`
     : esc(c.vendorCompany);
 
-  // Accept is the only solid button; the other two read as quiet bordered links.
-  const acceptButton = `<a href="${esc(accept)}" style="display:inline-block;margin:0 10px 8px 0;padding:10px 20px;border-radius:9999px;font-family:${SANS};font-size:13px;font-weight:600;text-decoration:none;background:${E.ink};color:${E.white};border:1px solid ${E.ink}">Accept</a>`;
-  const quietButton = (href: string, label: string) =>
-    `<a href="${esc(href)}" style="display:inline-block;margin:0 10px 8px 0;padding:8px 16px;border-radius:9999px;font-family:${SANS};font-size:13px;text-decoration:none;background:transparent;color:${E.ink};border:1px solid #cfc8b8">${esc(label)}</a>`;
+  const italic = (s: string, size = 13) =>
+    `<span style="font-family:${SERIF};font-style:italic;font-size:${size}px;color:${E.muted}">${s}</span>`;
+  const eyebrow = (s: string) =>
+    `<div style="margin:22px 0 4px">${italic(esc(s))}</div>`;
+  const head = (s: string) =>
+    `<div style="margin:0 0 6px;font-family:${SERIF};font-size:17px;font-weight:600;color:${E.ink}">${esc(s)}</div>`;
 
-  // Deliberately styled as a plain personal email: pure white edge to edge, no
-  // page tint, no card frame, no divider rules. The ONLY two designed elements
-  // are the vendor block and the gift callout, matching the site mockup's accents.
+  // Bulletproof buttons: nowrap labels (verify-at-port #1), inline-block
+  // 3-across at 600px, stacked full-width under 480px via the head media query.
+  const btn = (href: string, label: string, solid: boolean) =>
+    `<a class="tg-btn" href="${esc(href)}" style="display:inline-block;white-space:nowrap;margin:0 8px 10px 0;padding:12px 22px;border-radius:9999px;font-family:${SANS};font-size:14px;font-weight:600;text-decoration:none;text-align:center;${
+      solid
+        ? `background:${E.emerald};color:#ffffff;border:1px solid ${E.emerald}`
+        : `background:transparent;color:${E.ink};border:1px solid #cfc8b8`
+    }">${esc(label)}</a>`;
+
+  const giftLineHtml = `If you accept, <strong>approximately ${esc(c.indicativeAmount)}</strong> directs to <strong>${esc(c.charityName)}</strong>.`;
+  const giftSub =
+    "Your standing nomination. The exact gift is confirmed after the meeting. Reply CHARITY to direct this meeting\u2019s gift to a different DGR-endorsed charity, just this once.";
+
+  const preview = `${c.q1Head ?? c.q1.slice(0, 80)} · approximately ${c.indicativeAmount} to ${c.charityName} if you accept.`;
+
   const html = `<!doctype html>
-<html><body style="margin:0;padding:0;background:#ffffff">
+<html><head><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>@media (max-width:480px){.tg-btn{display:block !important;width:100% !important;box-sizing:border-box !important;margin-right:0 !important}}</style>
+</head><body style="margin:0;padding:0;background:#f6f2e8">
 <div style="display:none;max-height:0;overflow:hidden;mso-hide:all">${esc(preview)}</div>
-<div style="max-width:600px;font-family:${SANS};font-size:14px;line-height:1.5;color:${E.ink}">
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;background:#f6f2e8"><tr><td align="center" style="padding:28px 12px">
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:${E.white};border:1px solid ${E.border};border-radius:14px"><tr><td style="padding:28px 24px;font-family:${SANS};font-size:14px;line-height:1.55;color:${E.ink}">
+
+<!-- Wordmark: Fraunces colour split (Georgia fallback), text only -->
+<div style="font-family:${SERIF};font-size:16px;font-weight:600;letter-spacing:-0.01em;color:${E.ink}">The<span style="color:${E.emerald}">Good</span>Intro</div>
+
+<div style="margin:18px 0 14px">${italic("A request for your time", 14)}</div>
 
 <p style="margin:0 0 1em">Hi ${esc(c.execFirstName)},</p>
-<p style="margin:0 0 1em">${intro} They have been vetted and reviewed. Here is what you need to know.</p>
+<p style="margin:0 0 1em">${lead}</p>
 
-<!-- Vendor block: branded touch 1 of 2 -->
-<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:16px 0;background:${E.cream};border:1px solid ${E.border};border-radius:12px">
+<!-- Vendor card: warm-cream tint panel -->
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:16px 0;background:${E.cream};border-radius:12px">
 <tr>
-<td style="padding:14px 0 14px 14px;vertical-align:top;width:48px">
-  <div style="width:48px;height:48px;border-radius:50%;background:${E.mint};border:1px solid ${E.border};text-align:center;line-height:48px;font-family:${SANS};font-size:16px;font-weight:600;color:${E.emerald}">${esc(initials(c.requesterName))}</div>
+<td style="padding:16px 0 16px 16px;vertical-align:top;width:48px">
+  <div style="width:48px;height:48px;border-radius:50%;background:${E.mint};text-align:center;line-height:48px;font-family:${SANS};font-size:16px;font-weight:600;color:${E.emerald}">${esc(initials(c.requesterName))}</div>
 </td>
-<td style="padding:14px;vertical-align:top">
-  <div style="font-family:${SANS};font-size:14px;font-weight:600;color:${E.ink}">${esc(c.requesterName)}
-    <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:9999px;background:${E.mint};color:${E.emerald};font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;vertical-align:middle">Verified</span>
-  </div>
-  <div style="margin-top:2px;font-size:12px;color:${E.muted}">${roleLine}</div>
-  <div style="margin-top:6px;font-size:11px;color:${E.muted}">${metaHtml}</div>
+<td style="padding:16px;vertical-align:top">
+  <div style="font-family:${SANS};font-size:14px;font-weight:600;color:${E.ink}">${esc(c.requesterName)}</div>
+  <div style="margin-top:2px;font-size:12.5px;color:${E.muted}">${roleLine}</div>
+  ${c.credibilityLine ? `<div style="margin-top:8px">${italic(esc(c.credibilityLine))}</div>` : ""}
+  <div style="margin-top:6px">${italic(verifyHtml, 12)}</div>
 </td>
 </tr>
 </table>
 
-${sectionLabel("What they want to talk about")}
+${eyebrow("What they want to discuss")}
+${c.q1Head ? head(c.q1Head) : ""}
 <p style="margin:0 0 1em">${esc(c.q1)}</p>
 
-${sectionLabel("Why it is relevant to you")}
-<p style="margin:0 0 1em">${esc(c.q2)}</p>
-
-<!-- Gift callout: branded touch 2 of 2 -->
-<div style="margin:16px 0;background:${E.giftBg};border:1px solid ${E.emerald};border-radius:10px;padding:12px 14px">
-  <div style="font-size:13px;font-weight:600;color:${E.ink}">If you accept, <span style="font-family:${SERIF};font-style:italic;font-size:15px;color:${E.emerald}">${esc(c.indicativeAmount)}</span> directs to <strong>${esc(c.charityName)}</strong></div>
-  <div style="margin-top:3px;font-size:12px;color:${E.muted}">The charity you chose. The full gift is sent after the meeting takes place.</div>
+${eyebrow("Why you, specifically")}
+<div style="border-left:2px solid ${E.emerald};padding-left:14px;margin:0 0 1em">
+${c.q2Head ? head(c.q2Head) : ""}
+<p style="margin:0">${esc(c.q2)}</p>
 </div>
 
-<div style="margin:16px 0 0">
-  ${acceptButton}
-  ${quietButton(decline, "Decline")}
-  ${quietButton(toEa, eaLabel)}
+${
+  c.proposedTimeLabel
+    ? `<div style="margin:18px 0 0;font-family:${SERIF};font-size:17px;font-weight:600;color:${E.ink}">${esc(c.proposedTimeLabel)}</div>
+<div style="margin:2px 0 0;font-size:12.5px;color:${E.muted}">${c.durationMinutes} min${c.conferenceLabel ? ` · ${esc(c.conferenceLabel)}` : ""}</div>`
+    : ""
+}
+
+<!-- Gift block: light emerald wash, heart in text presentation (no emoji) -->
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:18px 0;background:${E.giftBg};border-radius:10px"><tr>
+<td style="padding:14px 16px">
+  <div style="font-size:14px;color:${E.ink}"><span style="color:${E.emerald}">&#9829;&#65038;</span>&nbsp; ${giftLineHtml}</div>
+  <div style="margin-top:5px">${italic(esc(giftSub), 12)}</div>
+</td>
+</tr></table>
+
+<div style="margin:20px 0 6px">
+  ${btn(accept, "Accept", true)}
+  ${btn(decline, "Decline", false)}
+  ${c.eaFirstName ? btn(toEa, `Send to ${c.eaFirstName} (EA)`, false) : ""}
 </div>
-<p style="margin:8px 0 0;font-size:11px;color:${E.muted}">These buttons open a short confirm page. Nothing is accepted or declined until you confirm there.</p>
 
-<p style="margin:1.5em 0 0">No pressure either way, and no obligation to take the next one.</p>
-<p style="margin:1em 0 1em">Best,</p>
-<div style="margin:0 0 1.5em">
-${signature.html}
-</div>
+<div style="margin:6px 0 0">${italic("Accepting holds nothing yet. We check your calendar, confirm a time with you, and send the invites.", 12)}</div>
+<div style="margin:14px 0 0">${italic("Questions? Just reply to this email. It reaches a real person.", 13)}</div>
 
-<p style="margin:0;font-size:11px;color:${E.muted}">TheGoodIntro · invite-only · Australia</p>
-</div></body></html>`;
+<div style="margin:22px 0 0;border-top:1px solid ${E.border};padding-top:12px;font-size:11px;color:${E.muted}">TheGoodIntro · invite-only · Australia · Email preferences</div>
 
+</td></tr></table>
+</td></tr></table>
+</body></html>`;
+
+  const eaLabel = c.eaFirstName ? `Send to ${c.eaFirstName} (EA)` : null;
   const text = [
     `Hi ${c.execFirstName},`,
     ``,
-    `${introText} They have been vetted and reviewed. Here is what you need to know.`,
+    leadText,
     ``,
-    `${c.requesterName} (Verified)`,
+    `${c.requesterName}`,
     roleLine.replaceAll("&amp;", "&"),
-    metaBits.join(" / ") + (c.linkedinUrl ? ` / ${c.linkedinUrl}` : ""),
+    ...(c.credibilityLine ? [c.credibilityLine] : []),
+    verifyBits.join(" · ") + (c.linkedinUrl ? ` · ${c.linkedinUrl}` : ""),
     ``,
-    `What they want to talk about:`,
+    `What they want to discuss:`,
+    ...(c.q1Head ? [c.q1Head] : []),
     c.q1,
     ``,
-    `Why it is relevant to you:`,
+    `Why you, specifically:`,
+    ...(c.q2Head ? [c.q2Head] : []),
     c.q2,
+    ...(c.proposedTimeLabel
+      ? [``, `${c.proposedTimeLabel} · ${c.durationMinutes} min${c.conferenceLabel ? ` · ${c.conferenceLabel}` : ""}`]
+      : []),
     ``,
-    `If you accept, ${c.indicativeAmount} directs to ${c.charityName}, the charity you chose. The full gift is sent after the meeting takes place.`,
+    `If you accept, approximately ${c.indicativeAmount} directs to ${c.charityName}. Your standing nomination. The exact gift is confirmed after the meeting. Reply CHARITY to direct this meeting's gift to a different DGR-endorsed charity, just this once.`,
     ``,
     `Accept: ${accept}`,
     `Decline: ${decline}`,
-    `${eaLabel}: ${toEa}`,
+    ...(eaLabel ? [`${eaLabel}: ${toEa}`] : []),
     ``,
-    `These links open a short confirm page. Nothing is accepted or declined until you confirm there.`,
-    ``,
-    `No pressure either way, and no obligation to take the next one.`,
-    ``,
-    `Best,`,
-    ``,
-    signature.text,
+    `Accepting holds nothing yet. We check your calendar, confirm a time with you, and send the invites.`,
+    `Questions? Just reply to this email. It reaches a real person.`,
     ``,
     `TheGoodIntro · invite-only · Australia`,
   ].join("\n");
@@ -234,6 +278,46 @@ export function adminSignupAlertEmail(c: {
 <p style="margin:24px 0"><a href="${esc(c.adminVendorsUrl)}" style="${BUTTON_SOLID}">Review in the admin</a></p>`),
     fromKind: "brand",
   };
+}
+
+/**
+ * A1 · The vendor welcome (to the vendor, from the brand) — DRAFT pending
+ * Issy's sign-off (requested 2026-06-12; "I'll sign off before it's used").
+ * NOT wired into the drain: SUPPORTED_EMAIL_EVENTS maps A1_vendor_signed_up
+ * to the admin alert only until she approves this copy. Wording from
+ * NOTIFICATION_TEMPLATES A1 on the locked email register: white card on warm
+ * cream, single emerald accent, no pills, no mono.
+ */
+export function vendorWelcomeEmail(c: {
+  contactFirstName: string;
+  bookCallUrl: string;
+}): ComposedEmail {
+  const subject = "Welcome to TheGoodIntro";
+  const html = `<!doctype html>
+<html><body style="margin:0;padding:0;background:#f6f2e8">
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;background:#f6f2e8"><tr><td align="center" style="padding:28px 12px">
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:${E.white};border:1px solid ${E.border};border-radius:14px"><tr><td style="padding:28px 24px;font-family:${SANS};font-size:14px;line-height:1.55;color:${E.ink}">
+<div style="font-family:${SERIF};font-size:16px;font-weight:600;letter-spacing:-0.01em;color:${E.ink}">The<span style="color:${E.emerald}">Good</span>Intro</div>
+<p style="margin:18px 0 1em">Hi ${esc(c.contactFirstName)},</p>
+<p style="margin:0 0 1em">Welcome to TheGoodIntro. The next step is a short call so we can get to know you and what you are hoping to achieve.</p>
+<p style="margin:20px 0"><a href="${esc(c.bookCallUrl)}" style="display:inline-block;white-space:nowrap;padding:12px 22px;border-radius:9999px;font-family:${SANS};font-size:14px;font-weight:600;text-decoration:none;background:${E.emerald};color:#ffffff;border:1px solid ${E.emerald}">Book your call</a></p>
+<p style="margin:0"><span style="font-family:${SERIF};font-style:italic;font-size:13px;color:${E.muted}">Questions? Just reply to this email. It reaches a real person.</span></p>
+<div style="margin:22px 0 0;border-top:1px solid ${E.border};padding-top:12px;font-size:11px;color:${E.muted}">TheGoodIntro · invite-only · Australia</div>
+</td></tr></table>
+</td></tr></table>
+</body></html>`;
+  const text = [
+    `Hi ${c.contactFirstName},`,
+    ``,
+    `Welcome to TheGoodIntro. The next step is a short call so we can get to know you and what you are hoping to achieve.`,
+    ``,
+    `Book your call: ${c.bookCallUrl}`,
+    ``,
+    `Questions? Just reply to this email. It reaches a real person.`,
+    ``,
+    `TheGoodIntro · invite-only · Australia`,
+  ].join("\n");
+  return { subject, html, text, fromKind: "brand" };
 }
 
 /** A4 · Invoice paid, the vendor receipt (from the brand). */

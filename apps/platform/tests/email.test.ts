@@ -72,36 +72,43 @@ describe("email queue drain (A1)", () => {
     const msg = calls[0];
     expect(msg.to).toBe(TEST_INBOX); // test-mode guard: never the exec's real address
     expect(msg.from).toContain("onboarding@resend.dev");
-    // Subject mirrors the public /executives mockup: "<Name> (<Company>) wants 45 minutes".
-    expect(msg.subject).toBe("Alex Alpha (Alpha Pty Ltd) wants 45 minutes");
+    // Subject per the locked README's recommendation (final wording is an
+    // open item for Issy at go-live).
+    expect(msg.subject).toBe("Alex Alpha (Alpha Pty Ltd) has requested 45 minutes");
     expect(msg.html).toContain(`/e/${tok!.token}?intent=accept`);
     expect(msg.html).toContain("?intent=decline");
-    expect(msg.html).toContain("?intent=send_to_ea");
+    // Riley has NO linked EA: the third action is omitted entirely (locked
+    // rule: named EA or nothing, never "my EA", never a placeholder button).
+    expect(msg.html).not.toContain("?intent=send_to_ea");
+    expect(msg.html).not.toContain("my EA");
     expect(msg.text).toContain(`/e/${tok!.token}`);
     expect(msg.html).toContain("Budget pacing tools");
-    // The mockup's structural elements, in email-safe form.
-    expect(msg.html).toContain("Verified");
+    // The locked surface (design/locked/exec-request-email, 2026-06-12):
+    // italic eyebrow, locked section eyebrows, italic verification line, NO
+    // badge or pill ("Verified"), no mono uppercase.
+    expect(msg.html).toContain("A request for your time");
+    expect(msg.html).toContain("What they want to discuss");
+    expect(msg.html).toContain("Why you, specifically");
+    expect(msg.html).not.toContain("Verified");
     expect(msg.html).toContain("Founder reviewed");
+    expect(msg.html).not.toContain("text-transform:uppercase");
     expect(msg.html).toContain("AA"); // initials monogram for Alex Alpha
-    expect(msg.html).toContain("What they want to talk about");
-    expect(msg.html).toContain("Why it is relevant to you");
     expect(msg.html).toContain("OzHarvest"); // Riley's chosen charity
-    // Closing per Issy 2026-06-11 (second pass): no-pressure line restored
-    // above "Best," and the signature.
-    expect(msg.html).toContain("No pressure either way, and no obligation to take the next one.");
-    expect(msg.html).toContain("Best,");
-    // Signature: bold name | Founder | phone (phone from EMAIL_SIGNATURE_PHONE),
-    // then the text-only wordmark.
-    expect(msg.html).toContain("<strong>Isobel Hardwick</strong> | Founder | +61 414 442 687");
+    // Accept is the solid EMERALD button (locked), not ink.
+    expect(msg.html).toMatch(/background:#06623f[^>]*>Accept<\/a>/);
+    // Quiet system footer per the lock; the personal founder signature is an
+    // OPEN ITEM for Issy and is deliberately absent until she adopts it.
+    expect(msg.html).toContain("Accepting holds nothing yet.");
+    expect(msg.html).toContain("It reaches a real person.");
+    expect(msg.html).toContain("TheGoodIntro · invite-only · Australia");
+    expect(msg.html).not.toContain("Best,");
+    expect(msg.html).not.toContain("Isobel Hardwick");
     expect(msg.html).toContain('The<span style="color:#06623f">Good</span>Intro');
-    expect(msg.text).toContain("No pressure either way");
-    expect(msg.text).toContain("Best,");
-    expect(msg.text).toContain("Isobel Hardwick | Founder | +61 414 442 687");
-    // Email-client constraints: no CSS vars, no Tailwind classes, and NO
-    // images of any kind in v1 (deliverability rule; the signature lockup is
-    // styled text, not the logo png).
+    // Email-client constraints: no CSS vars, no Tailwind classes (the single
+    // sanctioned class is tg-btn, the mobile full-width stacking hook), and
+    // NO images of any kind in v1 (deliverability rule).
     expect(msg.html).not.toContain("var(--");
-    expect(msg.html).not.toContain('class="');
+    expect(msg.html.replaceAll('class="tg-btn"', "")).not.toContain('class="');
     expect(msg.html).not.toContain("<img");
     expect(msg.attachments).toBeUndefined();
     // FACTS.md: brand casing, no em or en dashes anywhere in either part.
@@ -109,9 +116,12 @@ describe("email queue drain (A1)", () => {
     expect(msg.html).not.toContain("theGoodintro");
     expect(msg.html).not.toMatch(/[–—]/);
     expect(msg.text).not.toMatch(/[–—]/);
-    // Alpha's seeded cycle has 1 held meeting, so the next is meeting 2: $900.
-    expect(msg.html).toContain("$900");
-    expect(msg.text).toContain("$900");
+    // Money rule (lock anti-list): the gift is ALWAYS "approximately $X",
+    // never a flat figure, and the band never renders. Alpha's seeded cycle
+    // has 1 held meeting, so the next is meeting 2: approximately $900.
+    expect(msg.html).toContain("approximately $900");
+    expect(msg.text).toContain("approximately $900");
+    expect(msg.html).not.toMatch(/Band|Tier/);
     expect(msg.idempotencyKey).toBeTruthy();
 
     const { data: row } = await admin
@@ -156,7 +166,7 @@ describe("email queue drain (A1)", () => {
     const calls: EmailMessage[] = [];
     const summary = await drainEmailQueue(admin, fakeTransport(calls));
     expect(summary).toMatchObject({ sent: 1 });
-    expect(calls[0].subject).toBe("Casey Counsel (Alpha Pty Ltd) wants 45 minutes");
+    expect(calls[0].subject).toBe("Casey Counsel (Alpha Pty Ltd) has requested 45 minutes");
     expect(calls[0].html).toContain("GM Finance · Alpha Pty Ltd");
     expect(calls[0].html).toContain("CC"); // initials monogram for Casey Counsel
 
@@ -252,32 +262,43 @@ describe("email queue drain (A1)", () => {
     await admin.from("notification").delete().eq("id", inserted!.id);
   });
 
-  it("unsetting EMAIL_SIGNATURE_PHONE drops the number with no code change", async () => {
+  it("a linked EA renders the named third action; queued modules light up when data is passed", async () => {
     const { execRequestEmail } = await import("../lib/email/templates");
-    const compose = () =>
-      execRequestEmail({
-        execFirstName: "Riley",
-        requesterName: "Alex Alpha",
-        vendorCompany: "Alpha Pty Ltd",
-        q1: "x",
-        q2: "y",
-        indicativeAmount: "$900",
-        charityName: "OzHarvest",
-        confirmUrl: "http://localhost:3001/e/t",
-      });
-
-    const withPhone = compose();
-    expect(withPhone.html).toContain("<strong>Isobel Hardwick</strong> | Founder | +61 414 442 687");
-
-    delete process.env.EMAIL_SIGNATURE_PHONE;
-    try {
-      const without = compose();
-      expect(without.html).toContain("<strong>Isobel Hardwick</strong> | Founder");
-      expect(without.html).not.toContain("+61 414 442 687");
-      expect(without.text).toContain("Isobel Hardwick | Founder\n");
-    } finally {
-      process.env.EMAIL_SIGNATURE_PHONE = "+61 414 442 687";
-    }
+    const email = execRequestEmail({
+      execFirstName: "Jordan",
+      requesterName: "Alex Alpha",
+      requesterTitle: "Head of RevOps",
+      vendorCompany: "Alpha Pty Ltd",
+      credibilityLine: "8 years at Workday before joining Alpha in 2024.",
+      linkedinUrl: "https://linkedin.com/in/alexalpha",
+      q1Head: "Budget pacing for finance leaders",
+      q1: "x",
+      q2Head: "Your modernisation work",
+      q2: "y",
+      proposedTimeLabel: "Tuesday, 9 June · 10:00 AEST",
+      durationMinutes: 30,
+      conferenceLabel: "Zoom",
+      indicativeAmount: "$900",
+      charityName: "OzHarvest",
+      eaFirstName: "Lena",
+      confirmUrl: "http://localhost:3001/e/t",
+    });
+    // Named EA, never "my EA" (locked rule).
+    expect(email.html).toContain("Send to Lena (EA)");
+    expect(email.html).toContain("?intent=send_to_ea");
+    expect(email.html).not.toContain("my EA");
+    expect(email.subject).toBe("Alex Alpha (Alpha Pty Ltd) has requested 30 minutes");
+    // Modules whose source columns are queued exec-portal schema work render
+    // once their data is passed: credibility, Q1/Q2 heads, proposed time,
+    // LinkedIn line.
+    expect(email.html).toContain("8 years at Workday");
+    expect(email.html).toContain("Budget pacing for finance leaders");
+    expect(email.html).toContain("Tuesday, 9 June · 10:00 AEST");
+    expect(email.html).toContain("30 min · Zoom");
+    expect(email.html).toContain("View Alex on LinkedIn");
+    expect(email.html).toContain("approximately $900");
+    // The personal founder signature stays out until Issy adopts it (open item).
+    expect(email.html).not.toContain("Isobel Hardwick");
   });
 
   it("a request with no active token fails the row instead of sending", async () => {

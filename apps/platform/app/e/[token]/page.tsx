@@ -2,27 +2,58 @@ import type { Metadata } from "next";
 import { Wordmark } from "@thegoodintro/ui";
 import { createClient } from "@/lib/supabase/server";
 import { indicativeGiftAud } from "@/lib/gift-amount";
-import { ConfirmForm } from "./confirm-form";
+import { ActionRunner, type ActionPageData } from "./action-views";
+
+/**
+ * The email action pages (exec-request-email lock 2026-06-12, VP2-VP4):
+ * standalone public template on warm cream, wordmark centered top, NO portal
+ * chrome, content centered in a 390px-first column, tap targets 48px+.
+ *
+ * Act-instantly pattern: the email button's link carries ?intent=...; this
+ * page validates the token with the inert read, then the client fires the
+ * committing action immediately and reports the done state (VP2 accept /
+ * VP3 decline + optional reason / VP4 send-to-EA + optional note). The
+ * consent footnote renders only when the inert read says the exec had no
+ * consent record before this action.
+ */
 
 export const metadata: Metadata = {
-  title: "An introduction worth your time — TheGoodIntro",
+  title: "A request for your time — TheGoodIntro",
   robots: { index: false, follow: false },
 };
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="flex min-h-screen items-center justify-center px-6 py-16" style={{ background: "var(--portal-page)", color: "var(--foreground)" }}>
-      <div className="w-full max-w-lg rounded-2xl border p-8" style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }}>
-        {/* Same wordmark treatment as the platform header lockup (text only,
-            no image to block rendering). */}
-        <Wordmark size={15} className="mb-5 block" />
-        {children}
-      </div>
+    <main
+      className="min-h-screen px-6 py-12 flex flex-col items-center"
+      style={{ background: "var(--cream-1, #f6f2e8)", color: "var(--portal-ink)" }}
+    >
+      <Wordmark size={17} />
+      <div className="w-full max-w-[390px] mt-12">{children}</div>
     </main>
   );
 }
 
-export default async function ConfirmPage({
+function Quiet({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="text-center">
+      <h1
+        className="text-[26px] leading-tight font-semibold"
+        style={{ fontFamily: "var(--font-display), Georgia, serif", letterSpacing: "-0.01em" }}
+      >
+        {title}
+      </h1>
+      <p
+        className="mt-3 text-[14px] leading-relaxed"
+        style={{ fontFamily: "var(--font-display), Georgia, serif", fontStyle: "italic", color: "var(--muted-foreground)" }}
+      >
+        {body}
+      </p>
+    </div>
+  );
+}
+
+export default async function ActionPage({
   params,
   searchParams,
 }: {
@@ -39,58 +70,58 @@ export default async function ConfirmPage({
   if (!row) {
     return (
       <Shell>
-        <h1 className="text-lg font-semibold">This link is not valid</h1>
-        <p className="mt-2 text-sm" style={{ color: "var(--muted-foreground)" }}>
-          The request may have been withdrawn. Please reply to the email if you have questions.
-        </p>
+        <Quiet
+          title="This link is not valid."
+          body="The request may have been withdrawn. Just reply to the email if you have questions. It reaches a real person."
+        />
       </Shell>
     );
   }
 
-  if (row.token_status !== "active" || row.request_status !== "submitted") {
+  const intentVal: "accept" | "decline" | "send_to_ea" | null =
+    intent === "accept" || intent === "decline" || intent === "send_to_ea" ? intent : null;
+
+  // Forward needs an active token; accept/decline also need an open request.
+  const tokenActive = row.token_status === "active";
+  const requestOpen = row.request_status === "submitted";
+  const actionable =
+    intentVal === "send_to_ea" ? tokenActive && Boolean(row.ea_name) : tokenActive && requestOpen;
+
+  if (!intentVal) {
+    // A bare tokened URL (no button intent). Don't act on ambiguity; point
+    // back at the email's three buttons rather than inventing a chooser.
     return (
       <Shell>
-        <h1 className="text-lg font-semibold">This request has already been actioned</h1>
-        <p className="mt-2 text-sm" style={{ color: "var(--muted-foreground)" }}>
-          Nothing further is needed. Thank you.
-        </p>
+        <Quiet
+          title="Almost there."
+          body="Please use the Accept, Decline, or Send buttons in the email itself. Questions? Just reply to it. It reaches a real person."
+        />
       </Shell>
     );
   }
 
-  // One shared source with the email (lib/gift-amount.ts): exact, never "about".
-  const indicative = indicativeGiftAud(row.held_count ?? 0);
-  const intentVal: "accept" | "decline" | "send_to_ea" =
-    intent === "decline" ? "decline" : intent === "send_to_ea" ? "send_to_ea" : "accept";
+  if (!actionable) {
+    return (
+      <Shell>
+        <Quiet
+          title="Already taken care of."
+          body="This request has been actioned. Nothing further is needed. Questions? Just reply to the email."
+        />
+      </Shell>
+    );
+  }
+
+  const pageData: ActionPageData = {
+    requesterFirst: ((row.requester_name as string | null) ?? "The requester").split(/\s+/)[0] || "They",
+    eaName: (row.ea_name as string | null) ?? null,
+    charityName: (row.charity_name as string | null) ?? "your chosen charity",
+    indicativeAmount: indicativeGiftAud((row.held_count as number | null) ?? 0),
+    hasConsent: Boolean(row.has_consent),
+  };
 
   return (
     <Shell>
-      <p className="font-mono text-xs uppercase tracking-[0.18em]" style={{ color: "var(--portal-amber-ink)" }}>
-        An introduction worth your time
-      </p>
-      <h1 className="mt-1 text-xl font-semibold tracking-tight">
-        {row.vendor_name} would like to meet you
-      </h1>
-
-      <dl className="mt-5 flex flex-col gap-4 text-sm">
-        <div>
-          <dt className="font-medium">What they would like to talk about</dt>
-          <dd className="mt-0.5" style={{ color: "var(--muted-foreground)" }}>{row.q1}</dd>
-        </div>
-        <div>
-          <dt className="font-medium">Why it is relevant to you</dt>
-          <dd className="mt-0.5" style={{ color: "var(--muted-foreground)" }}>{row.q2}</dd>
-        </div>
-      </dl>
-
-      <p className="mt-5 rounded-lg px-4 py-3 text-sm" style={{ background: "var(--portal-amber-soft)", color: "var(--portal-amber-ink)" }}>
-        One 45-minute conversation. If you accept, <strong>{indicative}</strong>{" "}
-        directs to {row.charity_name ?? "your chosen charity"}, the charity you chose.
-      </p>
-
-      <div className="mt-6">
-        <ConfirmForm token={token} intent={intentVal} />
-      </div>
+      <ActionRunner token={token} intent={intentVal} data={pageData} />
     </Shell>
   );
 }
