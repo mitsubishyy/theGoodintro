@@ -752,6 +752,284 @@ function calendarState(connectedAt: string | null, provider: string | null, last
   };
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+   Exec Impact List — the cumulative giving surface
+   (design/locked/exec-impact-list, LOCKED 2026-06-11; route /exec/impact).
+   Reuses the Meetings patterns (three-stat header, collapsible cards, drawer)
+   plus a By-charity view and a gift drawer with a LinkedIn share. Read surface.
+
+   Money (HARD, CALCULATIONS.md): every figure is frozen-at-Held, read from
+   gift_record.charity_amount_cents / lib/reporting; never recomputed at render.
+
+   Honest degrades: charity.cause (parked charity-content schema) → cause line
+   omitted; gift_record.released_at not in schema → sat_date (the held date);
+   charity.logo_url → initials; "Learn about charity" opens the same deferred
+   charity-detail placeholder the dashboard uses.
+   ───────────────────────────────────────────────────────────────────────── */
+
+export interface GiftDrawerData {
+  id: string;
+  name: string;
+  role: string | null;
+  company: string;
+  photoUrl: string | null;
+  credibility: string | null;
+  linkedinUrl: string | null;
+  whenLong: string | null;
+  durationProvider: string;
+  releasedLine: string | null;
+  amount: string;
+  charityName: string;
+  charityId: string | null;
+  giftStatusLine: string;
+  q1Head: string | null;
+  q1: string;
+  q2Head: string | null;
+  q2: string;
+  /** Pre-filled LinkedIn share copy (parked for Issy to finalize). */
+  shareText: string;
+}
+
+export interface GiftRow {
+  id: string;
+  name: string;
+  role: string | null;
+  company: string;
+  photoUrl: string | null;
+  heldDateLabel: string;
+  amount: string;
+  /** For the "Largest amount first" sort. */
+  amountCents: number;
+  charityName: string;
+  charityShort: string;
+  charityId: string | null;
+  isOverride: boolean;
+  satIso: string | null;
+  drawer: GiftDrawerData;
+}
+
+export interface CharityGroup {
+  charityId: string;
+  name: string;
+  short: string;
+  amount: string;
+  meetings: number;
+  isStanding: boolean;
+  gifts: GiftRow[];
+}
+
+export interface ExecImpactData {
+  exec: { name: string; title: string | null; company: string | null; email: string; photoUrl: string | null };
+  tz: string;
+  stats: { fyAmount: string; fyMeetings: number; lifetimeAmount: string };
+  thisFy: GiftRow[];
+  previous: GiftRow[];
+  thisFyTotalLabel: string;
+  previousTotalLabel: string;
+  byCharity: CharityGroup[];
+  standingCharityName: string;
+}
+
+export async function loadExecImpact(supabase: SupabaseClient, execId: string, now = new Date()): Promise<ExecImpactData | null> {
+  const { data: execRow } = await supabase
+    .from("executive")
+    .select("id, name, title, company, primary_email, photo_url, timezone, default_charity_id")
+    .eq("id", execId)
+    .maybeSingle();
+  if (!execRow) return null;
+
+  const tz = (execRow.timezone as string) || AEST;
+  const defaultCharityId = (execRow.default_charity_id as string) ?? null;
+  const fy = financialYearWindow(now);
+
+  let standingName = "your charity";
+  if (defaultCharityId) {
+    const { data: c } = await supabase.from("charity").select("name").eq("id", defaultCharityId).maybeSingle();
+    if (c?.name) standingName = c.name as string;
+  }
+
+  // Requests → meeting/vendor/pitch context.
+  const { data: reqRows } = await supabase
+    .from("request")
+    .select("id, vendor_id, attendee, meeting_minutes, q1_head, q1_what, q2_head, q2_why, vendor:vendor_id(name), requester:requested_by_user_id(name, photo_url, bio_one_liner)")
+    .eq("executive_id", execId);
+  const reqs = reqRows ?? [];
+  const requestIds = reqs.map((r) => r.id as string);
+
+  const [fyCharity, lifetimeCharity] = await Promise.all([execCharityForPeriod(supabase, execId, fy), execCharityForPeriod(supabase, execId, {})]);
+  const baseStats = { fyAmount: formatAud(fyCharity.totalCents), lifetimeAmount: formatAud(lifetimeCharity.totalCents) };
+
+  if (requestIds.length === 0) {
+    return {
+      exec: execShell(execRow),
+      tz,
+      stats: { ...baseStats, fyMeetings: 0 },
+      thisFy: [],
+      previous: [],
+      thisFyTotalLabel: `${baseStats.fyAmount} to charity`,
+      previousTotalLabel: "$0 to charity",
+      byCharity: [],
+      standingCharityName: standingName,
+    };
+  }
+
+  const reqMeta = new Map(
+    reqs.map((r) => {
+      const v = one<{ name: string }>(r.vendor);
+      const u = one<{ name: string; photo_url: string | null; bio_one_liner: string | null }>(r.requester);
+      const attendee = r.attendee as { name?: string; title?: string } | null;
+      const onBehalf = Boolean(attendee?.name?.trim());
+      return [
+        r.id as string,
+        {
+          name: onBehalf ? attendee!.name!.trim() : u?.name ?? v?.name ?? "A vendor",
+          role: attendeeTitle(r.attendee),
+          company: v?.name ?? "",
+          photoUrl: onBehalf ? null : u?.photo_url ?? null,
+          credibility: onBehalf ? null : u?.bio_one_liner ?? null,
+          minutes: (r.meeting_minutes as number) ?? 45,
+          q1Head: (r.q1_head as string) ?? null,
+          q1: (r.q1_what as string) ?? "",
+          q2Head: (r.q2_head as string) ?? null,
+          q2: (r.q2_why as string) ?? "",
+        },
+      ];
+    }),
+  );
+
+  // Meetings (for when/provider) keyed by id, and their held gift records.
+  const { data: mtgRows } = await supabase.from("meeting").select("id, request_id, scheduled_at, join_url").in("request_id", requestIds);
+  const meetings = mtgRows ?? [];
+  const mtgById = new Map(meetings.map((m) => [m.id as string, m]));
+  const meetingIds = meetings.map((m) => m.id as string);
+  if (meetingIds.length === 0) {
+    return {
+      exec: execShell(execRow),
+      tz,
+      stats: { ...baseStats, fyMeetings: 0 },
+      thisFy: [],
+      previous: [],
+      thisFyTotalLabel: `${baseStats.fyAmount} to charity`,
+      previousTotalLabel: "$0 to charity",
+      byCharity: [],
+      standingCharityName: standingName,
+    };
+  }
+
+  const { data: gifts } = await supabase
+    .from("gift_record")
+    .select("meeting_id, charity_amount_cents, charity_id, sat_date, status, charity:charity_id(name, short_name)")
+    .in("meeting_id", meetingIds)
+    .neq("status", "voided")
+    .order("sat_date", { ascending: false });
+
+  const rows: GiftRow[] = (gifts ?? []).map((g) => {
+    const m = mtgById.get(g.meeting_id as string);
+    const meta = m ? reqMeta.get(m.request_id as string) : undefined;
+    const c = one<{ name: string; short_name: string | null }>(g.charity);
+    const charityName = c?.name ?? standingName;
+    const charityShort = c?.short_name ?? c?.name ?? standingName;
+    const charityId = (g.charity_id as string) ?? null;
+    const isOverride = Boolean(defaultCharityId && charityId && charityId !== defaultCharityId);
+    const amount = formatAud(g.charity_amount_cents as number);
+    const satIso = (g.sat_date as string) ?? null;
+    const name = meta?.name ?? "A meeting";
+    const scheduledIso = (m?.scheduled_at as string) ?? null;
+    const provider = m?.join_url ? providerFromUrl(m.join_url as string) : null;
+    const sentLabel = satIso ? shortDateNum(satIso, tz) : "";
+    return {
+      id: g.meeting_id as string,
+      name,
+      role: meta?.role ?? null,
+      company: meta?.company ?? "",
+      photoUrl: meta?.photoUrl ?? null,
+      heldDateLabel: satIso ? shortDow(satIso, tz) : "Held",
+      amount,
+      amountCents: g.charity_amount_cents as number,
+      charityName,
+      charityShort,
+      charityId,
+      isOverride,
+      satIso,
+      drawer: {
+        id: g.meeting_id as string,
+        name,
+        role: meta?.role ?? null,
+        company: meta?.company ?? "",
+        photoUrl: meta?.photoUrl ?? null,
+        credibility: meta?.credibility ?? null,
+        linkedinUrl: null,
+        whenLong: scheduledIso ? longDateTime(scheduledIso, tz) : null,
+        durationProvider: `${meta?.minutes ?? 45} min${provider ? ` · ${provider}` : ""}`,
+        releasedLine: satIso ? `Gift released to charity ${longDate(new Date(satIso), tz)}.` : null,
+        amount,
+        charityName,
+        charityId,
+        giftStatusLine: `${isOverride ? "For this meeting only" : "Your standing nomination"}${sentLabel ? ` · sent ${sentLabel}` : ""}`,
+        q1Head: meta?.q1Head ?? null,
+        q1: meta?.q1 ?? "",
+        q2Head: meta?.q2Head ?? null,
+        q2: meta?.q2 ?? "",
+        shareText: `My meeting with ${name} of ${meta?.company ?? "their company"} through TheGoodIntro funded a ${amount} gift to ${charityName}.`,
+      },
+    };
+  });
+
+  const inFy = (iso: string | null): boolean => Boolean(iso && iso >= fy.from && iso < fy.to);
+  const thisFy = rows.filter((r) => inFy(r.satIso));
+  const previous = rows.filter((r) => !inFy(r.satIso));
+
+  // By charity: group, sum, order by lifetime DESC.
+  const groups = new Map<string, CharityGroup>();
+  for (const r of rows) {
+    const key = r.charityId ?? "unknown";
+    const g = groups.get(key);
+    if (g) {
+      g.gifts.push(r);
+    } else {
+      groups.set(key, { charityId: key, name: r.charityName, short: r.charityShort, amount: "", meetings: 0, isStanding: Boolean(defaultCharityId && key === defaultCharityId), gifts: [r] });
+    }
+  }
+  // Sum cents per charity from the gift query (re-read amounts in cents).
+  const centsByCharity = new Map<string, number>();
+  for (const gx of gifts ?? []) {
+    const key = (gx.charity_id as string) ?? "unknown";
+    centsByCharity.set(key, (centsByCharity.get(key) ?? 0) + (gx.charity_amount_cents as number));
+  }
+  const byCharity = [...groups.values()]
+    .map((g) => ({ ...g, amount: formatAud(centsByCharity.get(g.charityId) ?? 0), meetings: g.gifts.length }))
+    .sort((a, b) => (centsByCharity.get(b.charityId) ?? 0) - (centsByCharity.get(a.charityId) ?? 0));
+
+  const sumLabel = (subset: GiftRow[]): string => formatAud(subset.reduce((acc, r) => acc + (centsForRow(gifts ?? [], r.id) ?? 0), 0));
+
+  return {
+    exec: execShell(execRow),
+    tz,
+    stats: { ...baseStats, fyMeetings: thisFy.length },
+    thisFy,
+    previous,
+    thisFyTotalLabel: `${sumLabel(thisFy)} to charity`,
+    previousTotalLabel: `${sumLabel(previous)} to charity`,
+    byCharity,
+    standingCharityName: standingName,
+  };
+}
+
+function centsForRow(gifts: { meeting_id: unknown; charity_amount_cents: unknown }[], meetingId: string): number | null {
+  const g = gifts.find((x) => x.meeting_id === meetingId);
+  return g ? (g.charity_amount_cents as number) : null;
+}
+
+function execShell(execRow: Record<string, unknown>): ExecImpactData["exec"] {
+  return {
+    name: (execRow.name as string) ?? "there",
+    title: (execRow.title as string) ?? null,
+    company: (execRow.company as string) ?? null,
+    email: (execRow.primary_email as string) ?? "",
+    photoUrl: (execRow.photo_url as string) ?? null,
+  };
+}
+
 function emptyMeetings(
   execRow: Record<string, unknown>,
   tz: string,
