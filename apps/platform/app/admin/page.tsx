@@ -14,8 +14,8 @@ import {
   type RibbonGroup,
 } from "@thegoodintro/ui";
 import { LastRefreshed } from "./_lib/LastRefreshed";
+import { BookedMeetingsCalendar } from "./_widgets/calendar";
 import {
-  BookedMeetingsCalendar,
   DistributionsBars,
   GiftsSentList,
   NeedsActionList,
@@ -109,13 +109,13 @@ export default async function AdminDashboard() {
     supabase.from("executive").select("id", head).eq("status", "paused"),
     supabase.from("executive").select("id", head).eq("status", "invited"),
 
-    // Booked Meetings calendar
+    // Booked Meetings calendar — every confirmed/held meeting with a time, so
+    // the client calendar can page month to month without a round trip.
     supabase
       .from("meeting")
       .select("scheduled_at")
       .in("status", ["confirmed", "held"])
-      .gte("scheduled_at", monthStart)
-      .lt("scheduled_at", monthEnd),
+      .not("scheduled_at", "is", null),
 
     // Distributions · meeting status
     supabase.from("meeting").select("status"),
@@ -267,13 +267,16 @@ export default async function AdminDashboard() {
   ];
 
   // ── Booked Meetings calendar ───────────────────────────────────────────
-  const bookedDays = Array.from(
-    new Set(
-      (monthMeetings.data ?? []).map((m) =>
-        new Date(m.scheduled_at as string).getUTCDate(),
-      ),
-    ),
-  );
+  // Group booked days by "YYYY-MM" (UTC, matching the grid) for the
+  // month-paging client calendar.
+  const bookedByMonth: Record<string, number[]> = {};
+  for (const m of monthMeetings.data ?? []) {
+    const d = new Date(m.scheduled_at as string);
+    const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
+    const day = d.getUTCDate();
+    (bookedByMonth[key] ??= []).includes(day) || bookedByMonth[key].push(day);
+  }
+  const todayKey = `${y}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
 
   // ── Pending Requests ───────────────────────────────────────────────────
   const pendingRows: PendingRequestRow[] = (pendingReqs.data ?? []).map((r) => {
@@ -474,9 +477,9 @@ export default async function AdminDashboard() {
             {/* The calendar grid always renders, booked or not (Issy
                 2026-06-12) — an empty month reads as the empty state. */}
             <BookedMeetingsCalendar
-              bookedDays={bookedDays}
-              today={now.getUTCDate()}
-              monthDate={now}
+              bookedByMonth={bookedByMonth}
+              todayKey={todayKey}
+              todayDate={now.getUTCDate()}
             />
           </Widget>
         </div>

@@ -8,78 +8,9 @@ import { formatAud } from "@/lib/format";
    error state matrix. These components render the row contents only.
    ───────────────────────────────────────────────────────────────────── */
 
-/* ── Booked Meetings (8-col, calendar view default) ───────────────────── */
-
-export function BookedMeetingsCalendar({
-  bookedDays,
-  today,
-  monthDate,
-}: {
-  bookedDays: number[];
-  today: number | null;
-  monthDate: Date;
-}) {
-  const booked = new Set(bookedDays);
-  const year = monthDate.getUTCFullYear();
-  const month = monthDate.getUTCMonth();
-  // Mon-Sun grid per the lock; getUTCDay returns 0=Sun..6=Sat so we shift.
-  const firstUtcDay = new Date(Date.UTC(year, month, 1)).getUTCDay();
-  const firstWeekday = (firstUtcDay + 6) % 7;
-  const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
-  const cells: (number | null)[] = [
-    ...Array(firstWeekday).fill(null),
-    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
-  ];
-  return (
-    <div className="px-5 py-4">
-      <div className="grid grid-cols-7 gap-1 text-center">
-        {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
-          <div
-            key={i}
-            className="text-[10px] uppercase tracking-[0.12em] pb-1"
-            style={{ color: "var(--muted-foreground)" }}
-          >
-            {d}
-          </div>
-        ))}
-        {cells.map((day, i) => {
-          if (day === null) return <div key={i} />;
-          const isBooked = booked.has(day);
-          const isToday = day === today;
-          return (
-            <div
-              key={i}
-              className="h-12 rounded-lg flex flex-col items-center justify-center text-[12.5px]"
-              style={
-                isToday
-                  ? { background: "var(--portal-ink)", color: "#fff", fontWeight: 600 }
-                  : { color: "var(--foreground)" }
-              }
-            >
-              {day}
-              {isBooked && (
-                <span
-                  className="mt-0.5 size-1.5 rounded-full"
-                  style={{ background: "var(--portal-amber)" }}
-                />
-              )}
-            </div>
-          );
-        })}
-      </div>
-      <div
-        className="mt-3 flex items-center gap-2 text-[11px]"
-        style={{ color: "var(--muted-foreground)" }}
-      >
-        <span
-          className="size-1.5 rounded-full"
-          style={{ background: "var(--portal-amber)" }}
-        />{" "}
-        days with booked meetings
-      </div>
-    </div>
-  );
-}
+/* ── Booked Meetings calendar moved to ./calendar.tsx ─────────────────────
+   It grew month navigation (Issy 2026-06-13), which needs client state, and
+   this module stays server-only for the rest of the widget bodies. */
 
 export function ViewToggle({
   left,
