@@ -54,16 +54,18 @@ function clean(v: unknown, max = 2000): string | null {
 async function updateExecProfile(updates: Record<string, unknown>, auditAction: string): Promise<ExecActionState> {
   if (!(await getFlag("exec_dashboard"))) return { error: "Executive portal is not enabled." };
   const supabase = await createClient();
+  // Explicit staff gate — authorization does not rest on RLS alone, and the
+  // audit row is then guaranteed (not a silent `if (staff)` skip). This is the
+  // sanctioned staff-acting-for-exec path; the real EA/exec path will reuse it.
+  const staff = (await getStaff())?.staff;
+  if (!staff) return { error: "Not authorized." };
   const execId = await resolveDemoExecutiveId(supabase);
   if (!execId) return { error: "No executive found." };
 
   const { error } = await supabase.from("executive").update(updates).eq("id", execId);
   if (error) return { error: error.message };
 
-  const staff = (await getStaff())?.staff;
-  if (staff) {
-    await logAudit(supabase, staff.id, { action: auditAction, targetType: "executive", targetId: execId, actingForExecutiveId: execId, metadata: { fields: Object.keys(updates) } });
-  }
+  await logAudit(supabase, staff.id, { action: auditAction, targetType: "executive", targetId: execId, actingForExecutiveId: execId, metadata: { fields: Object.keys(updates) } });
   revalidatePath("/exec/profile");
   revalidatePath("/exec");
   return { ok: true };
@@ -114,14 +116,35 @@ export async function saveProfileCalendarAction(input: { timezone: string; windo
 }
 
 export async function setRequestPauseAction(paused: boolean): Promise<ExecActionState> {
+  // The pause toggle is ONLY the active<->paused edge. executive.status is a
+  // lifecycle enum (invited/set_up/active/paused/left); never resurrect a 'left'
+  // exec or skip onboarding by force-writing 'active'. Guard the transition (the
+  // same edge the admin status machine encodes), then delegate the write.
+  if (!(await getFlag("exec_dashboard"))) return { error: "Executive portal is not enabled." };
+  const supabase = await createClient();
+  const execId = await resolveDemoExecutiveId(supabase);
+  if (!execId) return { error: "No executive found." };
+  const { data: row } = await supabase.from("executive").select("status").eq("id", execId).maybeSingle();
+  const current = row?.status as string | undefined;
+  if (paused) {
+    if (current === "paused") return { ok: true };
+    if (current !== "active") return { error: "Requests can only be paused for an active executive." };
+  } else {
+    if (current === "active") return { ok: true };
+    if (current !== "paused") return { error: "Requests can only be resumed for a paused executive." };
+  }
   return updateExecProfile({ status: paused ? "paused" : "active" }, paused ? "executive.requests_paused" : "executive.requests_resumed");
 }
 
 /**
  * Set the executive's standing-nomination (default) charity. Flag-gated
- * (exec_dashboard) and recorded in the append-only audit log. In the demo the
- * caller is the synthetic admin session, so the change is logged as staff acting
- * for the executive — the same shape the real EA-acting-for-exec path will use.
+ * (exec_dashboard), staff-gated, and recorded in the append-only audit log. In
+ * the demo the caller is the synthetic admin session, so the change is logged as
+ * staff acting for the executive — the same shape the real EA-acting-for-exec
+ * path will use. The default_charity_id flip + the nomination_history close/open
+ * run atomically inside the set_standing_nomination plpgsql function (migration
+ * 0022; charity validation + the one-open-row invariant live there) so a partial
+ * failure can never leave the executive with zero open nomination rows.
  */
 export async function setStandingNominationAction(
   charityId: string,
@@ -130,47 +153,22 @@ export async function setStandingNominationAction(
   if (!charityId) return { error: "No charity selected." };
 
   const supabase = await createClient();
-
-  // Only allow charities that exist and are DGR-endorsed (defence in depth;
-  // RLS still applies on the update itself).
-  const { data: charity } = await supabase
-    .from("charity")
-    .select("id, dgr_status")
-    .eq("id", charityId)
-    .is("deleted_at", null)
-    .maybeSingle();
-  if (!charity || charity.dgr_status !== "endorsed") {
-    return { error: "That charity is not available." };
-  }
+  const staff = (await getStaff())?.staff;
+  if (!staff) return { error: "Not authorized." };
 
   const execId = await resolveDemoExecutiveId(supabase);
   if (!execId) return { error: "No executive found." };
 
-  // No-op when the standing charity is unchanged (avoids a spurious history row).
-  const { data: execRow } = await supabase.from("executive").select("default_charity_id").eq("id", execId).maybeSingle();
-  if ((execRow?.default_charity_id ?? null) === charityId) return { ok: true };
-
-  const { error } = await supabase.from("executive").update({ default_charity_id: charityId }).eq("id", execId);
+  const { error } = await supabase.rpc("set_standing_nomination", { p_executive_id: execId, p_charity_id: charityId });
   if (error) return { error: error.message };
 
-  // Maintain nomination_history: close the open row, then open a new one. Order
-  // matters (the partial unique index allows at most one open row per exec).
-  // Staff can write nomination_history under RLS (the staff-acting-for-exec demo
-  // pattern); the real EA/exec path will reuse this shape.
-  await supabase.from("nomination_history").update({ ended_at: new Date().toISOString() }).eq("executive_id", execId).is("ended_at", null);
-  const { error: nhErr } = await supabase.from("nomination_history").insert({ executive_id: execId, charity_id: charityId });
-  if (nhErr) return { error: nhErr.message };
-
-  const staff = (await getStaff())?.staff;
-  if (staff) {
-    await logAudit(supabase, staff.id, {
-      action: "executive.standing_nomination_changed",
-      targetType: "executive",
-      targetId: execId,
-      actingForExecutiveId: execId,
-      metadata: { charity_id: charityId },
-    });
-  }
+  await logAudit(supabase, staff.id, {
+    action: "executive.standing_nomination_changed",
+    targetType: "executive",
+    targetId: execId,
+    actingForExecutiveId: execId,
+    metadata: { charity_id: charityId },
+  });
 
   revalidatePath("/exec");
   revalidatePath("/exec/my-charity");

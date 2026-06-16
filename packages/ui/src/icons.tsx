@@ -35,7 +35,10 @@ export type IconName =
   | "minus"
   | "x"
   | "check"
-  | "dots";
+  | "dots"
+  | "pencil"
+  | "camera"
+  | "trash";
 
 const PATHS: Record<IconName, ReactElement> = {
   // ── Domain ────────────────────────────────────────────────────────────────
@@ -132,6 +135,19 @@ const PATHS: Record<IconName, ReactElement> = {
       <circle cx="19" cy="12" r="1.1" />
     </>
   ),
+  pencil: (
+    <>
+      <path d="M4 20h4L18.5 9.5a2 2 0 0 0-2.83-2.83L5 17v3z" />
+      <path d="M14 7l3 3" />
+    </>
+  ),
+  camera: (
+    <>
+      <path d="M3 9.5A1.5 1.5 0 0 1 4.5 8h2L8 6h8l1.5 2h2A1.5 1.5 0 0 1 21 9.5v8A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5z" />
+      <circle cx="12" cy="13" r="3.2" />
+    </>
+  ),
+  trash: <path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13" />,
 };
 
 export interface IconProps extends Omit<SVGProps<SVGSVGElement>, "name"> {

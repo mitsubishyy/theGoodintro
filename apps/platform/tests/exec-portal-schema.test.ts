@@ -145,4 +145,35 @@ describe("exec portal schema (migration 0019)", () => {
       .select("id");
     expect(inserted ?? []).toEqual([]); // RLS check blocks the write
   });
+
+  it("set_standing_nomination rejects a non-staff caller (migration 0022)", async () => {
+    const alex = await signIn("alex@alpha.test"); // vendor user, not staff
+    const { error } = await alex.rpc("set_standing_nomination", { p_executive_id: PRIYA, p_charity_id: BEYOND_BLUE });
+    expect(error).not.toBeNull();
+    expect(error?.message.toLowerCase()).toMatch(/not_staff/);
+  });
+
+  it("set_standing_nomination flips the default atomically and keeps exactly one open row", async () => {
+    const admin = await signIn("admin@thegoodintro.test");
+    try {
+      const { error } = await admin.rpc("set_standing_nomination", { p_executive_id: PRIYA, p_charity_id: BEYOND_BLUE });
+      expect(error).toBeNull();
+
+      const { data: exec } = await admin.from("executive").select("default_charity_id").eq("id", PRIYA).single();
+      expect(exec?.default_charity_id).toBe(BEYOND_BLUE);
+
+      const { data: open } = await admin.from("nomination_history").select("charity_id").eq("executive_id", PRIYA).is("ended_at", null);
+      expect(open).toHaveLength(1);
+      expect(open![0]!.charity_id).toBe(BEYOND_BLUE);
+
+      // Idempotent: re-setting the same charity is a no-op, still exactly one open row.
+      const { error: e2 } = await admin.rpc("set_standing_nomination", { p_executive_id: PRIYA, p_charity_id: BEYOND_BLUE });
+      expect(e2).toBeNull();
+      const { data: open2 } = await admin.from("nomination_history").select("id").eq("executive_id", PRIYA).is("ended_at", null);
+      expect(open2).toHaveLength(1);
+    } finally {
+      // Restore RFDS standing so downstream state stays consistent.
+      await admin.rpc("set_standing_nomination", { p_executive_id: PRIYA, p_charity_id: RFDS });
+    }
+  });
 });

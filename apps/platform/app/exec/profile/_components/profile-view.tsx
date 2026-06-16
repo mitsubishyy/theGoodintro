@@ -84,7 +84,7 @@ function YouSection({ you }: { you: ExecProfileData["you"] }) {
           {editing && (
             <>
               <span className="absolute -bottom-1 -right-1 grid size-7 place-items-center rounded-full border" style={{ background: "#fff", borderColor: "var(--portal-line)" }} title="Photo upload is coming soon">
-                <Icon name="user" size={14} style={{ color: "var(--portal-ink)" }} />
+                <Icon name="camera" size={14} style={{ color: "var(--portal-ink)" }} />
               </span>
             </>
           )}
@@ -308,7 +308,7 @@ function CalendarSection({ calendar, ea, onEditEa }: { calendar: ExecProfileData
           </span>
           {ea && (
             <button type="button" onClick={onEditEa} className="inline-flex items-center gap-1.5 text-[13px] italic hover:underline underline-offset-2" style={{ color: "var(--portal-ink)" }}>
-              <Icon name="user" size={14} /> Edit
+              <Icon name="pencil" size={14} /> Edit
             </button>
           )}
         </div>
@@ -451,7 +451,7 @@ function SectionHeader({ title, editing, onEdit }: { title: string; editing?: bo
           </span>
         ) : (
           <button type="button" onClick={onEdit} className="inline-flex items-center gap-1.5 text-[13px] italic hover:underline underline-offset-2" style={{ color: "var(--portal-ink)" }}>
-            <Icon name="user" size={14} /> Edit
+            <Icon name="pencil" size={14} /> Edit
           </button>
         ))}
     </div>

@@ -51,21 +51,26 @@ export function ProfileEaDrawer({ ea, onClose }: { ea: ExecProfileData["ea"]; on
           </p>
 
           {isEdit && ea && (
-            <div className="mt-6 flex items-center gap-3 rounded-xl border p-4" style={{ borderColor: "var(--portal-line)" }}>
-              <Avatar name={ea.name} size={40} />
-              <div className="min-w-0 flex-1">
-                <div className="text-[14px] font-semibold" style={{ color: "var(--portal-ink)" }}>
-                  {ea.name}
-                </div>
-                {ea.sinceLabel && (
-                  <div className="text-[12.5px] italic" style={{ color: "var(--muted-foreground)" }}>
-                    Acting access since {ea.sinceLabel}
+            <div className="mt-6">
+              <p className="text-[12px] italic" style={{ color: "var(--muted-foreground)" }}>
+                Currently on file
+              </p>
+              <div className="mt-2 flex items-center gap-3 rounded-xl border p-4" style={{ borderColor: "var(--portal-line)" }}>
+                <Avatar name={ea.name} size={40} />
+                <div className="min-w-0 flex-1">
+                  <div className="text-[14px] font-semibold" style={{ color: "var(--portal-ink)" }}>
+                    {ea.name}
                   </div>
-                )}
+                  {ea.sinceLabel && (
+                    <div className="text-[12.5px] italic" style={{ color: "var(--muted-foreground)" }}>
+                      Acting access since {ea.sinceLabel}
+                    </div>
+                  )}
+                </div>
+                <button type="button" disabled className="inline-flex items-center gap-1.5 text-[12.5px] italic opacity-50" style={{ color: "var(--portal-ink)" }} title="Coming with the access-link email">
+                  <Icon name="trash" size={14} /> Remove {ea.name}&apos;s access
+                </button>
               </div>
-              <button type="button" disabled className="inline-flex items-center gap-1.5 text-[12.5px] italic opacity-50" style={{ color: "var(--portal-ink)" }} title="Coming with the access-link email">
-                <Icon name="x" size={14} /> Remove access
-              </button>
             </div>
           )}
 
@@ -78,7 +83,9 @@ export function ProfileEaDrawer({ ea, onClose }: { ea: ExecProfileData["ea"]; on
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@company.com" className="w-full rounded-lg px-3.5 py-2.5 text-[14px] outline-none" style={{ background: "var(--portal-page)", border: "1px solid var(--portal-line)", color: "var(--portal-ink)" }} />
             </div>
             <p className="mt-2 text-[12px] italic" style={{ color: "var(--muted-foreground)" }}>
-              Saving sends them a confirmation email with a one-click access link.
+              {isEdit && ea
+                ? `Saving sends ${ea.name} a confirmation email with a one-click access link. If you change the email to a new person, the previous address loses access immediately.`
+                : "Saving sends them a confirmation email with a one-click access link."}
             </p>
           </div>
 

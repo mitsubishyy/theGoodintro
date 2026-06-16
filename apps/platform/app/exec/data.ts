@@ -1058,9 +1058,14 @@ export async function loadExecMeetings(supabase: SupabaseClient, execId: string,
     };
   };
 
+  // Upcoming = every in-flight meeting (proposed = time being arranged, or
+  // confirmed) so none silently vanish from the list/calendar/drawer. proposed
+  // rows have no time and sort last ("~"); confirmed-past (time elapsed, outcome
+  // not yet recorded) still shows rather than disappearing. The "coming up" stat
+  // stays the strict lock definition (confirmed and in the future).
   const upcoming = meetings
-    .filter((m) => m.status === "confirmed" && m.scheduled_at && (m.scheduled_at as string) >= nowIso)
-    .sort((a, b) => (a.scheduled_at as string).localeCompare(b.scheduled_at as string))
+    .filter((m) => m.status === "confirmed" || m.status === "proposed")
+    .sort((a, b) => String(a.scheduled_at ?? "~").localeCompare(String(b.scheduled_at ?? "~")))
     .map(buildRow);
 
   const past = meetings
@@ -1078,7 +1083,8 @@ export async function loadExecMeetings(supabase: SupabaseClient, execId: string,
   for (const g of giftByMeeting.values()) {
     if (g.satIso && g.satIso >= fy.from && g.satIso < fy.to) heldFy += 1;
   }
-  const stats = { heldFy, comingUp: upcoming.length, lifetime: past.length };
+  const comingUp = meetings.filter((m) => m.status === "confirmed" && m.scheduled_at && (m.scheduled_at as string) >= nowIso).length;
+  const stats = { heldFy, comingUp, lifetime: past.length };
 
   return {
     exec: {

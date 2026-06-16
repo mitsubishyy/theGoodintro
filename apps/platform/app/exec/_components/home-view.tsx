@@ -114,9 +114,11 @@ export function ExecHomeView({ data }: { data: ExecHomeData }) {
         <h2 className="text-[22px] font-semibold" style={{ fontFamily: SERIF, color: "var(--portal-ink)" }}>
           Recent impact
         </h2>
-        <p className="mt-1.5 text-[13px]" style={{ color: "var(--muted-foreground)" }}>
-          Three most recent gifts. {metrics.fyMeetings} held this financial year.
-        </p>
+        {impact.length > 0 && (
+          <p className="mt-1.5 text-[13px]" style={{ color: "var(--muted-foreground)" }}>
+            Three most recent gifts. {metrics.fyMeetings} held this financial year.
+          </p>
+        )}
         <div className="mt-5">
           {impact.length === 0 ? (
             <QuietEmpty>Your first gift appears here once your first meeting is held. Confirmed, every time.</QuietEmpty>
@@ -313,7 +315,7 @@ function IncomingWidget({ rows, count }: { rows: IncomingRow[]; count: number })
             <p className="text-[14px] italic" style={{ color: "var(--portal-ink)" }}>
               Nothing awaiting your answer.
             </p>
-            <p className="mt-1.5 text-[12.5px]" style={{ color: "var(--muted-foreground)" }}>
+            <p className="mt-1.5 text-[12.5px] italic" style={{ color: "var(--muted-foreground)" }}>
               New requests reach your email first, then appear here with everything you need to decide.
             </p>
           </div>
@@ -423,7 +425,7 @@ function UpcomingCard({ m, onChangeCharity }: { m: UpcomingRow; onChangeCharity:
           <Icon name="heart" size={16} className="mt-0.5 shrink-0" style={{ color: "var(--portal-emerald)" }} />
           <div className="min-w-0">
             <div className="text-[13px]" style={{ color: "var(--portal-ink)" }}>
-              {m.amount} to {m.charityName}
+              approximately {m.amount} to {m.charityName}
             </div>
             <div className="text-[12px] italic" style={{ color: "var(--muted-foreground)" }}>
               {m.isOverride ? `For this meeting only · Your standing nomination (${m.standingCharityName}) stays` : "Your standing nomination"}
