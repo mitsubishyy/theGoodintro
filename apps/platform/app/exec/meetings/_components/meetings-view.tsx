@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Avatar, Icon } from "@thegoodintro/ui";
 import type { ExecMeetingsData, MeetingListRow, MeetingStatusDisplay } from "../../data";
 import { MeetingsCalendar } from "./meetings-calendar";
@@ -51,6 +52,10 @@ export function MeetingsView({ data, nowIso, tz, initialView, initialDrawerId }:
   const showPast = range === "all" || range === "past";
   const showCancelled = (range === "all" || range === "past") && data.cancelledTotal > 0;
 
+  // First-run: never had a meeting. Hide controls + cards, show the hero (the
+  // connect-calendar banner above still renders). First-run lock.
+  const noMeetings = data.upcoming.length === 0 && data.pastTotal === 0 && data.cancelledTotal === 0;
+
   return (
     <div>
       {/* ── Page header — three-stat mini-strip (naked text, hairline dividers) ── */}
@@ -73,12 +78,21 @@ export function MeetingsView({ data, nowIso, tz, initialView, initialDrawerId }:
       {/* ── Connect-your-calendar banner ── */}
       <div className="mt-8">
         {data.calendar.connected ? (
-          <div className="flex items-center gap-3 rounded-xl px-6 py-4 text-[13px]" style={{ background: "var(--portal-card-hover)", border: "1px solid var(--portal-line)" }}>
-            <Icon name="calendar" size={18} style={{ color: "var(--portal-emerald)" }} />
-            <span style={{ color: "var(--portal-ink)" }}>
-              {data.calendar.provider === "outlook" ? "Outlook" : "Google Calendar"} connected
-              {data.calendar.lastSyncedLabel ? ` · last synced ${data.calendar.lastSyncedLabel}` : ""}. Free and busy only, never event details.
-            </span>
+          <div className="flex items-center justify-between gap-4 rounded-xl px-6 py-3.5" style={{ background: "var(--portal-card-hover)", border: "1px solid var(--portal-line)" }}>
+            <div className="flex items-start gap-2.5">
+              <Icon name="calendar" size={18} className="mt-0.5 shrink-0" style={{ color: "var(--portal-ink)" }} />
+              <div>
+                <div className="text-[13px] font-medium" style={{ color: "var(--portal-ink)" }}>
+                  {data.calendar.provider === "outlook" ? "Outlook" : "Google Calendar"} connected
+                </div>
+                <div className="text-[12.5px] italic" style={{ color: "var(--muted-foreground)" }}>
+                  {data.calendar.lastSyncedLabel ? `Last synced ${data.calendar.lastSyncedLabel} · ` : ""}free and busy only, never event details
+                </div>
+              </div>
+            </div>
+            <Link href="/exec/profile" className="shrink-0 text-[13px] italic hover:underline underline-offset-2" style={{ color: "var(--portal-ink)" }}>
+              Manage in Profile →
+            </Link>
           </div>
         ) : (
           <div className="flex flex-col gap-4 rounded-xl px-6 py-5 sm:flex-row sm:items-center sm:justify-between" style={{ background: "var(--portal-card-reading)", border: "1px solid var(--portal-line)" }}>
@@ -105,34 +119,38 @@ export function MeetingsView({ data, nowIso, tz, initialView, initialDrawerId }:
         )}
       </div>
 
-      {/* ── Controls bar ── */}
-      <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-        <Segmented
-          value={view}
-          onChange={(v) => setView(v as View)}
-          options={[
-            { label: "Calendar", value: "calendar" },
-            { label: "List", value: "list" },
-          ]}
-        />
-        {view === "list" && (
-          <div className="flex items-center gap-3">
-            <Segmented
-              value={range}
-              onChange={(v) => setRange(v as Range)}
-              options={[
-                { label: "All", value: "all" },
-                { label: "Upcoming", value: "upcoming" },
-                { label: "Past", value: "past" },
-              ]}
-            />
-            <SortDropdown value={sort} onChange={setSort} />
-          </div>
-        )}
-      </div>
+      {/* ── Controls bar (hidden at first-run) ── */}
+      {!noMeetings && (
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+          <Segmented
+            value={view}
+            onChange={(v) => setView(v as View)}
+            options={[
+              { label: "Calendar", value: "calendar" },
+              { label: "List", value: "list" },
+            ]}
+          />
+          {view === "list" && (
+            <div className="flex items-center gap-3">
+              <Segmented
+                value={range}
+                onChange={(v) => setRange(v as Range)}
+                options={[
+                  { label: "All", value: "all" },
+                  { label: "Upcoming", value: "upcoming" },
+                  { label: "Past", value: "past" },
+                ]}
+              />
+              <SortDropdown value={sort} onChange={setSort} />
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── Body ── */}
-      {view === "calendar" ? (
+      {noMeetings ? (
+        <FirstRunHero icon="calendar" headline="No meetings yet." sub="Accept a request from your inbox and the confirmed meeting lands here, calendar invite and all." />
+      ) : view === "calendar" ? (
         <div className="mt-6">
           <MeetingsCalendar meetings={allRows} tz={tz} nowIso={nowIso} onOpen={setDrawerId} />
         </div>
@@ -339,6 +357,26 @@ function EmptyRow({ children }: { children: React.ReactNode }) {
     <p className="px-6 py-8 text-[14px] italic" style={{ color: "var(--muted-foreground)" }}>
       {children}
     </p>
+  );
+}
+
+// ── First-run hero (first-run lock; copy-only, no buttons) ───────────────────
+
+function FirstRunHero({ icon, headline, sub }: { icon: "calendar" | "heart"; headline: string; sub: string }) {
+  return (
+    <div className="grid place-items-center pt-[16vh] text-center">
+      <div className="max-w-[460px]">
+        <span className="mx-auto grid size-16 place-items-center rounded-full border" style={{ borderColor: "var(--portal-line)" }}>
+          <Icon name={icon} size={24} style={{ color: "var(--portal-ink)" }} />
+        </span>
+        <h2 className="mt-6 text-[28px] font-semibold tracking-tight" style={{ fontFamily: SERIF, color: "var(--portal-ink)" }}>
+          {headline}
+        </h2>
+        <p className="mt-3 text-[14px] italic leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
+          {sub}
+        </p>
+      </div>
+    </div>
   );
 }
 

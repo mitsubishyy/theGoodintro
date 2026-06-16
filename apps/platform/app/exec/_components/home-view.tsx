@@ -30,6 +30,10 @@ export function ExecHomeView({ data }: { data: ExecHomeData }) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const { exec, metrics, standing, incoming, upcoming, impact } = data;
 
+  // First-run (never-had-data) exec: nothing pending, nothing upcoming, no
+  // meetings ever. Drives the onboarding greeting sub-line (first-run lock).
+  const firstRun = metrics.incoming === 0 && metrics.upcoming === 0 && metrics.lifetimeMeetings === 0;
+
   // Greeting with the capital "Good" in emerald (locked).
   const greetingRest = data.greeting.replace(/^Good/, "");
 
@@ -42,7 +46,7 @@ export function ExecHomeView({ data }: { data: ExecHomeData }) {
           {greetingRest}
         </h1>
         <p className="mt-2 text-[14px] italic" style={{ color: "var(--muted-foreground)" }}>
-          {data.greetingDate}.
+          {data.greetingDate}.{firstRun ? " We set everything up on your onboarding call." : ""}
         </p>
       </header>
 
@@ -51,7 +55,7 @@ export function ExecHomeView({ data }: { data: ExecHomeData }) {
         className="mt-10 rounded-2xl px-7 py-6 grid grid-cols-2 lg:grid-cols-4 gap-y-6"
         style={{ background: "var(--portal-ribbon)", color: "var(--primary-foreground)" }}
       >
-        <MetricGroup label="Incoming" value={String(metrics.incoming)} sub="awaiting your answer" />
+        <MetricGroup label="Incoming" value={String(metrics.incoming)} sub={metrics.incoming === 0 ? "requests reach your email first" : "awaiting your answer"} />
         <MetricGroup label="Upcoming" value={String(metrics.upcoming)} sub="this month" divided />
         <MetricGroup
           label="This financial year"
@@ -63,7 +67,7 @@ export function ExecHomeView({ data }: { data: ExecHomeData }) {
         <MetricGroup
           label="Lifetime"
           value={metrics.lifetimeAmount}
-          sub={`${metrics.lifetimeMeetings} meetings · ${metrics.lifetimeCharities} charities`}
+          sub={metrics.lifetimeCharities === 0 ? `${metrics.lifetimeMeetings} meetings` : `${metrics.lifetimeMeetings} meetings · ${metrics.lifetimeCharities} charities`}
           emerald
           divided
         />
@@ -93,7 +97,7 @@ export function ExecHomeView({ data }: { data: ExecHomeData }) {
         </h2>
         <div className="mt-5 flex flex-col gap-4">
           {upcoming.length === 0 ? (
-            <QuietEmpty>No upcoming meetings yet.</QuietEmpty>
+            <QuietEmpty>No meetings in the diary yet. When you accept a request, the confirmed time lands here.</QuietEmpty>
           ) : (
             upcoming.map((m) => <UpcomingCard key={m.id} m={m} onChangeCharity={() => setModal({ variant: "override", charity: m.charityName })} />)
           )}
@@ -115,7 +119,7 @@ export function ExecHomeView({ data }: { data: ExecHomeData }) {
         </p>
         <div className="mt-5">
           {impact.length === 0 ? (
-            <QuietEmpty>No gifts yet. They appear here once a meeting is held.</QuietEmpty>
+            <QuietEmpty>Your first gift appears here once your first meeting is held. Confirmed, every time.</QuietEmpty>
           ) : (
             impact.map((g) => <ImpactRowView key={g.id} g={g} />)
           )}
@@ -310,7 +314,7 @@ function IncomingWidget({ rows, count }: { rows: IncomingRow[]; count: number })
               Nothing awaiting your answer.
             </p>
             <p className="mt-1.5 text-[12.5px]" style={{ color: "var(--muted-foreground)" }}>
-              New requests arrive by email and appear here.
+              New requests reach your email first, then appear here with everything you need to decide.
             </p>
           </div>
         </div>

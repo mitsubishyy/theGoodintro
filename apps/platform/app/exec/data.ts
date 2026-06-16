@@ -914,7 +914,7 @@ export async function loadExecMeetings(supabase: SupabaseClient, execId: string,
   const reqs = reqRows ?? [];
   const requestIds = reqs.map((r) => r.id as string);
   if (requestIds.length === 0) {
-    return emptyMeetings(execRow, tz, execRow.calendar_connected_at as string | null, execRow.calendar_provider as string | null, execRow.calendar_last_synced_at as string | null);
+    return emptyMeetings(execRow, tz, execRow.calendar_connected_at as string | null, execRow.calendar_provider as string | null, execRow.calendar_last_synced_at as string | null, now);
   }
 
   // Per-vendor held count → projected band amount for confirmed meetings.
@@ -1090,7 +1090,7 @@ export async function loadExecMeetings(supabase: SupabaseClient, execId: string,
     },
     tz,
     stats,
-    calendar: calendarState(execRow.calendar_connected_at as string | null, execRow.calendar_provider as string | null, execRow.calendar_last_synced_at as string | null, tz),
+    calendar: calendarState(execRow.calendar_connected_at as string | null, execRow.calendar_provider as string | null, execRow.calendar_last_synced_at as string | null, now),
     upcoming,
     past,
     cancelled,
@@ -1099,12 +1099,12 @@ export async function loadExecMeetings(supabase: SupabaseClient, execId: string,
   };
 }
 
-function calendarState(connectedAt: string | null, provider: string | null, lastSynced: string | null, tz: string): ExecMeetingsData["calendar"] {
+function calendarState(connectedAt: string | null, provider: string | null, lastSynced: string | null, now: Date): ExecMeetingsData["calendar"] {
   const connected = Boolean(connectedAt);
   return {
     connected,
     provider: connected ? provider ?? null : null,
-    lastSyncedLabel: connected && lastSynced ? shortDateNum(lastSynced, tz) : null,
+    lastSyncedLabel: connected && lastSynced ? relativeTime(lastSynced, now) : null,
   };
 }
 
@@ -1392,6 +1392,7 @@ function emptyMeetings(
   connectedAt: string | null,
   provider: string | null,
   lastSynced: string | null,
+  now: Date,
 ): ExecMeetingsData {
   return {
     exec: {
@@ -1403,7 +1404,7 @@ function emptyMeetings(
     },
     tz,
     stats: { heldFy: 0, comingUp: 0, lifetime: 0 },
-    calendar: calendarState(connectedAt, provider, lastSynced, tz),
+    calendar: calendarState(connectedAt, provider, lastSynced, now),
     upcoming: [],
     past: [],
     cancelled: [],

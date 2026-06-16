@@ -63,6 +63,10 @@ export function ImpactView({ data, nowIso, initialView, initialDrawerId }: { dat
   const thisFyRows = sortRows(data.thisFy);
   const prevRows = sortRows(data.previous);
 
+  // First-run: never held a meeting / no gifts ever. Hide controls + cards,
+  // show the heart hero personalised to the standing charity (first-run lock).
+  const noGifts = data.thisFy.length === 0 && data.previous.length === 0;
+
   return (
     <div>
       {/* ── Header ── */}
@@ -82,32 +86,36 @@ export function ImpactView({ data, nowIso, initialView, initialDrawerId }: { dat
         </div>
       </header>
 
-      {/* ── Controls ── */}
-      <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-        <Segmented
-          value={view}
-          onChange={(v) => setView(v as View)}
-          options={[
-            { label: "List", value: "list" },
-            { label: "By charity", value: "charity" },
-          ]}
-        />
-        <div className="flex items-center gap-3">
+      {/* ── Controls (hidden at first-run) ── */}
+      {!noGifts && (
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
           <Segmented
-            value={range}
-            onChange={(v) => setRange(v as Range)}
+            value={view}
+            onChange={(v) => setView(v as View)}
             options={[
-              { label: "All time", value: "all" },
-              { label: "This FY", value: "fy" },
-              { label: "Last 12 months", value: "12m" },
+              { label: "List", value: "list" },
+              { label: "By charity", value: "charity" },
             ]}
           />
-          <SortDropdown value={sort} onChange={setSort} />
+          <div className="flex items-center gap-3">
+            <Segmented
+              value={range}
+              onChange={(v) => setRange(v as Range)}
+              options={[
+                { label: "All time", value: "all" },
+                { label: "This FY", value: "fy" },
+                { label: "Last 12 months", value: "12m" },
+              ]}
+            />
+            <SortDropdown value={sort} onChange={setSort} />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── Body ── */}
-      {view === "list" ? (
+      {noGifts ? (
+        <FirstRunHero charity={data.standingCharityName} />
+      ) : view === "list" ? (
         <div className="mt-6 flex flex-col gap-8">
           <SectionCard label={`This financial year · ${data.thisFy.length} gifts`} rightLabel={data.thisFyTotalLabel} alwaysOpen>
             {thisFyRows.length === 0 ? <EmptyRow>No gifts in this range.</EmptyRow> : thisFyRows.map((r, i) => <GiftRowView key={r.id} row={r} first={i === 0} onOpen={() => setDrawerId(r.id)} />)}
@@ -351,5 +359,24 @@ function EmptyRow({ children }: { children: React.ReactNode }) {
     <p className="px-6 py-8 text-[14px] italic" style={{ color: "var(--muted-foreground)" }}>
       {children}
     </p>
+  );
+}
+
+// First-run hero (first-run lock; heart glyph, charity-personalised, no buttons).
+function FirstRunHero({ charity }: { charity: string }) {
+  return (
+    <div className="grid place-items-center pt-[16vh] text-center">
+      <div className="max-w-[460px]">
+        <span className="mx-auto grid size-16 place-items-center rounded-full border" style={{ borderColor: "var(--portal-line)" }}>
+          <Icon name="heart" size={24} style={{ color: "var(--portal-ink)" }} />
+        </span>
+        <h2 className="mt-6 text-[28px] font-semibold tracking-tight" style={{ fontFamily: SERIF, color: "var(--portal-ink)" }}>
+          Your first gift is one meeting away.
+        </h2>
+        <p className="mt-3 text-[14px] italic leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
+          Hold your first meeting and a real gift directs to {charity} in your name. Every gift lands here, confirmed.
+        </p>
+      </div>
+    </div>
   );
 }
