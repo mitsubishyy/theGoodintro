@@ -35,8 +35,15 @@ this file only maps them onto Xero.
 - **Token URL:** `https://identity.xero.com/connect/token` (form-encoded;
   client id/secret via HTTP basic auth header).
 - **Scopes (request exactly these):** `openid profile email offline_access
-  accounting.transactions accounting.contacts`. `offline_access` is what grants
-  the refresh token; without it the connection dies in 30 minutes.
+  accounting.contacts accounting.invoices accounting.settings.read`.
+  `offline_access` grants the refresh token (without it the connection dies in
+  30 minutes). **Granular-scopes gotcha (verified 2026-06-16):** Xero retired the
+  broad `accounting.transactions` scope for apps created after 2026-03-02; our
+  app is post-cutoff, so requesting it returns `invalid_scope`. The granular
+  replacements are `accounting.invoices` (create/read invoices, detect paid via
+  status) and, if ever reading Payment objects directly, `accounting.payments`.
+  `accounting.contacts` and `accounting.settings` are unchanged and available to
+  any app. If stage 2/3 needs more, adding a scope requires Issy to reconnect once.
 - **Tenant:** after token exchange, `GET https://api.xero.com/connections`
   (bearer token) returns the authorised tenants; store `tenantId` and send it
   as the `xero-tenant-id` header on every Accounting API call.

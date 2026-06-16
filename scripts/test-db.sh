@@ -35,11 +35,12 @@ if [ -z "$API_URL" ] || [ -z "$PUBLISHABLE_KEY" ]; then
   exit 1
 fi
 
-# Manually-added secrets (the Resend key + email config, A1) must survive
-# regeneration, or the one manual setup step evaporates on every test run.
+# Manually-added secrets (the Resend key + email config A1; the Xero OAuth keys
+# + token-encryption key, DEC-13) must survive regeneration, or the manual setup
+# steps evaporate on every test run.
 PRESERVED=""
 if [ -f apps/platform/.env.local ]; then
-  PRESERVED="$(grep -E '^(RESEND_API_KEY|EMAIL_MODE|EMAIL_TEST_RECIPIENT|EMAIL_FROM_PERSONAL|EMAIL_FROM_BRAND|EMAIL_REPLY_TO|EMAIL_ADMIN_ALERTS|EMAIL_SIGNATURE_PHONE)=' apps/platform/.env.local || true)"
+  PRESERVED="$(grep -E '^(RESEND_API_KEY|EMAIL_MODE|EMAIL_TEST_RECIPIENT|EMAIL_FROM_PERSONAL|EMAIL_FROM_BRAND|EMAIL_REPLY_TO|EMAIL_ADMIN_ALERTS|EMAIL_SIGNATURE_PHONE|XERO_CLIENT_ID|XERO_CLIENT_SECRET|XERO_REDIRECT_URI|XERO_WEBHOOK_KEY|XERO_TOKEN_ENC_KEY)=' apps/platform/.env.local || true)"
 fi
 
 cat > apps/platform/.env.local <<EOF
