@@ -156,7 +156,7 @@ export async function loadExecHome(supabase: SupabaseClient, execId: string, now
   let standing: ExecHomeData["standing"] = null;
   if (defaultCharityId) {
     const [{ data: charity }, { data: nom }] = await Promise.all([
-      supabase.from("charity").select("id, name, short_name, abn, dgr_status").eq("id", defaultCharityId).maybeSingle(),
+      supabase.from("charity").select("id, name, short_name, abn, dgr_status, cause, dgr_item, logo_url").eq("id", defaultCharityId).maybeSingle(),
       supabase
         .from("nomination_history")
         .select("started_at")
@@ -171,11 +171,11 @@ export async function loadExecHome(supabase: SupabaseClient, execId: string, now
       standing = {
         charityId: charity.id as string,
         name: charity.name as string,
-        cause: null, // charity.cause not in schema yet (next charity-content increment)
+        cause: (charity.cause as string) ?? null,
         abn: (charity.abn as string) ?? null,
-        dgrItem: null, // charity.dgr_item not in schema yet
+        dgrItem: (charity.dgr_item as string) ?? null,
         dgrStatus: (charity.dgr_status as string) ?? null,
-        logoUrl: null, // charity.logo_url not in schema yet → initials fallback
+        logoUrl: (charity.logo_url as string) ?? null,
         sinceLabel: nom?.started_at ? shortDateNum(nom.started_at as string, tz) : null,
       };
     }
@@ -371,6 +371,93 @@ export async function loadExecHome(supabase: SupabaseClient, execId: string, now
 // Indicative band-1 share, used where a vendor context is not in hand.
 export function indicativeFloor(): string {
   return formatAud(charityShareCentsForMeetingNumber(1));
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Charity DETAIL content (migration 0021) for the locked charity detail modal
+   (exec-dashboard VP4; re-rendered on My charity VP3 + opened from Impact's
+   "Learn about" footer). Read-only. Sections whose curated content is empty
+   render nothing (lock: "section hidden if charity has no curated quote", and
+   the same for purpose / programmes / stories). The "what your gift funds"
+   figure is the band-1 indicative charity share, rendered "approximately $X"
+   per the exec money rule (never a flat figure to an exec pre-Held).
+   ───────────────────────────────────────────────────────────────────────── */
+
+export interface CharityProgramme {
+  label: string;
+  body: string;
+}
+export interface CharityStory {
+  publishedAt: string | null;
+  headline: string;
+  body: string;
+  url: string | null;
+}
+export interface CharityContent {
+  id: string;
+  name: string;
+  cause: string | null;
+  abn: string | null;
+  dgrItem: string | null;
+  dgrEndorsed: boolean;
+  logoUrl: string | null;
+  heroImageUrl: string | null;
+  purpose: string | null;
+  programmes: CharityProgramme[];
+  featuredQuote: string | null;
+  featuredQuoteAttribution: string | null;
+  stories: CharityStory[];
+  /** Band-1 indicative charity share, formatted; rendered "approximately $X". */
+  indicativeAmount: string;
+}
+
+function asProgrammes(v: unknown): CharityProgramme[] {
+  if (!Array.isArray(v)) return [];
+  return v
+    .map((p) => ({ label: String((p as { label?: unknown }).label ?? "").trim(), body: String((p as { body?: unknown }).body ?? "").trim() }))
+    .filter((p) => p.label || p.body);
+}
+function asStories(v: unknown): CharityStory[] {
+  if (!Array.isArray(v)) return [];
+  return v
+    .map((s) => {
+      const o = s as { published_at?: unknown; headline?: unknown; body?: unknown; url?: unknown };
+      return {
+        publishedAt: o.published_at ? String(o.published_at) : null,
+        headline: String(o.headline ?? "").trim(),
+        body: String(o.body ?? "").trim(),
+        url: o.url ? String(o.url) : null,
+      };
+    })
+    .filter((s) => s.headline)
+    .sort((a, b) => String(b.publishedAt ?? "").localeCompare(String(a.publishedAt ?? "")))
+    .slice(0, 2);
+}
+
+export async function loadCharityContent(supabase: SupabaseClient, charityId: string): Promise<CharityContent | null> {
+  const { data: c } = await supabase
+    .from("charity")
+    .select("id, name, cause, abn, dgr_item, dgr_status, logo_url, hero_image_url, purpose, programmes, featured_quote, featured_quote_attribution, stories")
+    .eq("id", charityId)
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (!c) return null;
+  return {
+    id: c.id as string,
+    name: c.name as string,
+    cause: (c.cause as string) ?? null,
+    abn: (c.abn as string) ?? null,
+    dgrItem: (c.dgr_item as string) ?? null,
+    dgrEndorsed: c.dgr_status === "endorsed",
+    logoUrl: (c.logo_url as string) ?? null,
+    heroImageUrl: (c.hero_image_url as string) ?? null,
+    purpose: (c.purpose as string) ?? null,
+    programmes: asProgrammes(c.programmes),
+    featuredQuote: (c.featured_quote as string) ?? null,
+    featuredQuoteAttribution: (c.featured_quote_attribution as string) ?? null,
+    stories: asStories(c.stories),
+    indicativeAmount: indicativeFloor(),
+  };
 }
 
 /* ─────────────────────────────────────────────────────────────────────────

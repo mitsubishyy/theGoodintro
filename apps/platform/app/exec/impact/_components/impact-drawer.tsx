@@ -19,7 +19,7 @@ const SERIF = "var(--font-display), Georgia, serif";
 const RELEASED = "oklch(0.78 0.06 155)";
 const SITE = "https://thegoodintro.com";
 
-export function ImpactDrawer({ gift, onClose, onLearn }: { gift: GiftDrawerData | null; onClose: () => void; onLearn: (charityName: string) => void }) {
+export function ImpactDrawer({ gift, onClose, onLearn }: { gift: GiftDrawerData | null; onClose: () => void; onLearn: (charityId: string) => void }) {
   const [showPitch, setShowPitch] = useState(false);
 
   useEffect(() => {
@@ -146,7 +146,7 @@ export function ImpactDrawer({ gift, onClose, onLearn }: { gift: GiftDrawerData 
         <div className="sticky bottom-0 flex gap-3 border-t px-6 py-5" style={{ background: "var(--portal-card-reading)", borderColor: "var(--portal-line)" }}>
           <button
             type="button"
-            onClick={() => onLearn(gift.charityName)}
+            onClick={() => gift.charityId && onLearn(gift.charityId)}
             className="flex-[2] grid place-items-center h-12 rounded-[10px] text-[13.5px] font-semibold text-white"
             style={{ background: "var(--portal-emerald)" }}
           >

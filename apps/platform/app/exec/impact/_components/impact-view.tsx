@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Avatar, Icon } from "@thegoodintro/ui";
 import type { CharityGroup, ExecImpactData, GiftRow } from "../../data";
 import { ImpactDrawer } from "./impact-drawer";
-import { CharityChangeModal } from "../../_components/charity-change-modal";
+import { CharityDetailModal } from "../../_components/charity-detail-modal";
 
 /**
  * Exec Impact List (exec-impact-list lock 2026-06-11). Reuses the Meetings
@@ -31,7 +31,7 @@ export function ImpactView({ data, nowIso, initialView, initialDrawerId }: { dat
   const [prevOpen, setPrevOpen] = useState(false);
   const [openCharities, setOpenCharities] = useState<Set<string>>(() => new Set(data.byCharity[0] ? [data.byCharity[0].charityId] : []));
   const [drawerId, setDrawerId] = useState<string | null>(initialDrawerId);
-  const [learnCharity, setLearnCharity] = useState<string | null>(null);
+  const [detailCharityId, setDetailCharityId] = useState<string | null>(null);
 
   const allRows = useMemo(() => [...data.thisFy, ...data.previous], [data]);
   const drawerGift = useMemo(() => allRows.find((r) => r.id === drawerId)?.drawer ?? null, [allRows, drawerId]);
@@ -143,8 +143,8 @@ export function ImpactView({ data, nowIso, initialView, initialDrawerId }: { dat
         </div>
       )}
 
-      <ImpactDrawer key={drawerId ?? "closed"} gift={drawerGift} onClose={() => setDrawerId(null)} onLearn={(c) => setLearnCharity(c)} />
-      <CharityChangeModal open={learnCharity !== null} variant="learn" charityName={learnCharity ?? ""} onClose={() => setLearnCharity(null)} />
+      <ImpactDrawer key={drawerId ?? "closed"} gift={drawerGift} onClose={() => setDrawerId(null)} onLearn={(id) => setDetailCharityId(id)} />
+      <CharityDetailModal key={detailCharityId ?? "closed"} charityId={detailCharityId} onClose={() => setDetailCharityId(null)} />
     </div>
   );
 }

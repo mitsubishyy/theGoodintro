@@ -399,6 +399,47 @@ update public.charity set short_name = 'Cancer Council' where id = '00000000-000
 update public.charity set short_name = 'Red Cross'      where id = '00000000-0000-0000-0000-00000000c1a7';
 update public.charity set short_name = 'ACF'            where id = '00000000-0000-0000-0000-00000000c1a8';
 
+-- ════════════════════════════════════════════════════════════════════════════
+-- Charity content (migration 0021). v1 = curated by hand, no scraper. cause +
+-- dgr_item on all 8 (Direction Card / picker rows / My charity hero credentials);
+-- the dgr_item values are illustrative demo data. Full DETAIL-modal content
+-- (purpose / programmes / quote / stories) is curated for Priya's standing
+-- charity RFDS; the other 7 carry the short fields and degrade the modal's
+-- richer sections honestly until curated. logo_url / hero_image_url stay NULL so
+-- the initials + tint fallbacks render.
+update public.charity set cause = 'Mental health and wellbeing · Australia-wide',           dgr_item = 'Item 1 DGR' where id = '00000000-0000-0000-0000-00000000c1a1';
+update public.charity set cause = 'Food rescue and hunger relief · Australia-wide',          dgr_item = 'Item 1 DGR' where id = '00000000-0000-0000-0000-00000000c1a2';
+update public.charity set cause = 'Remote health services · Australia-wide',                 dgr_item = 'Item 1 DGR' where id = '00000000-0000-0000-0000-00000000c1a3';
+update public.charity set cause = 'Education for children in need · Australia-wide',          dgr_item = 'Item 1 DGR' where id = '00000000-0000-0000-0000-00000000c1a4';
+update public.charity set cause = 'Mental health research and prevention · Australia-wide',   dgr_item = 'Item 1 DGR' where id = '00000000-0000-0000-0000-00000000c1a5';
+update public.charity set cause = 'Cancer research, prevention and support · Australia-wide', dgr_item = 'Item 1 DGR' where id = '00000000-0000-0000-0000-00000000c1a6';
+update public.charity set cause = 'Humanitarian aid and resilience · Australia-wide',         dgr_item = 'Item 1 DGR' where id = '00000000-0000-0000-0000-00000000c1a7';
+update public.charity set cause = 'Environment and climate · Australia-wide',                 dgr_item = 'Item 1 DGR' where id = '00000000-0000-0000-0000-00000000c1a8';
+
+update public.charity set
+  purpose = 'The Royal Flying Doctor Service provides emergency aeromedical care and primary health services to people who live, work and travel across remote and rural Australia, so that anyone, anywhere, can reach the care they need.',
+  programmes = '[
+    {"label":"Emergency aeromedical retrieval","body":"Round-the-clock aircraft and medical crews reach critically ill and injured people in places no road or ambulance can, then fly them to definitive care."},
+    {"label":"Primary and mental health clinics","body":"Regular fly-in clinics bring GPs, nurses, dentists and mental health clinicians to remote communities that would otherwise go without."},
+    {"label":"Indigenous health programmes","body":"Community-led work with First Nations communities focuses on chronic disease, maternal health and the long-term wellbeing of country."}
+  ]'::jsonb,
+  featured_quote = 'Without the Flying Doctor, we''d have lost him. Simple as that.',
+  featured_quote_attribution = 'Station owner, Diamantina Shire QLD',
+  stories = '[
+    {"published_at":"2026-05-12","headline":"A nine-hour night flight from Birdsville","body":"A late-night retrieval from one of the most remote corners of Queensland, and the crew who made the call to fly.","url":"https://www.flyingdoctor.org.au/news/"},
+    {"published_at":"2026-04-28","headline":"First mental health clinic lands in Wilcannia","body":"A new fly-in mental health service begins regular clinics in far-west New South Wales.","url":"https://www.flyingdoctor.org.au/news/"}
+  ]'::jsonb,
+  content_updated_at = now()
+where id = '00000000-0000-0000-0000-00000000c1a3';
+
+-- Priya's locked two-row nomination history (Beyond Blue 9 Feb 2024 to 12 May
+-- 2024, then RFDS 12 May 2024 to present). Seeded before the generic backfill
+-- below so its not-exists guard skips her.
+insert into public.nomination_history (executive_id, charity_id, started_at, ended_at) values
+  ('00000000-0000-0000-0000-00000000ec03','00000000-0000-0000-0000-00000000c1a1','2024-02-09T00:00:00+10:00','2024-05-12T00:00:00+10:00'),
+  ('00000000-0000-0000-0000-00000000ec03','00000000-0000-0000-0000-00000000c1a3','2024-05-12T00:00:00+10:00', null)
+on conflict do nothing;
+
 -- Priya Raghavan (ec03) is the locked exec-portal sample: full business context,
 -- LinkedIn, timezone, a connected calendar, and a preferred meeting window.
 update public.executive set

@@ -5,9 +5,22 @@ import { createClient } from "@/lib/supabase/server";
 import { getStaff } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
-import { resolveDemoExecutiveId } from "./data";
+import { resolveDemoExecutiveId, loadCharityContent, type CharityContent } from "./data";
 
 export type ExecActionState = { ok?: boolean; error?: string };
+
+/**
+ * Fetch the curated content for a charity's DETAIL modal (exec-dashboard VP4 /
+ * My charity VP3 / Impact "Learn about"). On-demand so no loader carries the
+ * content; the modal calls this on open. Flag-gated; reads under the staff
+ * session RLS, the same demo pattern as the dashboard.
+ */
+export async function getCharityContentAction(charityId: string): Promise<CharityContent | null> {
+  if (!(await getFlag("exec_dashboard"))) return null;
+  if (!charityId) return null;
+  const supabase = await createClient();
+  return loadCharityContent(supabase, charityId);
+}
 
 /**
  * Set the executive's standing-nomination (default) charity. Flag-gated

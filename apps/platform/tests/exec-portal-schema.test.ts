@@ -78,15 +78,20 @@ describe("exec portal schema (migration 0019)", () => {
     expect(error?.message.toLowerCase()).toContain("request_q1_head_len");
   });
 
-  it("nomination_history backfilled one open row per exec with a standing charity", async () => {
+  it("nomination_history holds Priya's locked two-row sample + one open row per exec", async () => {
     const admin = await signIn("admin@thegoodintro.test");
 
+    // Priya carries the locked two-row history seeded for the My charity port:
+    // Beyond Blue (9 Feb 2024 to 12 May 2024), then RFDS (12 May 2024 to present).
     const { data: priyaRows } = await admin
       .from("nomination_history")
       .select("charity_id, started_at, ended_at")
-      .eq("executive_id", PRIYA);
-    expect(priyaRows).toHaveLength(1);
-    expect(priyaRows![0]).toMatchObject({ charity_id: RFDS, ended_at: null });
+      .eq("executive_id", PRIYA)
+      .order("started_at", { ascending: true });
+    expect(priyaRows).toHaveLength(2);
+    expect(priyaRows![0]).toMatchObject({ charity_id: BEYOND_BLUE });
+    expect(priyaRows![0].ended_at).not.toBeNull();
+    expect(priyaRows![1]).toMatchObject({ charity_id: RFDS, ended_at: null });
 
     // No exec with a standing charity is missing its open row.
     const { data: execs } = await admin
