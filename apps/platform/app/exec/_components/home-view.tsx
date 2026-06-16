@@ -6,6 +6,7 @@ import { Avatar, Icon } from "@thegoodintro/ui";
 import type { ExecHomeData, IncomingRow, UpcomingRow, ImpactRow } from "../data";
 import { CharityChangeModal } from "./charity-change-modal";
 import { CharityDetailModal } from "./charity-detail-modal";
+import { CharityPickerModal } from "./charity-picker-modal";
 
 /**
  * Exec dashboard VP1 (design/locked/exec-dashboard, LOCKED 2026-06-08 + the
@@ -26,6 +27,7 @@ const SERIF = "var(--font-display), Georgia, serif";
 export function ExecHomeView({ data }: { data: ExecHomeData }) {
   const [modal, setModal] = useState<{ variant: "standing" | "override" | "learn"; charity: string } | null>(null);
   const [detailCharityId, setDetailCharityId] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const { exec, metrics, standing, incoming, upcoming, impact } = data;
 
   // Greeting with the capital "Good" in emerald (locked).
@@ -70,7 +72,7 @@ export function ExecHomeView({ data }: { data: ExecHomeData }) {
       {/* ── Equal-height row: Direction Card (left) + Incoming widget (right) ── */}
       <section className="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
         <div className="lg:col-span-5">
-          <DirectionCard standing={standing} onLearn={() => standing && setDetailCharityId(standing.charityId)} onChange={() => standing && setModal({ variant: "standing", charity: standing.name })} />
+          <DirectionCard standing={standing} onLearn={() => standing && setDetailCharityId(standing.charityId)} onChange={() => setPickerOpen(true)} />
         </div>
         <div className="lg:col-span-7">
           <IncomingWidget rows={incoming} count={metrics.incoming} />
@@ -152,6 +154,7 @@ export function ExecHomeView({ data }: { data: ExecHomeData }) {
         onClose={() => setModal(null)}
       />
       <CharityDetailModal key={detailCharityId ?? "closed"} charityId={detailCharityId} eyebrow="Standing nomination" onClose={() => setDetailCharityId(null)} />
+      {pickerOpen && <CharityPickerModal onClose={() => setPickerOpen(false)} />}
     </div>
   );
 }

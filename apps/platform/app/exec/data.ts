@@ -434,6 +434,133 @@ function asStories(v: unknown): CharityStory[] {
     .slice(0, 2);
 }
 
+export interface CharityListItem {
+  id: string;
+  name: string;
+  shortName: string | null;
+  cause: string | null;
+  logoUrl: string | null;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Exec My charity — the view-only home of the standing nomination
+   (design/locked/exec-my-charity, LOCKED 2026-06-11; route /exec/my-charity).
+   Full editorial reading surface. The page hosts the picker + detail modals but
+   never changes the charity itself (the picker does). Numbers reuse the Impact
+   by-charity figures for the standing charity. nomination_history (0019) is the
+   "since" + history source.
+   ───────────────────────────────────────────────────────────────────────── */
+
+export interface NominationRow {
+  charityId: string;
+  name: string;
+  rangeLabel: string;
+  isCurrent: boolean;
+}
+export interface ExecMyCharityData {
+  exec: { name: string; title: string | null; company: string | null; email: string; photoUrl: string | null };
+  standing: { charityId: string; name: string; cause: string | null; abn: string | null; dgrItem: string | null; dgrEndorsed: boolean; logoUrl: string | null; sinceLabel: string | null } | null;
+  stats: { toStanding: string; meetingsHere: number; charitiesLifetime: number };
+  history: NominationRow[];
+}
+
+function fullDateLabel(iso: string, tz: string): string {
+  return new Intl.DateTimeFormat("en-AU", { day: "numeric", month: "long", year: "numeric", timeZone: tz }).format(new Date(iso));
+}
+
+export async function loadExecMyCharity(supabase: SupabaseClient, execId: string): Promise<ExecMyCharityData | null> {
+  const { data: execRow } = await supabase
+    .from("executive")
+    .select("id, name, title, company, primary_email, photo_url, timezone, default_charity_id")
+    .eq("id", execId)
+    .maybeSingle();
+  if (!execRow) return null;
+
+  const tz = (execRow.timezone as string) || AEST;
+  const defaultCharityId = (execRow.default_charity_id as string) ?? null;
+
+  // Hero: the standing charity's content + the "since" date (open nomination row).
+  let standing: ExecMyCharityData["standing"] = null;
+  if (defaultCharityId) {
+    const [content, { data: nom }] = await Promise.all([
+      loadCharityContent(supabase, defaultCharityId),
+      supabase.from("nomination_history").select("started_at").eq("executive_id", execId).eq("charity_id", defaultCharityId).is("ended_at", null).order("started_at", { ascending: false }).limit(1).maybeSingle(),
+    ]);
+    if (content) {
+      standing = {
+        charityId: content.id,
+        name: content.name,
+        cause: content.cause,
+        abn: content.abn,
+        dgrItem: content.dgrItem,
+        dgrEndorsed: content.dgrEndorsed,
+        logoUrl: content.logoUrl,
+        sinceLabel: nom?.started_at ? fullDateLabel(nom.started_at as string, tz) : null,
+      };
+    }
+  }
+
+  // Mini-strip: gifts to the standing charity + lifetime distinct charities.
+  let toStandingCents = 0;
+  let meetingsHere = 0;
+  let charitiesLifetime = 0;
+  const { data: reqRows } = await supabase.from("request").select("id").eq("executive_id", execId);
+  const requestIds = (reqRows ?? []).map((r) => r.id as string);
+  if (requestIds.length) {
+    const { data: mtgs } = await supabase.from("meeting").select("id").in("request_id", requestIds);
+    const meetingIds = (mtgs ?? []).map((m) => m.id as string);
+    if (meetingIds.length) {
+      const { data: gifts } = await supabase.from("gift_record").select("charity_id, charity_amount_cents").in("meeting_id", meetingIds).neq("status", "voided");
+      const charities = new Set<string>();
+      for (const g of gifts ?? []) {
+        charities.add(g.charity_id as string);
+        if (defaultCharityId && g.charity_id === defaultCharityId) {
+          toStandingCents += g.charity_amount_cents as number;
+          meetingsHere += 1;
+        }
+      }
+      charitiesLifetime = charities.size;
+    }
+  }
+
+  // Nomination history (newest first; current row is the open one).
+  const { data: histRows } = await supabase
+    .from("nomination_history")
+    .select("charity_id, started_at, ended_at, charity:charity_id(name)")
+    .eq("executive_id", execId)
+    .order("started_at", { ascending: false });
+  const history: NominationRow[] = (histRows ?? []).map((h) => {
+    const c = one<{ name: string }>(h.charity);
+    const start = fullDateLabel(h.started_at as string, tz);
+    const end = h.ended_at ? fullDateLabel(h.ended_at as string, tz) : "present";
+    return { charityId: h.charity_id as string, name: c?.name ?? "A charity", rangeLabel: `${start} to ${end}`, isCurrent: !h.ended_at };
+  });
+
+  return {
+    exec: execShell(execRow),
+    standing,
+    stats: { toStanding: formatAud(toStandingCents), meetingsHere, charitiesLifetime },
+    history,
+  };
+}
+
+/** The endorsed charity set for the picker modal (alphabetical, stable). */
+export async function loadCharityList(supabase: SupabaseClient): Promise<CharityListItem[]> {
+  const { data } = await supabase
+    .from("charity")
+    .select("id, name, short_name, cause, logo_url")
+    .eq("dgr_status", "endorsed")
+    .is("deleted_at", null)
+    .order("name", { ascending: true });
+  return (data ?? []).map((c) => ({
+    id: c.id as string,
+    name: c.name as string,
+    shortName: (c.short_name as string) ?? null,
+    cause: (c.cause as string) ?? null,
+    logoUrl: (c.logo_url as string) ?? null,
+  }));
+}
+
 export async function loadCharityContent(supabase: SupabaseClient, charityId: string): Promise<CharityContent | null> {
   const { data: c } = await supabase
     .from("charity")
