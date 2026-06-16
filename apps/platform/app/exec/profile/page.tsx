@@ -1,11 +1,58 @@
 import type { Metadata } from "next";
-import { ExecComingSoon } from "../_components/exec-coming-soon";
+import { createClient } from "@/lib/supabase/server";
+import { getFlag } from "@/lib/flags";
+import { ExecShell } from "../_components/exec-shell";
+import { ProfileView } from "./_components/profile-view";
+import { resolveDemoExecutiveId, loadExecProfile } from "../data";
 
 export const metadata: Metadata = {
   title: "Profile · TheGoodIntro",
   robots: { index: false, follow: false },
 };
 
-export default function Page() {
-  return <ExecComingSoon title="Profile" body="Your details, business context, calendar, and executive assistant settings will be editable here." />;
+/**
+ * Exec Profile — the locked account surface (design/locked/exec-profile, LOCKED
+ * 2026-06-11), completing the exec sidebar set. Flag-gated (exec_dashboard, OFF
+ * by default). The staging demo resolves one seeded executive read under the
+ * staff session's RLS; per-section saves go through staff-acting-for-exec actions.
+ */
+export default async function ExecProfilePage() {
+  if (!(await getFlag("exec_dashboard"))) return <FlagOff />;
+
+  const supabase = await createClient();
+  const execId = await resolveDemoExecutiveId(supabase);
+  const data = execId ? await loadExecProfile(supabase, execId) : null;
+  if (!data) return <FlagOff missingExec />;
+
+  return (
+    <ExecShell
+      title="Profile"
+      exec={{
+        name: data.exec.name,
+        title: data.exec.title,
+        company: data.exec.company,
+        email: data.exec.email,
+        photoUrl: data.exec.photoUrl,
+      }}
+    >
+      <ProfileView data={data} />
+    </ExecShell>
+  );
+}
+
+function FlagOff({ missingExec }: { missingExec?: boolean }) {
+  return (
+    <main className="grid min-h-screen place-items-center px-6" style={{ background: "var(--portal-page)", color: "var(--portal-ink)" }}>
+      <div className="max-w-md text-center">
+        <h1 className="text-lg font-semibold">
+          {missingExec ? "No executive to show yet" : "Executive portal is not enabled"}
+        </h1>
+        <p className="mt-2 text-sm" style={{ color: "var(--muted-foreground)" }}>
+          {missingExec
+            ? "Seed an executive on the local stack, then reload."
+            : "Turn on the exec_dashboard flag in feature_flag (staging first, Issy approves go-live)."}
+        </p>
+      </div>
+    </main>
+  );
 }

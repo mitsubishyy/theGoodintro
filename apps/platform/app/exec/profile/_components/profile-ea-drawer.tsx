@@ -1,0 +1,125 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Avatar, Icon } from "@thegoodintro/ui";
+import type { ExecProfileData } from "../../data";
+
+/**
+ * Profile EA drawer (exec-profile VP3 + exec-small-states-batch VP3). 540px right
+ * slide-over, 3px emerald top accent bar (edit/action variant), equal-priority
+ * footer pair. Add variant (no EA on file) omits the currently-on-file block +
+ * remove link. The numbered "what your assistant can do" circles are hairline +
+ * ink (never amber on exec).
+ *
+ * The save ("Send access link" / "Save changes") creates/updates an EA record +
+ * EAAssignment and sends a one-click access-link email — that email machinery is
+ * not wired and execs/EAs have no login in v1, so the action stays DISABLED with
+ * an honest note (the lock's degrade rule: disable rather than silently no-op).
+ */
+
+const SERIF = "var(--font-display), Georgia, serif";
+
+export function ProfileEaDrawer({ ea, onClose }: { ea: ExecProfileData["ea"]; onClose: () => void }) {
+  const isEdit = Boolean(ea);
+  const [name, setName] = useState(ea?.name ?? "");
+  const [email, setEmail] = useState(ea?.email ?? "");
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end" aria-modal="true" role="dialog">
+      <div className="absolute inset-0" style={{ background: "color-mix(in oklch, var(--portal-ink) 20%, transparent)", backdropFilter: "blur(2px)" }} onPointerDown={(e) => e.target === e.currentTarget && onClose()} />
+      <div className="relative h-full w-full max-w-[540px] overflow-y-auto border-l" style={{ background: "var(--portal-card-reading)", borderColor: "var(--portal-line)" }}>
+        <div className="h-[3px] w-full" style={{ background: "var(--portal-emerald)" }} />
+        <button type="button" onClick={onClose} aria-label="Close" className="absolute right-6 top-6 opacity-60 hover:opacity-100" style={{ color: "var(--muted-foreground)" }}>
+          <Icon name="x" size={20} />
+        </button>
+
+        <div className="px-7 pt-8 pb-28">
+          <p className="text-[12px] italic" style={{ color: "var(--muted-foreground)" }}>
+            Calendar & access
+          </p>
+          <h2 className="mt-1 text-[22px] font-semibold" style={{ fontFamily: SERIF, color: "var(--portal-ink)" }}>
+            {isEdit ? "Edit executive assistant" : "Add executive assistant"}
+          </h2>
+          <p className="mt-2 text-[13px] italic leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
+            Your assistant can see your incoming requests and act on meetings on your behalf. They cannot change your charity or your business context.
+          </p>
+
+          {isEdit && ea && (
+            <div className="mt-6 flex items-center gap-3 rounded-xl border p-4" style={{ borderColor: "var(--portal-line)" }}>
+              <Avatar name={ea.name} size={40} />
+              <div className="min-w-0 flex-1">
+                <div className="text-[14px] font-semibold" style={{ color: "var(--portal-ink)" }}>
+                  {ea.name}
+                </div>
+                {ea.sinceLabel && (
+                  <div className="text-[12.5px] italic" style={{ color: "var(--muted-foreground)" }}>
+                    Acting access since {ea.sinceLabel}
+                  </div>
+                )}
+              </div>
+              <button type="button" disabled className="inline-flex items-center gap-1.5 text-[12.5px] italic opacity-50" style={{ color: "var(--portal-ink)" }} title="Coming with the access-link email">
+                <Icon name="x" size={14} /> Remove access
+              </button>
+            </div>
+          )}
+
+          <div className="mt-6">
+            <p className="text-[12px] italic" style={{ color: "var(--muted-foreground)" }}>
+              {isEdit ? "Update details" : "Their details"}
+            </p>
+            <div className="mt-3 flex flex-col gap-3">
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Their name" className="w-full rounded-lg px-3.5 py-2.5 text-[14px] outline-none" style={{ background: "var(--portal-page)", border: "1px solid var(--portal-line)", color: "var(--portal-ink)" }} />
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@company.com" className="w-full rounded-lg px-3.5 py-2.5 text-[14px] outline-none" style={{ background: "var(--portal-page)", border: "1px solid var(--portal-line)", color: "var(--portal-ink)" }} />
+            </div>
+            <p className="mt-2 text-[12px] italic" style={{ color: "var(--muted-foreground)" }}>
+              Saving sends them a confirmation email with a one-click access link.
+            </p>
+          </div>
+
+          <div className="mt-6">
+            <p className="text-[12px] italic" style={{ color: "var(--muted-foreground)" }}>
+              What your assistant can do
+            </p>
+            <div className="mt-3 flex flex-col gap-3">
+              <EaStep n={1}>See your requests and calendar</EaStep>
+              <EaStep n={2}>Accept, decline, or forward on your behalf</EaStep>
+              <EaStep n={3}>Request reschedules</EaStep>
+            </div>
+          </div>
+
+          <p className="mt-6 text-[12px] italic" style={{ color: "var(--muted-foreground)" }}>
+            Assistant access goes live with the one-click access-link email, which is coming soon.
+          </p>
+        </div>
+
+        <div className="sticky bottom-0 flex gap-3 border-t px-6 py-5" style={{ background: "var(--portal-card-reading)", borderColor: "var(--portal-line)" }}>
+          <button type="button" onClick={onClose} className="flex-1 h-12 rounded-[10px] text-[13.5px] font-semibold" style={{ background: "transparent", color: "var(--portal-ink)", border: "1px solid var(--portal-line)" }}>
+            Cancel
+          </button>
+          <button type="button" disabled className="flex-1 h-12 rounded-[10px] text-[13.5px] font-semibold text-white opacity-50" style={{ background: "var(--portal-emerald)" }} title="Coming with the access-link email">
+            {isEdit ? "Save changes" : "Send access link"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EaStep({ n, children }: { n: number; children: React.ReactNode }) {
+  return (
+    <div className="flex items-start gap-3">
+      <span className="grid size-[18px] shrink-0 place-items-center rounded-full border text-[11px] font-semibold" style={{ borderColor: "var(--portal-line)", color: "var(--portal-ink)" }}>
+        {n}
+      </span>
+      <span className="text-[14px]" style={{ color: "var(--portal-ink)" }}>
+        {children}
+      </span>
+    </div>
+  );
+}

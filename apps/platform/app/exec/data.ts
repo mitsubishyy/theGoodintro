@@ -374,6 +374,148 @@ export function indicativeFloor(): string {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
+   Exec Profile — the account surface (design/locked/exec-profile, LOCKED
+   2026-06-11; route /exec/profile). Read-by-default; six sections, four
+   inline-editable. Admin-parity: every field mirrors an admin-captured field.
+   No new schema — all columns exist (0016/0019). Calendar shows the connected
+   strip (Priya is seeded connected) or the disconnected state. EA + consent
+   render honest empty states when absent (Priya has neither seeded).
+   ───────────────────────────────────────────────────────────────────────── */
+
+export interface ExecProfileData {
+  exec: { name: string; title: string | null; company: string | null; email: string; photoUrl: string | null };
+  you: { name: string; title: string | null; company: string | null; email: string; linkedinUrl: string | null; photoUrl: string | null; execIdLabel: string; joinedLabel: string | null };
+  business: { interestedIn: string | null; currentProjects: string | null; notInterestedIn: string | null; timeline: string | null; cadence: string | null; seniority: string | null };
+  charity: { name: string; cause: string | null; logoUrl: string | null } | null;
+  calendar: { connected: boolean; providerLabel: string | null; lastSyncedLabel: string | null; timezone: string | null; windowDays: string | null; windowStart: string | null; windowEnd: string | null };
+  ea: { name: string; email: string; sinceLabel: string | null } | null;
+  paused: boolean;
+  consent: { capturedAtLabel: string; termsVersion: string; actor: string; action: string; ip: string | null } | null;
+}
+
+function relativeTime(iso: string, now: Date): string {
+  const mins = Math.max(0, Math.round((now.getTime() - new Date(iso).getTime()) / 60000));
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins} minute${mins === 1 ? "" : "s"} ago`;
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return `${hrs} hour${hrs === 1 ? "" : "s"} ago`;
+  const days = Math.round(hrs / 24);
+  return `${days} day${days === 1 ? "" : "s"} ago`;
+}
+
+function execIdLabel(id: string): string {
+  return `EXC-${id.replaceAll("-", "").slice(-4).toUpperCase()}`;
+}
+
+function shortTime(t: string | null): string | null {
+  // "09:00:00" -> "09:00"
+  return t ? t.slice(0, 5) : null;
+}
+
+export async function loadExecProfile(supabase: SupabaseClient, execId: string, now = new Date()): Promise<ExecProfileData | null> {
+  const { data: e } = await supabase
+    .from("executive")
+    .select(
+      "id, name, title, company, primary_email, photo_url, linkedin_url, default_charity_id, ea_id, status, created_at, timezone, calendar_provider, calendar_connected_at, calendar_last_synced_at, preferred_window_days, preferred_window_start, preferred_window_end, interested_in, current_projects, not_interested_in, timeline, seniority_signal, suggested_cadence",
+    )
+    .eq("id", execId)
+    .maybeSingle();
+  if (!e) return null;
+
+  const tz = (e.timezone as string) || AEST;
+
+  // "Joined" date: the earliest nomination_history started_at (history starts at
+  // onboarding) is a faithful proxy — created_at on a seeded row is the seed run.
+  const { data: firstNom } = await supabase
+    .from("nomination_history")
+    .select("started_at")
+    .eq("executive_id", execId)
+    .order("started_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  const joinedLabel = firstNom?.started_at ? fullDateLabel(firstNom.started_at as string, tz) : null;
+
+  // Your-charity pointer.
+  let charity: ExecProfileData["charity"] = null;
+  if (e.default_charity_id) {
+    const { data: c } = await supabase.from("charity").select("name, cause, logo_url").eq("id", e.default_charity_id as string).maybeSingle();
+    if (c) charity = { name: c.name as string, cause: (c.cause as string) ?? null, logoUrl: (c.logo_url as string) ?? null };
+  }
+
+  // EA (denormalised ea_id → ea record) + acting-since from the assignment.
+  let ea: ExecProfileData["ea"] = null;
+  if (e.ea_id) {
+    const [{ data: eaRow }, { data: assign }] = await Promise.all([
+      supabase.from("ea").select("name, email").eq("id", e.ea_id as string).maybeSingle(),
+      supabase.from("ea_assignment").select("created_at").eq("ea_id", e.ea_id as string).eq("executive_id", execId).maybeSingle(),
+    ]);
+    if (eaRow) ea = { name: eaRow.name as string, email: eaRow.email as string, sinceLabel: assign?.created_at ? fullDateLabel(assign.created_at as string, tz) : null };
+  }
+
+  // Latest consent event for this exec (via its requests). Append-only record.
+  let consent: ExecProfileData["consent"] = null;
+  const { data: reqIds } = await supabase.from("request").select("id").eq("executive_id", execId);
+  const ids = (reqIds ?? []).map((r) => r.id as string);
+  if (ids.length) {
+    const { data: ce } = await supabase
+      .from("consent_event")
+      .select("consented_at, terms_version, actor, action, ip")
+      .in("request_id", ids)
+      .order("consented_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    if (ce) {
+      const day = new Intl.DateTimeFormat("en-AU", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: tz }).format(new Date(ce.consented_at as string));
+      consent = {
+        capturedAtLabel: `${day} · ${clockLabel(ce.consented_at as string, tz)}`,
+        termsVersion: (ce.terms_version as string) ?? "v1",
+        actor: ce.actor === "ea_acting_for_exec" ? "Your assistant" : "You (executive)",
+        action: ce.action as string,
+        ip: (ce.ip as string) ?? null,
+      };
+    }
+  }
+
+  const connected = Boolean(e.calendar_connected_at);
+  const providerLabel = connected ? (e.calendar_provider === "outlook" ? "Outlook" : "Google Calendar") : null;
+
+  return {
+    exec: execShell(e),
+    you: {
+      name: (e.name as string) ?? "",
+      title: (e.title as string) ?? null,
+      company: (e.company as string) ?? null,
+      email: (e.primary_email as string) ?? "",
+      linkedinUrl: (e.linkedin_url as string) ?? null,
+      photoUrl: (e.photo_url as string) ?? null,
+      execIdLabel: execIdLabel(e.id as string),
+      joinedLabel,
+    },
+    business: {
+      interestedIn: (e.interested_in as string) ?? null,
+      currentProjects: (e.current_projects as string) ?? null,
+      notInterestedIn: (e.not_interested_in as string) ?? null,
+      timeline: (e.timeline as string) ?? null,
+      cadence: (e.suggested_cadence as string) ?? null,
+      seniority: (e.seniority_signal as string) ?? null,
+    },
+    charity,
+    calendar: {
+      connected,
+      providerLabel,
+      lastSyncedLabel: connected && e.calendar_last_synced_at ? relativeTime(e.calendar_last_synced_at as string, now) : null,
+      timezone: (e.timezone as string) ?? null,
+      windowDays: (e.preferred_window_days as string) ?? null,
+      windowStart: shortTime(e.preferred_window_start as string | null),
+      windowEnd: shortTime(e.preferred_window_end as string | null),
+    },
+    ea,
+    paused: e.status === "paused",
+    consent,
+  };
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
    Charity DETAIL content (migration 0021) for the locked charity detail modal
    (exec-dashboard VP4; re-rendered on My charity VP3 + opened from Impact's
    "Learn about" footer). Read-only. Sections whose curated content is empty

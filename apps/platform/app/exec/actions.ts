@@ -39,6 +39,84 @@ export async function getCharityContentAction(charityId: string): Promise<Charit
   return loadCharityContent(supabase, charityId);
 }
 
+/* ── Profile per-section saves (exec-profile lock). Each is flag-gated, resolves
+   the demo executive, updates only its section's columns under the staff session
+   (the staff-acting-for-exec pattern), and appends an audit entry. Inline-edit
+   sections: You, Business context, Calendar window, Requests (pause). EA add/edit
+   + photo upload depend on email/upload machinery that is not wired and stay
+   inert in the UI. ── */
+
+function clean(v: unknown, max = 2000): string | null {
+  const s = typeof v === "string" ? v.trim() : "";
+  return s ? s.slice(0, max) : null;
+}
+
+async function updateExecProfile(updates: Record<string, unknown>, auditAction: string): Promise<ExecActionState> {
+  if (!(await getFlag("exec_dashboard"))) return { error: "Executive portal is not enabled." };
+  const supabase = await createClient();
+  const execId = await resolveDemoExecutiveId(supabase);
+  if (!execId) return { error: "No executive found." };
+
+  const { error } = await supabase.from("executive").update(updates).eq("id", execId);
+  if (error) return { error: error.message };
+
+  const staff = (await getStaff())?.staff;
+  if (staff) {
+    await logAudit(supabase, staff.id, { action: auditAction, targetType: "executive", targetId: execId, actingForExecutiveId: execId, metadata: { fields: Object.keys(updates) } });
+  }
+  revalidatePath("/exec/profile");
+  revalidatePath("/exec");
+  return { ok: true };
+}
+
+export async function saveProfileYouAction(input: { name: string; title: string; company: string; email: string; linkedinUrl: string }): Promise<ExecActionState> {
+  const email = clean(input.email, 320);
+  if (!email) return { error: "Email is required." };
+  const name = clean(input.name, 200);
+  if (!name) return { error: "Name is required." };
+  return updateExecProfile(
+    { name, title: clean(input.title, 200), company: clean(input.company, 200), primary_email: email, linkedin_url: clean(input.linkedinUrl, 500) },
+    "executive.profile_you_updated",
+  );
+}
+
+export async function saveProfileBusinessAction(input: {
+  interestedIn: string;
+  currentProjects: string;
+  notInterestedIn: string;
+  timeline: string;
+  cadence: string;
+  seniority: string;
+}): Promise<ExecActionState> {
+  return updateExecProfile(
+    {
+      interested_in: clean(input.interestedIn),
+      current_projects: clean(input.currentProjects),
+      not_interested_in: clean(input.notInterestedIn),
+      timeline: clean(input.timeline, 200),
+      suggested_cadence: clean(input.cadence, 200),
+      seniority_signal: clean(input.seniority, 200),
+    },
+    "executive.profile_business_updated",
+  );
+}
+
+export async function saveProfileCalendarAction(input: { timezone: string; windowDays: string; windowStart: string; windowEnd: string }): Promise<ExecActionState> {
+  return updateExecProfile(
+    {
+      timezone: clean(input.timezone, 64),
+      preferred_window_days: clean(input.windowDays, 32),
+      preferred_window_start: clean(input.windowStart, 8),
+      preferred_window_end: clean(input.windowEnd, 8),
+    },
+    "executive.profile_calendar_updated",
+  );
+}
+
+export async function setRequestPauseAction(paused: boolean): Promise<ExecActionState> {
+  return updateExecProfile({ status: paused ? "paused" : "active" }, paused ? "executive.requests_paused" : "executive.requests_resumed");
+}
+
 /**
  * Set the executive's standing-nomination (default) charity. Flag-gated
  * (exec_dashboard) and recorded in the append-only audit log. In the demo the
