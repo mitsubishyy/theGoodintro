@@ -1132,7 +1132,7 @@ body {
 }
 .hp-gallery-card {
   flex: 0 0 280px;
-  height: 360px;
+  height: 410px;
   position: relative;
   border-radius: 18px;
   filter: grayscale(1) contrast(0.95);
@@ -1175,7 +1175,8 @@ body {
 }
 .hp-gallery-card.is-logo .hp-gallery-photo {
   object-fit: contain;
-  padding: 38px;
+  /* extra bottom padding keeps tall logos (e.g. WWF) clear of the info panel */
+  padding: 30px 38px 58px;
 }
 .hp-gallery-card.is-logo .shape,
 .hp-gallery-card.is-logo .wm {
@@ -1321,6 +1322,14 @@ body {
   height: 100%;
   background: var(--signal);
   border-radius: 999px;
+}
+.hp-gallery-goal {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cream-9);
+  margin: 6px 0 0;
 }
 
 /* Final CTA section with floating bubbles */

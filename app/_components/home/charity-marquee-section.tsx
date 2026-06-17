@@ -15,21 +15,80 @@ import { MarqueeLogo, type MarqueeCharity } from "./marquee-logo";
  */
 const CHARITIES: MarqueeCharity[] = [
   {
+    name: "Leukaemia Foundation",
+    img: "/charities/leukaemia-foundation.png",
+    domain: "leukaemia.org.au",
+  },
+  {
     name: "Royal Flying Doctor Service",
     img: "/charities/royal-flying-doctor-service.png",
     domain: "flyingdoctor.org.au",
+  },
+  {
+    name: "R U OK?",
+    img: "/charities/r-u-ok.png",
+    domain: "ruok.org.au",
+  },
+  {
+    name: "headspace",
+    img: "/charities/headspace.png",
+    domain: "headspace.org.au",
+  },
+  {
+    name: "Starlight Children's Foundation",
+    img: "/charities/starlight-children-s-foundation.png",
+    domain: "starlight.org.au",
+  },
+  {
+    name: "Ronald McDonald House Charities",
+    img: "/charities/ronald-mcdonald-house-charities.png",
+    domain: "rmhc.org.au",
+  },
+  {
+    name: "St Vincent de Paul Society",
+    img: "/charities/st-vincent-de-paul-society.png",
+    domain: "vinnies.org.au",
+  },
+  {
+    name: "Children's Ground",
+    img: "/charities/children-s-ground.png",
+    domain: "childrensground.org.au",
+  },
+  {
+    name: "WWF-Australia",
+    img: "/charities/wwf-australia.png",
+    domain: "wwf.org.au",
+  },
+  {
+    name: "RSPCA Australia",
+    img: "/charities/rspca-australia.png",
+    domain: "rspca.org.au",
+  },
+  {
+    name: "Guide Dogs Australia",
+    img: "/charities/guide-dogs-australia.png",
+    domain: "guidedogs.com.au",
+  },
+  {
+    name: "Save the Children Australia",
+    img: "/charities/save-the-children-australia.png",
+    domain: "savethechildren.org.au",
+  },
+  {
+    name: "World Vision Australia",
+    img: "/charities/world-vision-australia.png",
+    domain: "worldvision.com.au",
+  },
+  {
+    name: "Cerebral Palsy Alliance",
+    img: "/charities/cerebral-palsy-alliance.png",
+    domain: "cerebralpalsy.org.au",
   },
   {
     name: "Cancer Council Australia",
     img: "/charities/cancer-council.png",
     domain: "cancer.org.au",
   },
-  { name: "headspace", domain: "headspace.org.au" },
-  { name: "R U OK?", domain: "ruok.org.au" },
-  { name: "Starlight Children's Foundation", domain: "starlight.org.au" },
-  { name: "RSPCA Australia", domain: "rspca.org.au" },
-  { name: "WWF-Australia", domain: "wwf.org.au" },
-  { name: "Save the Children Australia", domain: "savethechildren.org.au" },
 ];
 
 export default function CharityMarqueeSection() {
@@ -64,9 +123,8 @@ export default function CharityMarqueeSection() {
       </div>
 
       <p className="hp-marquee-note">
-        Illustrative examples, not partners. Executives choose from our
-        curated shortlist and may nominate any DGR-endorsed Australian
-        charity.
+        Executives choose from our curated shortlist and may nominate any
+        DGR-endorsed Australian charity.
       </p>
     </section>
   );

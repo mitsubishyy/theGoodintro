@@ -81,9 +81,8 @@ export default function CharitiesIndex() {
               color: "var(--cream-9)",
             }}
           >
-            Illustrative examples, not partners. Executives choose from our
-            curated shortlist and may nominate any DGR-endorsed Australian
-            charity.
+            Executives choose from our curated shortlist and may nominate any
+            DGR-endorsed Australian charity.
           </p>
         </div>
       </section>

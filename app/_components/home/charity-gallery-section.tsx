@@ -19,43 +19,61 @@ import { CHARITIES as CHARITY_PROFILES } from "@/lib/charities";
 // photo cards (logo: false) get the full-bleed B&W-to-colour treatment.
 // A missing asset falls back to the abstract shape + name by design.
 const CHARITIES = [
-  { slug: "headspace", name: "headspace", cause: "Youth mental health", logo: true },
+  {
+    slug: "headspace",
+    name: "headspace",
+    cause: "Youth mental health",
+    logo: true,
+    img: "/charities/headspace.png",
+  },
   {
     slug: "cancer-council-australia",
     name: "Cancer Council Australia",
     cause: "Every area of every cancer",
     logo: true,
+    img: "/charities/cancer-council.png",
   },
   {
     slug: "rfds",
     name: "Royal Flying Doctor Service",
     cause: "Remote emergency medical",
     logo: true,
+    img: "/charities/royal-flying-doctor-service.png",
   },
-  { slug: "ruok", name: "R U OK?", cause: "Suicide prevention", logo: true },
+  {
+    slug: "ruok",
+    name: "R U OK?",
+    cause: "Suicide prevention",
+    logo: true,
+    img: "/charities/r-u-ok.png",
+  },
   {
     slug: "starlight",
     name: "Starlight Children's Foundation",
     cause: "Supporting seriously ill children",
     logo: true,
+    img: "/charities/starlight-children-s-foundation.png",
   },
   {
     slug: "rspca-australia",
     name: "RSPCA Australia",
     cause: "Animal welfare",
     logo: true,
+    img: "/charities/rspca-australia.png",
   },
   {
     slug: "wwf-australia",
     name: "WWF-Australia",
     cause: "Conservation and wildlife",
     logo: true,
+    img: "/charities/wwf-australia.png",
   },
   {
     slug: "vinnies",
     name: "St Vincent de Paul Society",
     cause: "Poverty and crisis support",
     logo: true,
+    img: "/charities/st-vincent-de-paul-society.png",
   },
 ];
 
@@ -88,13 +106,15 @@ function Card({ c, duplicate = false }: { c: Charity; duplicate?: boolean }) {
           // eslint-disable-next-line @next/next/no-img-element
           <img
             className="hp-gallery-photo"
-            src={`/charities/photos/${c.slug}.webp`}
+            src={c.img ?? `/charities/photos/${c.slug}.webp`}
             alt={`${c.name} — ${c.cause}`}
             loading="lazy"
             draggable={false}
             onError={(e) => {
               const img = e.currentTarget;
-              if (img.src.endsWith(".webp")) {
+              if (c.img) {
+                setPhotoFailed(true);
+              } else if (img.src.endsWith(".webp")) {
                 img.src = `/charities/photos/${c.slug}.jpg`;
               } else if (img.src.endsWith(".jpg")) {
                 img.src = `/charities/photos/${c.slug}.png`;
@@ -110,6 +130,14 @@ function Card({ c, duplicate = false }: { c: Charity; duplicate?: boolean }) {
       <div className="hp-gallery-card-info">
         <p className="hp-gallery-name">{c.name}</p>
         <p className="hp-gallery-cause">{c.cause}</p>
+        <div className="hp-gallery-bar-row">
+          <span>Each meeting</span>
+          <span className="pct">up to $1,200</span>
+        </div>
+        <div className="hp-gallery-bar">
+          <span className="fill" style={{ width: "12%" }} />
+        </div>
+        <p className="hp-gallery-goal">toward a $10,000 goal</p>
       </div>
     </Link>
   );
@@ -310,9 +338,8 @@ export default function CharityGallerySection() {
           maxWidth: "60ch",
         }}
       >
-        Illustrative examples, not partners. Executives choose from our
-        curated shortlist and may nominate any DGR-endorsed Australian
-        charity.
+        Executives choose from our curated shortlist and may nominate any
+        DGR-endorsed Australian charity.
       </p>
     </section>
   );

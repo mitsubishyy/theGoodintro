@@ -365,8 +365,7 @@ export default function Giving() {
             ariaLabel="Example DGR-endorsed Australian charities"
           />
           <p className="mt-10 text-center text-xs text-muted-foreground italic max-w-2xl mx-auto">
-            Illustrative examples, not partners. The executive chooses any
-            DGR-endorsed Australian charity.
+            The executive chooses any DGR-endorsed Australian charity.
           </p>
         </div>
       </section>
