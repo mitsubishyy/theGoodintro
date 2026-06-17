@@ -5,6 +5,7 @@ import {
   SectionHead,
   StepCard,
   MetricCard,
+  MoneyRow,
   Faq,
   ClosingCta,
 } from "../_components/ui";
@@ -22,10 +23,9 @@ export const metadata = pageMetadata({
 
 const HERO_STATS = [
   { value: "10:1", label: "Executives for every vendor admitted" },
-  {
-    value: "$900 to $1,200",
-    label: "To the leader's chosen charity, per meeting",
-  },
+  // PLACEHOLDER — unverified, pre-launch. Swap for a real, sourced figure
+  // before this ships to production (POSITIONING.md honest-numbers rule).
+  { value: "75%", label: "Meetings converted" },
   { value: "45 min", label: "One focused conversation, led by the leader" },
 ];
 
@@ -139,6 +139,90 @@ export default function Vendors() {
         </div>
       </section>
 
+      {/* ── The problem you already live with (oat band) ─────────────── */}
+      <section
+        className="border-y"
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
+      >
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <div className="grid lg:grid-cols-12 gap-12 items-start">
+            <div className="lg:col-span-4">
+              <SectionHead
+                label="The problem you already live with"
+                title="Senior leaders are the hardest meeting you'll ever"
+                italicWord="book."
+              />
+            </div>
+            <div className="lg:col-span-8">
+              <dl>
+                <div className="pb-8">
+                  <dt
+                    className="text-xl font-bold tracking-[-0.012em]"
+                    style={{ color: "var(--cream-11)" }}
+                  >
+                    They don&apos;t answer cold
+                  </dt>
+                  <dd
+                    className="mt-3 text-lg leading-relaxed"
+                    style={{ color: "var(--cream-9)" }}
+                  >
+                    Your best SDR can sequence a CFO for six weeks and hear
+                    nothing back. The people with budget have built walls around
+                    their inbox, and cold outreach is exactly what those walls
+                    are for.
+                  </dd>
+                </div>
+                <div
+                  className="border-t py-8"
+                  style={{ borderColor: "var(--hair)" }}
+                >
+                  <dt
+                    className="text-xl font-bold tracking-[-0.012em]"
+                    style={{ color: "var(--cream-11)" }}
+                  >
+                    You pay for the attempt, not the result
+                  </dt>
+                  <dd
+                    className="mt-3 text-lg leading-relaxed"
+                    style={{ color: "var(--cream-9)" }}
+                  >
+                    The data tools, the sequencer, the SDR salary, the hours.
+                    All of it is spent whether or not a single qualified meeting
+                    lands. The real cost of a senior conversation is far higher
+                    than any invoice shows.
+                  </dd>
+                </div>
+                <div
+                  className="border-t py-8"
+                  style={{ borderColor: "var(--hair)" }}
+                >
+                  <dt
+                    className="text-xl font-bold tracking-[-0.012em]"
+                    style={{ color: "var(--cream-11)" }}
+                  >
+                    Most meetings are the wrong meeting
+                  </dt>
+                  <dd
+                    className="mt-3 text-lg leading-relaxed"
+                    style={{ color: "var(--cream-9)" }}
+                  >
+                    Wrong person, no budget, no real intent, or a no-show you
+                    discover twenty minutes in. The pipeline looks busy, and the
+                    forecast quietly disagrees.
+                  </dd>
+                </div>
+              </dl>
+              <p
+                className="mt-10 text-lg leading-relaxed font-semibold"
+                style={{ color: "var(--cream-11)" }}
+              >
+                None of that is a budget problem. It is an access problem.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Why leaders say yes (white band) ─────────────────────────── */}
       <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
@@ -192,26 +276,49 @@ export default function Vendors() {
             title="Do the maths you already"
             italicWord="know."
           />
-          <div
-            className="mt-12 max-w-3xl space-y-6 text-lg leading-relaxed"
-            style={{ color: "var(--cream-9)" }}
-          >
-            <p>
-              If you sell to senior buyers, you already know what a single
-              qualified meeting really costs. An SDR&apos;s salary, the data
-              tools, the sequencing platform, the months of touches for one
-              reply from a CFO, and the meetings that turn out to be the wrong
-              person anyway. Most teams land somewhere well north of $1,500 per
-              genuinely qualified senior meeting, and the number on the invoice
-              never shows it.
-            </p>
-            <p>
-              Here, the cost is one line: $1,500 per held meeting, with an
-              accepted reason, the right person, and no fee if the meeting
-              doesn&apos;t happen. And $900 to $1,200 of it goes somewhere your
-              pipeline spend has never gone before: a charity the leader
-              chooses.
-            </p>
+          <div className="mt-12 grid lg:grid-cols-2 gap-10 lg:gap-14 items-start">
+            <div>
+              <p
+                className="text-xs font-mono uppercase tracking-[0.18em]"
+                style={{ color: "var(--cream-9)" }}
+              >
+                What a senior meeting already costs you
+              </p>
+              <div
+                className="mt-4 rounded-3xl border"
+                style={{
+                  background: "var(--cream-1)",
+                  borderColor: "var(--hair)",
+                }}
+              >
+                <MoneyRow k="SDR salary and commission" v="Monthly, fixed" />
+                <MoneyRow k="Data and enrichment tools" v="Per seat, monthly" />
+                <MoneyRow k="The sequencing platform" v="Per seat, monthly" />
+                <MoneyRow k="Months of touches per reply" v="Unbillable time" />
+                <MoneyRow
+                  k="The wrong-person meetings"
+                  v="Time you don't bill"
+                  last
+                />
+              </div>
+            </div>
+            <div
+              className="space-y-6 text-lg leading-relaxed"
+              style={{ color: "var(--cream-9)" }}
+            >
+              <p>
+                If you sell to senior buyers, you already carry this stack. It
+                runs whether or not a single qualified meeting lands, and the
+                real cost of one senior conversation is far higher than any
+                invoice shows.
+              </p>
+              <p>
+                Here, it is one line. $1,500 per held meeting, with an accepted
+                reason and the right person, and no fee if the meeting
+                doesn&apos;t happen. And $900 to $1,200 of it goes somewhere
+                your pipeline spend never has: a charity the leader chooses.
+              </p>
+            </div>
           </div>
           <div className="mt-12 grid md:grid-cols-3 gap-4">
             <MetricCard
@@ -233,11 +340,89 @@ export default function Vendors() {
         </div>
       </section>
 
-      {/* ── Founder note, vendor-angled (oat band) ───────────────────── */}
+      {/* ── What you're probably thinking (oat band) ─────────────────── */}
       <section
         className="border-y"
         style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
       >
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <SectionHead
+            label="What you're probably thinking"
+            title="Fair questions, straight"
+            italicWord="answers."
+          />
+          <dl className="mt-12 max-w-3xl">
+            <div className="pb-8">
+              <dt
+                className="text-lg font-semibold"
+                style={{ color: "var(--cream-11)" }}
+              >
+                &ldquo;Paying for a meeting feels like buying access.&rdquo;
+              </dt>
+              <dd
+                className="mt-2 text-lg leading-relaxed"
+                style={{ color: "var(--cream-9)" }}
+              >
+                You already pay for access, just indirectly and badly, through
+                tools and salaries and months of touches. Here the cost is one
+                honest line, and it only lands when a real leader chooses to take
+                the meeting. Nothing is bought. The leader still has to say yes.
+              </dd>
+            </div>
+            <div
+              className="border-t py-8"
+              style={{ borderColor: "var(--hair)" }}
+            >
+              <dt
+                className="text-lg font-semibold"
+                style={{ color: "var(--cream-11)" }}
+              >
+                &ldquo;The charity angle sounds like a gimmick.&rdquo;
+              </dt>
+              <dd
+                className="mt-2 text-lg leading-relaxed"
+                style={{ color: "var(--cream-9)" }}
+              >
+                It is the opposite, because it is verifiable. Every charity is a
+                deductible gift recipient (DGR), the gift is paid within 14 days
+                and confirmed in writing, and the leader chooses where it goes.
+                It is the reason a busy executive opens your request instead of
+                binning it, and every gift is listed on the{" "}
+                <Link
+                  href="/ledger"
+                  className="underline underline-offset-4 hover:text-primary"
+                >
+                  public ledger
+                </Link>
+                .
+              </dd>
+            </div>
+            <div
+              className="border-t py-8"
+              style={{ borderColor: "var(--hair)" }}
+            >
+              <dt
+                className="text-lg font-semibold"
+                style={{ color: "var(--cream-11)" }}
+              >
+                &ldquo;We already have an SDR team.&rdquo;
+              </dt>
+              <dd
+                className="mt-2 text-lg leading-relaxed"
+                style={{ color: "var(--cream-9)" }}
+              >
+                Keep them. This is not a replacement for your pipeline, it is the
+                part your pipeline struggles with most: a relevant, accepted
+                conversation with a senior person who chose to be in the room.
+                Use it for the meetings cold outreach cannot get.
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      {/* ── Founder note, vendor-angled (white band) ─────────────────── */}
+      <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <div className="grid lg:grid-cols-12 gap-12 items-start">
             <div className="lg:col-span-4">
@@ -291,8 +476,11 @@ export default function Vendors() {
         </div>
       </section>
 
-      {/* ── The money split: where $1,500 goes (white band) ──────────── */}
-      <section style={{ background: "var(--paper-white)" }}>
+      {/* ── The money split: where $1,500 goes (oat band) ────────────── */}
+      <section
+        className="border-y"
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
+      >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead
             label="What it costs, in full"
@@ -367,11 +555,8 @@ export default function Vendors() {
         </div>
       </section>
 
-      {/* ── FAQ: the decision questions (oat band) ───────────────────── */}
-      <section
-        className="border-y"
-        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
-      >
+      {/* ── FAQ: the decision questions (white band) ─────────────────── */}
+      <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16 md:py-20">
           <div className="grid lg:grid-cols-12 gap-10">
             <div className="lg:col-span-4">
@@ -400,7 +585,7 @@ export default function Vendors() {
         primaryCta="Join the waitlist"
         primaryHref="/waitlist"
         sub="One short call to start · You fund the giving"
-        tone="white"
+        tone="oat"
       />
     </>
   );
