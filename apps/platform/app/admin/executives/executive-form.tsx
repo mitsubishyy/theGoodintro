@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import type { FormState } from "./actions";
-import { PhotoUploadField } from "./photo-upload-field";
+import { PhotoUploadField } from "../_components/photo-upload-field";
 
 type Charity = { id: string; name: string };
 type Initial = {

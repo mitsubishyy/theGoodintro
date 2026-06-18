@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll } from "vitest";
 import sharp from "sharp";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { processImage } from "../lib/upload/photo";
+import { isOwnAvatarUrl } from "../lib/upload/url";
 
 /**
  * Photo-upload pipeline (PHOTO_UPLOAD_SCOPE.md). Two layers:
@@ -69,6 +70,23 @@ describe("processImage", () => {
   });
 });
 
+describe("isOwnAvatarUrl (origin guard)", () => {
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  it("accepts a URL in our own avatars bucket", () => {
+    expect(isOwnAvatarUrl(`${base}/storage/v1/object/public/public-avatars/exec/x/avatar-abc.webp`)).toBe(true);
+    expect(isOwnAvatarUrl(`${base}/storage/v1/object/public/public-avatars/charity-hero/y/hero-def.webp`)).toBe(true);
+  });
+  it("rejects an external URL", () => {
+    expect(isOwnAvatarUrl("https://evil.example.com/storage/v1/object/public/public-avatars/x.webp")).toBe(false);
+  });
+  it("rejects a different bucket on the same host", () => {
+    expect(isOwnAvatarUrl(`${base}/storage/v1/object/public/other-bucket/x.webp`)).toBe(false);
+  });
+  it("treats empty as not-own", () => {
+    expect(isOwnAvatarUrl("")).toBe(false);
+  });
+});
+
 // ── storage.objects RLS (public read, staff-only write) ──────────────────────
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -129,5 +147,16 @@ describe("photo storage RLS (public-avatars)", () => {
     const { data } = anon.storage.from(BUCKET).getPublicUrl("exec/test-read/avatar.webp");
     const res = await fetch(data.publicUrl);
     expect(res.ok).toBe(true);
+  });
+
+  it("staff can persist a charity's logo + hero URLs", async () => {
+    const RFDS = "00000000-0000-0000-0000-00000000c1a3";
+    const logo = `${URL}/storage/v1/object/public/${BUCKET}/charity-logo/${RFDS}/logo-abc.webp`;
+    const hero = `${URL}/storage/v1/object/public/${BUCKET}/charity-hero/${RFDS}/hero-def.webp`;
+    const { error } = await staff.from("charity").update({ logo_url: logo, hero_image_url: hero }).eq("id", RFDS);
+    expect(error).toBeNull();
+    const { data } = await staff.from("charity").select("logo_url, hero_image_url").eq("id", RFDS).single();
+    expect(data?.logo_url).toBe(logo);
+    expect(data?.hero_image_url).toBe(hero);
   });
 });

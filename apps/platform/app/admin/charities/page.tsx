@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
 import { CharityForm } from "./charity-form";
@@ -42,7 +43,11 @@ export default async function CharitiesPage() {
           <tbody>
             {(charities ?? []).map((c) => (
               <tr key={c.id as string} style={{ borderTop: "1px solid var(--portal-line)" }}>
-                <td className="px-4 py-3 font-medium">{c.name as string}</td>
+                <td className="px-4 py-3 font-medium">
+                  <Link href={`/admin/charities/${c.id as string}`} className="hover:underline" style={{ color: "var(--portal-ink)" }}>
+                    {c.name as string}
+                  </Link>
+                </td>
                 <td className="px-4 py-3" style={{ color: "var(--muted-foreground)" }}>{(c.abn as string) ?? "—"}</td>
                 <td className="px-4 py-3">{c.dgr_status as string}</td>
               </tr>
