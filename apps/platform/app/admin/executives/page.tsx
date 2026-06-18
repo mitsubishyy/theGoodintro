@@ -17,7 +17,7 @@ export default async function ExecutivesPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="max-w-5xl">
+    <div className="max-w-5xl px-8 py-6">
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Executives</h1>

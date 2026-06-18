@@ -28,7 +28,7 @@ export default async function NewExecutivePage() {
   const photoUploadEnabled = await getFlag("photo_upload");
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-2xl px-8 py-6">
       <Link href="/admin/executives" className="text-sm" style={{ color: "var(--muted-foreground)" }}>
         ← Executives
       </Link>

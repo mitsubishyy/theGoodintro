@@ -42,7 +42,7 @@ export default async function ExecutiveDetailPage({
   const transitions = NEXT_STATUS[exec.status as string] ?? [];
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-2xl px-8 py-6">
       <Link href="/admin/executives" className="text-sm" style={{ color: "var(--muted-foreground)" }}>
         ← Executives
       </Link>

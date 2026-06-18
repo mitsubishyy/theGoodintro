@@ -19,7 +19,7 @@ export default async function CharitiesPage() {
     .order("name");
 
   return (
-    <div className="max-w-3xl">
+    <div className="max-w-3xl px-8 py-6">
       <h1 className="text-2xl font-semibold tracking-tight">Charities</h1>
       <p className="mt-1 mb-6 text-sm" style={{ color: "var(--muted-foreground)" }}>
         DGR-endorsed charities an executive can nominate.

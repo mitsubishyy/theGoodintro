@@ -74,7 +74,7 @@ export default async function MeetingsPage() {
   const emailMode = process.env.EMAIL_MODE === "live" ? "live" : "test";
 
   return (
-    <div className="max-w-3xl">
+    <div className="max-w-3xl px-8 py-6">
       <h1 className="text-2xl font-semibold tracking-tight">Meetings</h1>
       <p className="mt-1 mb-6 text-sm" style={{ color: "var(--muted-foreground)" }}>
         Confirm times and record outcomes. A held meeting consumes a credit and

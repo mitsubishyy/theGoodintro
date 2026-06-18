@@ -54,7 +54,7 @@ export default async function SettingsPage({
   const redirectUri = process.env.XERO_REDIRECT_URI ?? "(not set)";
 
   return (
-    <div className="max-w-3xl">
+    <div className="max-w-3xl px-8 py-6">
       <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
       <p className="mt-1 mb-6 text-sm" style={{ color: "var(--muted-foreground)" }}>
         Integrations and platform configuration.

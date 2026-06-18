@@ -29,7 +29,7 @@ export default async function CharityDetailPage({
   if (!charity) notFound();
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-2xl px-8 py-6">
       <Link href="/admin/charities" className="text-sm" style={{ color: "var(--muted-foreground)" }}>
         ← Charities
       </Link>
