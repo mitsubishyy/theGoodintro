@@ -28,6 +28,7 @@ export default async function ExecutiveDetailPage({
 }) {
   const { id } = await params;
   const enabled = await getFlag("exec_onboarding");
+  const photoUploadEnabled = await getFlag("photo_upload");
   const supabase = await createClient();
 
   const [{ data: exec }, { data: charities }, { data: eas }] = await Promise.all([
@@ -86,6 +87,7 @@ export default async function ExecutiveDetailPage({
             charities={charities ?? []}
             initial={exec}
             submitLabel="Save changes"
+            photoUploadEnabled={photoUploadEnabled}
           />
 
           <h2 className="mb-3 mt-10 text-sm font-semibold uppercase tracking-wide" style={{ color: "var(--muted-foreground)" }}>

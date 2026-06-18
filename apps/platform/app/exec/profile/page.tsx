@@ -23,6 +23,7 @@ export default async function ExecProfilePage() {
   const execId = await resolveDemoExecutiveId(supabase);
   const data = execId ? await loadExecProfile(supabase, execId) : null;
   if (!data) return <FlagOff missingExec />;
+  const photoUploadEnabled = await getFlag("photo_upload");
 
   return (
     <ExecShell
@@ -35,7 +36,7 @@ export default async function ExecProfilePage() {
         photoUrl: data.exec.photoUrl,
       }}
     >
-      <ProfileView data={data} />
+      <ProfileView data={data} photoUploadEnabled={photoUploadEnabled} />
     </ExecShell>
   );
 }

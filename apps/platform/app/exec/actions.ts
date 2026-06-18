@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getStaff } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
+import { isOwnAvatarUrl } from "@/lib/upload/url";
 import { resolveDemoExecutiveId, loadCharityContent, loadCharityList, type CharityContent, type CharityListItem } from "./data";
 
 export type ExecActionState = { ok?: boolean; error?: string };
@@ -112,6 +113,24 @@ export async function saveProfileCalendarAction(input: { timezone: string; windo
       preferred_window_end: clean(input.windowEnd, 8),
     },
     "executive.profile_calendar_updated",
+  );
+}
+
+/**
+ * Persist a newly uploaded profile photo (or clear it). The bytes already went
+ * through the upload route (validate + sharp re-encode + storage write); this
+ * only writes the returned public URL onto the executive, under the same
+ * staff-acting-for-exec path + audit as the other Profile saves. The URL is
+ * origin-checked to our own avatars bucket so a crafted call cannot point the
+ * avatar at an arbitrary external image (the upload-only rule).
+ */
+export async function saveProfilePhotoAction(photoUrl: string | null): Promise<ExecActionState> {
+  if (!(await getFlag("photo_upload"))) return { error: "Photo upload is not enabled." };
+  const url = (photoUrl ?? "").trim();
+  if (url && !isOwnAvatarUrl(url)) return { error: "That photo could not be saved." };
+  return updateExecProfile(
+    { photo_url: url || null },
+    url ? "executive.profile_photo_updated" : "executive.profile_photo_removed",
   );
 }
 

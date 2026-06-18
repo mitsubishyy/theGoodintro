@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Avatar, Icon } from "@thegoodintro/ui";
 import type { ExecProfileData } from "../../data";
-import { saveProfileYouAction, saveProfileBusinessAction, saveProfileCalendarAction, setRequestPauseAction } from "../../actions";
+import { saveProfileYouAction, saveProfileBusinessAction, saveProfileCalendarAction, saveProfilePhotoAction, setRequestPauseAction } from "../../actions";
+import { uploadPhotoFile } from "@/lib/upload/client";
 import { TIMELINE_OPTIONS, CADENCE_OPTIONS, SENIORITY_OPTIONS, WINDOW_DAY_OPTIONS, TIMEZONE_OPTIONS, timezoneLabel, windowDaysLabel } from "../options";
 import { ProfileEaDrawer } from "./profile-ea-drawer";
 
@@ -25,7 +26,7 @@ import { ProfileEaDrawer } from "./profile-ea-drawer";
 const SERIF = "var(--font-display), Georgia, serif";
 const EMPTY = "Not on file";
 
-export function ProfileView({ data }: { data: ExecProfileData }) {
+export function ProfileView({ data, photoUploadEnabled }: { data: ExecProfileData; photoUploadEnabled: boolean }) {
   const [eaOpen, setEaOpen] = useState(false);
 
   return (
@@ -43,7 +44,7 @@ export function ProfileView({ data }: { data: ExecProfileData }) {
       </header>
 
       <div className="mt-8 flex flex-col gap-8">
-        <YouSection you={data.you} />
+        <YouSection you={data.you} photoUploadEnabled={photoUploadEnabled} />
         <BusinessSection business={data.business} />
         <CharitySection charity={data.charity} />
         <CalendarSection calendar={data.calendar} ea={data.ea} onEditEa={() => setEaOpen(true)} />
@@ -58,12 +59,16 @@ export function ProfileView({ data }: { data: ExecProfileData }) {
 
 // ── Section 1: You ───────────────────────────────────────────────────────────
 
-function YouSection({ you }: { you: ExecProfileData["you"] }) {
+function YouSection({ you, photoUploadEnabled }: { you: ExecProfileData["you"]; photoUploadEnabled: boolean }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [f, setF] = useState({ name: you.name, title: you.title ?? "", company: you.company ?? "", email: you.email, linkedinUrl: you.linkedinUrl ?? "" });
+  const [photoUrl, setPhotoUrl] = useState<string | null>(you.photoUrl ?? null);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const [photoErr, setPhotoErr] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const save = async () => {
     setBusy(true);
@@ -75,18 +80,52 @@ function YouSection({ you }: { you: ExecProfileData["you"] }) {
     router.refresh();
   };
 
+  const onPickPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // let the same file be re-picked after an error
+    if (!file) return;
+    setPhotoBusy(true);
+    setPhotoErr(null);
+    // The route owns the real validation; ownerId is a fresh id (paths are
+    // content-hashed and the column write resolves the real executive).
+    const up = await uploadPhotoFile(file, "exec", crypto.randomUUID());
+    if ("error" in up) {
+      setPhotoBusy(false);
+      return setPhotoErr(up.error);
+    }
+    const res = await saveProfilePhotoAction(up.url);
+    setPhotoBusy(false);
+    if (res.error) return setPhotoErr(res.error);
+    setPhotoUrl(up.url);
+    router.refresh();
+  };
+
   return (
     <Card>
       <SectionHeader title="You" editing={editing} onEdit={() => setEditing(true)} />
       <div className="mt-5 flex gap-6">
         <div className="relative shrink-0">
-          <Avatar name={you.name} src={you.photoUrl ?? undefined} size={96} />
-          {editing && (
+          <Avatar name={you.name} src={photoUrl ?? undefined} size={96} />
+          {editing && photoUploadEnabled && (
             <>
-              <span className="absolute -bottom-1 -right-1 grid size-7 place-items-center rounded-full border" style={{ background: "#fff", borderColor: "var(--portal-line)" }} title="Photo upload is coming soon">
+              <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={onPickPhoto} />
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                disabled={photoBusy}
+                aria-label="Change photo"
+                title="Change photo"
+                className="absolute -bottom-1 -right-1 grid size-7 place-items-center rounded-full border disabled:opacity-60"
+                style={{ background: "#fff", borderColor: "var(--portal-line)" }}
+              >
                 <Icon name="camera" size={14} style={{ color: "var(--portal-ink)" }} />
-              </span>
+              </button>
             </>
+          )}
+          {editing && !photoUploadEnabled && (
+            <span className="absolute -bottom-1 -right-1 grid size-7 place-items-center rounded-full border" style={{ background: "#fff", borderColor: "var(--portal-line)" }} title="Photo upload is coming soon">
+              <Icon name="camera" size={14} style={{ color: "var(--portal-ink)" }} />
+            </span>
           )}
         </div>
         <div className="min-w-0 flex-1">
@@ -99,7 +138,16 @@ function YouSection({ you }: { you: ExecProfileData["you"] }) {
               </div>
               <TextField label="Email" value={f.email} onChange={(v) => setF({ ...f, email: v })} />
               <TextField label="LinkedIn" value={f.linkedinUrl} onChange={(v) => setF({ ...f, linkedinUrl: v })} placeholder="linkedin.com/in/yourprofile" />
-              {editing && <p className="text-[12px] italic" style={{ color: "var(--muted-foreground)" }}>Photo change is coming soon.</p>}
+              {photoUploadEnabled ? (
+                <div className="flex items-center gap-3">
+                  <button type="button" onClick={() => fileRef.current?.click()} disabled={photoBusy} className="text-[12px] italic underline-offset-2 hover:underline disabled:opacity-60" style={{ color: "var(--portal-ink)" }}>
+                    {photoBusy ? "Uploading…" : "Change photo"}
+                  </button>
+                  {photoErr && <span className="text-[12px]" style={{ color: "#b42318" }}>{photoErr}</span>}
+                </div>
+              ) : (
+                <p className="text-[12px] italic" style={{ color: "var(--muted-foreground)" }}>Photo change is coming soon.</p>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">

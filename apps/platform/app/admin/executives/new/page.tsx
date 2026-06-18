@@ -25,6 +25,7 @@ export default async function NewExecutivePage() {
     .select("id,name")
     .is("deleted_at", null)
     .order("name");
+  const photoUploadEnabled = await getFlag("photo_upload");
 
   return (
     <div className="max-w-2xl">
@@ -36,6 +37,7 @@ export default async function NewExecutivePage() {
         action={createExecutiveAction}
         charities={charities ?? []}
         submitLabel="Create executive"
+        photoUploadEnabled={photoUploadEnabled}
       />
     </div>
   );

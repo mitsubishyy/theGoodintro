@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import type { FormState } from "./actions";
+import { PhotoUploadField } from "./photo-upload-field";
 
 type Charity = { id: string; name: string };
 type Initial = {
@@ -37,11 +38,13 @@ export function ExecutiveForm({
   charities,
   initial = {},
   submitLabel,
+  photoUploadEnabled = false,
 }: {
   action: (prev: FormState, fd: FormData) => Promise<FormState>;
   charities: Charity[];
   initial?: Initial;
   submitLabel: string;
+  photoUploadEnabled?: boolean;
 }) {
   const [state, formAction, pending] = useActionState<FormState, FormData>(
     action,
@@ -81,10 +84,12 @@ export function ExecutiveForm({
         <Label>Suggested cadence</Label>
         <input name="suggested_cadence" placeholder="e.g. up to 2 / month" defaultValue={initial.suggested_cadence ?? ""} className="rounded-lg border px-3 py-2.5 text-sm" style={inputStyle} />
       </label>
-      <label className="flex flex-col gap-1.5 sm:col-span-2">
-        <Label>Photo URL</Label>
-        <input name="photo_url" defaultValue={initial.photo_url ?? ""} className="rounded-lg border px-3 py-2.5 text-sm" style={inputStyle} />
-      </label>
+      <PhotoUploadField
+        initialUrl={initial.photo_url ?? ""}
+        ownerId={initial.id}
+        previewName={initial.name ?? ""}
+        enabled={photoUploadEnabled}
+      />
       <label className="flex flex-col gap-1.5 sm:col-span-2">
         <Label>Business-context notes</Label>
         <textarea name="context_notes" rows={4} defaultValue={initial.context_notes ?? ""} className="rounded-lg border px-3 py-2.5 text-sm" style={inputStyle} />
