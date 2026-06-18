@@ -129,11 +129,11 @@ export default async function VendorLayout({
   const brand = (
     <div className="flex items-center gap-3.5">
       <Image
-        src="/brand-logo.png"
+        src="/brand-mark.png"
         alt=""
         width={24}
         height={24}
-        className="rounded-full shrink-0 object-cover"
+        className="rounded-md shrink-0 object-cover"
         style={{ width: 24, height: 24 }}
         priority
       />

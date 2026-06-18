@@ -18,7 +18,7 @@ import {
  *   - PortalShell composes sidebar + topbar + the page slot the route fills.
  *   - PortalSidebar uses the re-locked admin emerald palette
  *     (--portal-emerald-sidebar oklch(0.45 0.10 158)) with the cream wordmark
- *     + sage-mint "Good" + 24px circle mark inserted from /brand-logo.png.
+ *     + sage-mint "Good" + 24px square logomark from /brand-mark.png.
  *   - PortalTopbar carries the command-K search and the locked
  *     "All systems operational" status block in its context slot. The page H1
  *     lives in <PortalPage>, not the topbar.
@@ -110,16 +110,15 @@ export default async function AdminLayout({
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-3.5">
         <Image
-          src="/brand-logo.png"
+          src="/brand-mark.png"
           alt=""
           width={24}
           height={24}
-          className="rounded-full shrink-0 object-cover"
-          // brand-logo.png is the wide 750x168 wordmark, not a square icon
-          // mark. Pin both rendered dims to 24px (overriding Tailwind preflight
-          // `height:auto`, the warning's real trigger) and object-cover so it
-          // is neither distorted nor warns. TODO(issy): supply a square
-          // logomark asset for this 24px slot; this center-crops the wordmark.
+          className="rounded-md shrink-0 object-cover"
+          // brand-mark.png is the square 512x512 logomark (emerald tile, cream
+          // "G"). Pin both rendered dims to 24px (overriding Tailwind preflight
+          // `height:auto`, the warning's real trigger); rounded-md keeps the
+          // square tile lockup rather than cropping the mark into a circle.
           style={{ width: 24, height: 24 }}
           priority
         />
