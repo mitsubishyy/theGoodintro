@@ -5,6 +5,8 @@ import { requireStaff } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
 import { applyPaidInvoice } from "@/lib/billing";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { createCreditPurchaseInvoice } from "@/lib/integrations/xero";
 import { MEETING_FEE_CENTS, gstCentsForCredits } from "@thegoodintro/pricing";
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
@@ -48,8 +50,45 @@ export async function issueInvoiceAction(fd: FormData): Promise<void> {
 
   const feeExGst = credits * MEETING_FEE_CENTS;
   const gst = gstCentsForCredits(credits);
-  const xeroId = `STUB-${id.slice(-4)}-${Date.now()}`;
   const purchaseDate = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
+  // Real Xero invoice when the integration is on AND connected; otherwise the
+  // stub. CHANGE_SAFETY: with integrations_xero off this is unchanged behaviour,
+  // so existing tests and environments without a Xero connection are untouched.
+  // The pricing engine's figures (feeExGst/gst) are authoritative; the real path
+  // asserts Xero's computed totals equal them before recording (fails loud on a
+  // tax/account misconfig) — money is never recomputed here.
+  let xeroId = `STUB-${id.slice(-4)}-${Date.now()}`;
+  let invoiceStatus: "draft" | "sent" = "sent";
+  let xeroInvoiceNumber: string | null = null;
+  const admin = createAdminClient();
+  if (admin && (await getFlag("integrations_xero"))) {
+    const { data: v } = await supabase.from("vendor").select("name").eq("id", id).maybeSingle();
+    const { data: owner } = await supabase
+      .from("vendor_user")
+      .select("email")
+      .eq("vendor_id", id)
+      .eq("role", "owner")
+      .is("deleted_at", null)
+      .maybeSingle();
+    const created = await createCreditPurchaseInvoice(admin, {
+      vendorId: id,
+      vendorName: (v?.name as string) ?? `Vendor ${id.slice(0, 8)}`,
+      vendorEmail: (owner?.email as string) ?? undefined,
+      quantity: credits,
+      unitAmountCents: MEETING_FEE_CENTS,
+      expectedSubTotalCents: feeExGst,
+      expectedGstCents: gst,
+      status: "DRAFT", // stage-2 test mode; stage 3 raises AUTHORISED to email + collect
+      reference: `TGI-${id.slice(0, 8)}`,
+    });
+    if (created) {
+      xeroId = created.invoiceId;
+      xeroInvoiceNumber = created.invoiceNumber;
+      invoiceStatus = "draft"; // mirror the Xero DRAFT state in our ledger
+    }
+  }
+
   await supabase.from("invoice").insert({
     vendor_id: id,
     xero_invoice_id: xeroId,
@@ -69,13 +108,13 @@ export async function issueInvoiceAction(fd: FormData): Promise<void> {
     gst_cents: gst,
     quantity: credits,
     purchase_date: purchaseDate,
-    status: "sent",
+    status: invoiceStatus,
   });
   await logAudit(supabase, staff.id, {
     action: "invoice.issued",
     targetType: "vendor",
     targetId: id,
-    metadata: { credits, xero_invoice_id: xeroId },
+    metadata: { credits, xero_invoice_id: xeroId, xero_invoice_number: xeroInvoiceNumber },
   });
   revalidatePath(`/admin/vendors/${id}`);
 }
