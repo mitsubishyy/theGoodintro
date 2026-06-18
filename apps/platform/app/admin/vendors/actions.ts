@@ -6,7 +6,16 @@ import { getFlag } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
 import { applyPaidInvoice } from "@/lib/billing";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createCreditPurchaseInvoice } from "@/lib/integrations/xero";
+import {
+  createCreditPurchaseInvoice,
+  getValidAccessToken,
+  getInvoice,
+  authoriseInvoice,
+  emailInvoice,
+  isRealXeroInvoiceId,
+  canEmailInvoiceStatus,
+  markLedgerInvoiceSent,
+} from "@/lib/integrations/xero";
 import { MEETING_FEE_CENTS, gstCentsForCredits } from "@thegoodintro/pricing";
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
@@ -117,6 +126,83 @@ export async function issueInvoiceAction(fd: FormData): Promise<void> {
     metadata: { credits, xero_invoice_id: xeroId, xero_invoice_number: xeroInvoiceNumber },
   });
   revalidatePath(`/admin/vendors/${id}`);
+}
+
+/**
+ * Authorise an issued DRAFT invoice in Xero (DRAFT -> AUTHORISED) so it becomes
+ * payable. Does NOT email the vendor: authorise and email are decoupled (Issy
+ * 2026-06-18) so a real invoice can be verified in Xero before any email goes
+ * out. The ledger status is unchanged (stays 'draft' until the Email step;
+ * invoice_status has no 'authorised' value). Behind integrations_xero +
+ * vendor_payments; only acts on a real Xero invoice id (never a STUB).
+ */
+export async function authoriseInvoiceAction(fd: FormData): Promise<void> {
+  const { staff, supabase } = await requireStaff();
+  if (!(await getFlag("vendor_payments"))) return;
+  if (!(await getFlag("integrations_xero"))) return;
+  const vendorId = str(fd, "vendor_id");
+  const xeroId = str(fd, "xero_invoice_id");
+  if (!isRealXeroInvoiceId(xeroId)) return;
+
+  const admin = createAdminClient();
+  if (!admin) return;
+  const tok = await getValidAccessToken(admin);
+  if (!tok) return; // not connected
+
+  await authoriseInvoice(tok.accessToken, tok.tenantId, xeroId);
+  await logAudit(supabase, staff.id, {
+    action: "invoice.authorised",
+    targetType: "vendor",
+    targetId: vendorId,
+    metadata: { xero_invoice_id: xeroId },
+  });
+  revalidatePath(`/admin/vendors/${vendorId}`);
+}
+
+/**
+ * Email an AUTHORISED invoice to the vendor via Xero, then flip the ledger
+ * 'draft' -> 'sent'. emailInvoice sends a REAL email, so we first read the Xero
+ * status and refuse to send unless the invoice is SUBMITTED/AUTHORISED/PAID — a
+ * still-DRAFT (or VOIDED) invoice is a guarded no-op (authorise it first). The
+ * ledger flip is idempotent (markLedgerInvoiceSent), so a double click or a
+ * paid webhook that already advanced the row cannot regress or duplicate state.
+ */
+export async function emailInvoiceAction(fd: FormData): Promise<void> {
+  const { staff, supabase } = await requireStaff();
+  if (!(await getFlag("vendor_payments"))) return;
+  if (!(await getFlag("integrations_xero"))) return;
+  const vendorId = str(fd, "vendor_id");
+  const xeroId = str(fd, "xero_invoice_id");
+  if (!isRealXeroInvoiceId(xeroId)) return;
+
+  const admin = createAdminClient();
+  if (!admin) return;
+  const tok = await getValidAccessToken(admin);
+  if (!tok) return; // not connected
+
+  // Guard: never email a draft (Xero would reject it, and it must be payable
+  // first). Fetch-back the real Xero status before sending.
+  const current = await getInvoice(tok.accessToken, tok.tenantId, xeroId);
+  if (!canEmailInvoiceStatus(current.status)) {
+    await logAudit(supabase, staff.id, {
+      action: "invoice.email_skipped",
+      targetType: "vendor",
+      targetId: vendorId,
+      metadata: { xero_invoice_id: xeroId, xero_status: current.status },
+    });
+    revalidatePath(`/admin/vendors/${vendorId}`);
+    return;
+  }
+
+  await emailInvoice(tok.accessToken, tok.tenantId, xeroId);
+  const ledger = await markLedgerInvoiceSent(supabase, xeroId);
+  await logAudit(supabase, staff.id, {
+    action: "invoice.emailed",
+    targetType: "vendor",
+    targetId: vendorId,
+    metadata: { xero_invoice_id: xeroId, ledger },
+  });
+  revalidatePath(`/admin/vendors/${vendorId}`);
 }
 
 /**

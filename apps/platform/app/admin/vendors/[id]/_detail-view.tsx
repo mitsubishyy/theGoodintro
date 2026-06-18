@@ -19,8 +19,15 @@ import {
   approveVendorAction,
   issueInvoiceAction,
   simulatePaidAction,
+  authoriseInvoiceAction,
+  emailInvoiceAction,
 } from "../actions";
 import { vendorStatusPill, type VendorStatusEnum } from "../_status";
+
+/** STUB-… ids are the no-Xero fallback path; only real Xero invoices can be
+ *  authorised/emailed. Mirrors isRealXeroInvoiceId in lib (which pulls in
+ *  node:crypto and so cannot be imported into this client component). */
+const isRealXeroId = (id: string | null): id is string => !!id && !id.startsWith("STUB-");
 
 /**
  * Admin Vendor detail T4 view (LOCKED 2026-06-04 per UI_KIT_DESIGN_LOG;
@@ -555,15 +562,40 @@ function BillingModule({
                           {inv.createdLabel}
                         </span>
                       </div>
-                      {inv.status !== "paid" && inv.xeroInvoiceId && (
-                        <form action={simulatePaidAction}>
-                          <input type="hidden" name="vendor_id" value={vendor.id} />
-                          <input type="hidden" name="xero_invoice_id" value={inv.xeroInvoiceId} />
-                          <Button variant="primary" size="sm" type="submit">
-                            Simulate paid
-                          </Button>
-                        </form>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {/* Real Xero draft: Authorise (no email) then Email
+                            (sends, flips ledger -> sent). Decoupled so a real
+                            invoice can be verified in Xero before it is sent. */}
+                        {inv.status === "draft" && isRealXeroId(inv.xeroInvoiceId) && (
+                          <>
+                            <form action={authoriseInvoiceAction}>
+                              <input type="hidden" name="vendor_id" value={vendor.id} />
+                              <input type="hidden" name="xero_invoice_id" value={inv.xeroInvoiceId} />
+                              <Button variant="ghost" size="sm" type="submit">
+                                Authorise
+                              </Button>
+                            </form>
+                            <form action={emailInvoiceAction}>
+                              <input type="hidden" name="vendor_id" value={vendor.id} />
+                              <input type="hidden" name="xero_invoice_id" value={inv.xeroInvoiceId} />
+                              <Button variant="ghost" size="sm" type="submit">
+                                Email
+                              </Button>
+                            </form>
+                          </>
+                        )}
+                        {/* Staging shortcut: run the paid-unlock without a real
+                            payment (the real path is the signature-verified webhook). */}
+                        {inv.status !== "paid" && inv.xeroInvoiceId && (
+                          <form action={simulatePaidAction}>
+                            <input type="hidden" name="vendor_id" value={vendor.id} />
+                            <input type="hidden" name="xero_invoice_id" value={inv.xeroInvoiceId} />
+                            <Button variant="primary" size="sm" type="submit">
+                              Simulate paid
+                            </Button>
+                          </form>
+                        )}
+                      </div>
                     </li>
                   );
                 })}
@@ -600,6 +632,9 @@ function humanizeAction(action: string): string {
     "vendor.approved": "Approved vendor",
     "application.submitted": "Application submitted",
     "invoice.issued": "Issued invoice",
+    "invoice.authorised": "Authorised invoice",
+    "invoice.emailed": "Emailed invoice",
+    "invoice.email_skipped": "Email skipped (not authorised)",
     "invoice.simulated_paid": "Marked invoice as paid",
     "request.submitted": "Request submitted",
     "request.forwarded_to_ea": "Request forwarded to EA",

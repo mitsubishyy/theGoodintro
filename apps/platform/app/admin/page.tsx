@@ -68,6 +68,7 @@ export default async function AdminDashboard() {
     proposedMtgs,
     onboardExecs,
     releasedGifts,
+    reverseUnlocks,
     pendingReqs,
     recentOnboards,
     giftsByCharity,
@@ -141,6 +142,16 @@ export default async function AdminDashboard() {
       .eq("status", "released")
       .order("created_at", { ascending: true })
       .limit(3),
+    // Needs Action · paid invoices voided in Xero = manual reverse-unlock. The
+    // daily reconcile stamps voided_in_xero_at (V2_BUILD_PLAN §7 — v1 never
+    // auto-reverses); this surfaces it for Issy to action by hand.
+    supabase
+      .from("invoice")
+      .select("created_at, voided_in_xero_at, vendor:vendor_id ( name )")
+      .eq("status", "paid")
+      .not("voided_in_xero_at", "is", null)
+      .order("voided_in_xero_at", { ascending: true })
+      .limit(5),
 
     // Pending Requests
     supabase
@@ -326,6 +337,17 @@ export default async function AdminDashboard() {
       manual: false,
       lead: `Set up executive profile, ${e.name as string}`,
       detail: "Pending business context + calendar connect",
+      age: a.label,
+      ageTone: a.days >= 7 ? "red" : a.days >= 2 ? "amber" : "ink",
+    });
+  }
+  for (const r of reverseUnlocks.data ?? []) {
+    const v = one<{ name: string }>(r.vendor);
+    const a = ageShort((r.voided_in_xero_at as string) ?? (r.created_at as string));
+    needsRows.push({
+      manual: true,
+      lead: `Reverse credit unlock, ${v?.name ?? "Vendor"}`,
+      detail: "Invoice voided in Xero after payment · manual reversal",
       age: a.label,
       ageTone: a.days >= 7 ? "red" : a.days >= 2 ? "amber" : "ink",
     });

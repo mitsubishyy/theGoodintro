@@ -111,7 +111,10 @@ this file only maps them onto Xero.
 > NOT yet done, because it needs a public URL Xero can reach: registering the
 > webhook in the dev portal, the **intent-to-receive handshake**, and the
 > `XERO_WEBHOOK_KEY` — these are a **staging step** (see §9). The daily
-> reconcile job (below) is not built yet either.
+> reconcile job (the safety net below) **is now built** — logic
+> (`reconcileXeroInvoices`), route (`/api/jobs/xero-reconcile`), and the
+> `invoice.voided_in_xero_at` migration, DB-tested locally; only its `pg_cron`
+> **schedule** is a connected-window ops step (see §10).
 
 - **Configure** on the app's Webhooks tab in the developer portal: delivery
   URL = our route, category = **Invoices**. Copy the **webhook signing key**
@@ -204,3 +207,54 @@ platform is on staging (or via a tunnel like ngrok pointing at it), wire it up:
 5. **End-to-end test:** AUTHORISE an invoice (so it is payable), record a payment
    in Xero, and watch the webhook fire → credits unlock. Use the Demo Company or
    accept (and void) a test payment in the real org.
+
+## 10. Daily reconcile job (the webhook safety net, for Issy)
+
+The reconcile is the webhook's backstop (PRODUCTION_READINESS B4): once a day it
+sweeps our open invoices, unlocks any payment the webhook missed (**drift**),
+and flags any paid invoice that Xero has since **VOIDED** for a manual
+reverse-unlock (v1 never auto-reverses — V2_BUILD_PLAN §7). Per DEC-7 the
+schedule is Supabase **`pg_cron`**, not Vercel cron.
+
+The logic lives in the platform route `POST /api/jobs/xero-reconcile`
+(reuses the same encrypted token + `getInvoice` + idempotent `applyPaidInvoice`
+as the webhook, so a double-fire cannot double-credit). It is gated by a shared
+secret: **inert (503) until `CRON_SECRET` is set** in the deploy env, then
+requires `Authorization: Bearer <CRON_SECRET>`. `pg_cron` can only reach a public
+URL, so — like the webhook — this is wired on staging/production, not localhost
+(the reconcile logic itself is unit/DB-tested via `tests/xero-reconcile.test.ts`).
+
+Run these in the **connected Supabase project** (SQL editor), once:
+
+```sql
+-- 1. Enable the extensions (idempotent).
+create extension if not exists pg_cron;
+create extension if not exists pg_net;
+
+-- 2. Schedule the daily reconcile. pg_cron runs in UTC; 16:00 UTC ≈ 02:00 AEST.
+--    Replace <platform-host> with the deployed platform origin and <CRON_SECRET>
+--    with the value set in the platform's deploy env (NOT committed).
+select cron.schedule(
+  'xero-reconcile-daily',
+  '0 16 * * *',
+  $$
+    select net.http_post(
+      url     := 'https://<platform-host>/api/jobs/xero-reconcile',
+      headers := jsonb_build_object(
+        'Content-Type',  'application/json',
+        'Authorization', 'Bearer <CRON_SECRET>'
+      )
+    );
+  $$
+);
+```
+
+To change the time, `select cron.unschedule('xero-reconcile-daily');` then
+re-`cron.schedule` with a new cron expression. Inspect runs with
+`select * from cron.job_run_details order by start_time desc limit 10;`.
+
+**Verify:** with `CRON_SECRET` set + Xero connected, a manual
+`curl -X POST https://<platform-host>/api/jobs/xero-reconcile -H "Authorization: Bearer <CRON_SECRET>"`
+returns `{ ok: true, summary: { checked, driftUnlocked, voidedPaid, voidedUnpaid,
+errors } }`, and each run appends a `reconcile.run` row to `audit_entry`. A wrong
+/ missing bearer returns 401; with no `CRON_SECRET` set the route is 503.

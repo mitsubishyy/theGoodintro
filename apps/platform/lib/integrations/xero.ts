@@ -553,3 +553,190 @@ export async function processInvoiceEvents(
   }
   return { processed, unlocked };
 }
+
+// ─────────────────────────────────────────────────────────────────────────
+// Stage 3b — decoupled "Authorise" then "Email" admin actions.
+//   Issy's call (2026-06-18): keep issueInvoiceAction creating a DRAFT, then
+//   raise it in two separate steps. "Authorise" lifts DRAFT -> AUTHORISED in
+//   Xero (no email; the ledger stays 'draft' — invoice_status has no
+//   'authorised' value and AUTHORISED is observable on Xero), so a real invoice
+//   can be verified before any email goes out. "Email" sends via Xero and flips
+//   the ledger 'draft' -> 'sent'. emailInvoice triggers a REAL email, so the
+//   Email path gates on the Xero invoice actually being payable first.
+// ─────────────────────────────────────────────────────────────────────────
+
+/** STUB-… ids are the no-Xero fallback path; they have no Xero invoice to act on. */
+export function isRealXeroInvoiceId(id: string | null | undefined): boolean {
+  return !!id && !id.startsWith("STUB-");
+}
+
+/** Xero invoice states from which an invoice is emailable / payable. */
+export function canEmailInvoiceStatus(status: string): boolean {
+  return status === "SUBMITTED" || status === "AUTHORISED" || status === "PAID";
+}
+
+/**
+ * Flip a ledger invoice 'draft' -> 'sent' after Xero has emailed it. Idempotent
+ * and guarded: a missing or non-draft row (already sent/paid/void — e.g. a
+ * double click, or the paid webhook already advanced it) is a no-op, so state
+ * can never regress or duplicate. Money/state path: keyed on xero_invoice_id
+ * with a claim-on-status update (only one caller flips draft -> sent).
+ */
+export async function markLedgerInvoiceSent(
+  ledger: SupabaseClient,
+  xeroInvoiceId: string,
+): Promise<"sent" | "not_found" | "not_draft"> {
+  const { data: inv } = await ledger
+    .from("invoice")
+    .select("id, status")
+    .eq("xero_invoice_id", xeroInvoiceId)
+    .maybeSingle();
+  if (!inv) return "not_found";
+  if (inv.status !== "draft") return "not_draft";
+  const { data: claimed } = await ledger
+    .from("invoice")
+    .update({ status: "sent" })
+    .eq("id", inv.id)
+    .eq("status", "draft")
+    .select("id");
+  if (!claimed || claimed.length === 0) return "not_draft";
+  return "sent";
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Stage 4 — daily reconcile, the paid-webhook safety net
+//   (XERO_INTEGRATION_CONTRACT §5, PRODUCTION_READINESS B4; DEC-7 pg_cron).
+// ─────────────────────────────────────────────────────────────────────────
+
+export type ReconcileSummary = {
+  checked: number; // ledger invoices fetched against Xero
+  driftUnlocked: number; // PAID in Xero but the webhook missed it -> unlocked now
+  voidedPaid: number; // PAID invoices voided in Xero -> flagged for manual reverse-unlock
+  voidedUnpaid: number; // never-paid invoices voided in Xero -> ledger marked void
+  errors: number; // per-invoice failures (counted + logged, never fatal to the run)
+};
+
+/** Queue a staff in-app alert (same notification shape applyPaidInvoice uses). */
+async function queueStaffAlert(
+  admin: SupabaseClient,
+  event: string,
+  payload: Record<string, unknown>,
+): Promise<void> {
+  await admin.from("notification").insert({
+    recipient_type: "staff",
+    recipient_id: null,
+    channel: "in_app",
+    event,
+    status: "queued",
+    payload,
+  });
+}
+
+/**
+ * Daily reconcile — the paid-webhook's backstop. Sweeps every ledger invoice
+ * that is not already void and carries a real Xero id, reads its current Xero
+ * status, and:
+ *   - PAID in Xero but our ledger isn't -> applyPaidInvoice (idempotent). A
+ *     status of 'applied' means the webhook MISSED this payment = drift; we
+ *     unlock now and alert Issy (recurring drift => the webhook is failing).
+ *   - VOIDED in Xero + our ledger 'paid' (credits already unlocked) -> stamp
+ *     voided_in_xero_at ONCE and alert; surfaces as a manual reverse-unlock in
+ *     admin Needs action. NEVER auto-reverses (V2_BUILD_PLAN §7, Issy's call).
+ *   - VOIDED in Xero + our ledger draft/sent (never paid) -> mark ledger 'void'
+ *     (no money moved, nothing to reverse).
+ *
+ * `fetchStatus` is injected (the route passes live getInvoice) so the whole
+ * money/state path is testable on the local stack without Xero. Per-invoice
+ * errors are caught and counted, so a single Xero hiccup cannot abort the run.
+ * Writes an append-only `reconcile.run` system audit entry with the summary.
+ * Service-role client only (it unlocks credits + writes RLS-locked rows).
+ */
+export async function reconcileXeroInvoices(
+  admin: SupabaseClient,
+  fetchStatus: (xeroInvoiceId: string) => Promise<InvoiceStatusRead>,
+): Promise<ReconcileSummary> {
+  const summary: ReconcileSummary = {
+    checked: 0,
+    driftUnlocked: 0,
+    voidedPaid: 0,
+    voidedUnpaid: 0,
+    errors: 0,
+  };
+
+  const { data: rows } = await admin
+    .from("invoice")
+    .select("id, xero_invoice_id, status, vendor_id, voided_in_xero_at")
+    .neq("status", "void")
+    .not("xero_invoice_id", "is", null);
+
+  for (const inv of rows ?? []) {
+    const xeroId = inv.xero_invoice_id as string | null;
+    if (!isRealXeroInvoiceId(xeroId)) continue; // STUB fallback rows have no Xero invoice
+    summary.checked++;
+    try {
+      const status = await fetchStatus(xeroId as string);
+
+      if (status.status === "VOIDED") {
+        if (inv.status === "paid") {
+          // Credits already unlocked: flag for a MANUAL reverse-unlock. Stamp
+          // once (claim on null) so daily runs never duplicate the task/alert.
+          if (!inv.voided_in_xero_at) {
+            const { data: stamped } = await admin
+              .from("invoice")
+              .update({ voided_in_xero_at: new Date().toISOString() })
+              .eq("id", inv.id)
+              .is("voided_in_xero_at", null)
+              .select("id");
+            if (stamped && stamped.length > 0) {
+              summary.voidedPaid++;
+              await queueStaffAlert(admin, "B4_invoice_voided", {
+                invoice_id: inv.id,
+                vendor_id: inv.vendor_id,
+                xero_invoice_id: xeroId,
+              });
+            }
+          }
+        } else {
+          // Never paid -> close the dead invoice. No money moved, no reversal.
+          await admin
+            .from("invoice")
+            .update({
+              status: "void",
+              voided_in_xero_at:
+                (inv.voided_in_xero_at as string | null) ?? new Date().toISOString(),
+            })
+            .eq("id", inv.id);
+          summary.voidedUnpaid++;
+        }
+        continue;
+      }
+
+      if (isInvoicePaid(status)) {
+        const result = await applyPaidInvoice(admin, xeroId as string);
+        if (result.status === "applied") {
+          summary.driftUnlocked++;
+          await queueStaffAlert(admin, "B4_reconcile_drift", {
+            invoice_id: inv.id,
+            vendor_id: inv.vendor_id,
+            xero_invoice_id: xeroId,
+            credits: result.credits ?? null,
+          });
+        }
+      }
+    } catch {
+      summary.errors++;
+    }
+  }
+
+  // Append-only run log (B4 observability): a system audit entry per run.
+  await admin.from("audit_entry").insert({
+    actor_type: "system",
+    actor_id: null,
+    action: "reconcile.run",
+    target_type: "integration",
+    target_id: null,
+    metadata: { provider: "xero", ...summary },
+  });
+
+  return summary;
+}
