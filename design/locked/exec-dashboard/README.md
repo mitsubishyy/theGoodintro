@@ -1,5 +1,11 @@
 # Exec Dashboard — LOCKED 2026-06-08
 
+> **Money note (2026-06-12 rule):** a gift figure an exec reads PRE-Held renders
+> "approximately $N" (canonical: `exec-request-email`). The bare "$N" in the
+> sample copy below (e.g. the Direction Card, "What $N funds", Upcoming cards, the
+> Incoming widget) is shorthand; do not port a flat pre-Held figure. Recent Impact
+> and other Held figures are exact.
+
 Designed in Claude Design 2026-06-08. **First locked exec-portal screen.** Locks
 the entire exec portal shell (charcoal sidebar + tokens, top-bar only, no bell /
 no search), the editorial concierge register that distinguishes exec from

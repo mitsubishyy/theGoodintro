@@ -1,5 +1,10 @@
 # Exec Incoming Requests — LOCKED 2026-06-09
 
+> **Money note (2026-06-12 rule):** every card here is PRE-Held, so its gift
+> figure renders "approximately $N" (the projected band amount; canonical:
+> `exec-request-email`). The bare "$N" in the sample copy below is shorthand; do
+> not port a flat figure. The amount still varies by the vendor's band.
+
 Designed in Claude Design 2026-06-09. **Second locked exec-portal screen** (after
 the Exec Dashboard). The all-pending batch review surface. Route: `/exec/requests`.
 

@@ -1,5 +1,10 @@
 # Exec My Charity — LOCKED 2026-06-11
 
+> **Money note (2026-06-12 rule):** the "What $N funds" figure in the charity
+> detail modal is the projected pre-Held band amount, so it renders "approximately
+> $N" (canonical: `exec-request-email`). The bare "$N" sample copy is shorthand;
+> do not port a flat figure.
+
 Designed in Claude Design 2026-06-11. **Sixth locked exec-portal screen — completes the exec sidebar set** (Home · Meetings · Impact · My charity · Profile, plus Incoming Requests at `/exec/requests`). Route: `/exec/my-charity`.
 
 The view-only home of the exec's standing charity nomination — the "quiet place for the fuller picture": current nomination hero, the relationship's impact, nomination history, and how the nomination works. It is **NOT the charity-change interaction surface** (the locked picker modal owns changes; this page only hosts the trigger) and it is **NOT the gift feed** (`/exec/impact` owns that; no gift rows render here).

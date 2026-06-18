@@ -1,5 +1,11 @@
 # Exec Meetings List — LOCKED 2026-06-10
 
+> **Money note (2026-06-12 rule):** a gift figure an exec reads PRE-Held (Upcoming
+> meetings, the drawer "Your gift" before the meeting begins) renders
+> "approximately $N" (canonical: `exec-request-email`). The bare "$N" in the
+> sample copy below is shorthand; do not port a flat pre-Held figure. Past / Held
+> figures are the exact frozen amount.
+
 Designed in Claude Design 2026-06-10. **Third locked exec-portal screen** (after the Exec Dashboard and Exec Incoming Requests). Route: `/exec/meetings`. Priya's working surface for everything past, present, and upcoming. List + Calendar toggle. Row click opens a right-side drawer; there is no standalone meeting detail page.
 
 Three viewports plus one expanded variant: VP1 LIST default (Past + Cancelled collapsed), VP1b LIST with Past expanded, VP2 CALENDAR month view, VP3 LIST with drawer open on Mira Chen.

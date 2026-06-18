@@ -18,6 +18,14 @@ rules, open items) lives in [`../../UI_KIT_DESIGN_LOG.md`](../../UI_KIT_DESIGN_L
 Port from all three together: the design log spec, the exported HTML, and the
 screenshots. The design log wins on intent; the HTML/screenshots win on exact visuals.
 
+> **Money display rule (locked 2026-06-12, every exec-facing screen).** A gift
+> figure an EXECUTIVE reads PRE-Held renders as "approximately $N" (the projected
+> `bandForMeetingNumber(...)` amount), never a bare number; it becomes the EXACT
+> frozen `gift_record.charity_amount_cents` only at Held. Canonical lock:
+> `exec-request-email`. Where an older screen README's sample copy shows a bare
+> "$N" pre-Held, that is shorthand: render it with the "approximately" prefix, and
+> do not port the flat figure. Held, past, and Impact figures are exact (no prefix).
+
 ## Read order (do not skip)
 
 1. [`FACTS.md`](../../FACTS.md) — brand (TheGoodIntro) and pricing facts. Wins over any
