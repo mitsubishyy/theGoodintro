@@ -172,8 +172,16 @@ describe("exec portal schema (migration 0019)", () => {
       const { data: open2 } = await admin.from("nomination_history").select("id").eq("executive_id", PRIYA).is("ended_at", null);
       expect(open2).toHaveLength(1);
     } finally {
-      // Restore RFDS standing so downstream state stays consistent.
-      await admin.rpc("set_standing_nomination", { p_executive_id: PRIYA, p_charity_id: RFDS });
+      // Restore Priya's EXACT seeded two-row sample. set_standing_nomination only
+      // appends/closes rows, so it cannot prune the extra closed rows this test
+      // created; without a full restore the "locked two-row sample" assertion above
+      // fails on a rerun against a non-reset DB. Mirror seed_staging.sql exactly.
+      await admin.from("nomination_history").delete().eq("executive_id", PRIYA);
+      await admin.from("nomination_history").insert([
+        { executive_id: PRIYA, charity_id: BEYOND_BLUE, started_at: "2024-02-09T00:00:00+10:00", ended_at: "2024-05-12T00:00:00+10:00" },
+        { executive_id: PRIYA, charity_id: RFDS, started_at: "2024-05-12T00:00:00+10:00", ended_at: null },
+      ]);
+      await admin.from("executive").update({ default_charity_id: RFDS }).eq("id", PRIYA);
     }
   });
 });

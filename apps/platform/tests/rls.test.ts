@@ -67,10 +67,15 @@ describe("RLS tenant boundary", () => {
     expect(blairGifts?.length).toBe(0);
   });
 
-  it("paid vendors can read the active executive list", async () => {
-    const { data } = await alex.from("executive").select("id");
-    // 10 active execs in seed_staging.sql (2 original + 8 directory demo rows).
-    expect(data?.length).toBe(10);
+  it("paid vendors can read the active executive list (only active, all of them)", async () => {
+    const { data } = await alex.from("executive").select("id, status");
+    const rows = data ?? [];
+    // The RLS property (0003): a paid vendor sees execs only where status = 'active'.
+    expect(rows.every((e) => e.status === "active")).toBe(true);
+    // Seed has 10 active execs (2 original + 8 directory demo rows). Sibling tests
+    // share the DB and may add more active execs, so assert the floor, not an exact
+    // count (the old exact count made this flaky across reruns on a non-reset DB).
+    expect(rows.length).toBeGreaterThanOrEqual(10);
   });
 
   it("a vendor cannot read the staff table", async () => {

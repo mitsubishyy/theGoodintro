@@ -23,6 +23,8 @@ charity side in [CHARITY_FLOW.md](CHARITY_FLOW.md). Last updated 2026-05-26.
 - "Soft delete" means a `deleted_at` timestamp, not a real row removal (retention
   rules are a compliance-doc decision, flagged below).
 - Enums are written as `lower_snake_case` fixed value lists.
+- Columns added after the foundation schema are tagged with their migration
+  number, e.g. `(0019)`. This file reflects migrations through **0023**.
 
 ---
 
@@ -51,6 +53,7 @@ meetings.
 | `name` | text | |
 | `role` | enum | `owner` or `member`. Only `owner` sees billing |
 | `status` | enum | `invited` → `active` → `removed` |
+| `photo_url`, `bio_one_liner` | text | (0019) Avatar + one-line credibility line on the request email's vendor card |
 
 ### Invite
 **Purpose:** membership is invite-only. The Owner invites each user; the invite
@@ -71,12 +74,17 @@ email asks them to log in and create their account.
 | Field | Type | Notes |
 |---|---|---|
 | `name`, `title`, `company` | text | |
-| `photo_url` | text | |
-| `context_notes` | text | Business-context notes used to qualify requests |
-| `default_charity_id` | charity_id | Their standing charity (set at onboarding; changeable) |
+| `photo_url` | text | Set via the file-upload pipeline (0023); falls back to initials |
+| `linkedin_url` | text | (0019) |
+| `interested_in`, `current_projects`, `not_interested_in` | text | (0019) Structured business context the exec Profile + admin form edit; drives which vendor requests reach them. Never shown to vendors |
+| `timeline`, `seniority_signal` | text | (0019) Select-backed (canonical option lists live in code, no DB enum) |
+| `suggested_cadence` | text | Informational guide on how often this exec will meet; **not enforced** in v1 |
+| `context_notes` | text | **Deprecated** (0019). Superseded by the structured fields above; retained, no longer written |
+| `timezone`, `preferred_window_days`, `preferred_window_start`, `preferred_window_end` | text / time | (0019) Preferred meeting window, kept structured for slot proposal |
+| `calendar_provider`, `calendar_connected_at`, `calendar_last_synced_at` | text / timestamp | (0019) Free/busy connection only, never event detail |
+| `default_charity_id` | charity_id | Their standing charity. Changed via the atomic `set_standing_nomination` function (0022), which also closes/opens the NominationHistory row |
 | `ea_id` | ea_id | Nullable; the EA who assists them |
 | `status` | enum | `invited` → `set_up` → `active` → `paused` → `left` |
-| `suggested_cadence` | text | Informational guide for Issy on how often this exec will meet; **not enforced** in v1 |
 | `primary_email` | text | Where request emails go |
 
 ### EA (executive assistant)
@@ -91,15 +99,37 @@ record so a single EA has one identity across all the leaders they support.
 > link. Every action an EA takes is written to the audit log as "acting for
 > [executive]".
 
-### Charity _(shape deferred to [CHARITY_FLOW.md](CHARITY_FLOW.md))_
-**Purpose:** the DGR-endorsed Australian charity a gift goes to. Stubbed here so
-other entities can reference it.
+### Charity _(DGR + verification cadence still in [CHARITY_FLOW.md](CHARITY_FLOW.md))_
+**Purpose:** the DGR-endorsed Australian charity a gift goes to. Identity +
+credentials here; the curated DETAIL-modal content fields were added in 0021.
 
 | Field | Type | Notes |
 |---|---|---|
 | `name` | text | |
+| `short_name` | text | (0019) Short reference, e.g. "Flying Doctor" |
 | `abn` | text | |
 | `dgr_status` | enum | `endorsed` / `unverified` / `revoked` (verification cadence: charity/compliance docs) |
+| `cause`, `dgr_item` | text | (0021) One-line cause + DGR item shown on cards / picker rows |
+| `logo_url`, `hero_image_url` | text | (0021) Set via the file-upload pipeline (0023); fall back to initials / tint |
+| `purpose` | text | (0021) One-sentence mission (detail modal) |
+| `programmes` | jsonb | (0021) `[{label, body}]`, top programmes in curated order |
+| `featured_quote`, `featured_quote_attribution` | text | (0021) Illustrative testimonial + generic role attribution |
+| `stories` | jsonb | (0021) `[{published_at, headline, body, url}]`, newest rendered |
+| `content_updated_at` | timestamp | (0021) Freshness stamp |
+
+### NominationHistory
+**Purpose:** the standing-charity history behind the My charity "since [date]"
+line and feed. At most **one open row per executive** (the current standing
+charity); a change closes the open row (`ended_at`) and opens a new one, run
+atomically inside `set_standing_nomination` (0022) so an exec is never left with
+zero open rows.
+
+| Field | Type | Notes |
+|---|---|---|
+| `executive_id` | executive_id | (0019) |
+| `charity_id` | charity_id | |
+| `started_at` | timestamp | |
+| `ended_at` | timestamp | Null for the current open row; partial unique index enforces one open per exec |
 
 ---
 
@@ -197,6 +227,7 @@ a Request can be declined or expire without ever becoming a Meeting.
 | `vendor_id`, `requested_by_user_id` | refs | |
 | `executive_id` | executive_id | |
 | `q1_what` , `q2_why` | text(300) | The two context blocks (content-guarded: emails/phones/links stripped) |
+| `q1_head`, `q2_head` | text(120) | (0019) Short Fraunces heads rendered above each answer body |
 | `attendee` | json | On-behalf-of name + title + email when someone other than the requester attends |
 | `meeting_minutes` | int | **Fixed 45** for every meeting in v1 |
 | `status` | enum | `submitted` → `accepted` / `declined` / `expired` |
@@ -253,6 +284,17 @@ accepted.
 |---|---|---|
 | `name`, `email` | text | |
 | `role` | enum | `super_admin` / `staff` |
+
+### FeatureFlag and Storage
+**Purpose:** infra the build depends on, not domain entities.
+
+- **FeatureFlag** (`key`, `enabled`, `description`): every new behaviour ships
+  behind one, **OFF by default** (CHANGE_SAFETY.md), toggled in the admin portal.
+  e.g. `photo_upload` (0023), `exec_dashboard`, `request_loop`.
+- **Storage**: the `public-avatars` bucket (0023) holds executive + charity
+  images. Public read; **staff-only write** under storage RLS. Uploads are
+  re-encoded server-side (which strips EXIF/GPS) and stored at content-hashed
+  paths; the resulting public URL is written to the owning `*_url` column.
 
 ---
 
