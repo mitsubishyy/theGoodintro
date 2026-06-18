@@ -20,7 +20,7 @@ export default async function GivingPage() {
 
   return (
     <div className="max-w-3xl px-8 py-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Giving</h1>
+      <h1 className="text-[20px] font-semibold tracking-tight">Giving</h1>
       <p className="mt-1 mb-6 text-sm" style={{ color: "var(--muted-foreground)" }}>
         The canonical gift record per held meeting. {formatAud(owed)} released and awaiting payment.
       </p>

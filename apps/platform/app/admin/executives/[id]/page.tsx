@@ -47,7 +47,7 @@ export default async function ExecutiveDetailPage({
         ← Executives
       </Link>
       <div className="mt-2 mb-1 flex items-center gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight">{exec.name}</h1>
+        <h1 className="text-[20px] font-semibold tracking-tight">{exec.name}</h1>
         <span className="rounded-full px-2 py-0.5 text-xs" style={{ background: "var(--portal-amber-soft)", color: "var(--portal-amber-ink)" }}>
           {exec.status}
         </span>

@@ -20,7 +20,7 @@ export default async function ExecutivesPage() {
     <div className="max-w-5xl px-8 py-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Executives</h1>
+          <h1 className="text-[20px] font-semibold tracking-tight">Executives</h1>
           <p className="mt-1 mb-6 text-sm" style={{ color: "var(--muted-foreground)" }}>
             Senior leaders set up to receive and accept requests.
           </p>

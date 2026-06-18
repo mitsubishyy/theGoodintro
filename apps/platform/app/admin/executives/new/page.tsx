@@ -32,7 +32,7 @@ export default async function NewExecutivePage() {
       <Link href="/admin/executives" className="text-sm" style={{ color: "var(--muted-foreground)" }}>
         ← Executives
       </Link>
-      <h1 className="mt-2 mb-6 text-2xl font-semibold tracking-tight">New executive</h1>
+      <h1 className="mt-2 mb-6 text-[20px] font-semibold tracking-tight">New executive</h1>
       <ExecutiveForm
         action={createExecutiveAction}
         charities={charities ?? []}
