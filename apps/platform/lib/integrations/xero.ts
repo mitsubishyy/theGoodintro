@@ -1,5 +1,7 @@
+import crypto from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { encryptSecret, decryptSecret } from "../crypto";
+import { applyPaidInvoice } from "../billing";
 
 /**
  * Xero OAuth 2.0 client (XERO_INTEGRATION_CONTRACT.md §2). Stage 1: the connect
@@ -242,7 +244,9 @@ async function xeroApi(
   if (!res.ok) {
     throw new Error(`Xero ${method} ${path} failed (${res.status}): ${await res.text()}`);
   }
-  return (await res.json()) as Record<string, unknown>;
+  // Some endpoints (e.g. Email) return 204 / empty bodies.
+  const text = await res.text();
+  return (text ? JSON.parse(text) : {}) as Record<string, unknown>;
 }
 
 /** Update only the token columns after a refresh (keeps connected_at/by intact). */
@@ -445,4 +449,107 @@ export async function createCreditPurchaseInvoice(
     gstCents: input.expectedGstCents,
   });
   return { ...inv, accountCode };
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Stage 3 — authorise, email, and the paid webhook (XERO_INTEGRATION_CONTRACT §4/§5).
+// ─────────────────────────────────────────────────────────────────────────
+
+/** Raise a draft invoice to AUTHORISED so it can be emailed and paid. */
+export async function authoriseInvoice(
+  accessToken: string,
+  tenantId: string,
+  invoiceId: string,
+): Promise<void> {
+  await xeroApi("POST", `Invoices/${invoiceId}`, accessToken, tenantId, {
+    Invoices: [{ InvoiceID: invoiceId, Status: "AUTHORISED" }],
+  });
+}
+
+/** Email the invoice to its contact via Xero (uses the org's default template). */
+export async function emailInvoice(
+  accessToken: string,
+  tenantId: string,
+  invoiceId: string,
+): Promise<void> {
+  await xeroApi("POST", `Invoices/${invoiceId}/Email`, accessToken, tenantId, {});
+}
+
+export type InvoiceStatusRead = {
+  status: string;
+  amountDueCents: number | null;
+  invoiceNumber: string | null;
+};
+
+/** Read one invoice's payment-relevant status (the webhook fetch-back). */
+export async function getInvoice(
+  accessToken: string,
+  tenantId: string,
+  invoiceId: string,
+): Promise<InvoiceStatusRead> {
+  const data = await xeroApi("GET", `Invoices/${invoiceId}`, accessToken, tenantId);
+  const inv = ((data.Invoices as Record<string, unknown>[]) ?? [])[0];
+  if (!inv) throw new Error(`Xero invoice ${invoiceId} not found`);
+  return {
+    status: inv.Status as string,
+    amountDueCents: inv.AmountDue != null ? dollarsToCents(inv.AmountDue as number) : null,
+    invoiceNumber: (inv.InvoiceNumber as string) || null,
+  };
+}
+
+/** A Xero invoice is settled when fully paid (Status PAID, or AmountDue hit 0). */
+export function isInvoicePaid(inv: { status: string; amountDueCents: number | null }): boolean {
+  if (inv.status === "PAID") return true;
+  if (inv.status === "AUTHORISED" && inv.amountDueCents === 0) return true;
+  return false;
+}
+
+/**
+ * Verify a Xero webhook signature: base64(HMAC-SHA256(rawBody, signingKey))
+ * compared in constant time. MUST run on the raw request bytes, before any
+ * JSON parse/re-serialise. Also the intent-to-receive contract: a correct
+ * signature returns true (caller -> 200), an incorrect one false (caller -> 401).
+ */
+export function verifyXeroSignature(rawBody: string, signature: string, signingKey: string): boolean {
+  const expected = crypto.createHmac("sha256", signingKey).update(rawBody).digest("base64");
+  const a = Buffer.from(signature);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
+}
+
+export type XeroWebhookEvent = {
+  resourceId?: string;
+  eventCategory?: string; // e.g. "INVOICE", "CONTACT"
+  eventType?: string; // e.g. "UPDATE", "CREATE"
+  tenantId?: string;
+};
+
+/**
+ * Process a batch of webhook events: for each INVOICE event, fetch the invoice's
+ * current status (Xero webhooks are thin and carry no data — contract §5) and,
+ * if it is fully paid, run the idempotent unlock. `fetchStatus` is injected so
+ * the unlock path is testable without live Xero. Dedupes resourceIds within a
+ * batch; unknown invoices (not issued by us) fall through applyPaidInvoice as
+ * not_found and are ignored.
+ */
+export async function processInvoiceEvents(
+  admin: SupabaseClient,
+  events: XeroWebhookEvent[],
+  fetchStatus: (invoiceId: string) => Promise<InvoiceStatusRead>,
+): Promise<{ processed: number; unlocked: number }> {
+  let processed = 0;
+  let unlocked = 0;
+  const seen = new Set<string>();
+  for (const e of events) {
+    if (e.eventCategory !== "INVOICE" || !e.resourceId) continue;
+    if (seen.has(e.resourceId)) continue;
+    seen.add(e.resourceId);
+    processed++;
+    const status = await fetchStatus(e.resourceId);
+    if (!isInvoicePaid(status)) continue;
+    const result = await applyPaidInvoice(admin, e.resourceId);
+    if (result.status === "applied") unlocked++;
+  }
+  return { processed, unlocked };
 }

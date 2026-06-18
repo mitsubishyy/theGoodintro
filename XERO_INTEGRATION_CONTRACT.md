@@ -104,6 +104,15 @@ this file only maps them onto Xero.
 
 ## 5. Payment detection (webhook, plus reconcile fallback)
 
+> **Build status (stage 3, 2026-06-18):** the route at
+> `apps/platform/app/api/webhooks/xero/route.ts` is built to this contract
+> (real `events[]` shape, raw-body signature verify, fetch-back, idempotent
+> unlock) and unit/DB-tested locally (`tests/xero-webhook.test.ts`). What is
+> NOT yet done, because it needs a public URL Xero can reach: registering the
+> webhook in the dev portal, the **intent-to-receive handshake**, and the
+> `XERO_WEBHOOK_KEY` — these are a **staging step** (see §9). The daily
+> reconcile job (below) is not built yet either.
+
 - **Configure** on the app's Webhooks tab in the developer portal: delivery
   URL = our route, category = **Invoices**. Copy the **webhook signing key**
   shown there into env.
@@ -114,19 +123,23 @@ this file only maps them onto Xero.
   portal. Xero sends a mix of correctly and incorrectly signed payloads; the
   route must return **200 (empty body, no cookies) for valid signatures and
   401 for invalid ones, within 5 seconds**. Status flips to OK in the portal.
-  The existing stub route returns errors for bad signatures already; confirm
-  the exact 401-no-body behaviour and the 5-second budget.
+  **Implemented:** `verifyXeroSignature` (constant-time, raw bytes) → valid:
+  `200` no body / invalid: `401` no body. An ITR ping has a valid signature and
+  no events, so it acks 200 without a fetch-back.
 - **Payload (slim; never contains invoice data):**
   `{ "events": [{ "resourceUrl", "resourceId", "tenantId", "eventCategory":
   "INVOICE", "eventType": "UPDATE" | "CREATE", "eventDateUtc" }],
   "firstEventSequence", "lastEventSequence", "entropy" }`. Events are batched;
   a payment applied to an invoice arrives as an **INVOICE UPDATE** event.
-- **Handler contract:** verify signature → 200 immediately → process async
-  (queue or after-response). For each INVOICE event: `GET /Invoices/{resourceId}`
-  and treat as paid **only if** `Status == "PAID"` (equivalently
-  `AmountDue == 0` with `FullyPaidOnDate` set). Then call the existing
-  idempotent `applyPaidInvoice` keyed on `xero_invoice_id`; replays and
-  duplicate events are already safe (DB claim `status != 'paid'`).
+- **Handler contract (implemented):** verify signature → parse `events[]` →
+  for each `eventCategory == "INVOICE"` (deduped by `resourceId`),
+  `getInvoice(resourceId)` and treat as paid via `isInvoicePaid` (`Status ==
+  "PAID"`, or `AUTHORISED` with `AmountDue == 0`). Then `applyPaidInvoice`
+  keyed on `xero_invoice_id` (= the Xero `InvoiceID` we store); replays and
+  duplicate events are safe (DB claim `status != 'paid'`). `processInvoiceEvents`
+  takes the status-fetcher as a parameter so the unlock path is testable
+  without live Xero. (Currently synchronous; for higher volume, move to
+  ack-then-queue.)
 - Ignore events for invoices we did not issue (no matching `xero_invoice_id`):
   log and drop. Ignore UPDATE events that are not payments (status unchanged).
 - **Retries/outage:** Xero retries failed deliveries with backoff and can
@@ -157,13 +170,37 @@ Tenant id and tokens live in the DB (encrypted), not env. Add these to
 
 ## 8. Verify at build time (do not skip; this doc is from public docs)
 
-- [ ] OAuth round-trip against the Demo Company; confirm token lifetimes and
-      rotation grace behave as documented.
-- [ ] `TaxType "OUTPUT"` produces exactly 10% on the Demo Company (AU); confirm
-      the org's income account code.
-- [ ] Email endpoint sends from the Demo Company and what the email looks like.
-- [ ] ITR handshake passes against our route (response codes + 5s budget).
-- [ ] A payment applied in Xero fires INVOICE UPDATE and our fetch-back sees
-      `Status PAID`; replay unlocks exactly once (existing test extends).
-- [ ] Webhook retry/disable policy and the exact payload field casing.
-- [ ] Demo Company reset cadence and what survives it.
+- [x] OAuth round-trip (stage 1, live 2026-06-16): token stored encrypted +
+      decrypts; access token ~30 min; refresh rotates (verified live in stage 2).
+- [x] `TaxType "OUTPUT"` produces exactly 10% (stage 2, live): a 3-credit invoice
+      returned SubTotal $4,500 / TotalTax $450; income account auto-detected as
+      code `200` (Sales).
+- [~] Email endpoint: `emailInvoice` built; not sent live yet (avoid emailing
+      synthetic vendors). Verify against the connected org / Demo Company.
+- [ ] ITR handshake passes against our route — **staging** (needs public URL).
+- [~] A payment → fetch-back sees `Status PAID` → unlock: the unlock path is
+      DB-tested (`tests/xero-webhook.test.ts`) with the status injected; the
+      real Xero **delivery** is a staging step (§9).
+- [ ] Webhook retry/disable policy and exact payload field casing — confirm on
+      staging once deliveries are live.
+- [ ] (Real org in use, not the Demo Company — confirm target org before any
+      AUTHORISED/paid live test, since those touch the books.)
+
+## 9. Staging webhook setup (the live-delivery step, for Issy)
+
+The webhook is Xero calling us, so it only works on a public URL. When the
+platform is on staging (or via a tunnel like ngrok pointing at it), wire it up:
+
+1. **Get the public URL** of the platform's webhook route, e.g.
+   `https://<staging-host>/api/webhooks/xero` (local tunnel:
+   `https://<subdomain>.ngrok.io/api/webhooks/xero`).
+2. **developer.xero.com → your app → Webhooks**: set the **Delivery URL** to that
+   URL and tick the **Invoices** event.
+3. **Copy the "Webhooks key"** shown there into the platform env as
+   `XERO_WEBHOOK_KEY` (staging secret store, or `.env.local` for a tunnel test).
+   The route is inert (503) until this key is set.
+4. **Click "Send 'Intent to receive'."** Xero posts signed + deliberately-bad
+   payloads; our route answers 200 / 401 and the portal status flips to **OK**.
+5. **End-to-end test:** AUTHORISE an invoice (so it is payable), record a payment
+   in Xero, and watch the webhook fire → credits unlock. Use the Demo Company or
+   accept (and void) a test payment in the real org.
