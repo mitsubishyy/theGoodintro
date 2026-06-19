@@ -15,6 +15,7 @@ type Initial = {
   suggested_cadence?: string | null;
   photo_url?: string | null;
   context_notes?: string | null;
+  linkedin_url?: string | null;
 };
 
 const inputStyle = {
@@ -70,6 +71,10 @@ export function ExecutiveForm({
       <label className="flex flex-col gap-1.5">
         <Label>Company</Label>
         <input name="company" defaultValue={initial.company ?? ""} className="rounded-lg border px-3 py-2.5 text-sm" style={inputStyle} />
+      </label>
+      <label className="flex flex-col gap-1.5">
+        <Label>LinkedIn URL</Label>
+        <input name="linkedin_url" type="url" placeholder="https://www.linkedin.com/in/…" defaultValue={initial.linkedin_url ?? ""} className="rounded-lg border px-3 py-2.5 text-sm" style={inputStyle} />
       </label>
       <label className="flex flex-col gap-1.5">
         <Label>Default charity</Label>

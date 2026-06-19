@@ -105,7 +105,7 @@ export default async function VendorExecutivesPage({
   const [execsRes, requestsRes, heldRes] = await Promise.all([
     supabase
       .from("executive")
-      .select("id, name, title, company, industry, country, photo_url, bio, created_at, charity:default_charity_id(name)")
+      .select("id, name, title, company, industry, country, photo_url, bio, linkedin_url, created_at, charity:default_charity_id(name)")
       .order("created_at", { ascending: false }),
     supabase.from("request").select("status, executive_id, created_at"),
     supabase.from("meeting").select("id, request:request_id(executive_id)").eq("status", "held"),
@@ -164,6 +164,7 @@ export default async function VendorExecutivesPage({
       status: statusOf(e.id as string),
       // drawer fields, carried so the open drawer needs no second fetch
       bio: (e.bio as string | null) ?? null,
+      linkedinUrl: (e.linkedin_url as string | null) ?? null,
       charityName: charity?.name ?? null,
       memberSinceYear: new Date(e.created_at as string).getFullYear(),
     };

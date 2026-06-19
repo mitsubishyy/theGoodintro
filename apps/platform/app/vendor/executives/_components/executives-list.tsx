@@ -46,6 +46,8 @@ export interface ExecListRow {
   photoUrl: string | null;
   status: ExecStatusKey;
   bio: string | null;
+  /** Drawer-only: rendered next to the name in the detail slide-over, never in the list columns. */
+  linkedinUrl: string | null;
   charityName: string | null;
   memberSinceYear: number;
 }

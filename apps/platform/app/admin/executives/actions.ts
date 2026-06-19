@@ -37,6 +37,7 @@ export async function createExecutiveAction(
       suggested_cadence: orNull(str(fd, "suggested_cadence")),
       photo_url: orNull(str(fd, "photo_url")),
       default_charity_id: orNull(str(fd, "default_charity_id")),
+      linkedin_url: orNull(str(fd, "linkedin_url")),
       status: "invited",
     })
     .select("id")
@@ -78,6 +79,7 @@ export async function updateExecutiveAction(
       suggested_cadence: orNull(str(fd, "suggested_cadence")),
       photo_url: orNull(str(fd, "photo_url")),
       default_charity_id: orNull(str(fd, "default_charity_id")),
+      linkedin_url: orNull(str(fd, "linkedin_url")),
     })
     .eq("id", id);
   if (error) return { error: error.message };
