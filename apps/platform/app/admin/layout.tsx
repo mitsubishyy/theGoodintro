@@ -112,15 +112,17 @@ export default async function AdminLayout({
         <Image
           src="/brand-mark.png"
           alt=""
-          width={40}
-          height={40}
-          // The mark renders at 40px but -m-2 (8px negative margin all round)
+          width={48}
+          height={48}
+          // The mark renders at 48px but -m-3 (12px negative margin all round)
           // pulls its layout box back to the original 24px footprint, so the
           // image enlarges by overflowing its slot symmetrically WITHOUT moving
           // the wordmark (size 20) or ADMIN subtitle (10px) — their size and
-          // position stay fixed. rounded-md keeps the square tile lockup.
-          className="rounded-md shrink-0 object-cover -m-2"
-          style={{ width: 40, height: 40 }}
+          // position stay fixed. rounded-full matches the email-signature
+          // circular lockup. 48px is the ceiling here: any larger and the mark
+          // would collide with the wordmark (which we are not allowed to move).
+          className="rounded-full shrink-0 object-cover -m-3"
+          style={{ width: 48, height: 48 }}
           priority
         />
         <Wordmark
