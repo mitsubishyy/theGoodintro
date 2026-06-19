@@ -123,7 +123,7 @@ export default async function AdminLayout({
         // wordmark+subtitle so items-center centres it against the FULL two-line
         // block, not just the wordmark line. 48px is the ceiling: any larger and
         // it would collide with the wordmark.
-        className="rounded-full shrink-0 object-cover -m-3 border-[1.5px] border-white"
+        className="rounded-full shrink-0 object-cover -m-3 border-[1px] border-white"
         style={{ width: 48, height: 48 }}
         priority
       />
