@@ -127,7 +127,7 @@ export function MeetingRequestEmail({
             <span className="serif-italic" style={{ color: "var(--primary)" }}>
               $1,000
             </span>{" "}
-            directs to <strong>headspace</strong>
+            directs to <strong>Headspace</strong>
           </div>
           <div className="mt-1 text-[12px] text-muted-foreground leading-relaxed">
             Your standing nomination. Reply{" "}
