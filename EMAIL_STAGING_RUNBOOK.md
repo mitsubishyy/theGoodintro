@@ -147,20 +147,21 @@ select cron.schedule(
 
 `drainEmailQueue` sends `SUPPORTED_EMAIL_EVENTS`: **B1_request_submitted**,
 **B_forward_to_ea**, **C1_exec_accepted**, **C2_time_confirmed**,
-**C6_meeting_completed** (all wired 2026-06-19), **A1_vendor_signed_up** (admin
-alert), **A4_invoice_paid**. The C-series copy is NOTIFICATION_TEMPLATES verbatim
-but DRAFT (not design-locked, unlike B1/A1/A4) - give it a read before go-live.
+**C6_meeting_completed**, **D1_uncredited_booked**, **A1_vendor_signed_up** (admin
+alert), **A1_vendor_welcome**, **A4_invoice_paid** (the whole v1 loop, all wired
+2026-06-19). The C-series + D1 + B_forward_to_ea copy is NOTIFICATION_TEMPLATES
+verbatim but DRAFT (not design-locked, unlike B1/A1/A4) - give it a read before
+go-live. The A1 vendor welcome is queued at sign-up by migration **0025** (apply
+it with the rest on staging/prod).
 
-Still QUEUED by the flows but with no template (they stay queued untouched until
-a template is written and the event is added to `SUPPORTED_EMAIL_EVENTS`):
-
-- **D1_uncredited_booked** (vendor: pay-by date for an overcommit booking).
-- **A1 vendor welcome** - `vendorWelcomeEmail` template exists (copy signed off
-  2026-06-13) but is not wired into the drain.
+CONFIRM at go-live: `vendorWelcomeEmail` currently sends `fromKind: brand`, but
+NOTIFICATION_TEMPLATES A1 says "personally from Issy" - pick one.
 
 Out of the drain's scope by design: the **C2 exec calendar invite** (organiser
-Issy) rides the calendar integration, not the email queue; and the **B/D nudge +
-reschedule + reversal** emails are separate later passes.
+Issy) rides the calendar integration, not the email queue. Not built yet (queued
+nowhere, later passes): **B2/B3 nudges**, **B5 decline reply**, **C3 reschedule**,
+**C7 gift paid**, **D2 payment reminder**, **D3 auto-cancel**, **E reversal**,
+**F1 bounce**.
 
 None of the above block the exec request email (B1), the front door, which is
 fully built.
