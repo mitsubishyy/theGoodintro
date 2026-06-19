@@ -133,7 +133,7 @@ export default async function VendorLayout({
         alt=""
         width={48}
         height={48}
-        className="rounded-full shrink-0 object-cover -m-3 border-[3px] border-white"
+        className="rounded-full shrink-0 object-cover -m-3 border-[1.5px] border-white"
         style={{ width: 48, height: 48 }}
         priority
       />
