@@ -198,6 +198,7 @@ downstream workflows.
 | `line_items` | json | Credits line + **admin fee as its own named line** |
 | `amount_cents` | int | |
 | `status` | enum | `draft` → `sent` → `paid` → `void` |
+| `voided_in_xero_at` | timestamptz | Set by the daily reconcile (0024) when Xero VOIDs a **paid** invoice → manual reverse-unlock in admin Needs action; never auto-reversed (V2_BUILD_PLAN §7) |
 
 ### GiftRecord
 **Purpose:** the **single canonical record** of a gift owed per held meeting.
