@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { MEETING_FEE_CENTS } from "@thegoodintro/pricing";
 import { indicativeGiftAud } from "../gift-amount";
 import { formatAud } from "../format";
 import {
@@ -8,7 +9,9 @@ import {
   forwardToEaEmail,
   meetingCompletedExecEmail,
   timeConfirmedVendorEmail,
+  uncreditedBookedVendorEmail,
   vendorReceiptEmail,
+  vendorWelcomeEmail,
   type ComposedEmail,
 } from "./templates";
 import type { EmailTransport } from "./transport";
@@ -43,7 +46,9 @@ export const SUPPORTED_EMAIL_EVENTS = [
   "C1_exec_accepted",
   "C2_time_confirmed",
   "C6_meeting_completed",
+  "D1_uncredited_booked",
   "A1_vendor_signed_up",
+  "A1_vendor_welcome",
   "A4_invoice_paid",
 ] as const;
 
@@ -250,6 +255,74 @@ function formatMeetingDatetime(iso: string): string {
   }).format(new Date(iso));
 }
 
+/** UTC timestamp -> "Wednesday, 24 June 2026" (Sydney date, no time). */
+function formatMeetingDate(iso: string): string {
+  return new Intl.DateTimeFormat("en-AU", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Australia/Sydney",
+  }).format(new Date(iso));
+}
+
+/** D1: uncredited (overcommit) meeting booked, the vendor pay-by-date email. */
+async function composeUncreditedBooked(
+  supabase: SupabaseClient,
+  row: NotificationRow,
+): Promise<{ email: ComposedEmail; to: string }> {
+  if (!row.request_id) throw new ComposeError("notification has no request_id");
+  const { data: req } = await supabase
+    .from("request")
+    .select(`id, requester:requested_by_user_id(email), executive:executive_id(name)`)
+    .eq("id", row.request_id)
+    .single();
+  if (!req) throw new ComposeError("request not found");
+  const requester = one<{ email: string }>(req.requester);
+  const exec = one<{ name: string }>(req.executive);
+  if (!requester?.email) throw new ComposeError("requesting vendor user has no email");
+  if (!exec?.name) throw new ComposeError("executive not found");
+  const { data: meeting } = await supabase
+    .from("meeting")
+    .select("scheduled_at, payment_due_at")
+    .eq("request_id", row.request_id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (!meeting?.scheduled_at) throw new ComposeError("no scheduled meeting for request");
+  return {
+    to: requester.email,
+    email: uncreditedBookedVendorEmail({
+      execName: exec.name,
+      meetingDateLabel: formatMeetingDate(meeting.scheduled_at as string),
+      amount: formatAud(MEETING_FEE_CENTS),
+      paymentDueDateLabel: meeting.payment_due_at ? formatMeetingDate(meeting.payment_due_at as string) : "soon",
+      payUrl: process.env.EMAIL_PAY_URL || `${appBaseUrl()}/vendor/billing`,
+    }),
+  };
+}
+
+/** A1: the vendor welcome (to the new owner user, queued at sign-up by 0025). */
+async function composeVendorWelcome(
+  supabase: SupabaseClient,
+  row: NotificationRow,
+): Promise<{ email: ComposedEmail; to: string }> {
+  if (!row.recipient_id) throw new ComposeError("welcome has no recipient vendor_user");
+  const { data: user } = await supabase
+    .from("vendor_user")
+    .select("email, name")
+    .eq("id", row.recipient_id)
+    .maybeSingle();
+  if (!user?.email) throw new ComposeError("vendor_user not found for welcome");
+  return {
+    to: user.email as string,
+    email: vendorWelcomeEmail({
+      contactFirstName: (user.name as string | null)?.split(" ")[0] || "there",
+      bookCallUrl: process.env.EMAIL_BOOK_CALL_URL || `${appBaseUrl()}/vendor/get-started`,
+    }),
+  };
+}
+
 /** C1: exec accepted, the vendor "securing a time" email. */
 async function composeExecAcceptedVendor(
   supabase: SupabaseClient,
@@ -412,8 +485,12 @@ async function compose(
       return composeTimeConfirmedVendor(supabase, row);
     case "C6_meeting_completed":
       return composeMeetingCompletedExec(supabase, row);
+    case "D1_uncredited_booked":
+      return composeUncreditedBooked(supabase, row);
     case "A1_vendor_signed_up":
       return composeSignupAlert(supabase, row);
+    case "A1_vendor_welcome":
+      return composeVendorWelcome(supabase, row);
     case "A4_invoice_paid":
       return composeVendorReceipt(supabase, row);
     default:

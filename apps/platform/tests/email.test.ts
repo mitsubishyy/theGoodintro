@@ -572,4 +572,50 @@ describe("email queue drain (A1)", () => {
 
     await admin.from("notification").delete().eq("id", n!.id); // seeded request left intact
   });
+
+  it("D1 uncredited-booked (vendor, brand): pay-by-date with the flat meeting fee", async () => {
+    const { uncreditedBookedVendorEmail } = await import("../lib/email/templates");
+    const e = uncreditedBookedVendorEmail({
+      execName: "Riley Chen",
+      meetingDateLabel: "Wednesday, 24 June 2026",
+      amount: "$1,500",
+      paymentDueDateLabel: "Tuesday, 26 May 2026",
+      payUrl: "http://localhost:3001/vendor/billing",
+    });
+    expect(e.subject).toBe("Payment due for your meeting with Riley Chen");
+    expect(e.html).toContain("booked for <strong>Wednesday, 24 June 2026</strong>");
+    expect(e.html).toContain("$1,500"); // the flat meeting fee
+    expect(e.html).toContain("Tuesday, 26 May 2026");
+    expect(e.html).toContain("Pay now");
+    expect(e.html).toContain("/vendor/billing");
+    expect(e.fromKind).toBe("brand");
+    expect(e.html).not.toMatch(/[–—]/);
+    expect(e.text).not.toMatch(/[–—]/);
+  });
+
+  it("drains A1_vendor_welcome to the new owner user", async () => {
+    await preclear(admin);
+    const { data: n } = await admin
+      .from("notification")
+      .insert({
+        recipient_type: "vendor_user",
+        recipient_id: ALPHA_USER, // the owner user signup_vendor (0025) targets
+        channel: "email",
+        event: "A1_vendor_welcome",
+        status: "queued",
+      })
+      .select("id")
+      .single();
+
+    const calls: EmailMessage[] = [];
+    const summary = await drainEmailQueue(admin, fakeTransport(calls));
+    expect(summary).toMatchObject({ sent: 1, failed: 0 });
+    expect(calls[0].to).toBe(TEST_INBOX);
+    expect(calls[0].subject).toBe("Welcome to TheGoodIntro");
+    expect(calls[0].html).toContain("Hi Alex,"); // ALPHA_USER first name
+    expect(calls[0].html).toContain("/vendor/get-started"); // book-call fallback url
+    expect(calls[0].html).not.toMatch(/[–—]/);
+
+    await admin.from("notification").delete().eq("id", n!.id);
+  });
 });

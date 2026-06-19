@@ -622,6 +622,36 @@ export function meetingCompletedExecEmail(c: {
   };
 }
 
+/**
+ * D1 · Uncredited (overcommit) meeting booked, payment due (NOTIFICATION_TEMPLATES
+ * D1, from the brand). Wording verbatim. The amount is the flat per-meeting fee
+ * (MEETING_FEE_CENTS, pulled from the pricing module, never hardcoded). DRAFT.
+ */
+export function uncreditedBookedVendorEmail(c: {
+  execName: string;
+  meetingDateLabel: string;
+  amount: string; // the flat meeting fee, e.g. "$1,500"
+  paymentDueDateLabel: string;
+  payUrl: string;
+}): ComposedEmail {
+  const subject = `Payment due for your meeting with ${c.execName}`;
+  const lineHtml = `Your meeting with <strong>${esc(c.execName)}</strong> is booked for <strong>${esc(c.meetingDateLabel)}</strong>. To keep it, payment of <strong>${esc(c.amount)}</strong> needs to clear by <strong>${esc(c.paymentDueDateLabel)}</strong>.`;
+  const inner = pEl(lineHtml) + solidBtnEl(c.payUrl, "Pay now");
+  const text = [
+    `Your meeting with ${c.execName} is booked for ${c.meetingDateLabel}. To keep it, payment of ${c.amount} needs to clear by ${c.paymentDueDateLabel}.`,
+    ``,
+    `Pay now: ${c.payUrl}`,
+    ``,
+    `TheGoodIntro · invite-only · Australia`,
+  ].join("\n");
+  return {
+    subject,
+    html: lockedCard("Payment due", inner, `Payment of ${c.amount} is due by ${c.paymentDueDateLabel} to keep your meeting.`),
+    text,
+    fromKind: "brand",
+  };
+}
+
 /** A4 · Invoice paid, the vendor receipt (from the brand). */
 export function vendorReceiptEmail(c: {
   credits: number;
