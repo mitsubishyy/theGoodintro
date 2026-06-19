@@ -31,7 +31,21 @@ Routes referenced below (platform app):
 ## Phase 0 - Prerequisites
 
 - [ ] Platform deployed to a public URL `https://<host>` (or a tunnel forwarding
-      to `:3001`). Note the host; it is used throughout.
+      to `:3001`). Note the host; it is used throughout. **Current Vercel
+      production alias:** `thegoodintro-platform-mitsubishyys-projects.vercel.app`
+      (swap for a custom domain once one is assigned).
+- [ ] **Vercel Deployment Protection is OFF for the two routes Xero + pg_cron
+      hit.** Verified 2026-06-19: a POST to `/api/webhooks/xero` and
+      `/api/jobs/xero-reconcile` on the production alias both return Vercel's
+      **401 SSO auth wall** *before reaching our handlers*. External senders
+      (Xero's webhook, pg_cron's `pg_net`) cannot pass that wall, so the ITR
+      handshake and the cron POST would both fail with a confusing 401. Fix one:
+      - **Disable Deployment Protection for Production** (Project → Settings →
+        Deployment Protection). Safe here: both routes self-protect (HMAC
+        signature / `CRON_SECRET` bearer), so they never relied on Vercel's wall.
+      - **OR keep it and use Protection Bypass for Automation:** append
+        `?x-vercel-protection-bypass=<token>` to the Xero delivery URL, and add
+        an `x-vercel-protection-bypass: <token>` header to the `pg_net` call.
 - [ ] **OAuth redirect URI** for this host is registered on the Xero app
       (developer.xero.com to your app to Configuration) **and** set in the deploy
       env as `XERO_REDIRECT_URI=https://<host>/api/integrations/xero/callback`.
