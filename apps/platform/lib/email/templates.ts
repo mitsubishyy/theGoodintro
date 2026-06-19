@@ -332,6 +332,186 @@ export function vendorWelcomeEmail(c: {
   return { subject, html, text, fromKind: "brand" };
 }
 
+/**
+ * B_forward_to_ea · The "Send to EA" forward email (to the linked EA, acting for
+ * the executive). Same locked surface as B1 (design/locked/exec-request-email/,
+ * 2026-06-12): white card on warm cream, Georgia for Fraunces, italic register,
+ * no badges, pills, mono, or images, no em or en dashes. It differs from B1 only
+ * in framing: addressed to the EA, "acting for {Exec}", with TWO actions (the EA
+ * is the forward target, so there is no "Send to EA" button). The EA uses the
+ * same signed /e/<token> link and selects "EA acting for them" on the confirm
+ * page (EMAIL_ACTIONS.md). The gift is the EXEC's standing nomination, always
+ * rendered "approximately $X"; the exact figure locks at Held.
+ *
+ * DRAFT pending Issy: this copy is not design-locked (the locks cover B1/A1/A4).
+ * Sender follows B1 (personal); final sender + subject is the parked go-live call.
+ */
+export function forwardToEaEmail(c: {
+  eaFirstName: string;
+  execFirstName: string;
+  requesterName: string;
+  requesterTitle?: string | null;
+  vendorCompany: string;
+  credibilityLine?: string | null;
+  linkedinUrl?: string | null;
+  abnVerified?: boolean;
+  q1Head?: string | null;
+  q1: string;
+  q2Head?: string | null;
+  q2: string;
+  proposedTimeLabel?: string | null;
+  durationMinutes: number;
+  conferenceLabel?: string | null;
+  indicativeAmount: string;
+  charityName: string;
+  confirmUrl: string; // the signed /e/<token> link
+}): ComposedEmail {
+  const subject = `${c.requesterName} (${c.vendorCompany}) has requested ${c.durationMinutes} minutes with ${c.execFirstName}`;
+  const accept = `${c.confirmUrl}?intent=accept`;
+  const decline = `${c.confirmUrl}?intent=decline`;
+
+  const requesterFirst = c.requesterName.split(/\s+/)[0] || c.requesterName;
+  const lead = c.requesterTitle
+    ? `<strong>${esc(c.execFirstName)}</strong> has asked you to handle a meeting request. <strong>${esc(c.requesterName)}</strong>, ${esc(c.requesterTitle)} at <strong>${esc(c.vendorCompany)}</strong>, has requested ${c.durationMinutes} minutes with ${esc(c.execFirstName)}. They have been verified and reviewed.`
+    : `<strong>${esc(c.execFirstName)}</strong> has asked you to handle a meeting request. <strong>${esc(c.requesterName)}</strong> from <strong>${esc(c.vendorCompany)}</strong> has requested ${c.durationMinutes} minutes with ${esc(c.execFirstName)}. They have been verified and reviewed.`;
+  const leadText = c.requesterTitle
+    ? `${c.execFirstName} has asked you to handle a meeting request. ${c.requesterName}, ${c.requesterTitle} at ${c.vendorCompany}, has requested ${c.durationMinutes} minutes with ${c.execFirstName}. They have been verified and reviewed.`
+    : `${c.execFirstName} has asked you to handle a meeting request. ${c.requesterName} from ${c.vendorCompany} has requested ${c.durationMinutes} minutes with ${c.execFirstName}. They have been verified and reviewed.`;
+
+  const verifyBits = [];
+  if (c.abnVerified) verifyBits.push("ABN verified");
+  verifyBits.push("Founder reviewed");
+  const verifyHtml = c.linkedinUrl
+    ? `${verifyBits.join(" · ")} · <a href="${esc(c.linkedinUrl)}" style="color:${E.emerald};text-decoration:underline">View ${esc(requesterFirst)} on LinkedIn &#8599;</a>`
+    : verifyBits.join(" · ");
+
+  const roleLine = c.requesterTitle
+    ? `${esc(c.requesterTitle)} · ${esc(c.vendorCompany)}`
+    : esc(c.vendorCompany);
+
+  const italic = (s: string, size = 13) =>
+    `<span style="font-family:${SERIF};font-style:italic;font-size:${size}px;color:${E.muted}">${s}</span>`;
+  const eyebrow = (s: string) => `<div style="margin:22px 0 4px">${italic(esc(s))}</div>`;
+  const head = (s: string) =>
+    `<div style="margin:0 0 6px;font-family:${SERIF};font-size:17px;font-weight:600;color:${E.ink}">${esc(s)}</div>`;
+  const btn = (href: string, label: string, solid: boolean) =>
+    `<a class="tg-btn" href="${esc(href)}" style="display:inline-block;white-space:nowrap;margin:0 8px 10px 0;padding:12px 22px;border-radius:9999px;font-family:${SANS};font-size:14px;font-weight:600;text-decoration:none;text-align:center;${
+      solid
+        ? `background:${E.emerald};color:#ffffff;border:1px solid ${E.emerald}`
+        : `background:transparent;color:${E.ink};border:1px solid #cfc8b8`
+    }">${esc(label)}</a>`;
+
+  const giftLineHtml = `If you accept for ${esc(c.execFirstName)}, <strong>approximately ${esc(c.indicativeAmount)}</strong> directs to <strong>${esc(c.charityName)}</strong>.`;
+  const giftSub = `${c.execFirstName}’s standing nomination. The exact gift is confirmed after the meeting.`;
+  const actingNote = `You are acting for ${c.execFirstName}. Accepting or declining here is recorded as you acting on their behalf.`;
+  const preview = `${c.execFirstName} forwarded a request: ${c.requesterName} (${c.vendorCompany}), ${c.durationMinutes} minutes.`;
+
+  const html = `<!doctype html>
+<html><head><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>@media (max-width:480px){.tg-btn{display:block !important;width:100% !important;box-sizing:border-box !important;margin-right:0 !important}}</style>
+</head><body style="margin:0;padding:0;background:#f6f2e8">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all">${esc(preview)}</div>
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;background:#f6f2e8"><tr><td align="center" style="padding:28px 12px">
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:${E.white};border:1px solid ${E.border};border-radius:14px"><tr><td style="padding:28px 24px;font-family:${SANS};font-size:14px;line-height:1.55;color:${E.ink}">
+
+<div style="font-family:${SERIF};font-size:16px;font-weight:600;letter-spacing:-0.01em;color:${E.ink}">The<span style="color:${E.emerald}">Good</span>Intro</div>
+
+<div style="margin:18px 0 14px">${italic(`A request for ${esc(c.execFirstName)}`, 14)}</div>
+
+<p style="margin:0 0 1em">Hi ${esc(c.eaFirstName)},</p>
+<p style="margin:0 0 1em">${lead}</p>
+
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:16px 0;background:${E.cream};border-radius:12px">
+<tr>
+<td style="padding:16px 0 16px 16px;vertical-align:top;width:48px">
+  <div style="width:48px;height:48px;border-radius:50%;background:${E.mint};text-align:center;line-height:48px;font-family:${SANS};font-size:16px;font-weight:600;color:${E.emerald}">${esc(initials(c.requesterName))}</div>
+</td>
+<td style="padding:16px;vertical-align:top">
+  <div style="font-family:${SANS};font-size:14px;font-weight:600;color:${E.ink}">${esc(c.requesterName)}</div>
+  <div style="margin-top:2px;font-size:12.5px;color:${E.muted}">${roleLine}</div>
+  ${c.credibilityLine ? `<div style="margin-top:8px">${italic(esc(c.credibilityLine))}</div>` : ""}
+  <div style="margin-top:6px">${italic(verifyHtml, 12)}</div>
+</td>
+</tr>
+</table>
+
+${eyebrow("What they want to discuss")}
+${c.q1Head ? head(c.q1Head) : ""}
+<p style="margin:0 0 1em">${esc(c.q1)}</p>
+
+${eyebrow("Why " + esc(c.execFirstName) + ", specifically")}
+<div style="border-left:2px solid ${E.emerald};padding-left:14px;margin:0 0 1em">
+${c.q2Head ? head(c.q2Head) : ""}
+<p style="margin:0">${esc(c.q2)}</p>
+</div>
+
+${
+  c.proposedTimeLabel
+    ? `<div style="margin:18px 0 0;font-family:${SERIF};font-size:17px;font-weight:600;color:${E.ink}">${esc(c.proposedTimeLabel)}</div>
+<div style="margin:2px 0 0;font-size:12.5px;color:${E.muted}">${c.durationMinutes} min${c.conferenceLabel ? ` · ${esc(c.conferenceLabel)}` : ""}</div>`
+    : ""
+}
+
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:18px 0;background:${E.giftBg};border-radius:10px"><tr>
+<td style="padding:14px 16px">
+  <div style="font-size:14px;color:${E.ink}"><span style="color:${E.emerald}">&#9829;&#65038;</span>&nbsp; ${giftLineHtml}</div>
+  <div style="margin-top:5px">${italic(esc(giftSub), 12)}</div>
+</td>
+</tr></table>
+
+<div style="margin:6px 0 12px">${italic(esc(actingNote), 12)}</div>
+
+<div style="margin:8px 0 6px">
+  ${btn(accept, "Accept", true)}
+  ${btn(decline, "Decline", false)}
+</div>
+
+<div style="margin:6px 0 0">${italic("Accepting holds nothing yet. We check the calendar, confirm a time, and send the invites.", 12)}</div>
+<div style="margin:14px 0 0">${italic("Questions? Just reply to this email. It reaches a real person.", 13)}</div>
+
+<div style="margin:22px 0 0;border-top:1px solid ${E.border};padding-top:12px;font-size:11px;color:${E.muted}">TheGoodIntro · invite-only · Australia · Email preferences</div>
+
+</td></tr></table>
+</td></tr></table>
+</body></html>`;
+
+  const text = [
+    `Hi ${c.eaFirstName},`,
+    ``,
+    leadText,
+    ``,
+    `${c.requesterName}`,
+    roleLine.replaceAll("&amp;", "&"),
+    ...(c.credibilityLine ? [c.credibilityLine] : []),
+    verifyBits.join(" · ") + (c.linkedinUrl ? ` · ${c.linkedinUrl}` : ""),
+    ``,
+    `What they want to discuss:`,
+    ...(c.q1Head ? [c.q1Head] : []),
+    c.q1,
+    ``,
+    `Why ${c.execFirstName}, specifically:`,
+    ...(c.q2Head ? [c.q2Head] : []),
+    c.q2,
+    ...(c.proposedTimeLabel
+      ? [``, `${c.proposedTimeLabel} · ${c.durationMinutes} min${c.conferenceLabel ? ` · ${c.conferenceLabel}` : ""}`]
+      : []),
+    ``,
+    `If you accept for ${c.execFirstName}, approximately ${c.indicativeAmount} directs to ${c.charityName}. ${c.execFirstName}'s standing nomination. The exact gift is confirmed after the meeting.`,
+    ``,
+    actingNote,
+    ``,
+    `Accept: ${accept}`,
+    `Decline: ${decline}`,
+    ``,
+    `Accepting holds nothing yet. We check the calendar, confirm a time, and send the invites.`,
+    `Questions? Just reply to this email. It reaches a real person.`,
+    ``,
+    `TheGoodIntro · invite-only · Australia`,
+  ].join("\n");
+
+  return { subject, html, text, fromKind: "personal" };
+}
+
 /** A4 · Invoice paid, the vendor receipt (from the brand). */
 export function vendorReceiptEmail(c: {
   credits: number;

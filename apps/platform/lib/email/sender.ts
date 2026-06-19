@@ -3,6 +3,7 @@ import { indicativeGiftAud } from "../gift-amount";
 import {
   adminSignupAlertEmail,
   execRequestEmail,
+  forwardToEaEmail,
   vendorReceiptEmail,
   type ComposedEmail,
 } from "./templates";
@@ -34,6 +35,7 @@ import type { EmailTransport } from "./transport";
 
 export const SUPPORTED_EMAIL_EVENTS = [
   "B1_request_submitted",
+  "B_forward_to_ea",
   "A1_vendor_signed_up",
   "A4_invoice_paid",
 ] as const;
@@ -152,6 +154,80 @@ async function composeExecRequest(
   };
 }
 
+/**
+ * B_forward_to_ea: the "Send to EA" forward email. Same request context as B1,
+ * addressed to the linked EA (the notification's recipient), framed as acting
+ * for the executive. Reuses the request + token + indicative-amount fetch; the
+ * EA's address comes from the notification recipient (the `ea` table).
+ */
+async function composeForwardToEa(
+  supabase: SupabaseClient,
+  row: NotificationRow,
+): Promise<{ email: ComposedEmail; to: string }> {
+  if (!row.request_id) throw new ComposeError("notification has no request_id");
+  if (!row.recipient_id) throw new ComposeError("forward-to-ea has no recipient ea");
+
+  const { data: ea } = await supabase
+    .from("ea")
+    .select("name, email")
+    .eq("id", row.recipient_id)
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (!ea?.email) throw new ComposeError("ea not found or has no email");
+
+  const { data: req } = await supabase
+    .from("request")
+    .select(
+      `id, q1_what, q2_why, vendor_id, attendee, meeting_minutes,
+       vendor:vendor_id(name),
+       requester:requested_by_user_id(name),
+       executive:executive_id(name, charity:default_charity_id(name)),
+       tokens:email_action_token(token, status)`,
+    )
+    .eq("id", row.request_id)
+    .single();
+  if (!req) throw new ComposeError("request not found");
+
+  const vendor = one<{ name: string }>(req.vendor);
+  const requester = one<{ name: string }>(req.requester);
+  const exec = one<{ name: string; charity: unknown }>(req.executive);
+  const charity = one<{ name: string }>(exec?.charity);
+  const token = (req.tokens as { token: string; status: string }[]).find((t) => t.status === "active");
+  if (!exec?.name) throw new ComposeError("executive not found");
+  if (!token) throw new ComposeError("no active action token for request");
+
+  const attendee = (req.attendee ?? null) as { name?: string; title?: string } | null;
+  const requesterName = attendee?.name?.trim() || requester?.name || vendor?.name || "A member vendor";
+  const requesterTitle = attendee?.title?.trim() || null;
+
+  // Same indicative-amount source as B1 + the /e/[token] pages, so all three agree.
+  const { data: cycle } = await supabase
+    .from("cycle")
+    .select("held_meetings_count")
+    .eq("vendor_id", req.vendor_id)
+    .order("started_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const indicative = indicativeGiftAud((cycle?.held_meetings_count as number | undefined) ?? 0);
+
+  return {
+    to: ea.email as string,
+    email: forwardToEaEmail({
+      eaFirstName: (ea.name as string | null)?.split(" ")[0] || "there",
+      execFirstName: exec.name.split(" ")[0] || "your executive",
+      requesterName,
+      requesterTitle,
+      vendorCompany: vendor?.name ?? "A member vendor",
+      q1: req.q1_what as string,
+      q2: req.q2_why as string,
+      durationMinutes: (req.meeting_minutes as number | null) ?? 45,
+      indicativeAmount: indicative,
+      charityName: charity?.name ?? "their chosen charity",
+      confirmUrl: `${appBaseUrl()}/e/${token.token}`,
+    }),
+  };
+}
+
 /** A1: the new-sign-up alert to Issy. */
 async function composeSignupAlert(
   supabase: SupabaseClient,
@@ -212,6 +288,8 @@ async function compose(
   switch (row.event) {
     case "B1_request_submitted":
       return composeExecRequest(supabase, row);
+    case "B_forward_to_ea":
+      return composeForwardToEa(supabase, row);
     case "A1_vendor_signed_up":
       return composeSignupAlert(supabase, row);
     case "A4_invoice_paid":

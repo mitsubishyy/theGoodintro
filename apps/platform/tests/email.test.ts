@@ -339,4 +339,96 @@ describe("email queue drain (A1)", () => {
 
     await admin.from("request").delete().eq("id", req!.id);
   });
+
+  it("the forward-to-EA email is EA-framed with two actions (no send-to-ea)", async () => {
+    const { forwardToEaEmail } = await import("../lib/email/templates");
+    const email = forwardToEaEmail({
+      eaFirstName: "Lena",
+      execFirstName: "Jordan",
+      requesterName: "Alex Alpha",
+      requesterTitle: "Head of RevOps",
+      vendorCompany: "Alpha Pty Ltd",
+      q1: "x",
+      q2: "y",
+      durationMinutes: 30,
+      indicativeAmount: "$900",
+      charityName: "OzHarvest",
+      confirmUrl: "http://localhost:3001/e/t",
+    });
+    expect(email.subject).toBe("Alex Alpha (Alpha Pty Ltd) has requested 30 minutes with Jordan");
+    expect(email.html).toContain("Hi Lena,"); // the EA, not the exec
+    expect(email.html).toContain("acting for Jordan");
+    expect(email.html).toContain("?intent=accept");
+    expect(email.html).toContain("?intent=decline");
+    // The EA IS the forward target, so there is no "Send to EA" action.
+    expect(email.html).not.toContain("?intent=send_to_ea");
+    expect(email.html).toContain("AA"); // requester initials monogram
+    expect(email.html).toContain("approximately $900");
+    expect(email.html).toContain("OzHarvest");
+    expect(email.html).toMatch(/background:#06623f[^>]*>Accept<\/a>/); // emerald Accept
+    // Same email-client + brand constraints as B1.
+    expect(email.html).not.toContain("var(--");
+    expect(email.html).not.toContain("<img");
+    expect(email.html).toContain("TheGoodIntro");
+    expect(email.html).not.toContain("theGoodintro");
+    expect(email.html).not.toMatch(/[–—]/);
+    expect(email.text).not.toMatch(/[–—]/);
+    expect(email.fromKind).toBe("personal");
+  });
+
+  it("drains a queued B_forward_to_ea to the linked EA, acting for the exec", async () => {
+    await preclear(admin);
+    const SAM_EA = "00000000-0000-0000-0000-0000000000ea"; // seeded EA (Sam EA)
+    const { data: reqId } = await alex.rpc("submit_request", {
+      p_executive_id: RILEY,
+      p_q1: "EA forward path probe.",
+      p_q2: "EA forward path probe.",
+      p_attendee: null,
+    });
+    const { data: tok } = await admin
+      .from("email_action_token")
+      .select("token")
+      .eq("request_id", reqId)
+      .single();
+    await preclear(admin); // park the B1 row submit_request queued
+    const { data: fwd } = await admin
+      .from("notification")
+      .insert({
+        recipient_type: "ea",
+        recipient_id: SAM_EA,
+        channel: "email",
+        event: "B_forward_to_ea",
+        status: "queued",
+        request_id: reqId,
+      })
+      .select("id")
+      .single();
+
+    const calls: EmailMessage[] = [];
+    const summary = await drainEmailQueue(admin, fakeTransport(calls));
+    expect(summary).toMatchObject({ sent: 1, failed: 0 });
+    expect(calls.length).toBe(1);
+
+    const msg = calls[0];
+    expect(msg.to).toBe(TEST_INBOX); // test-mode guard: never the EA's real address
+    expect(msg.subject).toBe("Alex Alpha (Alpha Pty Ltd) has requested 45 minutes with Riley");
+    expect(msg.html).toContain("Hi Sam,"); // the seeded EA's first name
+    expect(msg.html).toContain("acting for Riley");
+    expect(msg.html).toContain(`/e/${tok!.token}?intent=accept`);
+    expect(msg.html).toContain("?intent=decline");
+    expect(msg.html).not.toContain("?intent=send_to_ea");
+    expect(msg.html).toContain("OzHarvest"); // Riley's standing charity
+    expect(msg.html).toContain("approximately $900");
+    expect(msg.html).not.toMatch(/[–—]/);
+
+    const { data: row } = await admin
+      .from("notification")
+      .select("status, sent_to")
+      .eq("id", fwd!.id)
+      .single();
+    expect(row).toMatchObject({ status: "sent", sent_to: TEST_INBOX });
+
+    await admin.from("notification").delete().eq("id", fwd!.id);
+    await admin.from("request").delete().eq("id", reqId);
+  });
 });
