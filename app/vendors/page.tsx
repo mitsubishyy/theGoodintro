@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { UserCheck, Target, HeartHandshake } from "lucide-react";
 import {
   PageHero,
@@ -213,8 +214,12 @@ export default function Vendors() {
                 </div>
               </dl>
               <p
-                className="mt-10 text-lg leading-relaxed font-semibold"
-                style={{ color: "var(--cream-11)" }}
+                className="mt-10 rounded-2xl border-x-4 px-6 py-5 text-lg leading-relaxed font-semibold"
+                style={{
+                  color: "var(--cream-11)",
+                  background: "var(--mint-tint)",
+                  borderColor: "var(--primary)",
+                }}
               >
                 None of that is a budget problem. It is an access problem.
               </p>
@@ -314,22 +319,23 @@ export default function Vendors() {
               </p>
               <p>
                 Here, it is one line. $1,500 per held meeting, with an accepted
-                reason and the right person, and no fee if the meeting
-                doesn&apos;t happen. And $900 to $1,200 of it goes somewhere
-                your pipeline spend never has: a charity the leader chooses.
+                reason and the right person, prepaid as a credit that is only
+                spent once the meeting actually happens. And $900 to $1,200 of
+                it goes somewhere your pipeline spend never has: a charity the
+                leader chooses.
               </p>
             </div>
           </div>
           <div className="mt-12 grid md:grid-cols-3 gap-4">
             <MetricCard
-              value="$0"
-              label="Until a meeting is held"
-              note="No fee until a meeting actually happens. If it doesn't, you pay nothing at all."
+              value="$1,500"
+              label="Per meeting, prepaid"
+              note="Pay one at a time or buy a block of credits ahead. No retainer, no seat fee."
             />
             <MetricCard
-              value="$1,500"
-              label="Flat, per held meeting"
-              note="One price, all in. No retainer, no seat fee, no tooling stack to feed."
+              value="10:1"
+              label="Executives per vendor"
+              note="We cap admissions, so you are never competing in a flooded inbox."
             />
             <MetricCard
               value="60 to 80%"
@@ -340,97 +346,31 @@ export default function Vendors() {
         </div>
       </section>
 
-      {/* ── What you're probably thinking (oat band) ─────────────────── */}
+      {/* ── Founder note, vendor-angled (oat band) ───────────────────── */}
       <section
         className="border-y"
         style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
           <SectionHead
-            label="What you're probably thinking"
-            title="Fair questions, straight"
-            italicWord="answers."
+            label="Who is behind this"
+            title="Built by someone who sent the"
+            italicWord="cold email."
           />
-          <dl className="mt-12 max-w-3xl">
-            <div className="pb-8">
-              <dt
-                className="text-lg font-semibold"
-                style={{ color: "var(--cream-11)" }}
-              >
-                &ldquo;Paying for a meeting feels like buying access.&rdquo;
-              </dt>
-              <dd
-                className="mt-2 text-lg leading-relaxed"
-                style={{ color: "var(--cream-9)" }}
-              >
-                You already pay for access, just indirectly and badly, through
-                tools and salaries and months of touches. Here the cost is one
-                honest line, and it only lands when a real leader chooses to take
-                the meeting. Nothing is bought. The leader still has to say yes.
-              </dd>
-            </div>
-            <div
-              className="border-t py-8"
-              style={{ borderColor: "var(--hair)" }}
-            >
-              <dt
-                className="text-lg font-semibold"
-                style={{ color: "var(--cream-11)" }}
-              >
-                &ldquo;The charity angle sounds like a gimmick.&rdquo;
-              </dt>
-              <dd
-                className="mt-2 text-lg leading-relaxed"
-                style={{ color: "var(--cream-9)" }}
-              >
-                It is the opposite, because it is verifiable. Every charity is a
-                deductible gift recipient (DGR), the gift is paid within 14 days
-                and confirmed in writing, and the leader chooses where it goes.
-                It is the reason a busy executive opens your request instead of
-                binning it, and every gift is listed on the{" "}
-                <Link
-                  href="/ledger"
-                  className="underline underline-offset-4 hover:text-primary"
-                >
-                  public ledger
-                </Link>
-                .
-              </dd>
-            </div>
-            <div
-              className="border-t py-8"
-              style={{ borderColor: "var(--hair)" }}
-            >
-              <dt
-                className="text-lg font-semibold"
-                style={{ color: "var(--cream-11)" }}
-              >
-                &ldquo;We already have an SDR team.&rdquo;
-              </dt>
-              <dd
-                className="mt-2 text-lg leading-relaxed"
-                style={{ color: "var(--cream-9)" }}
-              >
-                Keep them. This is not a replacement for your pipeline, it is the
-                part your pipeline struggles with most: a relevant, accepted
-                conversation with a senior person who chose to be in the room.
-                Use it for the meetings cold outreach cannot get.
-              </dd>
-            </div>
-          </dl>
-        </div>
-      </section>
-
-      {/* ── Founder note, vendor-angled (white band) ─────────────────── */}
-      <section style={{ background: "var(--paper-white)" }}>
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
-          <div className="grid lg:grid-cols-12 gap-12 items-start">
+          <div className="mt-12 grid lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-4">
-              <SectionHead
-                label="Who is behind this"
-                title="Built by someone who sent the"
-                italicWord="cold email."
-              />
+              <div
+                className="relative aspect-[4/5] rounded-2xl overflow-hidden border"
+                style={{ background: "var(--background)", borderColor: "var(--border)" }}
+              >
+                <Image
+                  src="/founder.jpg"
+                  alt="Isobel Hardwick, founder of TheGoodIntro"
+                  fill
+                  sizes="(min-width: 1024px) 33vw, 100vw"
+                  className="object-cover object-top"
+                />
+              </div>
             </div>
             <div className="lg:col-span-8">
               <blockquote
@@ -453,22 +393,15 @@ export default function Vendors() {
                   Australian leaders, I would like to talk to you.
                 </p>
               </blockquote>
-              <figcaption className="mt-8 flex items-center gap-3">
+              <figcaption className="mt-8">
                 <span
-                  className="size-11 rounded-full grid place-items-center text-sm font-bold"
-                  style={{ background: "var(--mint-tint)", color: "var(--primary-ink)" }}
-                  aria-hidden="true"
+                  className="block font-semibold"
+                  style={{ color: "var(--cream-11)" }}
                 >
-                  IH
+                  Isobel Hardwick
                 </span>
-                <span className="text-sm leading-tight">
-                  <span
-                    className="block font-semibold"
-                    style={{ color: "var(--cream-11)" }}
-                  >
-                    Isobel Hardwick
-                  </span>
-                  <span style={{ color: "var(--cream-9)" }}>Founder</span>
+                <span className="text-sm" style={{ color: "var(--cream-9)" }}>
+                  Founder
                 </span>
               </figcaption>
             </div>
@@ -476,99 +409,57 @@ export default function Vendors() {
         </div>
       </section>
 
-      {/* ── The money split: where $1,500 goes (oat band) ────────────── */}
-      <section
-        className="border-y"
-        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
-      >
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
-          <SectionHead
-            label="What it costs, in full"
-            title="Where your money goes."
-          />
-
-          <div className="mt-12 max-w-4xl">
-            <div
-              className="flex items-baseline gap-3 font-mono uppercase tracking-[0.14em]"
-              style={{ color: "var(--cream-9)" }}
-            >
-              <span
-                className="font-black tracking-[-0.03em] tabular-nums normal-case"
-                style={{ color: "var(--cream-11)", fontSize: "clamp(2rem, 4vw, 3rem)", fontFamily: "var(--font-inter), sans-serif" }}
-              >
-                $1,500
-              </span>
-              <span className="text-xs">per meeting</span>
-            </div>
-
-            {/* split bar */}
-            <div
-              className="mt-6 flex gap-1.5 h-24 rounded-2xl overflow-hidden"
-              role="img"
-              aria-label="Of every 1,500 dollar meeting, 900 to 1,200 dollars goes to the leader's chosen charity, and the remainder runs the network."
-            >
-              <div
-                className="flex flex-col justify-center px-6 rounded-l-2xl"
-                style={{ flexGrow: 75, background: "var(--primary)", color: "var(--cream-1)" }}
-              >
-                <span className="font-black text-xl md:text-2xl tracking-[-0.02em] tabular-nums">
-                  $900 to $1,200
-                </span>
-                <span className="text-xs md:text-sm opacity-90">
-                  to the leader&apos;s chosen charity
-                </span>
-              </div>
-              <div
-                className="flex flex-col justify-center px-4 rounded-r-2xl"
-                style={{ flexGrow: 25, background: "var(--stone)", color: "var(--cream-11)" }}
-              />
-            </div>
-
-            <p
-              className="mt-6 text-[15px] leading-relaxed max-w-2xl"
-              style={{ color: "var(--cream-9)" }}
-            >
-              We keep the rest to run the network: vetting, matching, and
-              operations. The charity share rises with the number of meetings
-              you take across the year. Full tier table on the{" "}
-              <Link
-                href="/pricing"
-                className="underline underline-offset-4 hover:text-primary"
-              >
-                pricing page
-              </Link>
-              .
-            </p>
-
-            <p
-              className="mt-6 text-[15px] leading-relaxed max-w-2xl"
-              style={{ color: "var(--cream-9)" }}
-            >
-              What that looks like in the real world: the leader directs $900
-              to $1,200 from your meeting to a charity they choose, from the
-              Royal Flying Doctor Service&apos;s aeromedical care to
-              headspace&apos;s youth mental health services. Always the
-              leader&apos;s choice, always paid within 14 days, always
-              confirmed in writing.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FAQ: the decision questions (white band) ─────────────────── */}
+      {/* ── FAQ: objections + decision questions, one accordion (white) ── */}
       <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16 md:py-20">
           <div className="grid lg:grid-cols-12 gap-10">
             <div className="lg:col-span-4">
               <SectionHead
-                label="Questions"
-                title="Before you apply."
-                lede="The five things vendors weigh first. If yours is not here, raise it on the call."
+                label="What you're probably thinking"
+                title="Fair questions, straight"
+                italicWord="answers."
+                lede="The objections and the logistics, in one place. If yours is not here, raise it on the call."
               />
             </div>
             <div className="lg:col-span-8">
-              {VENDOR_FAQS.map((f, i) => (
-                <Faq key={f.q} q={f.q} open={i === 0}>
+              <Faq
+                q={"“Paying for a meeting feels like buying access.”"}
+                open
+                name="vendor-qa"
+              >
+                You already pay for access, just indirectly and badly, through
+                tools and salaries and months of touches. Here the cost is one
+                honest line, and it only lands when a real leader chooses to take
+                the meeting. Nothing is bought. The leader still has to say yes.
+              </Faq>
+              <Faq
+                q={"“The charity angle sounds like a gimmick.”"}
+                name="vendor-qa"
+              >
+                It is the opposite, because it is verifiable. Every charity is a
+                deductible gift recipient (DGR), the gift is paid within 14 days
+                and confirmed in writing, and the leader chooses where it goes.
+                It is the reason a busy executive opens your request instead of
+                binning it, and every gift is listed on the{" "}
+                <Link
+                  href="/ledger"
+                  className="underline underline-offset-4 hover:text-primary"
+                >
+                  public ledger
+                </Link>
+                .
+              </Faq>
+              <Faq
+                q={"“We already have an SDR team.”"}
+                name="vendor-qa"
+              >
+                Keep them. This is not a replacement for your pipeline, it is the
+                part your pipeline struggles with most: a relevant, accepted
+                conversation with a senior person who chose to be in the room.
+                Use it for the meetings cold outreach cannot get.
+              </Faq>
+              {VENDOR_FAQS.map((f) => (
+                <Faq key={f.q} q={f.q} name="vendor-qa">
                   {f.node ?? f.a}
                 </Faq>
               ))}
