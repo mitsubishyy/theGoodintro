@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { Avatar, Icon, Wordmark, type IconName } from "@thegoodintro/ui";
 import { signOutAction } from "@/app/login/actions";
 
@@ -18,6 +19,12 @@ import { signOutAction } from "@/app/login/actions";
  * PortalSidebar so the exec-specific anatomy (emerald active rule, photo
  * account + title-company subtitle, italic sign-out) lands without touching
  * the admin/vendor sidebars.
+ *
+ * Responsive (BLUEPRINT density rules — "the sidebar collapses to a top
+ * hamburger; no screen may be desktop-only"): below md the persistent sidebar
+ * is hidden and a hamburger in the topbar opens it as a left slide-over drawer.
+ * The `data-exec-portal` marker scopes the emerald keyboard focus ring defined
+ * in globals.css to this shell.
  */
 
 const NAV: { label: string; href: string; icon: IconName }[] = [
@@ -44,78 +51,136 @@ function navActive(pathname: string, href: string): boolean {
   return href === "/exec" ? pathname === "/exec" : pathname.startsWith(href);
 }
 
+function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+  return (
+    <nav className="px-3 py-4 space-y-1">
+      {NAV.map((item) => {
+        const active = navActive(pathname, item.href);
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={onNavigate}
+            className="flex items-center gap-3 h-11 px-3 rounded-lg text-[14px]"
+            style={
+              active
+                ? {
+                    background: "var(--exec-sidebar-active)",
+                    color: "var(--exec-sidebar-text)",
+                    fontWeight: 600,
+                    boxShadow: "inset 3px 0 0 0 var(--portal-emerald)",
+                  }
+                : { color: "var(--exec-sidebar-muted)" }
+            }
+          >
+            <Icon name={item.icon} size={18} />
+            <span className="flex-1 truncate">{item.label}</span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
+function AccountBlock({ exec, subtitle }: { exec: ExecShellProps["exec"]; subtitle: string }) {
+  return (
+    <div className="px-4 pb-5">
+      <div className="flex items-center gap-3">
+        <Avatar name={exec.name} src={exec.photoUrl ?? undefined} size={32} />
+        <div className="leading-tight min-w-0">
+          <div className="text-[13px] font-semibold truncate" style={{ color: "var(--exec-sidebar-text)" }}>
+            {exec.name}
+          </div>
+          {subtitle && (
+            <div className="text-[11px] truncate" style={{ color: "var(--exec-sidebar-muted)" }}>
+              {subtitle}
+            </div>
+          )}
+        </div>
+      </div>
+      <form action={signOutAction} className="mt-2.5 pl-[44px]">
+        <button
+          type="submit"
+          className="text-[12px] italic hover:underline underline-offset-2"
+          style={{ color: "var(--exec-sidebar-muted)" }}
+        >
+          Sign out →
+        </button>
+      </form>
+    </div>
+  );
+}
+
 export function ExecShell({ title, exec, children }: ExecShellProps) {
   const pathname = usePathname() ?? "/exec";
   const subtitle = [exec.title, exec.company].filter(Boolean).join(" · ");
+  const [navOpen, setNavOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex" style={{ background: "var(--portal-page)", color: "var(--portal-ink)" }}>
-      <aside
-        className="w-60 shrink-0 hidden md:flex flex-col justify-between"
-        style={{ background: "var(--exec-sidebar)" }}
-      >
+    <div data-exec-portal className="min-h-screen flex" style={{ background: "var(--portal-page)", color: "var(--portal-ink)" }}>
+      {/* Desktop sidebar (md and up). */}
+      <aside className="w-60 shrink-0 hidden md:flex flex-col justify-between" style={{ background: "var(--exec-sidebar)" }}>
         <div>
           <div className="px-5 h-16 flex items-center">
             <Wordmark size={16} surface="dark" />
           </div>
-          <nav className="px-3 py-4 space-y-1">
-            {NAV.map((item) => {
-              const active = navActive(pathname, item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center gap-3 h-11 px-3 rounded-lg text-[14px]"
-                  style={
-                    active
-                      ? {
-                          background: "var(--exec-sidebar-active)",
-                          color: "var(--exec-sidebar-text)",
-                          fontWeight: 600,
-                          boxShadow: "inset 3px 0 0 0 var(--portal-emerald)",
-                        }
-                      : { color: "var(--exec-sidebar-muted)" }
-                  }
-                >
-                  <Icon name={item.icon} size={18} />
-                  <span className="flex-1 truncate">{item.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
+          <NavLinks pathname={pathname} />
         </div>
-
-        <div className="px-4 pb-5">
-          <div className="flex items-center gap-3">
-            <Avatar name={exec.name} src={exec.photoUrl ?? undefined} size={32} />
-            <div className="leading-tight min-w-0">
-              <div className="text-[13px] font-semibold truncate" style={{ color: "var(--exec-sidebar-text)" }}>
-                {exec.name}
-              </div>
-              {subtitle && (
-                <div className="text-[11px] truncate" style={{ color: "var(--exec-sidebar-muted)" }}>
-                  {subtitle}
-                </div>
-              )}
-            </div>
-          </div>
-          <form action={signOutAction} className="mt-2.5 pl-[44px]">
-            <button
-              type="submit"
-              className="text-[12px] italic hover:underline underline-offset-2"
-              style={{ color: "var(--exec-sidebar-muted)" }}
-            >
-              Sign out →
-            </button>
-          </form>
-        </div>
+        <AccountBlock exec={exec} subtitle={subtitle} />
       </aside>
+
+      {/* Mobile slide-over drawer (below md). Same charcoal sidebar content. */}
+      {navOpen && (
+        <div className="md:hidden">
+          <div
+            className="fixed inset-0 z-40"
+            style={{ background: "color-mix(in oklch, var(--portal-ink) 40%, transparent)" }}
+            onClick={() => setNavOpen(false)}
+            aria-hidden="true"
+          />
+          <aside
+            className="fixed inset-y-0 left-0 z-50 w-72 flex flex-col justify-between"
+            style={{ background: "var(--exec-sidebar)" }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation"
+          >
+            <div>
+              <div className="px-5 h-16 flex items-center justify-between">
+                <Wordmark size={16} surface="dark" />
+                <button
+                  type="button"
+                  onClick={() => setNavOpen(false)}
+                  aria-label="Close navigation"
+                  className="p-1 rounded"
+                  style={{ color: "var(--exec-sidebar-muted)" }}
+                >
+                  <Icon name="x" size={20} />
+                </button>
+              </div>
+              <NavLinks pathname={pathname} onNavigate={() => setNavOpen(false)} />
+            </div>
+            <AccountBlock exec={exec} subtitle={subtitle} />
+          </aside>
+        </div>
+      )}
 
       <div className="flex-1 min-w-0 flex flex-col">
         <header
-          className="h-14 shrink-0 px-8 flex items-center border-b"
+          className="h-14 shrink-0 px-4 md:px-8 flex items-center gap-3 border-b"
           style={{ background: "var(--portal-header)", borderColor: "var(--portal-line)" }}
         >
+          <button
+            type="button"
+            onClick={() => setNavOpen(true)}
+            aria-label="Open navigation"
+            className="md:hidden -ml-1 p-1.5 rounded"
+            style={{ color: "var(--portal-ink)" }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+              <path d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+          </button>
           <span className="text-[14px] font-semibold" style={{ color: "var(--portal-ink)" }}>
             {title}
           </span>
@@ -123,7 +188,7 @@ export function ExecShell({ title, exec, children }: ExecShellProps) {
               parked behind a feature flag (ratified OFF) until the command
               palette overlay exists. */}
         </header>
-        <main className="flex-1 min-w-0 px-8 py-8">
+        <main className="flex-1 min-w-0 px-4 md:px-8 py-8">
           <div className="w-full max-w-[1080px]">{children}</div>
         </main>
       </div>

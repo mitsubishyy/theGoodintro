@@ -41,3 +41,13 @@ body {
   background: var(--portal-page);
   color: var(--foreground);
 }
+
+/* Exec portal: a visible emerald focus ring on every keyboard-focused control
+   (BLUEPRINT §0 polish rubric — "focus rings are visible"). Scoped to the exec
+   shell via the data-exec-portal marker so admin/vendor focus styling is left
+   untouched in this pass. :focus-visible only matches keyboard focus, so mouse
+   clicks stay clean. */
+[data-exec-portal] :focus-visible {
+  outline: 2px solid var(--portal-emerald);
+  outline-offset: 2px;
+}
