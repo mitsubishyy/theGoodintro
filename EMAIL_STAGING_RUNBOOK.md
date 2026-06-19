@@ -146,16 +146,21 @@ select cron.schedule(
 ## Not yet templated (queued but will not send until built)
 
 `drainEmailQueue` sends `SUPPORTED_EMAIL_EVENTS`: **B1_request_submitted**,
-**B_forward_to_ea** (Send-to-EA forward, wired 2026-06-19), **A1_vendor_signed_up**
-(admin alert), **A4_invoice_paid**. The events below are already QUEUED by the
-flows but have no template, so they stay queued untouched until a template is
-written and the event is added to `SUPPORTED_EMAIL_EVENTS`:
+**B_forward_to_ea**, **C1_exec_accepted**, **C2_time_confirmed**,
+**C6_meeting_completed** (all wired 2026-06-19), **A1_vendor_signed_up** (admin
+alert), **A4_invoice_paid**. The C-series copy is NOTIFICATION_TEMPLATES verbatim
+but DRAFT (not design-locked, unlike B1/A1/A4) - give it a read before go-live.
 
-- **C1_exec_accepted** (vendor: securing a time), **C2_time_confirmed** (vendor:
-  invite sent), **C6_meeting_completed** (exec: gift + optional LinkedIn share),
-  **D1_uncredited_booked** (vendor: pay-by date).
+Still QUEUED by the flows but with no template (they stay queued untouched until
+a template is written and the event is added to `SUPPORTED_EMAIL_EVENTS`):
+
+- **D1_uncredited_booked** (vendor: pay-by date for an overcommit booking).
 - **A1 vendor welcome** - `vendorWelcomeEmail` template exists (copy signed off
   2026-06-13) but is not wired into the drain.
 
-Each needs copy/design before sending. None block the exec request email (B1),
-which is the front door and is fully built.
+Out of the drain's scope by design: the **C2 exec calendar invite** (organiser
+Issy) rides the calendar integration, not the email queue; and the **B/D nudge +
+reschedule + reversal** emails are separate later passes.
+
+None of the above block the exec request email (B1), the front door, which is
+fully built.
