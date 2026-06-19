@@ -2,6 +2,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { bandForMeetingNumber, charityShareCentsForMeetingNumber } from "@thegoodintro/pricing";
 import { formatAud } from "@/lib/format";
 import { execCharityForPeriod, financialYearWindow, monthWindow } from "@/lib/reporting";
+import { asProgrammes, asStories } from "./charity-content";
+import type { CharityProgramme, CharityStory } from "./charity-content";
+
+export type { CharityProgramme, CharityStory };
 
 /* Demo executive resolution + live-data loader for the locked exec dashboard
    (design/locked/exec-dashboard, VP1). Real magic-link exec/EA auth is deferred
@@ -525,16 +529,6 @@ export async function loadExecProfile(supabase: SupabaseClient, execId: string, 
    per the exec money rule (never a flat figure to an exec pre-Held).
    ───────────────────────────────────────────────────────────────────────── */
 
-export interface CharityProgramme {
-  label: string;
-  body: string;
-}
-export interface CharityStory {
-  publishedAt: string | null;
-  headline: string;
-  body: string;
-  url: string | null;
-}
 export interface CharityContent {
   id: string;
   name: string;
@@ -553,28 +547,6 @@ export interface CharityContent {
   indicativeAmount: string;
 }
 
-function asProgrammes(v: unknown): CharityProgramme[] {
-  if (!Array.isArray(v)) return [];
-  return v
-    .map((p) => ({ label: String((p as { label?: unknown }).label ?? "").trim(), body: String((p as { body?: unknown }).body ?? "").trim() }))
-    .filter((p) => p.label || p.body);
-}
-function asStories(v: unknown): CharityStory[] {
-  if (!Array.isArray(v)) return [];
-  return v
-    .map((s) => {
-      const o = s as { published_at?: unknown; headline?: unknown; body?: unknown; url?: unknown };
-      return {
-        publishedAt: o.published_at ? String(o.published_at) : null,
-        headline: String(o.headline ?? "").trim(),
-        body: String(o.body ?? "").trim(),
-        url: o.url ? String(o.url) : null,
-      };
-    })
-    .filter((s) => s.headline)
-    .sort((a, b) => String(b.publishedAt ?? "").localeCompare(String(a.publishedAt ?? "")))
-    .slice(0, 2);
-}
 
 export interface CharityListItem {
   id: string;
