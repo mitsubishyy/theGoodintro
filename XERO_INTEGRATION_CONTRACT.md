@@ -189,6 +189,10 @@ Tenant id and tokens live in the DB (encrypted), not env. Add these to
 - [ ] (Real org in use, not the Demo Company — confirm target org before any
       AUTHORISED/paid live test, since those touch the books.)
 
+> **Going live?** [`XERO_STAGING_RUNBOOK.md`](XERO_STAGING_RUNBOOK.md) is the
+> combined ordered checklist for §9 + §10 (prerequisites, end-to-end test,
+> rollback, troubleshooting). This section and §10 hold the authoritative detail.
+
 ## 9. Staging webhook setup (the live-delivery step, for Issy)
 
 The webhook is Xero calling us, so it only works on a public URL. When the
