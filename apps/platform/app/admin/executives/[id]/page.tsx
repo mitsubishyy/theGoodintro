@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Badge } from "@thegoodintro/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
 import { ExecutiveForm } from "../executive-form";
 import { EaSection } from "../ea-section";
+import { execStatusPill, type ExecStatusEnum } from "../_status";
 import { updateExecutiveAction, setExecutiveStatusAction } from "../actions";
 
 export const metadata: Metadata = {
@@ -48,9 +50,14 @@ export default async function ExecutiveDetailPage({
       </Link>
       <div className="mt-2 mb-1 flex items-center gap-3">
         <h1 className="text-[20px] font-semibold tracking-tight">{exec.name}</h1>
-        <span className="rounded-full px-2 py-0.5 text-xs" style={{ background: "var(--portal-amber-soft)", color: "var(--portal-amber-ink)" }}>
-          {exec.status}
-        </span>
+        {(() => {
+          const { label, tone } = execStatusPill(exec.status as ExecStatusEnum);
+          return (
+            <Badge tone={tone} dot>
+              {label}
+            </Badge>
+          );
+        })()}
       </div>
       <p className="mb-6 text-sm" style={{ color: "var(--muted-foreground)" }}>
         {exec.title}{exec.title && exec.company ? ", " : ""}{exec.company}
