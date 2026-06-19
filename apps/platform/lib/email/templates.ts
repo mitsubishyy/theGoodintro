@@ -512,6 +512,116 @@ ${
   return { subject, html, text, fromKind: "personal" };
 }
 
+/** The locked email card chrome (design/locked/exec-request-email/, 2026-06-12):
+ *  Fraunces colour-split wordmark (Georgia fallback), white card on warm cream,
+ *  italic eyebrow, quiet system footer. Shared by the C-series transactional
+ *  emails below so each is just its inner copy. */
+function lockedCard(eyebrow: string, inner: string, preview: string): string {
+  return `<!doctype html>
+<html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f6f2e8">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all">${esc(preview)}</div>
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;background:#f6f2e8"><tr><td align="center" style="padding:28px 12px">
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:${E.white};border:1px solid ${E.border};border-radius:14px"><tr><td style="padding:28px 24px;font-family:${SANS};font-size:14px;line-height:1.55;color:${E.ink}">
+<div style="font-family:${SERIF};font-size:16px;font-weight:600;letter-spacing:-0.01em;color:${E.ink}">The<span style="color:${E.emerald}">Good</span>Intro</div>
+<div style="margin:18px 0 14px"><span style="font-family:${SERIF};font-style:italic;font-size:14px;color:${E.muted}">${esc(eyebrow)}</span></div>
+${inner}
+<div style="margin:22px 0 0;border-top:1px solid ${E.border};padding-top:12px;font-size:11px;color:${E.muted}">TheGoodIntro · invite-only · Australia</div>
+</td></tr></table>
+</td></tr></table>
+</body></html>`;
+}
+
+const pEl = (html: string) => `<p style="margin:0 0 1em">${html}</p>`;
+const italicEl = (s: string) =>
+  `<p style="margin:0 0 1em"><span style="font-family:${SERIF};font-style:italic;color:${E.muted}">${esc(s)}</span></p>`;
+const solidBtnEl = (href: string, label: string) =>
+  `<p style="margin:20px 0"><a href="${esc(href)}" style="display:inline-block;white-space:nowrap;padding:12px 22px;border-radius:9999px;font-family:${SANS};font-size:14px;font-weight:600;text-decoration:none;background:${E.emerald};color:#ffffff;border:1px solid ${E.emerald}">${esc(label)}</a></p>`;
+
+/**
+ * C1 · Exec accepts, the vendor confirmation (NOTIFICATION_TEMPLATES C1, from the
+ * brand). Wording verbatim. Dressed in the locked card register. DRAFT (the
+ * C-series is not design-locked; B1/A1/A4 are).
+ */
+export function execAcceptedVendorEmail(c: { execName: string }): ComposedEmail {
+  const subject = `${c.execName} accepted.`;
+  const lineHtml = `Good news, <strong>${esc(c.execName)}</strong> has accepted. We are securing a time now and will send the invite shortly.`;
+  const lineText = `Good news, ${c.execName} has accepted. We are securing a time now and will send the invite shortly.`;
+  return {
+    subject,
+    html: lockedCard("Your request", pEl(lineHtml), `${c.execName} accepted. Securing a time now.`),
+    text: `${lineText}\n\nTheGoodIntro · invite-only · Australia`,
+    fromKind: "brand",
+  };
+}
+
+/**
+ * C2 · Time confirmed, the vendor confirmation (NOTIFICATION_TEMPLATES C2, from
+ * the brand). The exec side is the calendar invite (organiser Issy), out of the
+ * drain's scope. v1 has no ICS attach yet, so "the invite is on the way" stands
+ * in for "attached"; the join link renders as a button when present. DRAFT.
+ */
+export function timeConfirmedVendorEmail(c: {
+  execName: string;
+  meetingDatetimeLabel: string;
+  joinUrl?: string | null;
+}): ComposedEmail {
+  const subject = `You are confirmed with ${c.execName}`;
+  const lineHtml = `You are confirmed with <strong>${esc(c.execName)}</strong> on <strong>${esc(c.meetingDatetimeLabel)}</strong>.`;
+  const followup = c.joinUrl
+    ? "Your calendar invite is on the way, and you can join from the button below when it is time."
+    : "Your calendar invite and join link are on the way.";
+  const inner = pEl(lineHtml) + italicEl(followup) + (c.joinUrl ? solidBtnEl(c.joinUrl, "Join the meeting") : "");
+  const text = [
+    `You are confirmed with ${c.execName} on ${c.meetingDatetimeLabel}.`,
+    followup,
+    ...(c.joinUrl ? [``, `Join: ${c.joinUrl}`] : []),
+    ``,
+    `TheGoodIntro · invite-only · Australia`,
+  ].join("\n");
+  return {
+    subject,
+    html: lockedCard("You are confirmed", inner, `Confirmed with ${c.execName} on ${c.meetingDatetimeLabel}.`),
+    text,
+    fromKind: "brand",
+  };
+}
+
+/**
+ * C6 · Meeting held, the exec thank-you (NOTIFICATION_TEMPLATES C6, from Issy).
+ * Post-Held, so the gift is the EXACT frozen GiftRecord figure (never
+ * "approximately" — that prefix is the pre-Held rule only). Wording verbatim.
+ * The vendor-side C6 completion email is not queued by the current flow, so only
+ * the exec email is composed here. DRAFT (C-series not design-locked).
+ */
+export function meetingCompletedExecEmail(c: {
+  execFirstName: string;
+  vendorName: string;
+  charityAmount: string; // exact, e.g. "$900"
+  charityName: string;
+}): ComposedEmail {
+  const subject = `Thank you for meeting ${c.vendorName}`;
+  const inner =
+    pEl(`Hi ${esc(c.execFirstName)},`) +
+    pEl(
+      `Thank you for your time with <strong>${esc(c.vendorName)}</strong> today. As promised, <strong>${esc(c.charityAmount)}</strong> is on its way to <strong>${esc(c.charityName)}</strong>. I will confirm the moment it lands.`,
+    ) +
+    pEl("Issy");
+  const text = [
+    `Hi ${c.execFirstName},`,
+    ``,
+    `Thank you for your time with ${c.vendorName} today. As promised, ${c.charityAmount} is on its way to ${c.charityName}. I will confirm the moment it lands.`,
+    ``,
+    `Issy`,
+  ].join("\n");
+  return {
+    subject,
+    html: lockedCard("Your meeting is complete", inner, `${c.charityAmount} is on its way to ${c.charityName}.`),
+    text,
+    fromKind: "personal",
+  };
+}
+
 /** A4 · Invoice paid, the vendor receipt (from the brand). */
 export function vendorReceiptEmail(c: {
   credits: number;

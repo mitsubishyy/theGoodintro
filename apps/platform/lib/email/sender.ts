@@ -1,9 +1,13 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { indicativeGiftAud } from "../gift-amount";
+import { formatAud } from "../format";
 import {
   adminSignupAlertEmail,
+  execAcceptedVendorEmail,
   execRequestEmail,
   forwardToEaEmail,
+  meetingCompletedExecEmail,
+  timeConfirmedVendorEmail,
   vendorReceiptEmail,
   type ComposedEmail,
 } from "./templates";
@@ -36,6 +40,9 @@ import type { EmailTransport } from "./transport";
 export const SUPPORTED_EMAIL_EVENTS = [
   "B1_request_submitted",
   "B_forward_to_ea",
+  "C1_exec_accepted",
+  "C2_time_confirmed",
+  "C6_meeting_completed",
   "A1_vendor_signed_up",
   "A4_invoice_paid",
 ] as const;
@@ -228,6 +235,115 @@ async function composeForwardToEa(
   };
 }
 
+/** UTC timestamp -> "Wednesday, 24 June 2026 at 11:30 am AEST" (Sydney). v1 is
+ *  AU-only; the vendor timezone is not captured yet, so Sydney is the default. */
+function formatMeetingDatetime(iso: string): string {
+  return new Intl.DateTimeFormat("en-AU", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: "Australia/Sydney",
+    timeZoneName: "short",
+  }).format(new Date(iso));
+}
+
+/** C1: exec accepted, the vendor "securing a time" email. */
+async function composeExecAcceptedVendor(
+  supabase: SupabaseClient,
+  row: NotificationRow,
+): Promise<{ email: ComposedEmail; to: string }> {
+  if (!row.request_id) throw new ComposeError("notification has no request_id");
+  const { data: req } = await supabase
+    .from("request")
+    .select(`id, requester:requested_by_user_id(email), executive:executive_id(name)`)
+    .eq("id", row.request_id)
+    .single();
+  if (!req) throw new ComposeError("request not found");
+  const requester = one<{ email: string }>(req.requester);
+  const exec = one<{ name: string }>(req.executive);
+  if (!requester?.email) throw new ComposeError("requesting vendor user has no email");
+  if (!exec?.name) throw new ComposeError("executive not found");
+  return { to: requester.email, email: execAcceptedVendorEmail({ execName: exec.name }) };
+}
+
+/** C2: time confirmed, the vendor confirmation (with the scheduled time + join link). */
+async function composeTimeConfirmedVendor(
+  supabase: SupabaseClient,
+  row: NotificationRow,
+): Promise<{ email: ComposedEmail; to: string }> {
+  if (!row.request_id) throw new ComposeError("notification has no request_id");
+  const { data: req } = await supabase
+    .from("request")
+    .select(`id, requester:requested_by_user_id(email), executive:executive_id(name)`)
+    .eq("id", row.request_id)
+    .single();
+  if (!req) throw new ComposeError("request not found");
+  const requester = one<{ email: string }>(req.requester);
+  const exec = one<{ name: string }>(req.executive);
+  if (!requester?.email) throw new ComposeError("requesting vendor user has no email");
+  if (!exec?.name) throw new ComposeError("executive not found");
+  const { data: meeting } = await supabase
+    .from("meeting")
+    .select("scheduled_at, join_url")
+    .eq("request_id", row.request_id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (!meeting?.scheduled_at) throw new ComposeError("no scheduled meeting for request");
+  return {
+    to: requester.email,
+    email: timeConfirmedVendorEmail({
+      execName: exec.name,
+      meetingDatetimeLabel: formatMeetingDatetime(meeting.scheduled_at as string),
+      joinUrl: (meeting.join_url as string | null) ?? null,
+    }),
+  };
+}
+
+/** C6: meeting held, the exec thank-you with the EXACT frozen gift figure. */
+async function composeMeetingCompletedExec(
+  supabase: SupabaseClient,
+  row: NotificationRow,
+): Promise<{ email: ComposedEmail; to: string }> {
+  if (!row.request_id) throw new ComposeError("notification has no request_id");
+  const { data: req } = await supabase
+    .from("request")
+    .select(`id, vendor:vendor_id(name), executive:executive_id(name, primary_email)`)
+    .eq("id", row.request_id)
+    .single();
+  if (!req) throw new ComposeError("request not found");
+  const vendor = one<{ name: string }>(req.vendor);
+  const exec = one<{ name: string; primary_email: string }>(req.executive);
+  if (!exec?.primary_email) throw new ComposeError("executive has no primary email");
+  const { data: meeting } = await supabase
+    .from("meeting")
+    .select("id")
+    .eq("request_id", row.request_id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (!meeting?.id) throw new ComposeError("no meeting for request");
+  const { data: gift } = await supabase
+    .from("gift_record")
+    .select(`charity_amount_cents, charity:charity_id(name)`)
+    .eq("meeting_id", meeting.id)
+    .maybeSingle();
+  if (!gift) throw new ComposeError("no gift record for completed meeting");
+  const charity = one<{ name: string }>(gift.charity);
+  return {
+    to: exec.primary_email,
+    email: meetingCompletedExecEmail({
+      execFirstName: (exec.name ?? "").split(" ")[0] || "there",
+      vendorName: vendor?.name ?? "your guest",
+      charityAmount: formatAud(gift.charity_amount_cents as number),
+      charityName: charity?.name ?? "your chosen charity",
+    }),
+  };
+}
+
 /** A1: the new-sign-up alert to Issy. */
 async function composeSignupAlert(
   supabase: SupabaseClient,
@@ -290,6 +406,12 @@ async function compose(
       return composeExecRequest(supabase, row);
     case "B_forward_to_ea":
       return composeForwardToEa(supabase, row);
+    case "C1_exec_accepted":
+      return composeExecAcceptedVendor(supabase, row);
+    case "C2_time_confirmed":
+      return composeTimeConfirmedVendor(supabase, row);
+    case "C6_meeting_completed":
+      return composeMeetingCompletedExec(supabase, row);
     case "A1_vendor_signed_up":
       return composeSignupAlert(supabase, row);
     case "A4_invoice_paid":

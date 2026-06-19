@@ -431,4 +431,145 @@ describe("email queue drain (A1)", () => {
     await admin.from("notification").delete().eq("id", fwd!.id);
     await admin.from("request").delete().eq("id", reqId);
   });
+
+  it("C1 exec-accepted (vendor, brand): the securing-a-time copy", async () => {
+    const { execAcceptedVendorEmail } = await import("../lib/email/templates");
+    const e = execAcceptedVendorEmail({ execName: "Riley Chen" });
+    expect(e.subject).toBe("Riley Chen accepted.");
+    expect(e.html).toContain("Good news, <strong>Riley Chen</strong> has accepted.");
+    expect(e.html).toContain("securing a time");
+    expect(e.fromKind).toBe("brand");
+    expect(e.html).toContain('The<span style="color:#06623f">Good</span>Intro');
+    expect(e.html).not.toContain("var(--");
+    expect(e.html).not.toContain("<img");
+    expect(e.html).not.toContain("theGoodintro");
+    expect(e.html).not.toMatch(/[–—]/);
+    expect(e.text).not.toMatch(/[–—]/);
+  });
+
+  it("C2 time-confirmed (vendor, brand): datetime, join button only when present", async () => {
+    const { timeConfirmedVendorEmail } = await import("../lib/email/templates");
+    const withJoin = timeConfirmedVendorEmail({
+      execName: "Riley Chen",
+      meetingDatetimeLabel: "Wednesday, 24 June 2026 at 11:30 am AEST",
+      joinUrl: "https://zoom.us/j/123",
+    });
+    expect(withJoin.subject).toBe("You are confirmed with Riley Chen");
+    expect(withJoin.html).toContain("24 June 2026");
+    expect(withJoin.html).toContain("Join the meeting");
+    expect(withJoin.html).toContain("https://zoom.us/j/123");
+    expect(withJoin.fromKind).toBe("brand");
+    expect(withJoin.html).not.toMatch(/[–—]/);
+    const noJoin = timeConfirmedVendorEmail({ execName: "Riley Chen", meetingDatetimeLabel: "soon", joinUrl: null });
+    expect(noJoin.html).not.toContain("Join the meeting");
+    expect(noJoin.html).toContain("on the way");
+  });
+
+  it("C6 meeting-completed (exec, from Issy): the EXACT gift, never approximately", async () => {
+    const { meetingCompletedExecEmail } = await import("../lib/email/templates");
+    const e = meetingCompletedExecEmail({
+      execFirstName: "Riley",
+      vendorName: "Alpha Pty Ltd",
+      charityAmount: "$900",
+      charityName: "OzHarvest",
+    });
+    expect(e.subject).toBe("Thank you for meeting Alpha Pty Ltd");
+    expect(e.html).toContain("Hi Riley,");
+    expect(e.html).toContain("<strong>$900</strong>");
+    expect(e.html).toContain("OzHarvest");
+    expect(e.html).not.toContain("approximately"); // post-Held: the frozen figure, not the indicative one
+    expect(e.html).toContain("Issy");
+    expect(e.fromKind).toBe("personal");
+    expect(e.text).not.toMatch(/[–—]/);
+  });
+
+  it("drains C1_exec_accepted to the requesting vendor", async () => {
+    await preclear(admin);
+    const { data: reqId } = await alex.rpc("submit_request", {
+      p_executive_id: RILEY,
+      p_q1: "C1 path probe.",
+      p_q2: "C1 path probe.",
+      p_attendee: null,
+    });
+    await preclear(admin); // park the B1 row submit_request queued
+    const { data: n } = await admin
+      .from("notification")
+      .insert({
+        recipient_type: "vendor_user",
+        recipient_id: ALPHA_USER,
+        channel: "email",
+        event: "C1_exec_accepted",
+        status: "queued",
+        request_id: reqId,
+      })
+      .select("id")
+      .single();
+
+    const calls: EmailMessage[] = [];
+    const summary = await drainEmailQueue(admin, fakeTransport(calls));
+    expect(summary).toMatchObject({ sent: 1, failed: 0 });
+    expect(calls[0].to).toBe(TEST_INBOX);
+    expect(calls[0].subject).toBe("Riley Chen accepted."); // RILEY = Riley Chen
+    expect(calls[0].html).toContain("Riley Chen");
+
+    await admin.from("notification").delete().eq("id", n!.id);
+    await admin.from("request").delete().eq("id", reqId);
+  });
+
+  it("drains C2_time_confirmed with the seeded confirmed meeting time", async () => {
+    await preclear(admin);
+    const REQ_CONFIRMED = "00000000-0000-0000-0000-0000000004a4"; // seeded confirmed meeting
+    const { data: r } = await admin.from("request").select("executive_id").eq("id", REQ_CONFIRMED).single();
+    const { data: ex } = await admin.from("executive").select("name").eq("id", r!.executive_id).single();
+    const { data: n } = await admin
+      .from("notification")
+      .insert({
+        recipient_type: "vendor_user",
+        recipient_id: null, // confirmMeeting queues C2 with request_id only
+        channel: "email",
+        event: "C2_time_confirmed",
+        status: "queued",
+        request_id: REQ_CONFIRMED,
+      })
+      .select("id")
+      .single();
+
+    const calls: EmailMessage[] = [];
+    const summary = await drainEmailQueue(admin, fakeTransport(calls));
+    expect(summary).toMatchObject({ sent: 1, failed: 0 });
+    expect(calls[0].to).toBe(TEST_INBOX);
+    expect(calls[0].subject).toBe(`You are confirmed with ${ex!.name}`);
+    expect(calls[0].html).toContain("24 June 2026"); // scheduled_at 2026-06-24, Sydney
+    expect(calls[0].html).not.toMatch(/[–—]/);
+
+    await admin.from("notification").delete().eq("id", n!.id); // seeded request left intact
+  });
+
+  it("drains C6_meeting_completed to the exec with the EXACT frozen gift", async () => {
+    await preclear(admin);
+    const REQ_HELD = "00000000-0000-0000-0000-0000000004a1"; // seeded held meeting + gift ($900)
+    const { data: n } = await admin
+      .from("notification")
+      .insert({
+        recipient_type: "executive",
+        recipient_id: null, // markHeld queues C6 with request_id only
+        channel: "email",
+        event: "C6_meeting_completed",
+        status: "queued",
+        request_id: REQ_HELD,
+      })
+      .select("id")
+      .single();
+
+    const calls: EmailMessage[] = [];
+    const summary = await drainEmailQueue(admin, fakeTransport(calls));
+    expect(summary).toMatchObject({ sent: 1, failed: 0 });
+    expect(calls[0].to).toBe(TEST_INBOX);
+    expect(calls[0].html).toContain("$900"); // seeded gift charity_amount_cents 90000, exact
+    expect(calls[0].html).toContain("is on its way to");
+    expect(calls[0].html).not.toContain("approximately");
+    expect(calls[0].html).toContain("Issy");
+
+    await admin.from("notification").delete().eq("id", n!.id); // seeded request left intact
+  });
 });
