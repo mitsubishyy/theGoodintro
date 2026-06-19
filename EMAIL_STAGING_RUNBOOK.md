@@ -145,13 +145,12 @@ select cron.schedule(
 
 ## Not yet templated (queued but will not send until built)
 
-`drainEmailQueue` only sends `SUPPORTED_EMAIL_EVENTS`: **B1_request_submitted**,
-**A1_vendor_signed_up** (admin alert), **A4_invoice_paid**. These events are
-already QUEUED by the flows but have no template, so they stay queued untouched
-until a template is written and the event is added to `SUPPORTED_EMAIL_EVENTS`:
+`drainEmailQueue` sends `SUPPORTED_EMAIL_EVENTS`: **B1_request_submitted**,
+**B_forward_to_ea** (Send-to-EA forward, wired 2026-06-19), **A1_vendor_signed_up**
+(admin alert), **A4_invoice_paid**. The events below are already QUEUED by the
+flows but have no template, so they stay queued untouched until a template is
+written and the event is added to `SUPPORTED_EMAIL_EVENTS`:
 
-- **B_forward_to_ea** - the "Send to EA" forward email (highest priority; today
-  the action queues a row nothing sends).
 - **C1_exec_accepted** (vendor: securing a time), **C2_time_confirmed** (vendor:
   invite sent), **C6_meeting_completed** (exec: gift + optional LinkedIn share),
   **D1_uncredited_booked** (vendor: pay-by date).
