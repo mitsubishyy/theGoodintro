@@ -112,14 +112,15 @@ export default async function AdminLayout({
         <Image
           src="/brand-mark.png"
           alt=""
-          width={24}
-          height={24}
-          className="rounded-md shrink-0 object-cover"
-          // brand-mark.png is the square 512x512 logomark (emerald tile, cream
-          // "G"). Pin both rendered dims to 24px (overriding Tailwind preflight
-          // `height:auto`, the warning's real trigger); rounded-md keeps the
-          // square tile lockup rather than cropping the mark into a circle.
-          style={{ width: 24, height: 24 }}
+          width={40}
+          height={40}
+          // The mark renders at 40px but -m-2 (8px negative margin all round)
+          // pulls its layout box back to the original 24px footprint, so the
+          // image enlarges by overflowing its slot symmetrically WITHOUT moving
+          // the wordmark (size 20) or ADMIN subtitle (10px) — their size and
+          // position stay fixed. rounded-md keeps the square tile lockup.
+          className="rounded-md shrink-0 object-cover -m-2"
+          style={{ width: 40, height: 40 }}
           priority
         />
         <Wordmark

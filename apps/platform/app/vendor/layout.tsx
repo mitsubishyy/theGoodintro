@@ -131,10 +131,10 @@ export default async function VendorLayout({
       <Image
         src="/brand-mark.png"
         alt=""
-        width={24}
-        height={24}
-        className="rounded-md shrink-0 object-cover"
-        style={{ width: 24, height: 24 }}
+        width={40}
+        height={40}
+        className="rounded-md shrink-0 object-cover -m-2"
+        style={{ width: 40, height: 40 }}
         priority
       />
       <Wordmark size={20} surface="dark" goodColor="var(--portal-emerald-sidebar-good)" />
