@@ -1,214 +1,175 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import { formatDate } from "@/lib/format";
 import { getFlag } from "@/lib/flags";
-import { SUPPORTED_EMAIL_EVENTS } from "@/lib/email/sender";
-import { confirmMeetingAction, markHeldAction, releaseMeetingAction, reverseHeldAction, sendQueuedEmailsAction } from "./actions";
-import { CopyAcceptLink } from "./copy-link";
-import { ConfirmSubmit } from "./confirm-submit";
+import {
+  MetricsRibbon,
+  PortalPage,
+  Button,
+  type RibbonGroup,
+} from "@thegoodintro/ui";
+import { MeetingsView } from "./_view";
+import type { MeetingItem, MeetingStatusEnum } from "./_status";
 
 export const metadata: Metadata = {
   title: "Meetings — TheGoodIntro admin",
   robots: { index: false, follow: false },
 };
 
-const inputStyle = { background: "var(--portal-card)", borderColor: "var(--portal-line)" } as const;
+function one<T>(v: unknown): T | undefined {
+  return (Array.isArray(v) ? v[0] : v) as T | undefined;
+}
 
-type Row = {
+type ExecRel = {
+  name: string | null;
+  title: string | null;
+  company: string | null;
+  photo_url: string | null;
+  linkedin_url: string | null;
+  context_notes: string | null;
+  interested_in: string | null;
+  current_projects: string | null;
+  not_interested_in: string | null;
+  timeline: string | null;
+  seniority_signal: string | null;
+};
+type RequesterRel = { name: string | null; role: string | null; email: string | null };
+type RequestRel = {
+  q1_what: string | null;
+  q2_why: string | null;
+  created_at: string | null;
+  executive: ExecRel | ExecRel[] | null;
+  vendor: { name: string } | { name: string }[] | null;
+  requester: RequesterRel | RequesterRel[] | null;
+};
+type MeetingRow = {
   id: string;
-  status: string;
+  status: MeetingStatusEnum;
   scheduled_at: string | null;
   credit_lot_id: string | null;
   payment_due_at: string | null;
-  request: { executive: { title: string; company: string } | { title: string; company: string }[]; vendor: { name: string } | { name: string }[] } | null;
+  join_url: string | null;
+  charity: { name: string } | { name: string }[] | null;
+  request: RequestRel | RequestRel[] | null;
+  gift: { charity_amount_cents: number } | { charity_amount_cents: number }[] | null;
 };
 
-function names(r: Row) {
-  const req = Array.isArray(r.request) ? r.request[0] : r.request;
-  const exec = req && (Array.isArray(req.executive) ? req.executive[0] : req.executive);
-  const vendor = req && (Array.isArray(req.vendor) ? req.vendor[0] : req.vendor);
-  return { execLabel: exec ? `${exec.title}, ${exec.company}` : "—", vendor: vendor?.name ?? "—" };
+function shape(row: MeetingRow): MeetingItem {
+  const req = one<RequestRel>(row.request);
+  const exec = one<ExecRel>(req?.executive);
+  const vendor = one<{ name: string }>(req?.vendor);
+  const requester = one<RequesterRel>(req?.requester);
+  const charity = one<{ name: string }>(row.charity);
+  const gift = one<{ charity_amount_cents: number }>(row.gift);
+  return {
+    id: row.id,
+    status: row.status,
+    scheduledIso: row.scheduled_at,
+    creditLotId: row.credit_lot_id,
+    paymentDueIso: row.payment_due_at,
+    joinUrl: row.join_url,
+    vendorName: vendor?.name ?? "Vendor",
+    execName: exec?.name ?? null,
+    execLabel: exec ? [exec.title, exec.company].filter(Boolean).join(", ") : "—",
+    execTitle: exec?.title ?? null,
+    execCompany: exec?.company ?? null,
+    execPhotoUrl: exec?.photo_url ?? null,
+    execLinkedinUrl: exec?.linkedin_url ?? null,
+    execContextNotes: exec?.context_notes ?? null,
+    execInterestedIn: exec?.interested_in ?? null,
+    execCurrentProjects: exec?.current_projects ?? null,
+    execNotInterestedIn: exec?.not_interested_in ?? null,
+    execTimeline: exec?.timeline ?? null,
+    execSenioritySignal: exec?.seniority_signal ?? null,
+    charityName: charity?.name ?? null,
+    giftAmountCents: gift?.charity_amount_cents ?? null,
+    requesterName: requester?.name ?? null,
+    requesterRole: requester?.role ?? null,
+    requesterEmail: requester?.email ?? null,
+    requestQ1: req?.q1_what ?? null,
+    requestQ2: req?.q2_why ?? null,
+    requestSubmittedIso: req?.created_at ?? null,
+  };
 }
 
-type PendingRequest = {
-  id: string;
-  created_at: string;
-  executive: { title: string; company: string } | { title: string; company: string }[] | null;
-  vendor: { name: string } | { name: string }[] | null;
-  tokens: { token: string; status: string }[];
-};
-
-export default async function MeetingsPage() {
+export default async function MeetingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string; m?: string; d?: string }>;
+}) {
+  const sp = await searchParams;
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("meeting")
-    .select("id, status, scheduled_at, credit_lot_id, payment_due_at, request:request_id(executive:executive_id(title,company), vendor:vendor_id(name))")
-    .in("status", ["proposed", "confirmed", "held"])
-    .order("created_at", { ascending: true });
-  const rows = (data ?? []) as unknown as Row[];
 
-  // Submitted requests with their signed accept link. The token is staff-only
-  // under RLS; surfacing it here lets the admin hand-deliver the /e/<token>
-  // link until the email sender exists (MVP_GAP_AUDIT step 4, A1 stopgap).
-  const { data: pendingData } = await supabase
-    .from("request")
-    .select("id, created_at, executive:executive_id(title,company), vendor:vendor_id(name), tokens:email_action_token(token, status)")
-    .eq("status", "submitted")
-    .order("created_at", { ascending: true });
-  const pending = (pendingData ?? []) as unknown as PendingRequest[];
+  const now = new Date();
+  const y = now.getUTCFullYear();
+  const monthStart = new Date(Date.UTC(y, now.getUTCMonth(), 1)).toISOString();
+  const monthEnd = new Date(Date.UTC(y, now.getUTCMonth() + 1, 1)).toISOString();
+  const sevenAhead = new Date(now.getTime() + 7 * 86_400_000).toISOString();
+  const head = { count: "exact" as const, head: true };
 
-  // A1 outbox state for the drain block below.
-  const { data: outboxRows } = await supabase
-    .from("notification")
-    .select("status")
-    .eq("channel", "email")
-    .in("event", SUPPORTED_EMAIL_EVENTS as unknown as string[]);
-  const outboxCounts = { queued: 0, failed: 0, sent: 0 };
-  for (const n of outboxRows ?? []) {
-    if (n.status === "queued" || n.status === "sending") outboxCounts.queued += 1;
-    else if (n.status === "failed") outboxCounts.failed += 1;
-    else if (n.status === "sent") outboxCounts.sent += 1;
-  }
-  const emailFlagOn = await getFlag("email_sending");
-  const hasResendKey = Boolean(process.env.RESEND_API_KEY);
-  const emailMode = process.env.EMAIL_MODE === "live" ? "live" : "test";
+  const [allMeetings, upcomingC, pendingC, satisfiedC] = await Promise.all([
+    // Every meeting feeds the calendar + list (one fetch, client-side paging).
+    supabase
+      .from("meeting")
+      .select(
+        "id, status, scheduled_at, credit_lot_id, payment_due_at, join_url, charity:charity_id ( name ), request:request_id ( q1_what, q2_why, created_at, executive:executive_id ( name, title, company, photo_url, linkedin_url, context_notes, interested_in, current_projects, not_interested_in, timeline, seniority_signal ), vendor:vendor_id ( name ), requester:requested_by_user_id ( name, role, email ) ), gift:gift_record ( charity_amount_cents )",
+      )
+      .order("scheduled_at", { ascending: false, nullsFirst: false })
+      .limit(2000),
+
+    // Ribbon — upcoming (confirmed, next 7 days)
+    supabase
+      .from("meeting")
+      .select("id", head)
+      .eq("status", "confirmed")
+      .gte("scheduled_at", now.toISOString())
+      .lt("scheduled_at", sevenAhead),
+    // Ribbon — pending requests (awaiting review)
+    supabase.from("request").select("id", head).eq("status", "submitted"),
+    // Ribbon — meetings satisfied (held this month)
+    supabase
+      .from("meeting")
+      .select("id", head)
+      .eq("status", "held")
+      .gte("scheduled_at", monthStart)
+      .lt("scheduled_at", monthEnd),
+  ]);
+
+  const meetings = ((allMeetings.data ?? []) as unknown as MeetingRow[]).map(shape);
+
+  const ribbonGroups: RibbonGroup[] = [
+    { label: "Upcoming meetings", stats: [{ value: String(upcomingC.count ?? 0), sub: "confirmed in the next 7 days", big: true }] },
+    { label: "Pending requests", stats: [{ value: String(pendingC.count ?? 0), sub: "awaiting your review", big: true }] },
+    { label: "Meetings satisfied", stats: [{ value: String(satisfiedC.count ?? 0), sub: "held to completion this month", big: true }] },
+  ];
+
+  const actionsEnabled = await getFlag("request_loop");
+  const initialView = sp.view === "list" ? "list" : "calendar";
+  const initialKey = sp.d ?? (sp.m ? `${sp.m}-01` : null);
 
   return (
-    <div className="max-w-3xl px-8 py-6">
-      <h1 className="text-[20px] font-semibold tracking-tight">Meetings</h1>
-      <p className="mt-1 mb-6 text-sm" style={{ color: "var(--muted-foreground)" }}>
-        Confirm times and record outcomes. A held meeting consumes a credit and
-        records the gift.
-      </p>
-
-      {pending.length > 0 ? (
-        <div className="mb-8">
-          <h2 className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--muted-foreground)" }}>
-            Awaiting exec response
-          </h2>
-          <div className="flex flex-col gap-3">
-            {pending.map((p) => {
-              const exec = Array.isArray(p.executive) ? p.executive[0] : p.executive;
-              const vendorRel = Array.isArray(p.vendor) ? p.vendor[0] : p.vendor;
-              const execLabel = exec ? `${exec.title}, ${exec.company}` : "—";
-              const vendor = vendorRel?.name ?? "—";
-              const active = p.tokens.find((t) => t.status === "active");
-              return (
-                <div key={p.id} className="rounded-xl border p-4" style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }}>
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-medium">{vendor} → {execLabel}</div>
-                    <span className="font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--muted-foreground)" }}>
-                      Submitted {formatDate(p.created_at)}
-                    </span>
-                  </div>
-                  {active ? (
-                    <CopyAcceptLink path={`/e/${active.token}`} />
-                  ) : (
-                    <p className="mt-2 text-xs" style={{ color: "var(--muted-foreground)" }}>No active link for this request.</p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+    <PortalPage
+      title="Meetings"
+      breadcrumb={[{ label: "Home", href: "/admin" }, { label: "Meetings" }]}
+      action={
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="md" href="/admin/reports">
+            Export
+          </Button>
+          <Button variant="primary" size="md" href="/admin/meetings/new">
+            + New meeting
+          </Button>
         </div>
-      ) : null}
+      }
+    >
+      <MetricsRibbon groups={ribbonGroups} columns={3} numeralFont="fraunces" />
 
-      <div className="flex flex-col gap-3">
-        {rows.map((r) => {
-          const { execLabel, vendor } = names(r);
-          return (
-            <div key={r.id} className="rounded-xl border p-4" style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }}>
-              <div className="flex items-center justify-between">
-                <div className="text-sm font-medium">{vendor} → {execLabel}</div>
-                <span className="rounded-full px-2 py-0.5 text-xs" style={{ background: "var(--portal-amber-soft)", color: "var(--portal-amber-ink)" }}>
-                  {r.status}
-                </span>
-              </div>
-
-              {r.status === "proposed" ? (
-                <form action={confirmMeetingAction} className="mt-3 flex flex-wrap items-end gap-2">
-                  <input type="hidden" name="meeting_id" value={r.id} />
-                  <input name="scheduled_at" type="datetime-local" className="rounded-lg border px-2 py-1.5 text-sm" style={inputStyle} />
-                  <input name="join_url" placeholder="Join URL" className="rounded-lg border px-2 py-1.5 text-sm" style={inputStyle} />
-                  <button type="submit" className="rounded-lg px-3 py-1.5 text-sm font-semibold" style={{ background: "var(--portal-ink)", color: "var(--portal-card)" }}>
-                    Confirm time
-                  </button>
-                </form>
-              ) : r.status === "held" ? (
-                // Correction path (STATE_MACHINES.md): a wrongly-marked held
-                // meeting is reversed — credit returned, unpaid gift voided,
-                // rebook spawned. Behind a confirm so it can't fire on a stray click.
-                <div className="mt-2">
-                  <div className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-                    {formatDate(r.scheduled_at)} · held{r.credit_lot_id ? " · credit consumed" : ""}
-                  </div>
-                  <form action={reverseHeldAction} className="mt-2">
-                    <input type="hidden" name="meeting_id" value={r.id} />
-                    <ConfirmSubmit
-                      message="Reverse this held meeting? The credit returns to the vendor, the gift is voided if it has not been paid, and a rebook is created with the same executive."
-                      className="rounded-lg border px-3 py-1.5 text-sm"
-                      style={{ borderColor: "var(--portal-line)" }}
-                    >
-                      Reverse held
-                    </ConfirmSubmit>
-                  </form>
-                </div>
-              ) : (
-                <div className="mt-2">
-                  <div className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-                    {formatDate(r.scheduled_at)}
-                    {r.credit_lot_id ? " · credit reserved" : " · uncredited (payment due " + formatDate(r.payment_due_at) + ")"}
-                  </div>
-                  <div className="mt-2 flex gap-2">
-                    <form action={markHeldAction}>
-                      <input type="hidden" name="meeting_id" value={r.id} />
-                      <button type="submit" className="rounded-lg px-3 py-1.5 text-sm font-semibold" style={{ background: "var(--portal-ink)", color: "var(--portal-card)" }}>Mark held</button>
-                    </form>
-                    <form action={releaseMeetingAction}>
-                      <input type="hidden" name="meeting_id" value={r.id} />
-                      <input type="hidden" name="outcome" value="no_show" />
-                      <button type="submit" className="rounded-lg border px-3 py-1.5 text-sm" style={{ borderColor: "var(--portal-line)" }}>No-show</button>
-                    </form>
-                    <form action={releaseMeetingAction}>
-                      <input type="hidden" name="meeting_id" value={r.id} />
-                      <input type="hidden" name="outcome" value="cancelled" />
-                      <button type="submit" className="rounded-lg border px-3 py-1.5 text-sm" style={{ borderColor: "var(--portal-line)" }}>Cancel</button>
-                    </form>
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-        {rows.length === 0 ? (
-          <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>No meetings to schedule.</p>
-        ) : null}
-      </div>
-
-      {/* A1 email outbox: manual drain trigger, stopgap until the S6 cron. */}
-      <div className="mt-8">
-        <h2 className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--muted-foreground)" }}>
-          Email outbox
-        </h2>
-        <div className="rounded-xl border p-4" style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }}>
-          <div className="text-sm">
-            {outboxCounts.queued} queued · {outboxCounts.failed} failed (will retry) · {outboxCounts.sent} sent
-          </div>
-          <p className="mt-1 text-xs" style={{ color: "var(--muted-foreground)" }}>
-            Mode: {emailMode} · flag email_sending {emailFlagOn ? "on" : "off"} · Resend key {hasResendKey ? "present" : "missing"}.
-            {emailMode === "test" ? " Test mode sends everything to the Resend test inbox, never to real recipients." : ""}
-          </p>
-          <form action={sendQueuedEmailsAction} className="mt-3">
-            <ConfirmSubmit
-              message={`Send ${outboxCounts.queued + outboxCounts.failed} queued email(s) now (${emailMode} mode)?`}
-              className="rounded-lg px-3 py-1.5 text-sm font-semibold"
-              style={{ background: "var(--portal-ink)", color: "var(--portal-card)" }}
-            >
-              Send queued emails
-            </ConfirmSubmit>
-          </form>
-        </div>
-      </div>
-    </div>
+      <MeetingsView
+        meetings={meetings}
+        nowIso={now.toISOString()}
+        actionsEnabled={actionsEnabled}
+        initialView={initialView}
+        initialKey={initialKey}
+      />
+    </PortalPage>
   );
 }

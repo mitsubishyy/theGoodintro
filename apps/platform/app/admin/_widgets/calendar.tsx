@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Icon } from "@thegoodintro/ui";
 
 /**
@@ -9,6 +10,10 @@ import { Icon } from "@thegoodintro/ui";
  * and forward a month at a time. The server passes every booked day grouped
  * by month ("YYYY-MM" → [day numbers]), so navigation is instant and needs no
  * round trip. The grid always renders; an empty month simply has no dots.
+ *
+ * Connected to the full /admin/meetings calendar (Issy 2026-06-19): a booked
+ * day deep-links into the big calendar at the same month, so the dashboard
+ * widget and the Meetings screen read as one calendar.
  */
 
 export function BookedMeetingsCalendar({
@@ -101,23 +106,28 @@ export function BookedMeetingsCalendar({
           if (day === null) return <div key={i} />;
           const isBooked = booked.has(day);
           const isToday = viewKey === todayKey && day === todayDate;
-          return (
-            <div
+          const cellStyle = isToday
+            ? { background: "var(--portal-ink)", color: "#fff", fontWeight: 600 }
+            : { color: "var(--foreground)" };
+          const cellClass = "h-12 rounded-lg flex flex-col items-center justify-center text-[12.5px]";
+          const dot = isBooked && (
+            <span className="mt-0.5 size-1.5 rounded-full" style={{ background: "var(--portal-amber)" }} />
+          );
+          // Booked days deep-link into the full meetings calendar at this month.
+          return isBooked ? (
+            <Link
               key={i}
-              className="h-12 rounded-lg flex flex-col items-center justify-center text-[12.5px]"
-              style={
-                isToday
-                  ? { background: "var(--portal-ink)", color: "#fff", fontWeight: 600 }
-                  : { color: "var(--foreground)" }
-              }
+              href={`/admin/meetings?view=calendar&m=${viewKey}`}
+              aria-label={`View meetings on ${day} ${monthLabel}`}
+              className={`${cellClass} ${isToday ? "" : "hover:bg-[var(--portal-card-hover)]"}`}
+              style={cellStyle}
             >
               {day}
-              {isBooked && (
-                <span
-                  className="mt-0.5 size-1.5 rounded-full"
-                  style={{ background: "var(--portal-amber)" }}
-                />
-              )}
+              {dot}
+            </Link>
+          ) : (
+            <div key={i} className={cellClass} style={cellStyle}>
+              {day}
             </div>
           );
         })}

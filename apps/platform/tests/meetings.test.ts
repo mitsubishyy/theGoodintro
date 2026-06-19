@@ -1,6 +1,6 @@
 import { describe, it, expect, afterAll } from "vitest";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { confirmMeeting, markHeld, releaseMeeting, reverseHeld } from "../lib/meetings";
+import { confirmMeeting, markHeld, releaseMeeting, rescheduleMeeting, reverseHeld } from "../lib/meetings";
 import { markGiftPaid } from "../lib/gifts";
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -72,6 +72,38 @@ describe("meeting money path", () => {
     await sb.from("request").delete().eq("id", reqId);
     await sb.from("credit_lot").delete().eq("id", lot!.id);
     await sb.from("cycle").delete().eq("vendor_id", BETA);
+  });
+
+  it("reschedule edits a confirmed meeting's time + link without touching status or credit; rejects non-confirmed", async () => {
+    const sb = await admin();
+    const { data: lot } = await sb
+      .from("credit_lot")
+      .insert({ vendor_id: BETA, quantity: 1, quantity_remaining: 1 })
+      .select("id")
+      .single();
+    const { reqId, meetingId } = await newProposedMeeting(sb);
+
+    // A proposed meeting cannot be rescheduled (use the confirm flow first).
+    const rejected = await rescheduleMeeting(sb, meetingId, new Date(Date.now() + 10 * 864e5).toISOString(), null);
+    expect(rejected.ok).toBe(false);
+
+    await confirmMeeting(sb, meetingId, new Date(Date.now() + 7 * 864e5).toISOString(), "https://zoom.test/a");
+    const newWhen = new Date(Date.now() + 14 * 864e5).toISOString();
+    const r = await rescheduleMeeting(sb, meetingId, newWhen, "https://zoom.test/b");
+    expect(r).toMatchObject({ ok: true });
+
+    const { data: m } = await sb
+      .from("meeting")
+      .select("status, scheduled_at, join_url, credit_lot_id")
+      .eq("id", meetingId)
+      .single();
+    expect(m?.status).toBe("confirmed"); // status unchanged
+    expect(m?.credit_lot_id).toBe(lot!.id); // credit reservation untouched
+    expect(m?.join_url).toBe("https://zoom.test/b");
+    expect(new Date(m!.scheduled_at as string).toISOString()).toBe(newWhen);
+
+    await sb.from("request").delete().eq("id", reqId);
+    await sb.from("credit_lot").delete().eq("id", lot!.id);
   });
 
   it("with no credit, confirm schedules at least 30 days out (overcommit)", async () => {

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
-import { confirmMeeting, markHeld, releaseMeeting, reverseHeld } from "@/lib/meetings";
+import { confirmMeeting, markHeld, releaseMeeting, rescheduleMeeting, reverseHeld } from "@/lib/meetings";
 import { drainEmailQueue } from "@/lib/email/sender";
 import { resendTransport } from "@/lib/email/transport";
 
@@ -24,6 +24,24 @@ export async function confirmMeetingAction(fd: FormData): Promise<void> {
       targetType: "meeting",
       targetId: id,
       metadata: { detail: r.detail },
+    });
+  }
+  revalidatePath("/admin/meetings");
+}
+
+export async function rescheduleMeetingAction(fd: FormData): Promise<void> {
+  const { staff, supabase } = await requireStaff();
+  if (!(await getFlag("request_loop"))) return;
+  const id = str(fd, "meeting_id");
+  if (!id) return;
+  const when = str(fd, "scheduled_at");
+  const iso = when ? new Date(when).toISOString() : null;
+  const r = await rescheduleMeeting(supabase, id, iso, str(fd, "join_url") || null);
+  if (r.ok) {
+    await logAudit(supabase, staff.id, {
+      action: "meeting.rescheduled",
+      targetType: "meeting",
+      targetId: id,
     });
   }
   revalidatePath("/admin/meetings");

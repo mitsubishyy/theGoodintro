@@ -125,6 +125,41 @@ export async function confirmMeeting(
   return { ok: true, detail: creditLotId ? "reserved" : "overcommit" };
 }
 
+/**
+ * Edit the time / join link of an already-confirmed meeting (admin reschedule).
+ * Status does not change, so the transition guard passes it freely (0012) and no
+ * credit is touched — a credited meeting keeps its reservation, an uncredited
+ * (overcommit) meeting just re-derives its payment-due date from the new time.
+ */
+export async function rescheduleMeeting(
+  supabase: SupabaseClient,
+  meetingId: string,
+  scheduledAtISO: string | null,
+  joinUrl: string | null,
+): Promise<Result> {
+  const { data: m } = await supabase
+    .from("meeting")
+    .select("id, status, credit_lot_id")
+    .eq("id", meetingId)
+    .maybeSingle();
+  if (!m) return { ok: false, error: "not_found" };
+  if (m.status !== "confirmed") return { ok: false, error: "bad_state" };
+
+  const paymentDue =
+    m.credit_lot_id == null && scheduledAtISO
+      ? paymentDueAt(new Date(scheduledAtISO)).toISOString()
+      : null;
+
+  const { data: updated } = await supabase
+    .from("meeting")
+    .update({ scheduled_at: scheduledAtISO, join_url: joinUrl, payment_due_at: paymentDue })
+    .eq("id", meetingId)
+    .eq("status", "confirmed")
+    .select("id");
+  if (!updated?.length) return { ok: false, error: "bad_state" };
+  return { ok: true };
+}
+
 /** The vendor's cycle ordinal (1-based) for a cycle starting at `startedAtIso`. */
 async function cycleOrdinal(
   supabase: SupabaseClient,
