@@ -107,36 +107,39 @@ export default async function AdminLayout({
   ];
 
   const brand = (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center gap-3.5">
-        <Image
-          src="/brand-mark.png"
-          alt=""
-          width={48}
-          height={48}
-          // The mark renders at 48px but -m-3 (12px negative margin all round)
-          // pulls its layout box back to the original 24px footprint, so the
-          // image enlarges by overflowing its slot symmetrically WITHOUT moving
-          // the wordmark (size 20) or ADMIN subtitle (10px) — their size and
-          // position stay fixed. rounded-full matches the email-signature
-          // circular lockup. 48px is the ceiling here: any larger and the mark
-          // would collide with the wordmark (which we are not allowed to move).
-          className="rounded-full shrink-0 object-cover -m-3"
-          style={{ width: 48, height: 48 }}
-          priority
-        />
+    <div className="flex items-center gap-3.5">
+      <Image
+        src="/brand-mark.png"
+        alt=""
+        width={48}
+        height={48}
+        // The mark renders at 48px but -m-3 (12px negative margin all round)
+        // pulls its layout box back to the original 24px footprint, so it
+        // enlarges by overflowing its slot WITHOUT moving the wordmark (size
+        // 20) or ADMIN subtitle (10px) — their size and position stay fixed.
+        // rounded-full + the white border give the email-signature ringed-disc
+        // look (the white ring separates the green disc from the green sidebar
+        // so the mark pops). The mark is a sibling of the stacked
+        // wordmark+subtitle so items-center centres it against the FULL two-line
+        // block, not just the wordmark line. 48px is the ceiling: any larger and
+        // it would collide with the wordmark.
+        className="rounded-full shrink-0 object-cover -m-3 border-[3px] border-white"
+        style={{ width: 48, height: 48 }}
+        priority
+      />
+      <div className="flex flex-col gap-1">
         <Wordmark
           size={20}
           surface="dark"
           goodColor="var(--portal-emerald-sidebar-good)"
         />
+        <span
+          className="text-[10px] font-mono uppercase tracking-[0.18em]"
+          style={{ color: "var(--portal-emerald-sidebar-muted)" }}
+        >
+          ADMIN · PRODUCTION
+        </span>
       </div>
-      <span
-        className="text-[10px] font-mono uppercase tracking-[0.18em] pl-[37.5px]"
-        style={{ color: "var(--portal-emerald-sidebar-muted)" }}
-      >
-        ADMIN · PRODUCTION
-      </span>
     </div>
   );
 
