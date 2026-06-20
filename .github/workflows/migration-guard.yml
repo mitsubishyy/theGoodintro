@@ -1,0 +1,62 @@
+name: migration-guard
+
+# Weekly check that every DB migration has a rollback (supabase/down/). Opens a
+# GitHub Issue assigned to the owner ONLY when one is missing, so GitHub emails +
+# push-notifies. A clean run is silent.
+#
+# Lives on main (scheduled workflows only run from the default branch); checks
+# out platform/v2-foundation to run the actual check.
+
+on:
+  schedule:
+    - cron: "0 8 * * 0" # Sundays 08:00 UTC = 6pm Sydney (AEST)
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the platform branch (where the script + migrations live)
+        uses: actions/checkout@v4
+        with:
+          ref: platform/v2-foundation
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run migration rollback guard
+        id: guard
+        run: |
+          set +e
+          node scripts/check-migrations.js --strict | tee migration-report.txt
+          echo "code=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Open an issue if a rollback is missing
+        if: steps.guard.outputs.code != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('migration-report.txt', 'utf8').trim();
+            const today = new Date().toISOString().slice(0, 10);
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🔴 Migration without rollback — ${today}`,
+              assignees: [context.repo.owner],
+              body: [
+                'The weekly **migration-guard** check found database migration(s) with no rollback (`supabase/down/`).',
+                '',
+                '```',
+                report,
+                '```',
+                '',
+                'To clear it: open a Claude Code session on `platform/v2-foundation` and say **"write the missing rollbacks"** — Claude drafts each `down` migration for your review (or marks any deliberately-irreversible one with a `no-down:` reason). Schema work, so it waits for your approval before committing.',
+              ].join('\n'),
+            });
