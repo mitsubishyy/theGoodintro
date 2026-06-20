@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { drainEmailQueue } from "../lib/email/sender";
 import type { EmailMessage, EmailTransport } from "../lib/email/transport";
+import { formatAud } from "../lib/format";
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
@@ -539,7 +540,22 @@ describe("email queue drain (A1)", () => {
     expect(summary).toMatchObject({ sent: 1, failed: 0 });
     expect(calls[0].to).toBe(TEST_INBOX);
     expect(calls[0].subject).toBe(`You are confirmed with ${ex!.name}`);
-    expect(calls[0].html).toContain("24 June 2026"); // scheduled_at 2026-06-24, Sydney
+    // Seed dates are relative (now + offset) and re-roll on every db reset, so
+    // derive the expected Sydney date from the actual scheduled_at, never hardcode.
+    const { data: m } = await admin
+      .from("meeting")
+      .select("scheduled_at")
+      .eq("request_id", REQ_CONFIRMED)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+    const expectedDate = new Intl.DateTimeFormat("en-AU", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "Australia/Sydney",
+    }).format(new Date(m!.scheduled_at as string));
+    expect(calls[0].html).toContain(expectedDate);
     expect(calls[0].html).not.toMatch(/[–—]/);
 
     await admin.from("notification").delete().eq("id", n!.id); // seeded request left intact
@@ -565,7 +581,21 @@ describe("email queue drain (A1)", () => {
     const summary = await drainEmailQueue(admin, fakeTransport(calls));
     expect(summary).toMatchObject({ sent: 1, failed: 0 });
     expect(calls[0].to).toBe(TEST_INBOX);
-    expect(calls[0].html).toContain("$900"); // seeded gift charity_amount_cents 90000, exact
+    // Derive the exact gift from the seeded gift_record (avoid hardcoding a value
+    // that a reseed could change); the email must render it verbatim, not "approximately".
+    const { data: m6 } = await admin
+      .from("meeting")
+      .select("id")
+      .eq("request_id", REQ_HELD)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+    const { data: g6 } = await admin
+      .from("gift_record")
+      .select("charity_amount_cents")
+      .eq("meeting_id", m6!.id)
+      .single();
+    expect(calls[0].html).toContain(formatAud(g6!.charity_amount_cents as number));
     expect(calls[0].html).toContain("is on its way to");
     expect(calls[0].html).not.toContain("approximately");
     expect(calls[0].html).toContain("Issy");
@@ -614,8 +644,24 @@ describe("email queue drain (A1)", () => {
     expect(calls[0].subject).toBe("Welcome to TheGoodIntro");
     expect(calls[0].html).toContain("Hi Alex,"); // ALPHA_USER first name
     expect(calls[0].html).toContain("/vendor/get-started"); // book-call fallback url
+    expect(calls[0].html).toContain("Issy"); // personal sign-off (2026-06-20 decision)
     expect(calls[0].html).not.toMatch(/[–—]/);
 
     await admin.from("notification").delete().eq("id", n!.id);
+  });
+
+  it("the vendor welcome is personal (from Issy) with a light sign-off", async () => {
+    const { vendorWelcomeEmail } = await import("../lib/email/templates");
+    const e = vendorWelcomeEmail({
+      contactFirstName: "Alex",
+      bookCallUrl: "http://localhost:3001/vendor/get-started",
+    });
+    expect(e.fromKind).toBe("personal"); // 2026-06-20: personally from Issy, not brand
+    expect(e.html).toContain("with me, so I can get to know you"); // first person
+    expect(e.html).toContain("Looking forward to meeting you.");
+    expect(e.html).toContain("Issy");
+    expect(e.text).toContain("Issy");
+    expect(e.html).not.toMatch(/[–—]/);
+    expect(e.text).not.toMatch(/[–—]/);
   });
 });

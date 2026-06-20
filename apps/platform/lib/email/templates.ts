@@ -286,14 +286,14 @@ export function adminSignupAlertEmail(c: {
  * locked email register (design/locked/exec-request-email/, 2026-06-12): white
  * card on warm cream, Fraunces colour-split wordmark (Georgia fallback), italic
  * eyebrow, single emerald accent, italic reply invitation, quiet system footer.
- * No pills, no mono, no images, no em or en dashes. Sent from the brand (not
- * personally), so B1's personal-signature open item does NOT apply here.
+ * No pills, no mono, no images, no em or en dashes. Sent PERSONALLY from Issy
+ * (fromKind personal; 2026-06-20 decision, matching NOTIFICATION_TEMPLATES A1),
+ * with a light first-person touch + "Issy" sign-off. The fuller doc copy (with
+ * the approved emoji + gmail signature) was the richer option not taken.
  *
- * Issy signed off the copy + look (italic eyebrow adopted) on 2026-06-13. STILL
- * NOT wired into the drain: A1_vendor_signed_up composes only the admin alert
- * until the Book-your-call button is confirmed from a real inbox and the
- * notify.* DNS is live (see resend-setup-state). Wiring is a separate,
- * flag-gated step on Issy's go.
+ * Issy signed off the copy + look (italic eyebrow adopted) on 2026-06-13. WIRED
+ * into the drain as A1_vendor_welcome (composeVendorWelcome), queued at sign-up
+ * by migration 0025. It only SENDS when email_sending is on + EMAIL_MODE=live.
  */
 export function vendorWelcomeEmail(c: {
   contactFirstName: string;
@@ -311,9 +311,11 @@ export function vendorWelcomeEmail(c: {
 <div style="font-family:${SERIF};font-size:16px;font-weight:600;letter-spacing:-0.01em;color:${E.ink}">The<span style="color:${E.emerald}">Good</span>Intro</div>
 <div style="margin:18px 0 14px"><span style="${italicSerif};font-size:14px">A warm welcome</span></div>
 <p style="margin:0 0 1em">Hi ${esc(c.contactFirstName)},</p>
-<p style="margin:0 0 1em">Welcome to TheGoodIntro. The next step is a short call so we can get to know you and what you are hoping to achieve.</p>
+<p style="margin:0 0 1em">Welcome to TheGoodIntro. The next step is a short call with me, so I can get to know you and what you are hoping to achieve.</p>
 <p style="margin:20px 0"><a href="${esc(c.bookCallUrl)}" style="display:inline-block;white-space:nowrap;padding:12px 22px;border-radius:9999px;font-family:${SANS};font-size:14px;font-weight:600;text-decoration:none;background:${E.emerald};color:#ffffff;border:1px solid ${E.emerald}">Book your call</a></p>
-<p style="margin:0"><span style="${italicSerif};font-size:13px">Questions? Just reply to this email. It reaches a real person.</span></p>
+<p style="margin:0 0 1em"><span style="${italicSerif};font-size:13px">Questions? Just reply to this email. It reaches a real person.</span></p>
+<p style="margin:0 0 0.25em">Looking forward to meeting you.</p>
+<p style="margin:0">Issy</p>
 <div style="margin:22px 0 0;border-top:1px solid ${E.border};padding-top:12px;font-size:11px;color:${E.muted}">TheGoodIntro · invite-only · Australia</div>
 </td></tr></table>
 </td></tr></table>
@@ -321,15 +323,18 @@ export function vendorWelcomeEmail(c: {
   const text = [
     `Hi ${c.contactFirstName},`,
     ``,
-    `Welcome to TheGoodIntro. The next step is a short call so we can get to know you and what you are hoping to achieve.`,
+    `Welcome to TheGoodIntro. The next step is a short call with me, so I can get to know you and what you are hoping to achieve.`,
     ``,
     `Book your call: ${c.bookCallUrl}`,
     ``,
     `Questions? Just reply to this email. It reaches a real person.`,
     ``,
+    `Looking forward to meeting you.`,
+    `Issy`,
+    ``,
     `TheGoodIntro · invite-only · Australia`,
   ].join("\n");
-  return { subject, html, text, fromKind: "brand" };
+  return { subject, html, text, fromKind: "personal" };
 }
 
 /**
