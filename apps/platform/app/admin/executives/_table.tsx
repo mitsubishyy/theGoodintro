@@ -26,6 +26,8 @@ export interface ExecRow {
   /** "Title, Company" (either side may be missing). */
   role: string;
   charityName: string | null;
+  /** Meetings held with this executive (lifetime). */
+  meetingsHeld: number;
   addedLabel: string;
   status: ExecStatusEnum;
 }
@@ -114,6 +116,20 @@ export function AdminExecutivesTable({
           </span>
         ) : (
           <Dash />
+        ),
+    },
+    {
+      key: "meetings",
+      header: "Meetings",
+      width: "104px",
+      align: "right",
+      render: (r) =>
+        r.meetingsHeld === 0 ? (
+          <Dash />
+        ) : (
+          <span className="font-mono text-[13px] tabular-nums" style={{ color: "var(--portal-ink)" }}>
+            {r.meetingsHeld}
+          </span>
         ),
     },
     {
