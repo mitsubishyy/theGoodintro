@@ -4,14 +4,26 @@ import { NextRequest, NextResponse } from "next/server";
   POST /api/waitlist
 
   Receives a waitlist signup (name, work email, role, company, audience),
-  validates it server-side, then forwards it to a private Google Sheet via a
-  Google Apps Script Web App URL (env: WAITLIST_SHEETS_WEBHOOK_URL). Kept
-  on its own env var so the founding-cohort survey at /api/apply and the
-  waitlist write to different Sheets cleanly.
+  validates it server-side, enriches it with request metadata (IP, geo,
+  referer, user-agent and a lightweight VPN/datacenter signal), then forwards
+  it to a private Google Sheet via a Google Apps Script Web App URL
+  (env: WAITLIST_SHEETS_WEBHOOK_URL). Kept on its own env var so the
+  founding-cohort survey at /api/apply and the waitlist write to different
+  Sheets cleanly.
 
   No database. No third-party form service. If the env var is not set, the
   submission is logged to the server and still returns ok, so the form is
   testable before the Sheet is wired up.
+
+  NOTE: the metadata fields (ip, geo*, ipOrg, likelyVpnOrDatacenter, referer,
+  userAgent) are SENT in the JSON payload. For them to land in the Sheet (and
+  in the notification email), the Google Apps Script on the other end must be
+  updated to read and write these keys — adding a payload key here does not
+  create a Sheet column on its own.
+
+  Optional: set IPINFO_TOKEN to use an authenticated ipinfo.io lookup. Without
+  a token a rate-limited free lookup is used, and VPN/datacenter detection
+  falls back to an org-name heuristic.
 */
 
 export const runtime = "nodejs";
@@ -37,6 +49,95 @@ function rateLimited(ip: string): boolean {
 
 function str(v: unknown, max = 500): string {
   return typeof v === "string" ? v.trim().slice(0, max) : "";
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Org-name fragments that strongly indicate a hosting / VPN / datacenter
+// network rather than a residential or mobile ISP. Used as a no-API-key
+// fallback when ipinfo's explicit privacy flags (paid plans) are unavailable.
+const DATACENTER_HINTS = [
+  "hosting",
+  "datacenter",
+  "data center",
+  "vpn",
+  "proxy",
+  "ovh",
+  "hetzner",
+  "digitalocean",
+  "linode",
+  "vultr",
+  "amazon",
+  "aws",
+  "azure",
+  "oracle cloud",
+  "m247",
+  "datacamp",
+  "leaseweb",
+  "choopa",
+  "contabo",
+  "scaleway",
+  "gcore",
+  "g-core",
+  "psychz",
+  "nforce",
+  "frantech",
+  "colocrossing",
+  "quadranet",
+  "ip volume",
+  "private layer",
+  "mullvad",
+  "nordvpn",
+  "expressvpn",
+  "surfshark",
+  "privacy",
+];
+
+type IpIntel = {
+  org: string;
+  asn: string;
+  // true / false when known, "" when we could not determine it
+  likelyVpnOrDatacenter: boolean | "";
+  source: string;
+};
+
+async function ipIntel(ip: string): Promise<IpIntel> {
+  if (!ip || ip === "unknown") {
+    return { org: "", asn: "", likelyVpnOrDatacenter: "", source: "no-ip" };
+  }
+  try {
+    const token = process.env.IPINFO_TOKEN;
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 2500);
+    const res = await fetch(
+      `https://ipinfo.io/${encodeURIComponent(ip)}/json${token ? `?token=${token}` : ""}`,
+      { signal: ctrl.signal, headers: { Accept: "application/json" } },
+    );
+    clearTimeout(t);
+    if (!res.ok) {
+      return { org: "", asn: "", likelyVpnOrDatacenter: "", source: `http_${res.status}` };
+    }
+    const data: Record<string, unknown> = await res.json();
+    const org = typeof data.org === "string" ? data.org : "";
+    const asn = org.startsWith("AS") ? org.split(" ")[0] : "";
+    // Paid ipinfo plans return a `privacy` object with authoritative flags.
+    const priv = (data.privacy as Record<string, unknown> | undefined) ?? {};
+    const explicit =
+      Boolean(priv.vpn) ||
+      Boolean(priv.proxy) ||
+      Boolean(priv.tor) ||
+      Boolean(priv.hosting) ||
+      Boolean(priv.relay);
+    const heuristic = DATACENTER_HINTS.some((k) => org.toLowerCase().includes(k));
+    return {
+      org,
+      asn,
+      likelyVpnOrDatacenter: explicit || heuristic,
+      source: token ? "ipinfo" : "ipinfo-free",
+    };
+  } catch {
+    return { org: "", asn: "", likelyVpnOrDatacenter: "", source: "lookup_failed" };
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -74,13 +175,37 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Email is optional, but if provided it must be a plausible email.
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  // Email is required, and must be a plausible email. This keeps every lead
+  // contactable and rejects the blank / drive-by submissions the form used to
+  // accept.
+  if (!email) {
+    return NextResponse.json(
+      { error: "Please enter your work email so we can be in touch." },
+      { status: 400 },
+    );
+  }
+  if (!EMAIL_RE.test(email)) {
     return NextResponse.json(
       { error: "That email does not look valid. Please check it." },
       { status: 400 },
     );
   }
+
+  // Request metadata for lead attribution and abuse triage.
+  const geoCountry = str(req.headers.get("x-vercel-ip-country"), 8);
+  const geoRegion = str(req.headers.get("x-vercel-ip-country-region"), 16);
+  const rawCity = req.headers.get("x-vercel-ip-city") || "";
+  let geoCity = "";
+  try {
+    geoCity = rawCity ? decodeURIComponent(rawCity) : "";
+  } catch {
+    geoCity = rawCity;
+  }
+  const geoTimezone = str(req.headers.get("x-vercel-ip-timezone"), 64);
+  const referer = str(req.headers.get("referer"), 500);
+  const userAgent = str(req.headers.get("user-agent"), 500);
+
+  const intel = await ipIntel(ip);
 
   const record = {
     type: "waitlist",
@@ -103,6 +228,18 @@ export async function POST(req: NextRequest) {
     utmMedium: str(body.utmMedium, 100),
     utmCampaign: str(body.utmCampaign, 100),
     utmContent: str(body.utmContent, 100),
+    // --- request metadata (added 2026-06) ---
+    ip,
+    geoCity,
+    geoRegion,
+    geoCountry,
+    geoTimezone,
+    ipOrg: intel.org,
+    ipAsn: intel.asn,
+    likelyVpnOrDatacenter: intel.likelyVpnOrDatacenter,
+    ipCheckSource: intel.source,
+    referer,
+    userAgent,
   };
 
   const webhook = process.env.WAITLIST_SHEETS_WEBHOOK_URL;
@@ -132,6 +269,8 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  console.log(`[waitlist] ${record.audience.toUpperCase()} ${record.fullName || "(no name)"} <${record.email || "no email"}> (${record.company || "no company"}) utm=${record.utmSource}`);
+  console.log(
+    `[waitlist] ${record.audience.toUpperCase()} ${record.fullName || "(no name)"} <${record.email}> (${record.company || "no company"}) geo=${geoCountry || "?"}/${geoCity || "?"} vpn=${intel.likelyVpnOrDatacenter} utm=${record.utmSource}`,
+  );
   return NextResponse.json({ ok: true });
 }

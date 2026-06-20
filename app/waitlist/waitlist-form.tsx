@@ -193,7 +193,12 @@ export default function WaitlistForm() {
       return;
     }
 
-    if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    if (!email.trim()) {
+      setError("Please enter your work email so we can be in touch.");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       setError("That email does not look valid. Please check it.");
       return;
     }
@@ -365,7 +370,7 @@ export default function WaitlistForm() {
               />
             </Field>
 
-            <Field label="Work email">
+            <Field label="Work email" required>
               <input
                 type="email"
                 className={inputCls}
