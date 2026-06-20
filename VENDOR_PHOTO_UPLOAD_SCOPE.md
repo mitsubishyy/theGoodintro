@@ -61,18 +61,21 @@ The **executive** photo slice is LIVE on the cloud demo (project ojizccgnnfmigiz
   only" rule for the exec slice. That rule is self-contradictory (it also calls the cloud
   the staging/demo) and should be reconciled.
 
-The **vendor** photo slice is HANDED TO THE BUILD CHAT (Issy, 2026-06-20). It is NOT on
-the cloud. To roll it out the build chat must:
-1. Cloud DB is genuinely behind: `vendor_user.photo_url` (migration **0019**) does NOT
-   exist on cloud, and 0017–0026 are pending. Apply the pending migrations the proper way
-   (the original `supabase db push` runbook) — note 0023 is ALREADY applied via MCP, so
-   reconcile the history. The vendor slice strictly needs 0019 (column) + 0023 (done) + 0026.
-2. Deploy this branch's code onto `platform/v2-foundation` (the demo's deploy branch),
-   integrating the build chat's newer commits — do NOT force-push.
-3. Then turn `vendor_photo_upload` ON, run the full gate, and verify.
+UPDATE (2026-06-20, later same day): the **vendor** photo slice is ALSO LIVE on the cloud
+demo now. Do NOT re-apply these migrations. Applied to cloud via MCP: 0023, **0019**
+(`vendor_user.photo_url` + exec columns, additive), and **0026** (vendor storage RLS +
+helper + flag). `vendor_photo_upload` is **ON**. The feature code was rebased onto and
+pushed to `platform/v2-foundation` and deployed; the vendor Settings self-serve page + the
+admin Users & seats override popover are live.
 
-Local branch `platform/vendor-photo-upload` = v2-foundation + one commit (bc5b35b) with
-the whole feature. Builds clean locally.
+IMPORTANT for a future `supabase db push`: the cloud history is non-contiguous —
+0019/0023/0026 were applied via MCP (timestamp versions), while 0017/0018/0020–0025 are
+still NOT on cloud (not needed for photos). Reconcile before any bulk push; do not assume a
+clean 0016→0026 chain.
+
+Still open: the email cartoon fallback (vendor photo in the exec request email) is NOT built;
+vendor email-editing is read-only; upload progress is a simple "Uploading…"; the full
+`npm test` suite was not run for the cloud rollout (build + lint + check:copy passed).
 
 ## Current state (from the audit)
 
