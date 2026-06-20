@@ -23,7 +23,8 @@
     "dev:web": "turbo run dev --filter=@thegoodintro/web",
     "dev:platform": "turbo run dev --filter=@thegoodintro/platform",
     "indexnow": "npm run indexnow --workspace=@thegoodintro/web",
-    "check:copy": "node scripts/check-copy.js"
+    "check:copy": "node scripts/check-copy.js",
+    "check:drift": "node scripts/drift-sentinel.js"
   },
   "devDependencies": {
     "supabase": "^2.101.0",
