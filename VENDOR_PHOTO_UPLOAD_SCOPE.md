@@ -49,6 +49,31 @@ STILL TO BUILD (after the two designs land):
   (section 7). Independent of the UIs, but only shows real photos once uploads exist.
 - Tests + full gate.
 
+## CLOUD ROLLOUT STATUS (2026-06-20) — read before touching the cloud
+
+The **executive** photo slice is LIVE on the cloud demo (project ojizccgnnfmigizqgthp):
+- Migration **0023** was applied to cloud via the Supabase MCP (bucket `public-avatars`,
+  staff-only storage RLS, `photo_upload` flag). The `photo_upload` flag is **ON**.
+- The deployed v2-foundation code already had the exec photo UI, so no redeploy was
+  needed; the admin New/Edit Executive + exec Profile photo controls are now active on
+  https://thegoodintro-platform.vercel.app . `executive.photo_url` already existed (0001).
+- Issy authorised this one cloud write explicitly, overriding the CLAUDE.md "local DB
+  only" rule for the exec slice. That rule is self-contradictory (it also calls the cloud
+  the staging/demo) and should be reconciled.
+
+The **vendor** photo slice is HANDED TO THE BUILD CHAT (Issy, 2026-06-20). It is NOT on
+the cloud. To roll it out the build chat must:
+1. Cloud DB is genuinely behind: `vendor_user.photo_url` (migration **0019**) does NOT
+   exist on cloud, and 0017–0026 are pending. Apply the pending migrations the proper way
+   (the original `supabase db push` runbook) — note 0023 is ALREADY applied via MCP, so
+   reconcile the history. The vendor slice strictly needs 0019 (column) + 0023 (done) + 0026.
+2. Deploy this branch's code onto `platform/v2-foundation` (the demo's deploy branch),
+   integrating the build chat's newer commits — do NOT force-push.
+3. Then turn `vendor_photo_upload` ON, run the full gate, and verify.
+
+Local branch `platform/vendor-photo-upload` = v2-foundation + one commit (bc5b35b) with
+the whole feature. Builds clean locally.
+
 ## Current state (from the audit)
 
 - `vendor_user.photo_url` exists (migration `0019_exec_portal_schema.sql:78-80`) but
