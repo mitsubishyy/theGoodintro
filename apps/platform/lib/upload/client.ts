@@ -10,7 +10,7 @@ export type UploadResult = { url: string } | { error: string };
 
 export async function uploadPhotoFile(
   file: File,
-  entity: "exec" | "charity-logo" | "charity-hero",
+  entity: "exec" | "vendor-user" | "charity-logo" | "charity-hero",
   ownerId: string,
 ): Promise<UploadResult> {
   const fd = new FormData();

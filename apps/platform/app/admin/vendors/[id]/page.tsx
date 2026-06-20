@@ -61,6 +61,7 @@ export default async function VendorDetailPage({
   const { id } = await params;
   const supabase = await createClient();
   const payments = await getFlag("vendor_payments");
+  const photoUploadEnabled = await getFlag("vendor_photo_upload");
   const now = new Date();
   const nowIso = now.toISOString();
 
@@ -101,7 +102,7 @@ export default async function VendorDetailPage({
       .order("created_at", { ascending: false }),
     supabase
       .from("vendor_user")
-      .select("id, name, email, role, status")
+      .select("id, name, email, role, status, photo_url")
       .eq("vendor_id", id)
       .is("deleted_at", null)
       .order("created_at", { ascending: true }),
@@ -182,6 +183,7 @@ export default async function VendorDetailPage({
     email: u.email as string,
     role: u.role as "owner" | "member",
     status: u.status as "invited" | "active" | "removed",
+    photoUrl: (u.photo_url as string | null) ?? undefined,
   }));
 
   const requests: RequestSubRow[] = (requestsResp.data ?? []).map((r) => {
@@ -265,6 +267,7 @@ export default async function VendorDetailPage({
         vetting={vetting}
         activity={activity}
         pendingRequestCount={pendingRequestCount}
+        photoUploadEnabled={photoUploadEnabled}
       />
     </PortalPage>
   );

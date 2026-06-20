@@ -1,11 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireStaff } from "@/lib/auth";
+import { requireStaff, getStaff } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
 import { applyPaidInvoice } from "@/lib/billing";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
+import { isOwnAvatarUrl } from "@/lib/upload/url";
 import {
   createCreditPurchaseInvoice,
   getValidAccessToken,
@@ -254,4 +256,38 @@ export async function simulatePaidAction(fd: FormData): Promise<void> {
     metadata: { xero_invoice_id: xeroId, result: result.status },
   });
   revalidatePath(`/admin/vendors/${vendorId}`);
+}
+
+const VU_UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Admin override: set or clear a vendor user's photo. The bytes already went
+ * through the upload route (validate + sharp re-encode + storage write under the
+ * staff session); this writes the returned public URL onto the vendor_user row,
+ * origin-checked to our own avatars bucket, and audits it. Gated on
+ * `vendor_photo_upload` (the same flag as vendor self-serve).
+ */
+export async function saveVendorUserPhotoAction(
+  vendorUserId: string,
+  photoUrl: string | null,
+): Promise<{ ok?: boolean; error?: string }> {
+  if (!(await getFlag("vendor_photo_upload"))) return { error: "Photo upload is not enabled." };
+  if (!VU_UUID_RE.test(vendorUserId)) return { error: "Invalid target." };
+  const supabase = await createClient();
+  const staff = (await getStaff())?.staff;
+  if (!staff) return { error: "Not authorized." };
+  const url = (photoUrl ?? "").trim();
+  if (url && !isOwnAvatarUrl(url)) return { error: "That photo could not be saved." };
+
+  const { error } = await supabase.from("vendor_user").update({ photo_url: url || null }).eq("id", vendorUserId);
+  if (error) return { error: error.message };
+
+  await logAudit(supabase, staff.id, {
+    action: url ? "vendor_user.photo_updated" : "vendor_user.photo_removed",
+    targetType: "vendor_user",
+    targetId: vendorUserId,
+    metadata: {},
+  });
+  revalidatePath("/admin/vendors", "layout");
+  return { ok: true };
 }

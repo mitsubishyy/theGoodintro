@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getStaff } from "@/lib/auth";
+import { getStaff, getVendor } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
 import { createClient } from "@/lib/supabase/server";
 import { ASSET_SPECS, processImage, objectPath, MAX_BYTES, type AssetEntity } from "@/lib/upload/photo";
@@ -15,17 +15,11 @@ const fail = (error: string, status: number) => NextResponse.json({ ok: false, e
  * Photo upload (PHOTO_UPLOAD_SCOPE.md). Upload-only: this route validates,
  * re-encodes (the security control) and stores the image, then returns a stable
  * public URL. It does NOT write any column; the caller persists the URL through
- * its existing audited save path. v1 is staff-only (exec + charity); vendor
- * self-serve is Pass B behind its own flag.
+ * its existing audited save path. The `exec` + charity entities are staff-only
+ * under the `photo_upload` flag; the `vendor-user` entity is the Pass B vendor
+ * slice under the `vendor_photo_upload` flag (vendor self-serve OR admin override).
  */
 export async function POST(req: Request) {
-  if (!(await getFlag("photo_upload"))) return fail("Photo upload is not enabled.", 403);
-
-  // Authz BEFORE any processing. Session client is RLS-bound, so the storage
-  // INSERT policy (staff-only) is the real enforcement; this is the friendly 403.
-  const staff = (await getStaff())?.staff;
-  if (!staff) return fail("Not authorized.", 403);
-
   let form: FormData;
   try {
     form = await req.formData();
@@ -39,6 +33,25 @@ export async function POST(req: Request) {
 
   const ownerId = String(form.get("ownerId") ?? "").trim();
   if (!UUID_RE.test(ownerId)) return fail("Invalid target id.", 400);
+
+  // Flag + authz by entity, BEFORE any processing. The session client below is
+  // RLS-bound, so the storage policy is the real enforcement; these are the
+  // friendly 403s plus defense-in-depth.
+  if (entity === "vendor-user") {
+    if (!(await getFlag("vendor_photo_upload"))) return fail("Photo upload is not enabled.", 403);
+    // Staff may upload for any vendor (admin override). Otherwise the caller
+    // must be the vendor who owns this row; the path-scoped RLS (0026) enforces
+    // the same constraint at the database, so a forged ownerId fails either way.
+    const staff = (await getStaff())?.staff;
+    if (!staff) {
+      const vendorUser = (await getVendor())?.vendorUser;
+      if (!vendorUser || vendorUser.id !== ownerId) return fail("Not authorized.", 403);
+    }
+  } else {
+    if (!(await getFlag("photo_upload"))) return fail("Photo upload is not enabled.", 403);
+    const staff = (await getStaff())?.staff;
+    if (!staff) return fail("Not authorized.", 403);
+  }
 
   const file = form.get("file");
   if (!(file instanceof File)) return fail("No file provided.", 400);

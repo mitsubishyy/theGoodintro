@@ -14,7 +14,7 @@ import { uploadPhotoFile } from "@/lib/upload/client";
  * `enabled` flag off the control renders an honest inert state.
  */
 
-type Entity = "exec" | "charity-logo" | "charity-hero";
+type Entity = "exec" | "vendor-user" | "charity-logo" | "charity-hero";
 
 export function PhotoUploadField({
   entity = "exec",
