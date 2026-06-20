@@ -399,6 +399,28 @@ When the user asks for design changes:
 4. **Commit and push to main** when the user says "push", "ship", or "deploy".
    This triggers the Vercel build.
 
+## Closing out a task
+
+When you finish a task or project the user assigned, end the response with a
+short **wrap-up block** so she knows where things stand and whether she can move
+on. Always include:
+
+1. **Status line.** State plainly that the task is done and, if it was committed
+   or pushed, that it is verified/shipped. If anything was left incomplete,
+   skipped, or is blocked on an Issy decision, say so here instead — don't imply
+   "done" when it isn't.
+2. **"You can close this chat."** When the work is genuinely finished and nothing
+   is waiting on this conversation's context, say so explicitly. If something
+   still needs this chat (a running build, an unanswered question, a half-done
+   step), say to keep it open and why.
+3. **Recommended next tasks.** A short bulleted list (2–4 items) of what to pick
+   up next in a *fresh* chat — drawn from the build plans, open TODOs, parked
+   decisions, or the natural follow-on to what was just done. Keep each to one
+   line. If there genuinely is no sensible next task, say that too.
+
+Keep the block tight — three short parts, not a report. The point is to remove
+the "is it safe to walk away?" guesswork at the end of every piece of work.
+
 ## Recent direction history (for context)
 
 In iteration order, these were tried and rejected — do not re-propose:
