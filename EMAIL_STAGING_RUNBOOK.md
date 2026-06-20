@@ -154,8 +154,8 @@ verbatim but DRAFT (not design-locked, unlike B1/A1/A4) - give it a read before
 go-live. The A1 vendor welcome is queued at sign-up by migration **0025** (apply
 it with the rest on staging/prod).
 
-CONFIRM at go-live: `vendorWelcomeEmail` currently sends `fromKind: brand`, but
-NOTIFICATION_TEMPLATES A1 says "personally from Issy" - pick one.
+Sender resolved 2026-06-20: the vendor welcome sends `fromKind: personal`
+(personally from Issy), so at go-live it uses `EMAIL_FROM_PERSONAL`.
 
 Out of the drain's scope by design: the **C2 exec calendar invite** (organiser
 Issy) rides the calendar integration, not the email queue. Not built yet (queued
