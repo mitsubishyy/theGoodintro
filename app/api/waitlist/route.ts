@@ -53,6 +53,27 @@ function str(v: unknown, max = 500): string {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Personal / free-mail domains the waitlist does not accept. Work email only.
+// Kept in sync with the same list in app/waitlist/waitlist-form.tsx.
+const BLOCKED_EMAIL_DOMAINS = [
+  // Google
+  "gmail.com", "googlemail.com",
+  // Microsoft
+  "outlook.com", "outlook.com.au", "hotmail.com", "hotmail.co.uk",
+  "hotmail.com.au", "live.com", "live.com.au", "msn.com",
+  // Apple
+  "icloud.com", "me.com", "mac.com",
+  // Yahoo
+  "yahoo.com", "yahoo.com.au", "yahoo.co.uk", "ymail.com", "rocketmail.com",
+  // Other free webmail
+  "aol.com", "proton.me", "protonmail.com", "gmx.com", "gmx.net",
+  "mail.com", "zoho.com", "yandex.com", "fastmail.com", "tutanota.com",
+  "hey.com", "pm.me",
+  // Australian ISP personal addresses
+  "bigpond.com", "bigpond.net.au", "optusnet.com.au", "iinet.net.au",
+  "internode.on.net", "tpg.com.au", "ozemail.com.au", "dodo.com.au",
+];
+
 // Org-name fragments that strongly indicate a hosting / VPN / datacenter
 // network rather than a residential or mobile ISP. Used as a no-API-key
 // fallback when ipinfo's explicit privacy flags (paid plans) are unavailable.
@@ -187,6 +208,16 @@ export async function POST(req: NextRequest) {
   if (!EMAIL_RE.test(email)) {
     return NextResponse.json(
       { error: "That email does not look valid. Please check it." },
+      { status: 400 },
+    );
+  }
+  const emailDomain = email.split("@")[1]?.toLowerCase() ?? "";
+  if (BLOCKED_EMAIL_DOMAINS.includes(emailDomain)) {
+    return NextResponse.json(
+      {
+        error:
+          "Please use your work email. Personal addresses (Gmail, Outlook, iCloud) are not accepted.",
+      },
       { status: 400 },
     );
   }

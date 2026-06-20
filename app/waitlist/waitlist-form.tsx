@@ -9,6 +9,27 @@ const inputCls =
 const areaCls =
   "w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-base text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 focus-visible:ring-offset-background resize-y min-h-[96px]";
 
+// Personal / free-mail domains the waitlist does not accept. Work email only.
+// Kept in sync with the same list in app/api/waitlist/route.ts.
+const BLOCKED_EMAIL_DOMAINS = [
+  // Google
+  "gmail.com", "googlemail.com",
+  // Microsoft
+  "outlook.com", "outlook.com.au", "hotmail.com", "hotmail.co.uk",
+  "hotmail.com.au", "live.com", "live.com.au", "msn.com",
+  // Apple
+  "icloud.com", "me.com", "mac.com",
+  // Yahoo
+  "yahoo.com", "yahoo.com.au", "yahoo.co.uk", "ymail.com", "rocketmail.com",
+  // Other free webmail
+  "aol.com", "proton.me", "protonmail.com", "gmx.com", "gmx.net",
+  "mail.com", "zoho.com", "yandex.com", "fastmail.com", "tutanota.com",
+  "hey.com", "pm.me",
+  // Australian ISP personal addresses
+  "bigpond.com", "bigpond.net.au", "optusnet.com.au", "iinet.net.au",
+  "internode.on.net", "tpg.com.au", "ozemail.com.au", "dodo.com.au",
+];
+
 const EXEC_TOPIC_OPTS = [
   "Not sure yet",
   "AI & automation",
@@ -164,6 +185,7 @@ export default function WaitlistForm() {
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [doneName, setDoneName] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -187,6 +209,7 @@ export default function WaitlistForm() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setEmailError(null);
 
     if (!audience) {
       setError("Please tell us whether you are joining as an executive or a vendor.");
@@ -194,12 +217,20 @@ export default function WaitlistForm() {
     }
 
     if (!email.trim()) {
-      setError("Please enter your work email so we can be in touch.");
+      setEmailError("Please enter your work email so we can be in touch.");
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      setError("That email does not look valid. Please check it.");
+      setEmailError("That email does not look valid. Please check it.");
+      return;
+    }
+
+    const emailDomain = email.trim().split("@")[1]?.toLowerCase() ?? "";
+    if (BLOCKED_EMAIL_DOMAINS.includes(emailDomain)) {
+      setEmailError(
+        "Please use your work email. Personal addresses (Gmail, Outlook, iCloud) are not accepted.",
+      );
       return;
     }
 
@@ -371,11 +402,19 @@ export default function WaitlistForm() {
             </Field>
 
             <Field label="Work email" required>
+              {emailError ? (
+                <p className="mb-3 text-sm" style={{ color: "var(--primary)" }}>
+                  {emailError}
+                </p>
+              ) : null}
               <input
                 type="email"
                 className={inputCls}
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (emailError) setEmailError(null);
+                }}
                 placeholder="jane@company.com"
                 autoComplete="email"
               />
