@@ -1,37 +1,32 @@
 // Submits the site's pages to IndexNow so Bing indexes new content quickly.
 // Run after a Vercel deploy: `npm run indexnow`.
 //
-// Requires an IndexNow key:
-//   1. Set INDEXNOW_KEY in the environment.
-//   2. Host the key file at https://thegoodintro.com/<INDEXNOW_KEY>.txt
-//      containing exactly the key (place it in public/).
-// Without the key this is a safe no-op so it never breaks a deploy.
+// IndexNow keys are NOT secret: the matching proof file is hosted publicly at
+// https://thegoodintro.com/<KEY>.txt. So the key is committed below and the
+// script works out of the box; override with INDEXNOW_KEY if it is ever rotated
+// (remember to commit the new public/<key>.txt alongside it).
 
 const HOST = "thegoodintro.com";
 const SITE = `https://${HOST}`;
-const KEY = process.env.INDEXNOW_KEY;
+const KEY = process.env.INDEXNOW_KEY || "ceb04359c0708ba22085819b6ae7ef78";
 
+// Keep in sync with the indexable routes in app/sitemap.ts (noindex routes omitted).
 const ROUTES = [
   "",
   "/how-it-works",
+  "/executives",
   "/vendors",
   "/pricing",
   "/giving",
-  "/impact",
+  "/charities",
   "/faq",
+  "/impact",
+  "/ledger",
   "/opportunity",
-  "/apply",
+  "/waitlist",
   "/privacy",
   "/terms",
 ];
-
-if (!KEY) {
-  console.log(
-    "[indexnow] INDEXNOW_KEY not set. Skipping (no-op). " +
-      "Set it and add public/<key>.txt before relying on this.",
-  );
-  process.exit(0);
-}
 
 const urlList = ROUTES.map((p) => `${SITE}${p}`);
 

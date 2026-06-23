@@ -18,6 +18,17 @@ const securityHeaders = [
     value: "strict-origin-when-cross-origin",
   },
   {
+    // Two years, subdomains included, and preload-eligible. Vercel serves the
+    // site over HTTPS only, so this is safe.
+    key: "Strict-Transport-Security",
+    value: "max-age=63072000; includeSubDomains; preload",
+  },
+  {
+    // The site needs none of these powerful features; deny them site-wide.
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
+  },
+  {
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",

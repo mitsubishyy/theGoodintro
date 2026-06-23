@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { ClosingCta } from "../../_components/ui";
+import { BreadcrumbJsonLd } from "../../_components/json-ld";
 import { CHARITIES, getCharity } from "@/lib/charities";
 import { ABN_LOOKUP_URL } from "@/lib/config";
 import { pageMetadata } from "@/lib/metadata";
@@ -46,6 +47,13 @@ export default async function CharityPage({
 
   return (
     <>
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", path: "/" },
+          { name: "Charities", path: "/charities" },
+          { name: c.name, path: `/charities/${c.slug}` },
+        ]}
+      />
       {/* ── Who they are (white band) ─────────────────────────────── */}
       <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-5xl px-6 lg:px-10 pt-24 md:pt-32 pb-16 md:pb-20">

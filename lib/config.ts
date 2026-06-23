@@ -14,6 +14,14 @@ export const CALENDLY_URL = "mailto:issy@thegoodintros.com";
 // TODO(lachlan): replace with Isobel's real LinkedIn URL.
 export const FOUNDER_LINKEDIN = "https://www.linkedin.com/in/isobel-hardwick/";
 
+// Company LinkedIn page. Used in the footer and as an Organization `sameAs`
+// signal so search engines tie the site to the verified company profile.
+export const COMPANY_LINKEDIN = "https://www.linkedin.com/company/thegoodintro";
+
+// Registered ABN (also shown publicly in the footer). Used as a structured-data
+// identifier on the Organization so the entity is unambiguous to search engines.
+export const COMPANY_ABN = "59 398 447 638";
+
 // Public registers used for verification links across the site.
 export const ACNC_REGISTER_URL = "https://www.acnc.gov.au/charity/charities";
 export const ABN_LOOKUP_URL = "https://abr.business.gov.au/";

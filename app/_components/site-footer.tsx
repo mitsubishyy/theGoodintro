@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { COMPANY_LINKEDIN } from "@/lib/config";
+import { IconLinkedIn } from "./icons";
 
 // Labelled link groups. New public pages get a footer link here even when
 // they stay off the top nav.
@@ -78,6 +80,16 @@ export default function SiteFooter() {
             href="mailto:issy@thegoodintros.com"
           >
             issy@thegoodintros.com
+          </a>
+          <a
+            className="hp-footer-email inline-flex items-center gap-1.5"
+            href={COMPANY_LINKEDIN}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="TheGoodIntro on LinkedIn"
+          >
+            <IconLinkedIn size={16} />
+            LinkedIn
           </a>
           <p className="hp-footer-meta">
             &copy; 2026 TheGoodIntro &middot; ABN 59 398 447 638
