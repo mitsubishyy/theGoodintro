@@ -6,6 +6,7 @@ import {
   ComparisonRow,
   Faq,
   ClosingCta,
+  SecondaryCta,
 } from "../_components/ui";
 import { LogoMarquee } from "../_components/LogoMarquee";
 import {
@@ -367,6 +368,11 @@ export default function Giving() {
           <p className="mt-10 text-center text-xs text-muted-foreground italic max-w-2xl mx-auto">
             The executive chooses any DGR-endorsed Australian charity.
           </p>
+          <div className="mt-10 flex justify-center">
+            <SecondaryCta href="/charities">
+              View all charities available here
+            </SecondaryCta>
+          </div>
         </div>
       </section>
 

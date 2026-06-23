@@ -1,6 +1,8 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ClosingCta } from "../../_components/ui";
 import { BreadcrumbJsonLd } from "../../_components/json-ld";
+import CharityGallery from "../../_components/charity-gallery";
 import { CHARITIES, getCharity } from "@/lib/charities";
 import { ABN_LOOKUP_URL } from "@/lib/config";
 import { pageMetadata } from "@/lib/metadata";
@@ -57,6 +59,15 @@ export default async function CharityPage({
       {/* ── Who they are (white band) ─────────────────────────────── */}
       <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-5xl px-6 lg:px-10 pt-24 md:pt-32 pb-16 md:pb-20">
+          <div className="relative mb-7 h-12 w-44">
+            <Image
+              src={c.logo}
+              alt={`${c.name} logo`}
+              fill
+              className="object-contain object-left"
+              sizes="176px"
+            />
+          </div>
           <span
             className="font-mono text-[11px] uppercase tracking-[0.22em]"
             style={{ color: "var(--cream-9)" }}
@@ -88,17 +99,39 @@ export default async function CharityPage({
               <p key={p.slice(0, 32)}>{p}</p>
             ))}
           </div>
-          <p className="mt-6 text-[15px]">
+
+          <CharityGallery logo={c.logo} images={c.images} />
+
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
             <a
               href={c.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="underline underline-offset-4 hover:text-primary"
+              className="text-[15px] underline underline-offset-4 hover:text-primary"
               style={{ color: "var(--cream-10)" }}
             >
               {c.website.replace("https://www.", "")}
             </a>
-          </p>
+            <a
+              href={c.donateUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hp-btn-ghost"
+            >
+              Donate to {c.name} directly
+              <span className="circle" aria-hidden="true">
+                <svg viewBox="0 0 14 14" fill="none">
+                  <path
+                    d="M3 11 L11 3 M5 3 H11 V9"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+            </a>
+          </div>
           <p
             className="mt-8 text-sm italic max-w-2xl"
             style={{

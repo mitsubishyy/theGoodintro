@@ -1,5 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ClosingCta } from "../_components/ui";
+import { CollectionPageJsonLd } from "../_components/json-ld";
 import { CHARITIES } from "@/lib/charities";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -13,6 +15,15 @@ export const metadata = pageMetadata({
 export default function CharitiesIndex() {
   return (
     <>
+      <CollectionPageJsonLd
+        name="Charities executives can choose"
+        description="DGR-endorsed Australian charities an executive can direct a meeting's gift to on TheGoodIntro."
+        path="/charities"
+        items={CHARITIES.map((c) => ({
+          name: c.name,
+          path: `/charities/${c.slug}`,
+        }))}
+      />
       {/* ── Header (white band) ───────────────────────────────────── */}
       <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-5xl px-6 lg:px-10 pt-24 md:pt-32 pb-16 md:pb-20">
@@ -58,6 +69,15 @@ export default function CharitiesIndex() {
                 className="group rounded-2xl border p-6 md:p-7 transition-all duration-200 hover:-translate-y-0.5"
                 style={{ background: "var(--cream-1)", borderColor: "var(--hair)" }}
               >
+                <div className="relative mb-5 h-9 w-28">
+                  <Image
+                    src={c.logo}
+                    alt=""
+                    fill
+                    className="object-contain object-left"
+                    sizes="112px"
+                  />
+                </div>
                 <div className="text-[17px] font-semibold tracking-tight">
                   {c.name}
                 </div>

@@ -77,6 +77,50 @@ export function WebSiteJsonLd() {
   );
 }
 
+/**
+ * CollectionPage + ItemList structured data for a listing page (e.g. the
+ * charities index). Declares the page as a collection and lists its members in
+ * order, tied back to the site's WebSite entity.
+ */
+export function CollectionPageJsonLd({
+  name,
+  description,
+  path,
+  items,
+}: {
+  name: string;
+  description: string;
+  path: string;
+  items: { name: string; path: string }[];
+}) {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": `${SITE_URL}${path}#collection`,
+    url: `${SITE_URL}${path}`,
+    name,
+    description,
+    inLanguage: "en-AU",
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: items.length,
+      itemListElement: items.map((it, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: it.name,
+        url: `${SITE_URL}${it.path}`,
+      })),
+    },
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}
+
 export type Crumb = { name: string; path: string };
 
 /**

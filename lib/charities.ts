@@ -16,6 +16,20 @@
 // - Nothing here may imply partnership or endorsement. The template adds
 //   the standard non-affiliation line to every page.
 
+/**
+ * A photo slot on a charity profile. Leave `images` unset on a charity to
+ * show on-brand placeholders (the page renders two landscape + one portrait
+ * frame). To add a real photo, drop the file under /public and add an entry
+ * here with its `src` + `alt`, one slot at a time.
+ */
+export type CharityImage = {
+  orientation: "landscape" | "portrait";
+  /** Path under /public, e.g. /charities/photos/rfds/clinic.webp */
+  src: string;
+  /** Describe the photo (required once a src is set). */
+  alt: string;
+};
+
 export type CharityProfile = {
   slug: string;
   name: string;
@@ -23,6 +37,10 @@ export type CharityProfile = {
   tagline: string;
   /** The charity's own website. */
   website: string;
+  /** Logo path under /public (filenames do not always match the slug). */
+  logo: string;
+  /** The charity's official donation page, verified from their own site. */
+  donateUrl: string;
   /** Two short paragraphs on what they do, from their own materials. */
   about: [string, string];
   /**
@@ -38,14 +56,37 @@ export type CharityProfile = {
   abn: string;
   /** DGR status line. */
   dgr: string;
+  /** Optional real photos. When unset, the page shows placeholder frames. */
+  images?: CharityImage[];
 };
 
 export const CHARITIES: CharityProfile[] = [
+  {
+    slug: "leukaemia-foundation",
+    name: "Leukaemia Foundation",
+    tagline: "Blood cancer support and research",
+    website: "https://www.leukaemia.org.au",
+    logo: "/charities/leukaemia-foundation.png",
+    donateUrl: "https://www.leukaemia.org.au/make-a-difference/give/donate/",
+    about: [
+      "The Leukaemia Foundation is a national charity supporting Australians facing leukaemia, lymphoma, myeloma and other blood cancers, along with their families.",
+      "By its own description it offers wraparound support services, including emotional support, accommodation for patients who travel for treatment and practical assistance, while funding blood cancer research and campaigning for change.",
+    ],
+    impact: {
+      heading: "What a gift funds",
+      body: "The Leukaemia Foundation does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports blood cancer research and the support services, including accommodation and emotional support, it provides to Australians facing blood cancer.",
+    },
+    entity: "The Leukaemia Foundation of Australia Limited",
+    abn: "57 057 493 017",
+    dgr: "DGR endorsed",
+  },
   {
     slug: "rfds",
     name: "Royal Flying Doctor Service",
     tagline: "Remote emergency medical",
     website: "https://www.flyingdoctor.org.au",
+    logo: "/charities/royal-flying-doctor-service.png",
+    donateUrl: "https://www.flyingdoctor.org.au/donate/",
     about: [
       "The Royal Flying Doctor Service provides emergency and primary health care to people living, working and travelling across rural and remote Australia, delivered by air and on the ground.",
       "Its own donor pages describe donations and bequests funding the replacement of aeromedical aircraft and vital medical equipment that keep the service flying.",
@@ -60,10 +101,31 @@ export const CHARITIES: CharityProfile[] = [
     dgr: "DGR endorsed",
   },
   {
+    slug: "ruok",
+    name: "R U OK?",
+    tagline: "Suicide prevention through connection",
+    website: "https://www.ruok.org.au",
+    logo: "/charities/r-u-ok.png",
+    donateUrl: "https://join.ruok.org.au/donate",
+    about: [
+      "R U OK? is an Australian suicide prevention charity and registered health promotion charity. It encourages people to stay connected and have conversations that can support someone through a difficult time.",
+      "By its own description it aims to inspire and empower everyone to meaningfully connect with the people around them and start a conversation with anyone who may be struggling with life.",
+    ],
+    impact: {
+      heading: "What a gift funds",
+      body: "R U OK? does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports the campaigns, resources and education that encourage Australians to ask one another, 'are you OK?'",
+    },
+    entity: "RUOK? Limited",
+    abn: "25 138 676 829",
+    dgr: "DGR endorsed",
+  },
+  {
     slug: "headspace",
     name: "headspace",
     tagline: "Youth mental health",
     website: "https://headspace.org.au",
+    logo: "/charities/headspace.png",
+    donateUrl: "https://headspace.org.au/donate",
     about: [
       "headspace is Australia's National Youth Mental Health Foundation, providing early intervention mental health services to young people aged 12 to 25.",
       "Its centres across Australia, alongside online and phone services, support young people across four areas: mental health, physical health, alcohol and other drugs, and work and study.",
@@ -77,10 +139,204 @@ export const CHARITIES: CharityProfile[] = [
     dgr: "DGR endorsed",
   },
   {
+    slug: "starlight",
+    name: "Starlight Children's Foundation",
+    tagline: "Joy for seriously ill children",
+    website: "https://www.starlight.org.au",
+    logo: "/charities/starlight-children-s-foundation.png",
+    donateUrl: "https://www.starlight.org.au/donate/",
+    about: [
+      "Starlight Children's Foundation works to brighten the lives of seriously ill and hospitalised children and young people across Australia.",
+      "By its own description it uses play, social connection and creativity, through programs such as Starlight Express Rooms, Livewire and wish-granting, to support children through treatment and hospital stays.",
+    ],
+    impact: {
+      heading: "What a gift funds",
+      body: "Starlight Children's Foundation does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports the programs that bring play, connection and moments of happiness to seriously ill children and young people.",
+    },
+    entity: "Starlight Children's Foundation Australia",
+    abn: "80 931 522 157",
+    dgr: "DGR endorsed",
+  },
+  {
+    slug: "ronald-mcdonald-house",
+    name: "Ronald McDonald House Charities",
+    tagline: "Families near children in hospital",
+    website: "https://www.rmhc.org.au",
+    logo: "/charities/ronald-mcdonald-house-charities.png",
+    donateUrl: "https://ronaldmcdonaldhouse.org.au/donate/",
+    about: [
+      "Ronald McDonald House Charities provides accommodation and support to families with a seriously ill or injured child who is receiving specialist medical care away from home.",
+      "By its own description it runs houses, family rooms, family retreats and other programs across Australia so families can stay close to their child, and to each other, during treatment.",
+    ],
+    impact: {
+      heading: "What a gift funds",
+      body: "Ronald McDonald House Charities does not publish a per-dollar figure we can attribute cleanly, so we will not invent one. A gift directed here supports the accommodation and family programs that keep families together while a child is in hospital.",
+    },
+    entity: "Ronald McDonald House Charities Trust",
+    abn: "26 037 589 412",
+    dgr: "DGR endorsed",
+  },
+  {
+    slug: "st-vincent-de-paul",
+    name: "St Vincent de Paul Society",
+    tagline: "Help for people in need",
+    website: "https://www.vinnies.org.au",
+    logo: "/charities/st-vincent-de-paul-society.png",
+    donateUrl: "https://donate.vinnies.org.au/",
+    about: [
+      "The St Vincent de Paul Society, known as Vinnies, is a lay Catholic organisation that provides assistance to people experiencing hardship across Australia.",
+      "By its own description it runs more than 200 services nationally, including emergency accommodation, food and meals through its soup vans and food hubs, and longer-term support such as casework, healthcare and employment assistance.",
+    ],
+    impact: {
+      heading: "What a gift funds",
+      body: "The St Vincent de Paul Society does not publish a simple per-dollar figure, so we will not invent one. A gift directed to the national body supports services for people in need, from emergency relief and food to longer-term casework and support.",
+    },
+    note: "Vinnies operates through state and territory councils. A gift directed here goes to the National Council of Australia.",
+    entity: "National Council of Australia Incorporated",
+    abn: "50 748 098 845",
+    dgr: "DGR endorsed",
+  },
+  {
+    slug: "childrens-ground",
+    name: "Children's Ground",
+    tagline: "First Nations-led change",
+    website: "https://childrensground.org.au",
+    logo: "/charities/children-s-ground.png",
+    donateUrl: "https://childrensground.org.au/donate",
+    about: [
+      "Children's Ground is a First Nations-led organisation working with Aboriginal communities to deliver a long-term approach to learning, health, wellbeing and employment.",
+      "By its own description its approach is designed, delivered and evaluated by the communities it serves, working across a generation to create lasting change.",
+    ],
+    impact: {
+      heading: "What a gift funds",
+      body: "Children's Ground does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports its First Nations-led programs across learning, health, wellbeing and economic development.",
+    },
+    entity: "Children's Ground Limited",
+    abn: "74 154 403 086",
+    dgr: "DGR endorsed",
+  },
+  {
+    slug: "wwf-australia",
+    name: "WWF-Australia",
+    tagline: "Wildlife and nature conservation",
+    website: "https://wwf.org.au",
+    logo: "/charities/wwf-australia.png",
+    donateUrl: "https://www.wwf.org.au/donate",
+    about: [
+      "WWF-Australia is the local arm of the global conservation organisation, working to protect Australia's threatened species and the habitats they depend on.",
+      "By its own description it works to protect wildlife and restore nature, drawing on First Peoples' knowledge and partnering with communities across Australia and the Asia-Pacific.",
+    ],
+    impact: {
+      heading: "What a gift funds",
+      body: "WWF-Australia does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports its work protecting threatened wildlife and restoring the natural places they rely on.",
+    },
+    entity: "World Wide Fund for Nature Australia",
+    abn: "57 001 594 074",
+    dgr: "DGR endorsed",
+  },
+  {
+    slug: "rspca-australia",
+    name: "RSPCA Australia",
+    tagline: "Animal welfare",
+    website: "https://www.rspca.org.au",
+    logo: "/charities/rspca-australia.png",
+    donateUrl: "https://www.rspca.org.au/support-us/donate/",
+    about: [
+      "RSPCA Australia is the national body of the RSPCA federation, working to prevent cruelty to animals and to improve animal welfare across the country.",
+      "By its own description the national office focuses on animal welfare policy, science and education, while the member Societies in each state and territory deliver frontline animal care.",
+    ],
+    impact: {
+      heading: "What a gift funds",
+      body: "RSPCA Australia does not publish a simple per-dollar figure, so we will not invent one. A gift directed to the national body supports the policy, science and education work that underpins animal welfare across Australia.",
+    },
+    note: "The RSPCA is a federation. A gift directed here goes to the national body, RSPCA Australia.",
+    entity: "RSPCA Australia",
+    abn: "99 668 654 249",
+    dgr: "DGR endorsed",
+  },
+  {
+    slug: "guide-dogs-australia",
+    name: "Guide Dogs Australia",
+    tagline: "Blindness and low vision services",
+    website: "https://guidedogs.com.au",
+    logo: "/charities/guide-dogs-australia.png",
+    donateUrl: "https://guidedogs.com.au/donate-to-guide-dogs/",
+    about: [
+      "Guide Dogs Australia is the national federation of Guide Dogs organisations, providing services to people who are blind or have low vision.",
+      "By its own description its services reach beyond guide dogs to include orientation and mobility training, occupational therapy and other support that helps people move through the world with confidence.",
+    ],
+    impact: {
+      heading: "What a gift funds",
+      body: "Guide Dogs Australia does not publish a per-dollar figure we can attribute cleanly, so we will not invent one. A gift directed here supports guide dogs and the broader orientation, mobility and therapy services for people who are blind or have low vision.",
+    },
+    entity: "Royal Guide Dogs Australia",
+    abn: "99 008 427 423",
+    dgr: "DGR endorsed",
+  },
+  {
+    slug: "save-the-children",
+    name: "Save the Children Australia",
+    tagline: "Protection for vulnerable children",
+    website: "https://www.savethechildren.org.au",
+    logo: "/charities/save-the-children-australia.png",
+    donateUrl: "https://www.savethechildren.org.au/donate/make-a-donation",
+    about: [
+      "Save the Children Australia is part of the global Save the Children movement, working to protect children and give them access to education, health care and safety.",
+      "By its own description it works in Australia and overseas across child protection, education, health and emergency response for children affected by poverty, conflict and disaster.",
+    ],
+    impact: {
+      heading: "What a gift funds",
+      body: "Save the Children Australia does not publish a single per-dollar figure we can attribute cleanly, so we will not invent one. A gift directed here supports its programs protecting children and helping them access education, health and safety.",
+    },
+    entity: "Save the Children Australia",
+    abn: "99 008 610 035",
+    dgr: "DGR endorsed",
+  },
+  {
+    slug: "world-vision-australia",
+    name: "World Vision Australia",
+    tagline: "Ending poverty for children",
+    website: "https://www.worldvision.com.au",
+    logo: "/charities/world-vision-australia.png",
+    donateUrl: "https://www.worldvision.com.au/donate",
+    about: [
+      "World Vision Australia is part of the global World Vision movement, working with children, families and communities to overcome poverty and injustice.",
+      "By its own description its work spans long-term community development, emergency relief and advocacy, alongside its well-known child sponsorship program.",
+    ],
+    impact: {
+      heading: "What a gift funds",
+      body: "World Vision Australia does not publish a single per-dollar figure we can attribute cleanly, so we will not invent one. A gift directed here supports its development, emergency relief and advocacy work for children and communities.",
+    },
+    entity: "World Vision Australia",
+    abn: "28 004 778 081",
+    dgr: "DGR endorsed",
+  },
+  {
+    slug: "cerebral-palsy-alliance",
+    name: "Cerebral Palsy Alliance",
+    tagline: "Disability services and research",
+    website: "https://cerebralpalsy.org.au",
+    logo: "/charities/cerebral-palsy-alliance.png",
+    donateUrl: "https://donate.cerebralpalsy.org.au/",
+    about: [
+      "Cerebral Palsy Alliance provides services, research and advocacy for people living with cerebral palsy and other disabilities, and their families.",
+      "By its own description its support spans early intervention, therapy, equipment, accommodation and employment, alongside research and technology aimed at prevention and cure.",
+    ],
+    impact: {
+      heading: "What a gift funds",
+      body: "Cerebral Palsy Alliance does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports its disability services and the research and technology it funds for people with cerebral palsy.",
+    },
+    entity: "Cerebral Palsy Alliance",
+    abn: "45 000 062 288",
+    dgr: "DGR endorsed",
+  },
+  {
     slug: "cancer-council-australia",
     name: "Cancer Council Australia",
     tagline: "Every area of every cancer",
     website: "https://www.cancer.org.au",
+    logo: "/charities/cancer-council.png",
+    donateUrl: "https://www.cancer.org.au/get-involved/donate-to-cancer-council",
     about: [
       "Cancer Council Australia describes itself as the only charity in Australia to work across every area of every cancer. It is a federation of eight state and territory Cancer Councils working together nationally.",
       "Its work spans funding cancer research, prevention programs, and support for people affected by cancer, including the free, confidential Cancer Council 13 11 20 information and support service.",
