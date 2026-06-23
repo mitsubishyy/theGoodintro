@@ -8,7 +8,7 @@ import { pageMetadata } from "@/lib/metadata";
 export const metadata = pageMetadata({
   title: "Charities. TheGoodIntro.",
   description:
-    "Every gift goes to a DGR-endorsed Australian charity the executive chooses. These are some of the causes leaders can direct their meetings to.",
+    "Every gift goes to a charity the executive chooses. These are some of the causes leaders can direct their meetings to.",
   path: "/charities",
 });
 
@@ -42,15 +42,14 @@ export default function CharitiesIndex() {
               fontFamily: "var(--font-inter), sans-serif",
             }}
           >
-            Causes executives choose.
+            <span className="hp-serif-italic">Good</span> causes we support
           </h1>
           <p
             className="mt-6 max-w-2xl text-[16px] leading-relaxed"
             style={{ color: "var(--cream-9)" }}
           >
-            Every gift goes to a DGR-endorsed Australian charity the executive
-            chooses. These are some of the causes leaders can direct their
-            meetings to.
+            Every gift goes to a charity the executive chooses. These are some
+            of the causes leaders can direct their meetings to.
           </p>
         </div>
       </section>
@@ -111,7 +110,7 @@ export default function CharitiesIndex() {
         eyebrow="The giving"
         title="A relevant meeting,"
         italicWord="a chosen cause."
-        lede="Join the waitlist. Executives direct each meeting's gift, $900 to $1,200, to the DGR-endorsed Australian charity they choose, paid within 14 days and confirmed in writing."
+        lede="Join the waitlist. Executives direct each meeting's gift, $900 to $1,200, to the charity they choose, paid within 14 days and confirmed in writing."
         primaryCta="Join the waitlist"
         primaryHref="/waitlist"
         secondaryLabel="How the giving works"

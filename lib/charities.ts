@@ -45,9 +45,10 @@ export type CharityProfile = {
   about: [string, string];
   /**
    * What a gift funds: the charity's own published equivalence with inline
-   * attribution if one exists, otherwise a description of the service.
+   * attribution if one exists, otherwise a description of the service. Two
+   * paragraphs: (1) what a gift funds, (2) what they are doing to make change.
    */
-  impact: { heading: string; body: string };
+  impact: { heading: string; body: string[] };
   /** Optional extra note rendered after the impact body (e.g. structure). */
   note?: string;
   /** Registered entity name, per CHARITY_FLOW.md / ABN Lookup. */
@@ -74,7 +75,10 @@ export const CHARITIES: CharityProfile[] = [
     ],
     impact: {
       heading: "What a gift funds",
-      body: "The Leukaemia Foundation does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports blood cancer research and the support services, including accommodation and emotional support, it provides to Australians facing blood cancer.",
+      body: [
+        "The Leukaemia Foundation does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports its blood cancer research grants and its wraparound support services, including free or subsidised accommodation near treatment for patients who travel, practical assistance, and emotional support from its blood cancer support coordinators.",
+        "By its own description the Foundation also campaigns for equitable access to treatment and care for every Australian with blood cancer, wherever they live, and funds research aimed at improving survival. Its stated goal is a future where no one loses their life to blood cancer.",
+      ],
     },
     entity: "The Leukaemia Foundation of Australia Limited",
     abn: "57 057 493 017",
@@ -93,7 +97,10 @@ export const CHARITIES: CharityProfile[] = [
     ],
     impact: {
       heading: "What a gift funds",
-      body: "The Royal Flying Doctor Service does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports the aeromedical aircraft and medical equipment that keep the service reaching patients across rural and remote Australia.",
+      body: [
+        "The Royal Flying Doctor Service does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports the aeromedical aircraft, medical equipment and onboard supplies that let its crews reach and treat patients far from a hospital, along with the primary and preventative health clinics it runs in remote communities.",
+        "By its own description the RFDS combines emergency aeromedical retrieval with everyday primary care, dental and mental health services for people who live, work and travel beyond the reach of city hospitals. Its work helps ensure that distance from a hospital is less of a barrier to timely care.",
+      ],
     },
     note: "The RFDS is a federation of sections. By its own description, donations and bequests received by the national body are distributed across the RFDS family nationally.",
     entity: "Royal Flying Doctor Service of Australia",
@@ -113,7 +120,10 @@ export const CHARITIES: CharityProfile[] = [
     ],
     impact: {
       heading: "What a gift funds",
-      body: "R U OK? does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports the campaigns, resources and education that encourage Australians to ask one another, 'are you OK?'",
+      body: [
+        "R U OK? does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports the campaigns, free resources and education programs that help Australians notice when someone is struggling and start a conversation, including materials made for workplaces, schools and communities.",
+        "By its own description R U OK? is a public health initiative focused on prevention through everyday connection, encouraging people to ask the question, listen, and stay in touch rather than wait for a crisis. Its national day each year anchors a message it carries the rest of the year, that a conversation could change a life.",
+      ],
     },
     entity: "RUOK? Limited",
     abn: "25 138 676 829",
@@ -132,7 +142,10 @@ export const CHARITIES: CharityProfile[] = [
     ],
     impact: {
       heading: "What a gift funds",
-      body: "headspace does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports early intervention services for young people aged 12 to 25, delivered through headspace centres and their online and phone services.",
+      body: [
+        "headspace does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports early intervention services for young people aged 12 to 25, spanning mental health, physical and sexual health, alcohol and other drugs, and work and study support, delivered through its centres and its online and phone service, eheadspace.",
+        "By its own description headspace works to reach young people early, before difficulties become entrenched, and to make help easier to find and less stigmatised. It also supports families and friends, and contributes to research and training that lift the quality of youth mental health care across Australia.",
+      ],
     },
     entity: "headspace National Youth Mental Health Foundation Ltd",
     abn: "26 137 533 843",
@@ -151,7 +164,10 @@ export const CHARITIES: CharityProfile[] = [
     ],
     impact: {
       heading: "What a gift funds",
-      body: "Starlight Children's Foundation does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports the programs that bring play, connection and moments of happiness to seriously ill children and young people.",
+      body: [
+        "Starlight Children's Foundation does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports programs such as Starlight Express Rooms in major children's hospitals, the Captain Starlight visitor program, the Livewire online community for teens, and wishes granted to children living with a serious illness.",
+        "By its own description Starlight uses positive distraction and play as a complement to medical treatment, helping seriously ill children and young people cope with pain, fear and isolation. Its programs are designed to give children moments of normal childhood and joy through what can be a long and difficult time.",
+      ],
     },
     entity: "Starlight Children's Foundation Australia",
     abn: "80 931 522 157",
@@ -170,7 +186,10 @@ export const CHARITIES: CharityProfile[] = [
     ],
     impact: {
       heading: "What a gift funds",
-      body: "Ronald McDonald House Charities does not publish a per-dollar figure we can attribute cleanly, so we will not invent one. A gift directed here supports the accommodation and family programs that keep families together while a child is in hospital.",
+      body: [
+        "Ronald McDonald House Charities does not publish a per-dollar figure we can attribute cleanly, so we will not invent one. A gift directed here supports its Houses and Family Rooms near hospitals, which give families a place to sleep, eat and rest close to their seriously ill or injured child, along with family retreats and learning programs.",
+        "By its own description the charity keeps families together and close to the care their child needs, easing the financial and emotional strain of treatment away from home. Staying nearby means parents can be present for ward rounds, treatment and recovery rather than travelling long distances each day.",
+      ],
     },
     entity: "Ronald McDonald House Charities Trust",
     abn: "26 037 589 412",
@@ -189,7 +208,10 @@ export const CHARITIES: CharityProfile[] = [
     ],
     impact: {
       heading: "What a gift funds",
-      body: "The St Vincent de Paul Society does not publish a simple per-dollar figure, so we will not invent one. A gift directed to the national body supports services for people in need, from emergency relief and food to longer-term casework and support.",
+      body: [
+        "The St Vincent de Paul Society does not publish a simple per-dollar figure, so we will not invent one. A gift directed to the national body supports services for people in need, including emergency accommodation, food and meals through soup vans and food hubs, financial and material assistance, and longer-term casework, healthcare and employment support.",
+        "By its own description Vinnies combines immediate relief with support that helps people move beyond crisis, delivered largely through volunteer members who visit and assist people in their own communities. It also advocates on the causes of poverty and disadvantage in Australia.",
+      ],
     },
     note: "Vinnies operates through state and territory councils. A gift directed here goes to the National Council of Australia.",
     entity: "National Council of Australia Incorporated",
@@ -209,7 +231,10 @@ export const CHARITIES: CharityProfile[] = [
     ],
     impact: {
       heading: "What a gift funds",
-      body: "Children's Ground does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports its First Nations-led programs across learning, health, wellbeing and economic development.",
+      body: [
+        "Children's Ground does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports its First Nations-led programs across early years learning, education, health and wellbeing, cultural and creative development, and economic participation, delivered with and by the communities it serves.",
+        "By its own description Children's Ground works to a long-term commitment, designed, delivered and evaluated by First Nations people, with the aim of lasting change across a generation rather than short-term intervention. Its approach is built on the knowledge, languages and aspirations of the communities themselves.",
+      ],
     },
     entity: "Children's Ground Limited",
     abn: "74 154 403 086",
@@ -228,7 +253,10 @@ export const CHARITIES: CharityProfile[] = [
     ],
     impact: {
       heading: "What a gift funds",
-      body: "WWF-Australia does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports its work protecting threatened wildlife and restoring the natural places they rely on.",
+      body: [
+        "WWF-Australia does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports its work to protect threatened species such as koalas, restore habitats damaged by land clearing and bushfire, and reduce the pressures driving wildlife decline across Australia and the wider Asia-Pacific.",
+        "By its own description WWF-Australia works to regenerate nature this decade, partnering with First Peoples, scientists, communities and business to protect wildlife and the places they depend on. It combines on-ground conservation with advocacy for stronger protection of Australia's natural environment.",
+      ],
     },
     entity: "World Wide Fund for Nature Australia",
     abn: "57 001 594 074",
@@ -247,7 +275,10 @@ export const CHARITIES: CharityProfile[] = [
     ],
     impact: {
       heading: "What a gift funds",
-      body: "RSPCA Australia does not publish a simple per-dollar figure, so we will not invent one. A gift directed to the national body supports the policy, science and education work that underpins animal welfare across Australia.",
+      body: [
+        "RSPCA Australia does not publish a simple per-dollar figure, so we will not invent one. A gift directed to the national body supports the animal welfare policy, science and education work behind the RSPCA name, including research into farm animal welfare and national standards, advocacy, and public education campaigns.",
+        "By its own description the national office sets the direction and evidence base for animal welfare in Australia, while the member Societies in each state and territory run the shelters, inspectorate and frontline animal care. Together they work to prevent cruelty and improve the treatment of animals.",
+      ],
     },
     note: "The RSPCA is a federation. A gift directed here goes to the national body, RSPCA Australia.",
     entity: "RSPCA Australia",
@@ -267,7 +298,10 @@ export const CHARITIES: CharityProfile[] = [
     ],
     impact: {
       heading: "What a gift funds",
-      body: "Guide Dogs Australia does not publish a per-dollar figure we can attribute cleanly, so we will not invent one. A gift directed here supports guide dogs and the broader orientation, mobility and therapy services for people who are blind or have low vision.",
+      body: [
+        "Guide Dogs Australia does not publish a per-dollar figure we can attribute cleanly, so we will not invent one. A gift directed here supports the breeding, raising and training of guide dogs, and the broader services for people who are blind or have low vision, including orientation and mobility training, occupational therapy and assistive technology.",
+        "By its own description Guide Dogs helps people with low vision or blindness move safely and live independently, with services extending well beyond the dogs themselves. Raising and training a guide dog can take up to two years, and its services rely largely on donations and community support.",
+      ],
     },
     entity: "Royal Guide Dogs Australia",
     abn: "99 008 427 423",
@@ -286,7 +320,10 @@ export const CHARITIES: CharityProfile[] = [
     ],
     impact: {
       heading: "What a gift funds",
-      body: "Save the Children Australia does not publish a single per-dollar figure we can attribute cleanly, so we will not invent one. A gift directed here supports its programs protecting children and helping them access education, health and safety.",
+      body: [
+        "Save the Children Australia does not publish a single per-dollar figure we can attribute cleanly, so we will not invent one. A gift directed here supports its programs in Australia and overseas, spanning child protection, early childhood and education, child and maternal health, and emergency response for children affected by disaster and conflict.",
+        "By its own description Save the Children works to ensure children survive, learn and are protected, reaching children in some of the hardest places through both long-term development and rapid humanitarian response. It also campaigns for the rights of children and for changes that improve their lives.",
+      ],
     },
     entity: "Save the Children Australia",
     abn: "99 008 610 035",
@@ -305,7 +342,10 @@ export const CHARITIES: CharityProfile[] = [
     ],
     impact: {
       heading: "What a gift funds",
-      body: "World Vision Australia does not publish a single per-dollar figure we can attribute cleanly, so we will not invent one. A gift directed here supports its development, emergency relief and advocacy work for children and communities.",
+      body: [
+        "World Vision Australia does not publish a single per-dollar figure we can attribute cleanly, so we will not invent one. A gift directed here supports long-term community development in areas such as clean water, food security, health and education, alongside emergency relief in crises and its well-known child sponsorship program.",
+        "By its own description World Vision works alongside communities to tackle the root causes of poverty so that progress lasts beyond any single project. It also responds to humanitarian emergencies and advocates on issues such as child protection and ending exploitation.",
+      ],
     },
     entity: "World Vision Australia",
     abn: "28 004 778 081",
@@ -324,7 +364,10 @@ export const CHARITIES: CharityProfile[] = [
     ],
     impact: {
       heading: "What a gift funds",
-      body: "Cerebral Palsy Alliance does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports its disability services and the research and technology it funds for people with cerebral palsy.",
+      body: [
+        "Cerebral Palsy Alliance does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports its services for people with cerebral palsy and similar disabilities, including early intervention for children, therapy, equipment and assistive technology, accommodation and employment support, and it funds research toward prevention and cure.",
+        "By its own description the Alliance pairs frontline disability services with a globally recognised research effort, including work on the early detection and prevention of cerebral palsy. Its research is shared internationally, aiming to improve outcomes for people with cerebral palsy beyond Australia alone.",
+      ],
     },
     entity: "Cerebral Palsy Alliance",
     abn: "45 000 062 288",
@@ -343,7 +386,10 @@ export const CHARITIES: CharityProfile[] = [
     ],
     impact: {
       heading: "What a gift funds",
-      body: "Cancer Council Australia does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports cancer research, prevention programs and support services for Australians affected by cancer.",
+      body: [
+        "Cancer Council Australia does not publish a simple per-dollar figure, so we will not invent one. A gift directed here supports cancer research grants, prevention and early-detection programs such as those covering tobacco, sun protection and screening, and support services including the free, confidential 13 11 20 information and support line.",
+        "By its own description Cancer Council is the only charity working across every area of every cancer, from research and prevention through to support and advocacy. As a federation of the state and territory Cancer Councils, it brings a national voice to cancer control and evidence-based public health policy.",
+      ],
     },
     entity: "The Cancer Council Australia",
     abn: "91 130 793 725",

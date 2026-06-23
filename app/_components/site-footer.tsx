@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { COMPANY_LINKEDIN } from "@/lib/config";
 import { IconLinkedIn } from "./icons";
+import { CHARITIES } from "@/lib/charities";
 
 // Labelled link groups. New public pages get a footer link here even when
 // they stay off the top nav.
@@ -96,6 +97,17 @@ export default function SiteFooter() {
           </p>
         </div>
       </div>
+
+      <nav className="hp-footer-charities" aria-label="Charities">
+        <p className="hp-footer-col-label">Charities</p>
+        <ul className="hp-footer-charity-list">
+          {CHARITIES.map((c) => (
+            <li key={c.slug}>
+              <Link href={`/charities/${c.slug}`}>{c.name}</Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </footer>
   );
 }

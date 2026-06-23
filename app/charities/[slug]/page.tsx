@@ -29,6 +29,28 @@ export async function generateMetadata({
   });
 }
 
+// Intrinsic pixel dimensions of each logo asset, keyed by charity slug. Used
+// so the logo can sit inline beside the name at a uniform height with its own
+// natural width (the assets range from wide wordmarks to tall badges). Keep in
+// sync if a logo file under /public/charities is replaced.
+const LOGO_DIMS: Record<string, { w: number; h: number }> = {
+  "leukaemia-foundation": { w: 800, h: 145 },
+  rfds: { w: 178, h: 147 },
+  ruok: { w: 800, h: 425 },
+  headspace: { w: 800, h: 693 },
+  starlight: { w: 800, h: 232 },
+  "ronald-mcdonald-house": { w: 800, h: 439 },
+  "st-vincent-de-paul": { w: 800, h: 132 },
+  "childrens-ground": { w: 574, h: 800 },
+  "wwf-australia": { w: 537, h: 800 },
+  "rspca-australia": { w: 800, h: 258 },
+  "guide-dogs-australia": { w: 800, h: 584 },
+  "save-the-children": { w: 800, h: 172 },
+  "world-vision-australia": { w: 800, h: 166 },
+  "cerebral-palsy-alliance": { w: 800, h: 180 },
+  "cancer-council-australia": { w: 430, h: 215 },
+};
+
 // Deep-link to the ABN Lookup record once the ABN is confirmed; until then
 // the [VERIFY...] marker sends readers to the lookup itself.
 function abnLookupHref(abn: string): string {
@@ -47,6 +69,8 @@ export default async function CharityPage({
   const c = getCharity(slug);
   if (!c) notFound();
 
+  const logo = LOGO_DIMS[c.slug] ?? { w: 200, h: 80 };
+
   return (
     <>
       <BreadcrumbJsonLd
@@ -59,38 +83,54 @@ export default async function CharityPage({
       {/* ── Who they are (white band) ─────────────────────────────── */}
       <section style={{ background: "var(--paper-white)" }}>
         <div className="mx-auto max-w-5xl px-6 lg:px-10 pt-24 md:pt-32 pb-16 md:pb-20">
-          <div className="relative mb-7 h-12 w-44">
-            <Image
-              src={c.logo}
-              alt={`${c.name} logo`}
-              fill
-              className="object-contain object-left"
-              sizes="176px"
-            />
-          </div>
           <span
             className="font-mono text-[11px] uppercase tracking-[0.22em]"
             style={{ color: "var(--cream-9)" }}
           >
             Charity profile
           </span>
-          <h1
-            className="mt-5 font-extrabold tracking-[-0.02em]"
-            style={{
-              color: "var(--cream-11)",
-              fontSize: "clamp(2.25rem, 4.4vw, 3.25rem)",
-              lineHeight: 1.04,
-              fontFamily: "var(--font-inter), sans-serif",
-            }}
-          >
-            {c.name}
-          </h1>
-          <p
-            className="mt-3 font-mono text-[12px] uppercase tracking-[0.18em]"
-            style={{ color: "var(--cream-9)" }}
-          >
-            {c.tagline}
-          </p>
+          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
+            <Image
+              src={c.logo}
+              alt={`${c.name} logo`}
+              width={logo.w}
+              height={logo.h}
+              className="h-10 w-auto md:h-12"
+              sizes="(max-width: 768px) 40px, 48px"
+              priority
+            />
+            <h1
+              className="font-extrabold tracking-[-0.02em]"
+              style={{
+                color: "var(--cream-11)",
+                fontSize: "clamp(2.25rem, 4.4vw, 3.25rem)",
+                lineHeight: 1.04,
+                fontFamily: "var(--font-inter), sans-serif",
+              }}
+            >
+              {c.name}
+            </h1>
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span
+              className="font-mono text-[12px] uppercase tracking-[0.18em]"
+              style={{ color: "var(--cream-9)" }}
+            >
+              {c.tagline}
+            </span>
+            <span aria-hidden style={{ color: "var(--cream-9)" }}>
+              &middot;
+            </span>
+            <a
+              href={c.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[13px] underline underline-offset-4 hover:text-primary"
+              style={{ color: "var(--cream-10)" }}
+            >
+              {c.website.replace("https://www.", "")}
+            </a>
+          </div>
           <div
             className="mt-8 max-w-3xl space-y-5 text-lg leading-relaxed"
             style={{ color: "var(--cream-10)" }}
@@ -100,49 +140,18 @@ export default async function CharityPage({
             ))}
           </div>
 
-          <CharityGallery logo={c.logo} images={c.images} />
-
-          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
-            <a
-              href={c.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[15px] underline underline-offset-4 hover:text-primary"
-              style={{ color: "var(--cream-10)" }}
-            >
-              {c.website.replace("https://www.", "")}
-            </a>
+          <div className="mt-10 flex justify-center">
             <a
               href={c.donateUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="hp-btn-ghost"
+              className="hp-btn-primary"
             >
-              Donate to {c.name} directly
-              <span className="circle" aria-hidden="true">
-                <svg viewBox="0 0 14 14" fill="none">
-                  <path
-                    d="M3 11 L11 3 M5 3 H11 V9"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
+              Donate to {c.name}
             </a>
           </div>
-          <p
-            className="mt-8 text-sm italic max-w-2xl"
-            style={{
-              fontFamily: "var(--font-fraunces), serif",
-              color: "var(--cream-9)",
-            }}
-          >
-            {c.name} is not affiliated with TheGoodIntro. Executives choose
-            from our curated shortlist and may nominate any DGR-endorsed
-            Australian charity.
-          </p>
+
+          <CharityGallery logo={c.logo} images={c.images} />
         </div>
       </section>
 
@@ -152,60 +161,80 @@ export default async function CharityPage({
         style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto max-w-5xl px-6 lg:px-10 py-16 md:py-20">
-          <span
-            className="font-mono text-[11px] uppercase tracking-[0.22em]"
-            style={{ color: "var(--cream-9)" }}
-          >
-            {c.impact.heading}
-          </span>
-          <p
-            className="mt-6 max-w-3xl text-lg leading-relaxed"
-            style={{ color: "var(--cream-10)" }}
-          >
-            {c.impact.body}
-          </p>
-          {c.note && (
-            <p
-              className="mt-5 max-w-3xl text-[15px] leading-relaxed"
+          <div className="max-w-3xl">
+            <span
+              className="font-mono text-[11px] uppercase tracking-[0.22em]"
               style={{ color: "var(--cream-9)" }}
             >
-              {c.note}
-            </p>
-          )}
+              {c.impact.heading}
+            </span>
+            <div
+              className="mt-6 space-y-5 text-lg leading-relaxed"
+              style={{ color: "var(--cream-10)" }}
+            >
+              {c.impact.body.map((p) => (
+                <p key={p.slice(0, 32)}>{p}</p>
+              ))}
+            </div>
+            {c.note && (
+              <p
+                className="mt-6 text-lg leading-relaxed"
+                style={{ color: "var(--cream-10)" }}
+              >
+                {c.note}
+              </p>
+            )}
+          </div>
         </div>
       </section>
 
-      {/* ── Registration (white band) ─────────────────────────────── */}
-      <section style={{ background: "var(--paper-white)" }}>
-        <div className="mx-auto max-w-5xl px-6 lg:px-10 py-16 md:py-20">
-          <span
-            className="font-mono text-[11px] uppercase tracking-[0.22em]"
+      {/* ── Fund through a meeting (white closing) ────────────────── */}
+      <ClosingCta
+        eyebrow="The giving"
+        title={`Fund ${c.name}`}
+        italicWord="through a meeting."
+        lede={`Executives on TheGoodIntro direct each meeting's gift, $900 to $1,200 of the vendor's flat fee, to a charity they choose. ${c.name} can be that choice, with every gift paid within 14 days and confirmed in writing.`}
+        primaryCta="Join the waitlist"
+        primaryHref="/waitlist"
+        secondaryLabel="How the giving works"
+        secondaryHref="/giving"
+        sub="Free for executives · The executive chooses the charity"
+        tone="white"
+      />
+
+      {/* ── Fine print: registration + non-affiliation (oat) ──────── */}
+      <section
+        className="border-y"
+        style={{ background: "var(--paper-oat)", borderColor: "var(--border)" }}
+      >
+        <div className="mx-auto max-w-5xl px-6 lg:px-10 py-10">
+          <p
+            className="text-[13px] leading-relaxed"
             style={{ color: "var(--cream-9)" }}
           >
-            Registration
-          </span>
-          <dl className="mt-6 space-y-2 text-[15px] leading-relaxed">
-            <div className="flex flex-wrap gap-x-3">
-              <dt className="font-semibold" style={{ color: "var(--cream-11)" }}>
-                Entity
-              </dt>
-              <dd style={{ color: "var(--cream-10)" }}>{c.entity}</dd>
-            </div>
-            <div className="flex flex-wrap gap-x-3">
-              <dt className="font-semibold" style={{ color: "var(--cream-11)" }}>
-                ABN
-              </dt>
-              <dd style={{ color: "var(--cream-10)" }}>{c.abn}</dd>
-            </div>
-            <div className="flex flex-wrap gap-x-3">
-              <dt className="font-semibold" style={{ color: "var(--cream-11)" }}>
-                DGR status
-              </dt>
-              <dd style={{ color: "var(--cream-10)" }}>{c.dgr}</dd>
-            </div>
-          </dl>
-          <p className="mt-6 text-[15px]" style={{ color: "var(--cream-9)" }}>
-            Check the public record yourself on{" "}
+            <span className="font-medium" style={{ color: "var(--cream-10)" }}>
+              Sources:
+            </span>{" "}
+            the descriptions on this page are drawn from {c.name}&apos;s own{" "}
+            <a
+              href={c.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-4 hover:text-primary"
+            >
+              website
+            </a>{" "}
+            and{" "}
+            <a
+              href={c.donateUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-4 hover:text-primary"
+            >
+              donation pages
+            </a>
+            . Registration: {c.entity} &middot; ABN {c.abn} &middot; {c.dgr},
+            verifiable on{" "}
             <a
               href={abnLookupHref(c.abn)}
               target="_blank"
@@ -214,24 +243,18 @@ export default async function CharityPage({
             >
               ABN Lookup
             </a>
-            . Nothing rests on our word.
+            .
+          </p>
+          <p
+            className="mt-3 max-w-3xl text-[13px] italic leading-relaxed"
+            style={{ color: "var(--cream-9)" }}
+          >
+            {c.name} is not affiliated with TheGoodIntro. Executives choose from
+            our curated shortlist and may nominate any DGR-endorsed Australian
+            charity.
           </p>
         </div>
       </section>
-
-      {/* ── Fund through a meeting (oat closing) ──────────────────── */}
-      <ClosingCta
-        eyebrow="The giving"
-        title={`Fund ${c.name}`}
-        italicWord="through a meeting."
-        lede={`Executives on TheGoodIntro direct each meeting's gift, $900 to $1,200 of the vendor's flat fee, to a DGR-endorsed Australian charity they choose. ${c.name} can be that choice, with every gift paid within 14 days and confirmed in writing.`}
-        primaryCta="Join the waitlist"
-        primaryHref="/waitlist"
-        secondaryLabel="How the giving works"
-        secondaryHref="/giving"
-        sub="Free for executives · The executive chooses the charity"
-        tone="oat"
-      />
     </>
   );
 }

@@ -1841,6 +1841,40 @@ body.hp-is-scrolled .hp-topnav {
   font-size: 13px;
   color: var(--cream-9);
 }
+/* Full-width row listing every charity profile page. */
+.hp-footer-charities {
+  max-width: 1320px;
+  margin: clamp(32px, 4vw, 48px) auto 0;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+.hp-footer-charity-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 28px;
+  font-size: 13px;
+}
+@media (min-width: 640px) {
+  .hp-footer-charity-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .hp-footer-charity-list {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+.hp-footer-charity-list a {
+  color: var(--cream-11);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.hp-footer-charity-list a:hover {
+  color: var(--primary);
+}
 
 /* ── Vendors "how it works" 5-step flow ──────────────────────────────
    Ported from the Claude Design handoff (Vendors Flow Section.html).
