@@ -1,6 +1,6 @@
 // Site-wide constants.
 
-export const SITE_URL = "https://thegoodintro.vercel.app";
+export const SITE_URL = "https://thegoodintro.com";
 
 export const SITE_NAME = "TheGoodIntro";
 

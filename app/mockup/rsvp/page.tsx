@@ -172,7 +172,7 @@ function LandingFrame({ children }: { children: React.ReactNode }) {
           <span className="size-2.5 rounded-full" style={{ background: "#e6dfd2" }} />
         </span>
         <span className="ml-3 text-[11px] font-mono text-muted-foreground truncate">
-          thegoodintro.vercel.app/r
+          thegoodintro.com/r
         </span>
       </div>
       <div

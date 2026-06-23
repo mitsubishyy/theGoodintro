@@ -11,7 +11,7 @@
 //
 // Options:
 //   --campaign=may-cfo-2026   tags every link so you can filter the Sheet
-//   --base=https://thegoodintro.vercel.app   override the link origin (default below)
+//   --base=https://thegoodintro.com   override the link origin (default below)
 //
 // The HMAC signing here MUST match lib/rsvp.ts byte-for-byte, or the links it
 // produces will be rejected by /api/rsvp. If you change one, change both.
@@ -28,7 +28,7 @@ if (!SECRET) {
 const args = process.argv.slice(2);
 let file = null;
 let campaign = "";
-let base = "https://thegoodintro.vercel.app";
+let base = "https://thegoodintro.com";
 for (const a of args) {
   if (a.startsWith("--campaign=")) campaign = a.slice("--campaign=".length);
   else if (a.startsWith("--base=")) base = a.slice("--base=".length).replace(/\/$/, "");
