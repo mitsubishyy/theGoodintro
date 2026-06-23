@@ -19,7 +19,7 @@ export default function ComingSoon() {
       <style>{`html,body{overflow:hidden}.hp-topnav,.hp-footer{display:none!important}`}</style>
 
       <div
-        className="fixed inset-0 z-[100] flex flex-col items-center justify-center px-6 text-center"
+        className="flex min-h-screen flex-col items-center justify-center px-6 text-center"
         style={{ background: "var(--background)" }}
       >
         <Image
