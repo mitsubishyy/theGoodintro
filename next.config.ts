@@ -60,6 +60,19 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Canonical host enforcement. Match the EXACT alternate hosts (not a wildcard)
+  // so production www + the bare vercel.app 308 to the apex, while *.vercel.app
+  // preview deployments are left untouched. Compiled to a Vercel edge routing
+  // rule at build time, so this runs without invoking a function.
+  async redirects() {
+    const toApex = (host: string) => ({
+      source: "/:path*",
+      has: [{ type: "host" as const, value: host }],
+      destination: "https://thegoodintro.com/:path*",
+      permanent: true,
+    });
+    return [toApex("www.thegoodintro.com"), toApex("thegoodintro.vercel.app")];
+  },
   async headers() {
     return [
       {
