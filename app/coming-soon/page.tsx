@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { COMPANY_LINKEDIN } from "@/lib/config";
 
 // The public "coming soon" wall. middleware.ts rewrites every public route to
 // this page while the wall flag is on; the real site stays built and intact
@@ -70,6 +71,16 @@ export default function ComingSoon() {
           style={{ color: "var(--cream-9)" }}
         >
           issy@thegoodintros.com
+        </a>
+
+        <a
+          href={COMPANY_LINKEDIN}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 text-[15px] underline underline-offset-4 transition-colors hover:text-primary"
+          style={{ color: "var(--cream-9)" }}
+        >
+          LinkedIn
         </a>
       </div>
     </>
