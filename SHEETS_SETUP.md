@@ -167,7 +167,7 @@ function copyHtml(firstName, answers) {
 '<div style="margin-top:4px;font-family:Georgia,\'Times New Roman\',serif;font-size:15px;">' + wordmark(false) + '</div>',
 '</td>',
 '<td style="vertical-align:middle;">',
-'<img src="https://thegoodintro.vercel.app/issy.jpg" alt="Issy Hardwick" width="64" height="64" style="display:block;width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:50% 0%;border:1px solid #E6DFD2;" />',
+'<img src="https://thegoodintro.com/issy.jpg" alt="Issy Hardwick" width="64" height="64" style="display:block;width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:50% 0%;border:1px solid #E6DFD2;" />',
 '</td>',
 '</tr></table>',
 '</td></tr>',

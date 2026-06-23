@@ -4,7 +4,7 @@ An invite-only Australian network that connects vetted software vendors with
 senior executives for a single, qualified meeting. Every meeting funds a gift to
 a registered charity the executive chooses. Executives pay nothing.
 
-Live site: https://thegoodintro.vercel.app
+Live site: https://thegoodintro.com
 
 ## The idea
 

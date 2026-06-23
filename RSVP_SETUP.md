@@ -127,8 +127,8 @@ function doPost(e) {
    ```
 
    `links.csv` is your original rows plus `accept_url` and `decline_url`
-   columns. (Pass `--base=https://thegoodintro.vercel.app` while the custom
-   domain isn't live yet, so the links point at the working deployment.)
+   columns. (Pass `--base=https://thegoodintro.com` so the links point at the
+   live site.)
 
 3. Paste `links.csv` into your Gmail mail-merge sheet and use the
    `{{accept_url}}` / `{{decline_url}}` merge fields as the `href` of two
