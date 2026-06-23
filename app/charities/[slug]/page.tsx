@@ -162,12 +162,17 @@ export default async function CharityPage({
       >
         <div className="mx-auto max-w-5xl px-6 lg:px-10 py-16 md:py-20">
           <div className="max-w-3xl">
-            <span
-              className="font-mono text-[11px] uppercase tracking-[0.22em]"
-              style={{ color: "var(--cream-9)" }}
+            <h2
+              className="font-bold tracking-[-0.02em]"
+              style={{
+                color: "var(--cream-11)",
+                fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
+                lineHeight: 1.12,
+                fontFamily: "var(--font-inter), sans-serif",
+              }}
             >
               {c.impact.heading}
-            </span>
+            </h2>
             <div
               className="mt-6 space-y-5 text-lg leading-relaxed"
               style={{ color: "var(--cream-10)" }}
