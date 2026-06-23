@@ -165,7 +165,7 @@ export default async function CharityPage({
             <h2
               className="font-bold tracking-[-0.02em]"
               style={{
-                color: "var(--cream-11)",
+                color: "var(--primary)",
                 fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
                 lineHeight: 1.12,
                 fontFamily: "var(--font-inter), sans-serif",
