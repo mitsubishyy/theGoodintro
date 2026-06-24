@@ -10,22 +10,19 @@ import { resendTransport } from "@/lib/email/transport";
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
 
+// NOTE: the canonical transition audits (meeting.confirmed/held/reversed/no_show/
+// cancelled) are written INSIDE the 0027 RPCs, so these actions no longer log them
+// — one audit per transition, written in one place. Reschedule and the email drain
+// are not RPC transitions, so they keep their audit here.
+
 export async function confirmMeetingAction(fd: FormData): Promise<void> {
-  const { staff, supabase } = await requireStaff();
+  const { supabase } = await requireStaff();
   if (!(await getFlag("request_loop"))) return;
   const id = str(fd, "meeting_id");
   if (!id) return;
   const when = str(fd, "scheduled_at");
   const iso = when ? new Date(when).toISOString() : null;
-  const r = await confirmMeeting(supabase, id, iso, str(fd, "join_url") || null);
-  if (r.ok) {
-    await logAudit(supabase, staff.id, {
-      action: "meeting.confirmed",
-      targetType: "meeting",
-      targetId: id,
-      metadata: { detail: r.detail },
-    });
-  }
+  await confirmMeeting(supabase, id, iso, str(fd, "join_url") || null);
   revalidatePath("/admin/meetings");
 }
 
@@ -48,14 +45,11 @@ export async function rescheduleMeetingAction(fd: FormData): Promise<void> {
 }
 
 export async function markHeldAction(fd: FormData): Promise<void> {
-  const { staff, supabase } = await requireStaff();
+  const { supabase } = await requireStaff();
   if (!(await getFlag("request_loop"))) return;
   const id = str(fd, "meeting_id");
   if (!id) return;
-  const r = await markHeld(supabase, id, "admin");
-  if (r.ok) {
-    await logAudit(supabase, staff.id, { action: "meeting.held", targetType: "meeting", targetId: id });
-  }
+  await markHeld(supabase, id, "admin");
   revalidatePath("/admin/meetings");
 }
 
@@ -79,36 +73,21 @@ export async function sendQueuedEmailsAction(): Promise<void> {
 }
 
 export async function reverseHeldAction(fd: FormData): Promise<void> {
-  const { staff, supabase } = await requireStaff();
+  const { supabase } = await requireStaff();
   if (!(await getFlag("request_loop"))) return;
   const id = str(fd, "meeting_id");
   if (!id) return;
-  const r = await reverseHeld(supabase, id);
-  if (r.ok) {
-    await logAudit(supabase, staff.id, {
-      action: "meeting.reversed",
-      targetType: "meeting",
-      targetId: id,
-      metadata: { detail: r.detail },
-    });
-  }
+  await reverseHeld(supabase, id);
   revalidatePath("/admin/meetings");
   revalidatePath("/admin/giving");
 }
 
 export async function releaseMeetingAction(fd: FormData): Promise<void> {
-  const { staff, supabase } = await requireStaff();
+  const { supabase } = await requireStaff();
   if (!(await getFlag("request_loop"))) return;
   const id = str(fd, "meeting_id");
   const outcome = str(fd, "outcome") === "cancelled" ? "cancelled" : "no_show";
   if (!id) return;
-  const r = await releaseMeeting(supabase, id, outcome);
-  if (r.ok) {
-    await logAudit(supabase, staff.id, {
-      action: `meeting.${outcome}`,
-      targetType: "meeting",
-      targetId: id,
-    });
-  }
+  await releaseMeeting(supabase, id, outcome);
   revalidatePath("/admin/meetings");
 }

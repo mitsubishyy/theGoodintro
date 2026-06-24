@@ -18,99 +18,41 @@ export type ApplyResult = {
 };
 
 /**
- * The single money-unlock path, shared by the Xero webhook (service-role
- * client) and the admin "simulate payment" action (staff client). Idempotent:
- * it atomically claims the invoice, so a webhook replay cannot double-credit.
+ * The single money-unlock path, shared by the Xero webhook (service-role client)
+ * and the admin "simulate payment" action (staff client). Runs as ONE atomic
+ * Postgres function (public.apply_paid_invoice, migration 0027): it locks and
+ * claims the invoice, then unlocks credits, anchors/reopens the cycle, activates
+ * the vendor, and queues the receipt — all in one transaction.
  *
- *  - marks the invoice paid,
- *  - creates a CreditLot (credits roll over; this lot carries its origin),
- *  - anchors the 12-month cycle on first purchase (else reopens the window),
- *  - unlocks the vendor (status active, access_expires_at),
- *  - queues the receipt + admin notifications.
+ * Idempotent: a replay sees the already-claimed invoice and no-ops, so it can
+ * never double-credit; and unlike the previous multi-call version, a failure
+ * partway can no longer leave a paid invoice with no credits.
+ *
+ * The credit count and cycle dates are computed here from @thegoodintro/pricing
+ * (the single source of money math) and passed into the RPC.
  */
 export async function applyPaidInvoice(
   supabase: SupabaseClient,
   xeroInvoiceId: string,
 ): Promise<ApplyResult> {
+  // line_items + amount are immutable (set at invoice creation), so deriving the
+  // credit count here and passing it in carries no race with the claim.
   const { data: invoice } = await supabase
     .from("invoice")
-    .select("id, vendor_id, line_items, amount_cents, status")
+    .select("line_items, amount_cents")
     .eq("xero_invoice_id", xeroInvoiceId)
     .maybeSingle();
   if (!invoice) return { status: "not_found" };
-  if (invoice.status === "paid") return { status: "already_paid" };
-
-  // Atomically claim: only one caller flips draft/sent -> paid.
-  const { data: claimed } = await supabase
-    .from("invoice")
-    .update({ status: "paid" })
-    .eq("id", invoice.id)
-    .neq("status", "paid")
-    .select("id");
-  if (!claimed || claimed.length === 0) return { status: "already_paid" };
 
   const credits = creditsFromLineItems(invoice.line_items, invoice.amount_cents);
-
-  await supabase.from("credit_lot").insert({
-    vendor_id: invoice.vendor_id,
-    quantity: credits,
-    quantity_remaining: credits,
-    invoice_id: invoice.id,
-  });
-
-  const { data: vendor } = await supabase
-    .from("vendor")
-    .select("cycle_started_at, owner_user_id")
-    .eq("id", invoice.vendor_id)
-    .single();
-
   const now = new Date();
-  const ends = cycleEndsAt(now);
 
-  if (!vendor?.cycle_started_at) {
-    await supabase.from("cycle").insert({
-      vendor_id: invoice.vendor_id,
-      started_at: now.toISOString(),
-      ends_at: ends.toISOString(),
-      held_meetings_count: 0,
-    });
-    await supabase
-      .from("vendor")
-      .update({
-        status: "active",
-        cycle_started_at: now.toISOString(),
-        access_expires_at: ends.toISOString(),
-      })
-      .eq("id", invoice.vendor_id);
-  } else {
-    // Re-purchase reopens the access window.
-    await supabase
-      .from("vendor")
-      .update({ status: "active", access_expires_at: ends.toISOString() })
-      .eq("id", invoice.vendor_id);
-  }
-
-  // The receipt is not request-scoped, so the email composer reads the credit
-  // count and amount from the payload (0014), never re-deriving them at send time.
-  const receiptPayload = { credits, amount_cents: invoice.amount_cents };
-  await supabase.from("notification").insert([
-    {
-      recipient_type: "vendor_user",
-      recipient_id: vendor?.owner_user_id ?? null,
-      channel: "email",
-      event: "A4_invoice_paid",
-      status: "queued",
-      payload: receiptPayload,
-    },
-    {
-      recipient_type: "staff",
-      recipient_id: null,
-      channel: "in_app",
-      event: "A4_invoice_paid_admin",
-      status: "queued",
-      payload: receiptPayload,
-    },
-  ]);
-
-  return { status: "applied", credits };
+  const { data, error } = await supabase.rpc("apply_paid_invoice", {
+    p_xero_invoice_id: xeroInvoiceId,
+    p_credits: credits,
+    p_cycle_ends_at: cycleEndsAt(now).toISOString(),
+    p_now: now.toISOString(),
+  });
+  if (error) throw new Error(error.message);
+  return data as ApplyResult;
 }

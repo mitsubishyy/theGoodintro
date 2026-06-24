@@ -1,128 +1,58 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { giftSplitForHeldMeeting, SCHEDULE_VERSION } from "@thegoodintro/pricing";
+import { CHARITY_BANDS, adminFeeCents, SCHEDULE_VERSION } from "@thegoodintro/pricing";
 import {
-  canOverbook,
   cycleEndsAt,
   earliestUncreditedSchedule,
   paymentDueAt,
+  OVERCOMMIT_MAX_UNPAID,
 } from "@thegoodintro/pricing/ledger";
 
 /**
- * Meeting state-machine transitions (STATE_MACHINES.md), run by staff (or the
- * service role). Credit reserve/consume/release and gift creation live here so
- * the booking flow never re-implements the money math — the split comes from
- * @thegoodintro/pricing. Each transition flips state with a conditional update
- * so a double-submit can't double-apply.
+ * Meeting state-machine transitions (STATE_MACHINES.md). Each money/state
+ * transition runs as ONE atomic Postgres function (migration 0027) so all of its
+ * writes — the status flip, the credit/cycle counters, the gift record, the
+ * notifications, and the audit row — commit or roll back together, and the
+ * counters move under a row lock so concurrent calls cannot lose an update.
+ *
+ * These wrappers are deliberately thin: they compute the band schedule and the
+ * cycle/overcommit dates from @thegoodintro/pricing (the single source of money
+ * math) and pass them into the RPC. The SQL never re-derives a rate or a date.
  */
 
 type Result = { ok: true; detail?: string } | { ok: false; error: string };
 
-async function vendorIdForMeeting(supabase: SupabaseClient, meetingId: string) {
-  const { data } = await supabase
-    .from("meeting")
-    .select("id, status, request_id, credit_lot_id, charity_id, request:request_id(vendor_id)")
-    .eq("id", meetingId)
-    .maybeSingle();
-  if (!data) return null;
-  const req = Array.isArray(data.request) ? data.request[0] : data.request;
-  return { meeting: data, vendorId: req?.vendor_id as string };
+/** Postgres surfaces a `raise exception '<code>'` as the error message; keep the
+ *  short stable token (e.g. "bad_state", "overcommit_cap_reached"). */
+function rpcError(message: string | undefined): string {
+  if (!message) return "rpc_error";
+  return message.replace(/^.*?:\s*/, "").trim() || message;
 }
 
-/** Available = sum(remaining) − reserved (confirmed meetings holding a credit). */
-async function reservedCount(supabase: SupabaseClient, vendorId: string) {
-  const { count } = await supabase
-    .from("meeting")
-    .select("id, request:request_id!inner(vendor_id)", { count: "exact", head: true })
-    .eq("status", "confirmed")
-    .not("credit_lot_id", "is", null)
-    .eq("request.vendor_id", vendorId);
-  return count ?? 0;
-}
-
-async function unpaidOvercommitCount(supabase: SupabaseClient, vendorId: string) {
-  const { count } = await supabase
-    .from("meeting")
-    .select("id, request:request_id!inner(vendor_id)", { count: "exact", head: true })
-    .eq("status", "confirmed")
-    .is("credit_lot_id", null)
-    .eq("request.vendor_id", vendorId);
-  return count ?? 0;
-}
-
-/** Confirm a time: reserve a credit if available, else schedule as overcommit. */
+/** Confirm a time: reserve a credit if available, else schedule as overcommit.
+ *  Atomic + per-vendor serialized inside public.confirm_meeting so two confirms
+ *  cannot both claim the last credit. */
 export async function confirmMeeting(
   supabase: SupabaseClient,
   meetingId: string,
   scheduledAtISO: string | null,
   joinUrl: string | null,
 ): Promise<Result> {
-  const ctx = await vendorIdForMeeting(supabase, meetingId);
-  if (!ctx) return { ok: false, error: "not_found" };
-  const { vendorId } = ctx;
+  // Overcommit fallback timing (used only if no credit is available): at least
+  // 30 days out, payment due 30 days before — from the pricing ledger.
+  const minDate = earliestUncreditedSchedule(new Date());
+  let when = scheduledAtISO ? new Date(scheduledAtISO) : minDate;
+  if (when < minDate) when = minDate;
 
-  const { data: lots } = await supabase
-    .from("credit_lot")
-    .select("id, quantity_remaining, purchased_at")
-    .eq("vendor_id", vendorId)
-    .gt("quantity_remaining", 0)
-    .order("purchased_at", { ascending: true });
-  const remaining = (lots ?? []).reduce((s, l) => s + (l.quantity_remaining as number), 0);
-  const reserved = await reservedCount(supabase, vendorId);
-  const available = remaining - reserved;
-
-  let creditLotId: string | null = null;
-  let scheduledAt = scheduledAtISO;
-  let paymentDue: string | null = null;
-
-  if (available > 0) {
-    // Pick the oldest lot with spare capacity (remaining > its reservations).
-    for (const lot of lots ?? []) {
-      const { count } = await supabase
-        .from("meeting")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "confirmed")
-        .eq("credit_lot_id", lot.id);
-      if ((lot.quantity_remaining as number) > (count ?? 0)) {
-        creditLotId = lot.id as string;
-        break;
-      }
-    }
-  } else {
-    // Overcommit: cap of 4, at least 30 days out, payment due 30 days before.
-    if (!canOverbook(await unpaidOvercommitCount(supabase, vendorId))) {
-      return { ok: false, error: "overcommit_cap_reached" };
-    }
-    const minDate = earliestUncreditedSchedule(new Date());
-    let when = scheduledAtISO ? new Date(scheduledAtISO) : minDate;
-    if (when < minDate) when = minDate;
-    scheduledAt = when.toISOString();
-    paymentDue = paymentDueAt(when).toISOString();
-  }
-
-  const { data: updated } = await supabase
-    .from("meeting")
-    .update({
-      status: "confirmed",
-      scheduled_at: scheduledAt,
-      join_url: joinUrl,
-      credit_lot_id: creditLotId,
-      payment_due_at: paymentDue,
-    })
-    .eq("id", meetingId)
-    .in("status", ["proposed", "confirmed"])
-    .select("id");
-  if (!updated?.length) return { ok: false, error: "bad_state" };
-
-  await supabase.from("notification").insert({
-    recipient_type: "vendor_user",
-    recipient_id: null,
-    channel: "email",
-    event: creditLotId ? "C2_time_confirmed" : "D1_uncredited_booked",
-    status: "queued",
-    request_id: ctx.meeting.request_id,
+  const { data, error } = await supabase.rpc("confirm_meeting", {
+    p_meeting_id: meetingId,
+    p_scheduled_at: scheduledAtISO,
+    p_join_url: joinUrl,
+    p_overcommit_scheduled_at: when.toISOString(),
+    p_overcommit_payment_due_at: paymentDueAt(when).toISOString(),
+    p_overcommit_max: OVERCOMMIT_MAX_UNPAID,
   });
-
-  return { ok: true, detail: creditLotId ? "reserved" : "overcommit" };
+  if (error) return { ok: false, error: rpcError(error.message) };
+  return { ok: true, detail: data as string };
 }
 
 /**
@@ -130,6 +60,7 @@ export async function confirmMeeting(
  * Status does not change, so the transition guard passes it freely (0012) and no
  * credit is touched — a credited meeting keeps its reservation, an uncredited
  * (overcommit) meeting just re-derives its payment-due date from the new time.
+ * This is a single conditional update, already atomic, so it stays in app code.
  */
 export async function rescheduleMeeting(
   supabase: SupabaseClient,
@@ -160,65 +91,39 @@ export async function rescheduleMeeting(
   return { ok: true };
 }
 
-/** The vendor's cycle ordinal (1-based) for a cycle starting at `startedAtIso`. */
-async function cycleOrdinal(
+/** Meeting held: consume the credit, lock the gift split, advance the band — all
+ *  atomic in public.mark_held. The cycle window is resolved here from the
+ *  vendor's anchor cycle using the pricing date math; the DB locks the cycle row
+ *  and reads+increments the counter so concurrent helds get distinct positions. */
+export async function markHeld(
   supabase: SupabaseClient,
-  vendorId: string,
-  startedAtIso: string,
-): Promise<number> {
-  const { count } = await supabase
-    .from("cycle")
-    .select("id", { count: "exact", head: true })
-    .eq("vendor_id", vendorId)
-    .lte("started_at", startedAtIso);
-  return count ?? 1;
-}
+  meetingId: string,
+  source: "zoom_teams_api" | "vendor_reported" | "admin" = "zoom_teams_api",
+): Promise<Result> {
+  const now = new Date();
 
-/**
- * Resolve the band cycle that `now` falls in (DEC-4). The band tier runs on a
- * rolling 12-month window anchored on the vendor's FIRST cycle (their first
- * payment), independent of the access window (billing.ts re-purchase only extends
- * access, never creates a band cycle). Lazy renewal: if no existing cycle's
- * half-open `[started_at, ends_at)` contains `now`, a 12-month boundary was
- * crossed, so we materialise the window that contains `now` by stepping forward
- * from the anchor, with `held_meetings_count = 0` (the band resets to band 1).
- */
-async function resolveBandCycle(
-  supabase: SupabaseClient,
-  vendorId: string,
-  now: Date,
-): Promise<{ id: string; heldBefore: number; cycleNumber: number }> {
-  const nowIso = now.toISOString();
-
-  // 1. An existing cycle whose window contains `now`.
-  const { data: containing } = await supabase
-    .from("cycle")
-    .select("id, started_at, held_meetings_count")
-    .eq("vendor_id", vendorId)
-    .lte("started_at", nowIso)
-    .gt("ends_at", nowIso)
-    .order("started_at", { ascending: false })
-    .limit(1)
+  // Resolve which 12-month band-cycle window `now` falls in, anchored on the
+  // vendor's first cycle (DEC-4). The DB creates the window only if none
+  // contains `now`; we pass the dates so no date math lives in SQL.
+  const { data: ctx } = await supabase
+    .from("meeting")
+    .select("request:request_id(vendor_id)")
+    .eq("id", meetingId)
     .maybeSingle();
-  if (containing) {
-    return {
-      id: containing.id as string,
-      heldBefore: (containing.held_meetings_count as number) ?? 0,
-      cycleNumber: await cycleOrdinal(supabase, vendorId, containing.started_at as string),
-    };
+  const req = ctx ? (Array.isArray(ctx.request) ? ctx.request[0] : ctx.request) : null;
+  const vendorId = (req as { vendor_id?: string } | null)?.vendor_id;
+
+  let start = new Date(now);
+  if (vendorId) {
+    const { data: first } = await supabase
+      .from("cycle")
+      .select("started_at")
+      .eq("vendor_id", vendorId)
+      .order("started_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    if (first) start = new Date(first.started_at as string);
   }
-
-  // 2. Renewal (or no cycle yet): anchor on the first cycle and step 12-month
-  //    windows until one contains `now`. Anchor at `now` if there is no cycle.
-  const { data: first } = await supabase
-    .from("cycle")
-    .select("started_at")
-    .eq("vendor_id", vendorId)
-    .order("started_at", { ascending: true })
-    .limit(1)
-    .maybeSingle();
-
-  let start = first ? new Date(first.started_at as string) : new Date(now);
   let end = cycleEndsAt(start);
   let guard = 0;
   while (end <= now && guard++ < 1000) {
@@ -226,188 +131,66 @@ async function resolveBandCycle(
     end = cycleEndsAt(start);
   }
 
-  const { data: created } = await supabase
-    .from("cycle")
-    .insert({
-      vendor_id: vendorId,
-      started_at: start.toISOString(),
-      ends_at: end.toISOString(),
-      held_meetings_count: 0,
-    })
-    .select("id")
-    .single();
+  // The band schedule (position -> split), straight from pricing.
+  const bands = CHARITY_BANDS.map((b) => ({
+    band_key: `band_${b.band}`,
+    lo: b.lo,
+    hi: b.hi,
+    charity_cents: b.rateCents,
+    admin_cents: adminFeeCents(b.rateCents),
+  }));
 
-  return {
-    id: created!.id as string,
-    heldBefore: 0,
-    cycleNumber: await cycleOrdinal(supabase, vendorId, start.toISOString()),
-  };
-}
-
-/** Meeting held: consume the credit, lock the gift split, advance the band. */
-export async function markHeld(
-  supabase: SupabaseClient,
-  meetingId: string,
-  source: "zoom_teams_api" | "vendor_reported" | "admin" = "zoom_teams_api",
-): Promise<Result> {
-  const ctx = await vendorIdForMeeting(supabase, meetingId);
-  if (!ctx) return { ok: false, error: "not_found" };
-  const { meeting, vendorId } = ctx;
-
-  const now = new Date();
-
-  const { data: flipped } = await supabase
-    .from("meeting")
-    .update({ status: "held", outcome_source: source })
-    .eq("id", meetingId)
-    .eq("status", "confirmed")
-    .select("id");
-  if (!flipped?.length) return { ok: false, error: "bad_state" };
-
-  // DEC-4: the band cycle containing `now` (renews lazily across a 12-month boundary).
-  const cycle = await resolveBandCycle(supabase, vendorId, now);
-  const heldBefore = cycle.heldBefore;
-  const split = giftSplitForHeldMeeting(heldBefore);
-  const positionN = heldBefore + 1;
-
-  // Consume the reserved credit.
-  if (meeting.credit_lot_id) {
-    const { data: lot } = await supabase
-      .from("credit_lot")
-      .select("quantity_remaining")
-      .eq("id", meeting.credit_lot_id)
-      .single();
-    await supabase
-      .from("credit_lot")
-      .update({ quantity_remaining: Math.max(0, (lot?.quantity_remaining as number) - 1) })
-      .eq("id", meeting.credit_lot_id);
-  }
-
-  await supabase
-    .from("cycle")
-    .update({ held_meetings_count: heldBefore + 1 })
-    .eq("id", cycle.id);
-
-  // One canonical gift record per held meeting (meeting_id is unique), with the
-  // DEC-3 snapshot columns: sat_date (held date), the cycle + position it sits in,
-  // and the band-schedule version frozen at completion.
-  await supabase.from("gift_record").insert({
-    meeting_id: meetingId,
-    charity_id: meeting.charity_id,
-    band_at_completion: split.bandKey,
-    charity_amount_cents: split.charityCents,
-    admin_fee_cents: split.adminCents,
-    status: "released",
-    sat_date: now.toISOString().slice(0, 10),
-    cycle_number: cycle.cycleNumber,
-    position_n: positionN,
-    schedule_version: SCHEDULE_VERSION,
+  const { data, error } = await supabase.rpc("mark_held", {
+    p_meeting_id: meetingId,
+    p_source: source,
+    p_now: now.toISOString(),
+    p_cycle_window_start: start.toISOString(),
+    p_cycle_window_end: end.toISOString(),
+    p_bands: bands,
+    p_schedule_version: SCHEDULE_VERSION,
   });
-
-  await supabase.from("notification").insert([
-    { recipient_type: "executive", recipient_id: null, channel: "email", event: "C6_meeting_completed", status: "queued", request_id: meeting.request_id },
-    { recipient_type: "staff", recipient_id: null, channel: "in_app", event: "C5_release_gift", status: "queued", request_id: meeting.request_id },
-  ]);
-
-  return { ok: true, detail: split.bandKey };
+  if (error) return { ok: false, error: rpcError(error.message) };
+  return { ok: true, detail: data as string };
 }
 
 /**
- * Manual reversal (STATE_MACHINES.md `held → reversed`): the vendor reported a
- * wrongly-marked meeting. Returns the consumed credit to the lot, voids the
- * gift while it is still `released` (a `paid` gift is terminal per DEC-6 — the
- * credit return is then a goodwill cost, surfaced via `detail`), gives the
- * band position back to the cycle, and spawns the rebook: a fresh `proposed`
- * meeting on the same request, so the same exec can be rebooked from the
- * meetings list.
+ * Manual reversal (`held → reversed`): atomically returns the consumed credit,
+ * voids the gift while it is still `released` (a `paid` gift stands as goodwill),
+ * frees the band position, and spawns a `proposed` rebook on the same request.
  */
 export async function reverseHeld(supabase: SupabaseClient, meetingId: string): Promise<Result> {
-  const ctx = await vendorIdForMeeting(supabase, meetingId);
-  if (!ctx) return { ok: false, error: "not_found" };
-  const { meeting, vendorId } = ctx;
-
-  const { data: flipped } = await supabase
-    .from("meeting")
-    .update({ status: "reversed" })
-    .eq("id", meetingId)
-    .eq("status", "held")
-    .select("id");
-  if (!flipped?.length) return { ok: false, error: "bad_state" };
-
-  const { data: voidedRows } = await supabase
-    .from("gift_record")
-    .update({ status: "voided" })
-    .eq("meeting_id", meetingId)
-    .eq("status", "released")
-    .select("id, sat_date");
-  const voided = voidedRows?.[0];
-
-  // Return the credit consumed at held.
-  if (meeting.credit_lot_id) {
-    const { data: lot } = await supabase
-      .from("credit_lot")
-      .select("quantity, quantity_remaining")
-      .eq("id", meeting.credit_lot_id)
-      .single();
-    if (lot) {
-      await supabase
-        .from("credit_lot")
-        .update({
-          quantity_remaining: Math.min(
-            lot.quantity as number,
-            (lot.quantity_remaining as number) + 1,
-          ),
-        })
-        .eq("id", meeting.credit_lot_id);
-    }
-  }
-
-  // Give the band position back. Reporting counts non-voided gifts, so the
-  // cycle counter must drop with the void or the next held meeting lands one
-  // position (possibly one band) too high. A paid gift still counts, so no
-  // decrement in the goodwill case. The cycle is found by the gift's sat_date;
-  // if a 12-month boundary fell on that exact UTC day this picks the later
-  // window — acceptable at MVP volume.
-  if (voided?.sat_date) {
-    const dayStart = `${voided.sat_date as string}T00:00:00Z`;
-    const nextDay = new Date(new Date(dayStart).getTime() + 864e5).toISOString();
-    const { data: cycle } = await supabase
-      .from("cycle")
-      .select("id, held_meetings_count")
-      .eq("vendor_id", vendorId)
-      .lt("started_at", nextDay)
-      .gt("ends_at", dayStart)
-      .order("started_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (cycle && (cycle.held_meetings_count as number) > 0) {
-      await supabase
-        .from("cycle")
-        .update({ held_meetings_count: (cycle.held_meetings_count as number) - 1 })
-        .eq("id", cycle.id);
-    }
-  }
-
-  // Rebook with the same exec: a new proposed meeting on the same request.
-  await supabase
-    .from("meeting")
-    .insert({ request_id: meeting.request_id, charity_id: meeting.charity_id, status: "proposed" });
-
-  return { ok: true, detail: voided ? "gift_voided" : "gift_paid_kept" };
+  const { data, error } = await supabase.rpc("reverse_held", { p_meeting_id: meetingId });
+  if (error) return { ok: false, error: rpcError(error.message) };
+  return { ok: true, detail: data as string };
 }
 
-/** No-show or cancellation: release the reservation, no gift. */
+/** No-show or cancellation of a confirmed meeting: release the reservation, no gift. */
 export async function releaseMeeting(
   supabase: SupabaseClient,
   meetingId: string,
   outcome: "no_show" | "cancelled",
 ): Promise<Result> {
-  const { data: flipped } = await supabase
-    .from("meeting")
-    .update({ status: outcome, credit_lot_id: null })
-    .eq("id", meetingId)
-    .eq("status", "confirmed")
-    .select("id");
-  if (!flipped?.length) return { ok: false, error: "bad_state" };
+  const { error } = await supabase.rpc("release_meeting", {
+    p_meeting_id: meetingId,
+    p_outcome: outcome,
+  });
+  if (error) return { ok: false, error: rpcError(error.message) };
   return { ok: true };
+}
+
+/** Cancel a meeting still in `proposed` (no credit was reserved yet). */
+export async function cancelProposedMeeting(
+  supabase: SupabaseClient,
+  meetingId: string,
+): Promise<Result> {
+  const { data, error } = await supabase.rpc("cancel_proposed_meeting", { p_meeting_id: meetingId });
+  if (error) return { ok: false, error: rpcError(error.message) };
+  return { ok: true, detail: data as string };
+}
+
+/** Close a still-open (`submitted`) request: admin housekeeping for stale/withdrawn. */
+export async function closeRequest(supabase: SupabaseClient, requestId: string): Promise<Result> {
+  const { data, error } = await supabase.rpc("close_request", { p_request_id: requestId });
+  if (error) return { ok: false, error: rpcError(error.message) };
+  return { ok: true, detail: data as string };
 }
