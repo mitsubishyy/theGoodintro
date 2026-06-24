@@ -8,7 +8,11 @@ type CookieToSet = { name: string; value: string; options?: CookieOptions };
 // /demo/enter (auto-sign-in); in real prod it goes to /login until magic-link
 // exec/EA auth is built (EXECUTIVE_PORTAL_BRIEF). The /exec/email and /exec/rsvp
 // design references stay reachable without data (handled as static pages).
-const PUBLIC_PATHS = ["/", "/login", "/signup", "/auth", "/api/webhooks", "/e", "/demo"];
+// /api/jobs (cron) and /api/webhooks (Xero) authenticate themselves with a
+// CRON_SECRET bearer / a verified signature, so they must bypass this session
+// gate — otherwise the scheduler's no-cookie request is redirected to /login
+// before the route's own 401 guard ever runs.
+const PUBLIC_PATHS = ["/", "/login", "/signup", "/auth", "/api/webhooks", "/api/jobs", "/e", "/demo"];
 
 /**
  * Refreshes the auth session on every request and gates access: anyone not

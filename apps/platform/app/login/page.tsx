@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LoginForm } from "./login-form";
+import { safeNextPath } from "@/lib/safe-redirect";
 
 export const metadata: Metadata = {
   title: "Sign in — TheGoodIntro",
@@ -35,7 +36,7 @@ export default async function LoginPage({
           </p>
         ) : null}
 
-        <LoginForm next={next && next.startsWith("/") ? next : "/"} />
+        <LoginForm next={safeNextPath(next)} />
       </div>
     </main>
   );

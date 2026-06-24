@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { safeNextPath } from "@/lib/safe-redirect";
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
@@ -12,7 +13,8 @@ type CookieToSet = { name: string; value: string; options?: CookieOptions };
 export async function GET(req: NextRequest) {
   const role = req.nextUrl.searchParams.get("role") === "vendor" ? "vendor" : "admin";
   const nextParam = req.nextUrl.searchParams.get("next");
-  const next = nextParam && nextParam.startsWith("/") ? nextParam : role === "vendor" ? "/vendor" : "/admin";
+  const safe = safeNextPath(nextParam);
+  const next = safe !== "/" ? safe : role === "vendor" ? "/vendor" : "/admin";
 
   if (process.env.NEXT_PUBLIC_DEMO_OPEN_ACCESS !== "1") {
     return NextResponse.redirect(new URL("/login", req.url));

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { getStaff } from "@/lib/auth";
+import { getStaff, getVendor } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
 import { isOwnAvatarUrl } from "@/lib/upload/url";
@@ -16,6 +16,9 @@ export type ExecActionState = { ok?: boolean; error?: string };
  */
 export async function getCharityListAction(): Promise<{ charities: CharityListItem[]; currentId: string | null }> {
   if (!(await getFlag("exec_dashboard"))) return { charities: [], currentId: null };
+  // Fail closed on identity, not on RLS alone (matches updateExecProfile).
+  const ident = (await getStaff())?.staff ?? (await getVendor())?.vendorUser;
+  if (!ident) return { charities: [], currentId: null };
   const supabase = await createClient();
   const execId = await resolveDemoExecutiveId(supabase);
   const charities = await loadCharityList(supabase);
@@ -36,6 +39,8 @@ export async function getCharityListAction(): Promise<{ charities: CharityListIt
 export async function getCharityContentAction(charityId: string): Promise<CharityContent | null> {
   if (!(await getFlag("exec_dashboard"))) return null;
   if (!charityId) return null;
+  const ident = (await getStaff())?.staff ?? (await getVendor())?.vendorUser;
+  if (!ident) return null;
   const supabase = await createClient();
   return loadCharityContent(supabase, charityId);
 }

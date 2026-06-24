@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { safeNextPath } from "@/lib/safe-redirect";
 
 export type AuthState = { error?: string };
 
@@ -10,7 +11,7 @@ export async function verifyMfaAction(
   formData: FormData,
 ): Promise<AuthState> {
   const code = String(formData.get("code") ?? "").trim();
-  const next = String(formData.get("next") ?? "/") || "/";
+  const next = safeNextPath(String(formData.get("next") ?? ""));
 
   const supabase = await createClient();
   const { data: factors, error: fe } = await supabase.auth.mfa.listFactors();

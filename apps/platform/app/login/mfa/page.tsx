@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MfaForm } from "./mfa-form";
+import { safeNextPath } from "@/lib/safe-redirect";
 
 export const metadata: Metadata = {
   title: "Two-factor — TheGoodIntro",
@@ -28,7 +29,7 @@ export default async function MfaPage({
         <p className="mb-6 text-sm" style={{ color: "var(--muted-foreground)" }}>
           Enter the code from your authenticator app.
         </p>
-        <MfaForm next={next && next.startsWith("/") ? next : "/"} />
+        <MfaForm next={safeNextPath(next)} />
       </div>
     </main>
   );

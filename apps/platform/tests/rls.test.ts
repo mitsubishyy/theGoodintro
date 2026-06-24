@@ -67,6 +67,23 @@ describe("RLS tenant boundary", () => {
     expect(blairGifts?.length).toBe(0);
   });
 
+  it("a vendor cannot read another org's money rows (meeting, credit_lot, cycle, invoice)", async () => {
+    // Alpha's seeded money rows (seed_staging.sql). For each, Alpha's own user
+    // can read it (positive control) and Beta's user reads zero (isolation).
+    const ALPHA_MONEY: Record<string, string> = {
+      invoice: "00000000-0000-0000-0000-0000000019a1",
+      cycle: "00000000-0000-0000-0000-00000000c9a1",
+      credit_lot: "00000000-0000-0000-0000-0000000010a1",
+      meeting: "00000000-0000-0000-0000-0000000013a1",
+    };
+    for (const [table, id] of Object.entries(ALPHA_MONEY)) {
+      const { data: mine } = await alex.from(table).select("id").eq("id", id);
+      expect(mine?.map((r) => r.id)).toEqual([id]);
+      const { data: theirs } = await blair.from(table).select("id").eq("id", id);
+      expect(theirs ?? []).toEqual([]);
+    }
+  });
+
   it("paid vendors can read the active executive list (only active, all of them)", async () => {
     const { data } = await alex.from("executive").select("id, status");
     const rows = data ?? [];
