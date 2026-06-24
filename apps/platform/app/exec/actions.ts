@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { getStaff, getVendor } from "@/lib/auth";
+import { getStaff } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
 import { isOwnAvatarUrl } from "@/lib/upload/url";
@@ -16,9 +16,9 @@ export type ExecActionState = { ok?: boolean; error?: string };
  */
 export async function getCharityListAction(): Promise<{ charities: CharityListItem[]; currentId: string | null }> {
   if (!(await getFlag("exec_dashboard"))) return { charities: [], currentId: null };
-  // Fail closed on identity, not on RLS alone (matches updateExecProfile).
-  const ident = (await getStaff())?.staff ?? (await getVendor())?.vendorUser;
-  if (!ident) return { charities: [], currentId: null };
+  // Staff-only for now: the /exec portal is staff-operated until slice 2d builds
+  // the exec/EA access model. Fail closed on identity, not on RLS alone.
+  if (!(await getStaff())?.staff) return { charities: [], currentId: null };
   const supabase = await createClient();
   const execId = await resolveDemoExecutiveId(supabase);
   const charities = await loadCharityList(supabase);
@@ -39,8 +39,7 @@ export async function getCharityListAction(): Promise<{ charities: CharityListIt
 export async function getCharityContentAction(charityId: string): Promise<CharityContent | null> {
   if (!(await getFlag("exec_dashboard"))) return null;
   if (!charityId) return null;
-  const ident = (await getStaff())?.staff ?? (await getVendor())?.vendorUser;
-  if (!ident) return null;
+  if (!(await getStaff())?.staff) return null;
   const supabase = await createClient();
   return loadCharityContent(supabase, charityId);
 }
@@ -146,6 +145,8 @@ export async function setRequestPauseAction(paused: boolean): Promise<ExecAction
   // same edge the admin status machine encodes), then delegate the write.
   if (!(await getFlag("exec_dashboard"))) return { error: "Executive portal is not enabled." };
   const supabase = await createClient();
+  // Establish staff identity before any executive read (action-level consistency).
+  if (!(await getStaff())?.staff) return { error: "Not authorized." };
   const execId = await resolveDemoExecutiveId(supabase);
   if (!execId) return { error: "No executive found." };
   const { data: row } = await supabase.from("executive").select("status").eq("id", execId).maybeSingle();

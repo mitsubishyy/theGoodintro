@@ -6,8 +6,9 @@ type CookieToSet = { name: string; value: string; options?: CookieOptions };
 // /exec is intentionally NOT public: the dashboard reads RLS-protected data, so
 // it needs a session. In the demo, the redirect below routes it through
 // /demo/enter (auto-sign-in); in real prod it goes to /login until magic-link
-// exec/EA auth is built (EXECUTIVE_PORTAL_BRIEF). The /exec/email and /exec/rsvp
-// design references stay reachable without data (handled as static pages).
+// exec/EA auth is built (EXECUTIVE_PORTAL_BRIEF). The whole /exec tree (including
+// the /exec/email and /exec/rsvp design references) is now gated to staff by
+// app/exec/layout.tsx, interim until exec/EA scoping in slice 2d.
 // /api/jobs (cron) and /api/webhooks (Xero) authenticate themselves with a
 // CRON_SECRET bearer / a verified signature, so they must bypass this session
 // gate — otherwise the scheduler's no-cookie request is redirected to /login
