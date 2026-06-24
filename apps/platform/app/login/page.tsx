@@ -10,9 +10,9 @@ export const metadata: Metadata = {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string; error?: string }>;
+  searchParams: Promise<{ next?: string; error?: string; reset?: string }>;
 }) {
-  const { next, error } = await searchParams;
+  const { next, error, reset } = await searchParams;
 
   return (
     <main
@@ -33,6 +33,12 @@ export default async function LoginPage({
         {error === "not_staff" ? (
           <p className="mb-4 text-sm" style={{ color: "var(--portal-amber-ink)" }}>
             That account does not have admin access.
+          </p>
+        ) : null}
+
+        {reset === "done" ? (
+          <p className="mb-4 text-sm" style={{ color: "var(--muted-foreground)" }}>
+            Your password has been updated. Sign in with your new password.
           </p>
         ) : null}
 
