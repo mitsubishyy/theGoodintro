@@ -24,6 +24,7 @@ export function PhotoUploadField({
   ownerId,
   previewName,
   previewShape = "round",
+  previewSize = 56,
   hint = "PNG, JPG or WebP. Max 1MB.",
   enabled,
   className = "sm:col-span-2",
@@ -35,6 +36,7 @@ export function PhotoUploadField({
   ownerId?: string;
   previewName: string;
   previewShape?: "round" | "wide";
+  previewSize?: number;
   hint?: string;
   enabled: boolean;
   className?: string;
@@ -62,7 +64,7 @@ export function PhotoUploadField({
         {label}
       </span>
       <div className="flex items-center gap-4">
-        <Preview shape={previewShape} url={url} name={previewName} />
+        <Preview shape={previewShape} url={url} name={previewName} size={previewSize} />
         {enabled ? (
           <div className="flex flex-col gap-1.5">
             <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={onPick} />
@@ -96,7 +98,7 @@ export function PhotoUploadField({
   );
 }
 
-function Preview({ shape, url, name }: { shape: "round" | "wide"; url: string; name: string }) {
+function Preview({ shape, url, name, size }: { shape: "round" | "wide"; url: string; name: string; size: number }) {
   if (shape === "wide") {
     return (
       <div
@@ -114,5 +116,5 @@ function Preview({ shape, url, name }: { shape: "round" | "wide"; url: string; n
       </div>
     );
   }
-  return <Avatar name={name || "?"} src={url || undefined} size={56} />;
+  return <Avatar name={name || "?"} src={url || undefined} size={size} />;
 }
