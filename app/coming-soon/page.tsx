@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { COMPANY_LINKEDIN } from "@/lib/config";
-import WaitlistForm from "../waitlist/waitlist-form";
+import WaitlistCta from "./waitlist-cta";
 
 // The public "coming soon" wall. middleware.ts rewrites every public route to
 // this page while the wall flag is on; the real site stays built and intact
@@ -16,10 +16,6 @@ export const metadata: Metadata = {
     "We're building something good. TheGoodIntro is an invite-only Australian network where senior introductions fund the charities executives choose. Coming soon. Join the waitlist.",
 };
 
-// force-dynamic so the embedded waitlist form (useSearchParams) server-renders,
-// matching the real /waitlist page and avoiding a client-only flash.
-export const dynamic = "force-dynamic";
-
 export default function ComingSoon() {
   return (
     <>
@@ -27,7 +23,7 @@ export default function ComingSoon() {
       <style>{`.hp-topnav,.hp-footer{display:none!important}`}</style>
 
       <div
-        className="flex min-h-screen flex-col items-center px-6 py-16 text-center md:py-20"
+        className="grid min-h-screen place-items-center px-6 py-16 text-center"
         style={{ background: "var(--background)" }}
       >
         <div className="w-full max-w-xl">
@@ -68,9 +64,9 @@ export default function ComingSoon() {
             charities executives choose.
           </p>
 
-          {/* The exact site waitlist form. */}
-          <div className="mt-10 text-left">
-            <WaitlistForm />
+          {/* "Join the waitlist" button reveals the exact site form on click. */}
+          <div className="mt-10">
+            <WaitlistCta />
           </div>
 
           <div
