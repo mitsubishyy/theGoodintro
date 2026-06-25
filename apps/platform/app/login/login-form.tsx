@@ -4,6 +4,13 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { signInAction, type AuthState } from "./actions";
 
+/**
+ * Staff / vendor password sign-in. On the locked two-column /login redesign this
+ * is the SECONDARY path: the email sign-in-link leads when exec_ea_login is on,
+ * and this opens from a quiet "Sign in with a password instead" disclosure. When
+ * the link flow is off it is the only path. Restyled to the locked field look
+ * (48px white fields, hairline, mono labels, ink CTA).
+ */
 export function LoginForm({ next }: { next: string }) {
   const [state, formAction, pending] = useActionState<AuthState, FormData>(
     signInAction,
@@ -14,7 +21,7 @@ export function LoginForm({ next }: { next: string }) {
     <form action={formAction} className="flex flex-col gap-4">
       <input type="hidden" name="next" value={next} />
       <label className="flex flex-col gap-1.5">
-        <span className="font-mono text-xs uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
+        <span className="font-mono text-[11px] uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
           Work email
         </span>
         <input
@@ -22,12 +29,12 @@ export function LoginForm({ next }: { next: string }) {
           type="email"
           autoComplete="email"
           required
-          className="rounded-lg border px-3 py-2.5 text-sm outline-none"
-          style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }}
+          className="h-12 rounded-lg border px-3.5 text-sm outline-none"
+          style={{ background: "#fff", borderColor: "var(--portal-line)" }}
         />
       </label>
       <label className="flex flex-col gap-1.5">
-        <span className="font-mono text-xs uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
+        <span className="font-mono text-[11px] uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
           Password
         </span>
         <input
@@ -35,8 +42,8 @@ export function LoginForm({ next }: { next: string }) {
           type="password"
           autoComplete="current-password"
           required
-          className="rounded-lg border px-3 py-2.5 text-sm outline-none"
-          style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }}
+          className="h-12 rounded-lg border px-3.5 text-sm outline-none"
+          style={{ background: "#fff", borderColor: "var(--portal-line)" }}
         />
       </label>
 
@@ -57,8 +64,8 @@ export function LoginForm({ next }: { next: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="mt-1 rounded-lg px-4 py-2.5 text-sm font-semibold disabled:opacity-60"
-        style={{ background: "var(--portal-ink)", color: "var(--portal-card)" }}
+        className="h-12 rounded-lg text-sm font-semibold disabled:opacity-60"
+        style={{ background: "var(--portal-ink)", color: "#fff" }}
       >
         {pending ? "Signing in…" : "Sign in"}
       </button>
