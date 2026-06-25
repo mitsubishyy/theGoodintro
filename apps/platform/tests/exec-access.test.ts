@@ -375,12 +375,17 @@ describe("exec/EA passwordless access + controlled charity change (2d)", () => {
     expect(await resolveStaffSignInTarget(admin, `staff-none-${rand()}@nowhere.test`)).toEqual({ status: "none" });
   });
 
-  it("does not mis-claim when an auth user is bound to a soft-deleted record whose email was reused", async () => {
+  it("does not mis-claim when an auth user is stuck on a soft-deleted record whose email was reused", async () => {
     const email = `reuse-${rand()}@exec.test`;
     const e1 = await mkExec(email);
     const uid = await mkUser(email);
-    await admin.from("executive").update({ auth_user_id: uid }).eq("id", e1);
+    // Defense-in-depth, independent of the 0032 revoke trigger: simulate a UID
+    // stuck on a soft-deleted record (a pre-0032 row, or an out-of-band write).
+    // Soft-delete FIRST (the trigger only fires on the null -> set edge), THEN pin
+    // the link onto the already-dead row so it persists; linkAuthUserToExecOrEa
+    // must still refuse it rather than jump to the active e2 sharing the email.
     await admin.from("executive").update({ deleted_at: new Date().toISOString() }).eq("id", e1);
+    await admin.from("executive").update({ auth_user_id: uid }).eq("id", e1);
     const e2 = await mkExec(email); // same email, active, unlinked
 
     const res = await linkAuthUserToExecOrEa(admin, uid, email);
@@ -460,5 +465,59 @@ describe("exec/EA passwordless access + controlled charity change (2d)", () => {
     expect(on.error).toBeNull();
     const { data: after } = await admin.from("executive").select("default_charity_id").eq("id", execId).single();
     expect(after?.default_charity_id).toBe(ids.charB);
+  });
+
+  // ── 9. Total emergency revoke — soft-delete clears auth_user_id (0032) ──────
+  it("soft-deleting a bound executive clears auth_user_id, dropping access immediately, and frees the email to re-onboard", async () => {
+    const { execId, email, client } = await linkedExec();
+    const uid = (await client.auth.getUser()).data.user!.id;
+    // Bound and scoped: the live session resolves its own row.
+    const { data: before } = await client.from("executive").select("id");
+    expect(before?.map((r) => r.id)).toEqual([execId]);
+
+    // Soft-delete via the service role (the path an admin / bulk revoke uses).
+    await admin.from("executive").update({ deleted_at: new Date().toISOString() }).eq("id", execId);
+
+    // The 0032 trigger nulled the link atomically with the delete: total revoke.
+    const { data: row } = await admin.from("executive").select("auth_user_id").eq("id", execId).single();
+    expect(row?.auth_user_id).toBeNull();
+    // The live session loses RLS scope on its next read — no row resolves to it.
+    const { data: after } = await client.from("executive").select("id");
+    expect(after ?? []).toEqual([]);
+
+    // Re-onboard: a fresh record on the SAME email binds the freed UID cleanly
+    // (without the revoke, linkAuthUserToExecOrEa would refuse the stuck UID).
+    const e2 = await mkExec(email);
+    const relinked = await linkAuthUserToExecOrEa(admin, uid, email);
+    expect(relinked).toMatchObject({ kind: "executive", id: e2 });
+    const { data: e2row } = await admin.from("executive").select("auth_user_id").eq("id", e2).single();
+    expect(e2row?.auth_user_id).toBe(uid);
+  });
+
+  it("soft-deleting a bound EA clears auth_user_id and frees the email to re-onboard", async () => {
+    const email = `del-ea-${rand()}@ea.test`;
+    const eaId = await mkEa(email);
+    const uid = await mkUser(email);
+    await admin.from("ea").update({ auth_user_id: uid }).eq("id", eaId);
+
+    await admin.from("ea").update({ deleted_at: new Date().toISOString() }).eq("id", eaId);
+    const { data: row } = await admin.from("ea").select("auth_user_id").eq("id", eaId).single();
+    expect(row?.auth_user_id).toBeNull();
+
+    const ea2 = await mkEa(email);
+    const relinked = await linkAuthUserToExecOrEa(admin, uid, email);
+    expect(relinked).toMatchObject({ kind: "ea", id: ea2 });
+    const { data: ea2row } = await admin.from("ea").select("auth_user_id").eq("id", ea2).single();
+    expect(ea2row?.auth_user_id).toBe(uid);
+  });
+
+  it("the revoke trigger fires only on the soft-delete edge: an ordinary update keeps the link", async () => {
+    const { execId } = await linkedExec();
+    const { data: bound } = await admin.from("executive").select("auth_user_id").eq("id", execId).single();
+    expect(bound?.auth_user_id).toBeTruthy();
+    // An unrelated field update must NOT disturb the auth linkage.
+    await admin.from("executive").update({ title: "Updated CFO" }).eq("id", execId);
+    const { data: still } = await admin.from("executive").select("auth_user_id").eq("id", execId).single();
+    expect(still?.auth_user_id).toBe(bound?.auth_user_id);
   });
 });
