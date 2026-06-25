@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStaff, getExecPrincipal } from "@/lib/auth";
-import { getFlag } from "@/lib/flags";
+import { getFlag, getFlagAuthoritative } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
 import { isOwnAvatarUrl } from "@/lib/upload/url";
 import { resolveExecOrEaByEmail, sendSignInLink } from "@/lib/exec-access";
@@ -225,7 +225,7 @@ export async function setStandingNominationAction(
  * enumeration oracle (contrast the self-service path, which never reveals).
  */
 export async function sendAccessLinkAction(email: string): Promise<ExecActionState> {
-  if (!(await getFlag("exec_ea_login"))) return { error: "Sign-in links are not enabled." };
+  if (!(await getFlagAuthoritative("exec_ea_login"))) return { error: "Sign-in links are not enabled." };
   const clean = (email ?? "").trim().toLowerCase();
   if (!clean) return { error: "No email provided." };
   if (!(await getStaff())?.staff) return { error: "Not authorized." };
@@ -236,7 +236,9 @@ export async function sendAccessLinkAction(email: string): Promise<ExecActionSta
   const member = await resolveExecOrEaByEmail(admin, clean);
   if (!member) return { error: "No executive or assistant is on file for that email." };
 
-  await sendSignInLink(member.email);
+  // member confirmed -> shouldCreateUser true (a never-logged-in exec/EA has no
+  // auth user yet); the sign-in link binds auth_user_id on first click.
+  await sendSignInLink(member.email, true);
   logSecurityEvent("exec_signin_link_provisioned", { kind: member.kind, by: "staff" });
   return { ok: true };
 }

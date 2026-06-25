@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LoginForm } from "./login-form";
 import { SignInLinkForm } from "./sign-in-link-form";
 import { safeNextPath } from "@/lib/safe-redirect";
-import { getFlag } from "@/lib/flags";
+import { getFlagAuthoritative } from "@/lib/flags";
 
 export const metadata: Metadata = {
   title: "Sign in — TheGoodIntro",
@@ -15,7 +15,9 @@ export default async function LoginPage({
   searchParams: Promise<{ next?: string; error?: string; reset?: string }>;
 }) {
   const { next, error, reset } = await searchParams;
-  const execEaLogin = await getFlag("exec_ea_login");
+  // Authoritative read: the visitor here is anonymous, and feature_flag is not
+  // readable by anon under RLS, so a session-scoped read would always be OFF.
+  const execEaLogin = await getFlagAuthoritative("exec_ea_login");
 
   return (
     <main

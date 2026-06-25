@@ -6,6 +6,7 @@ import {
   requestExecEaSignInLink,
   linkAuthUserToExecOrEa,
 } from "@/lib/exec-access";
+import { getFlagAuthoritative } from "@/lib/flags";
 import { GET as signInGET } from "@/app/auth/sign-in/route";
 
 /**
@@ -87,6 +88,11 @@ describe("exec/EA passwordless access + controlled charity change (2d)", () => {
     return (data ?? []).length;
   }
 
+  /** Toggle the exec_ea_login kill switch (read authoritatively by the gates). */
+  async function setExecEaLogin(enabled: boolean): Promise<void> {
+    await admin.from("feature_flag").update({ enabled }).eq("key", "exec_ea_login");
+  }
+
   beforeAll(async () => {
     if (!URL || !KEY || !SERVICE_KEY) throw new Error("Supabase env vars are not set");
     admin = createClient(URL, SERVICE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
@@ -109,10 +115,16 @@ describe("exec/EA passwordless access + controlled charity change (2d)", () => {
     ids.ea2 = await mkEa(`acc-ea2-${rand()}@ea.test`);
     await admin.from("ea_assignment").insert({ ea_id: ids.ea, executive_id: ids.e1 });
     await admin.from("ea_assignment").insert({ ea_id: ids.ea2, executive_id: ids.e2 });
+
+    // The exec/EA sign-in + RPC paths are gated behind exec_ea_login; enable it for
+    // the suite (seeded OFF). Flag-OFF behaviour is covered by dedicated tests that
+    // toggle it and restore ON; afterAll restores the seed default (OFF).
+    await setExecEaLogin(true);
   });
 
   afterAll(async () => {
     if (!admin) return;
+    await setExecEaLogin(false);
     // An exec that has been the subject of an audited charity change cannot be
     // hard-deleted: audit_entry is append-only (delete is blocked) and
     // acting_for_executive_id FK-restricts the row. So FIRST neutralize every
@@ -334,5 +346,105 @@ describe("exec/EA passwordless access + controlled charity change (2d)", () => {
     const { data: vEa } = await vendor.from("ea").select("id").eq("auth_user_id", vUid);
     expect(vExec ?? []).toEqual([]);
     expect(vEa ?? []).toEqual([]);
+  });
+
+  // ── 6. Ambiguous / reused email binding (review findings 1 & 4) ────────────
+  it("refuses to bind when an email matches more than one unlinked record, binding none", async () => {
+    const email = `dupe-${rand()}@exec.test`;
+    const eA = await mkExec(email);
+    const eB = await mkExec(email); // same email, both unlinked
+    const uid = await mkUser(email);
+
+    const res = await linkAuthUserToExecOrEa(admin, uid, email);
+    expect(res).toBeNull(); // ambiguous -> never guess
+    const { data } = await admin.from("executive").select("auth_user_id").in("id", [eA, eB]);
+    expect(data!.every((r) => r.auth_user_id === null)).toBe(true); // neither claimed
+  });
+
+  it("does not mis-claim when an auth user is bound to a soft-deleted record whose email was reused", async () => {
+    const email = `reuse-${rand()}@exec.test`;
+    const e1 = await mkExec(email);
+    const uid = await mkUser(email);
+    await admin.from("executive").update({ auth_user_id: uid }).eq("id", e1);
+    await admin.from("executive").update({ deleted_at: new Date().toISOString() }).eq("id", e1);
+    const e2 = await mkExec(email); // same email, active, unlinked
+
+    const res = await linkAuthUserToExecOrEa(admin, uid, email);
+    expect(res).toBeNull(); // uid belongs to the deleted e1; must not jump to e2
+    const { data } = await admin.from("executive").select("auth_user_id").eq("id", e2).single();
+    expect(data?.auth_user_id).toBeNull(); // e2 untouched
+  });
+
+  // ── 7. Route `next` is confined to the exec portal (review finding 3) ──────
+  it("the route collapses `next` traversal: /exec/../admin lands on /exec, a real /exec/* next is honored", async () => {
+    const mk = async () => {
+      const email = `trav-${rand()}@exec.test`;
+      await mkExec(email);
+      await mkUser(email);
+      const { data: link } = await admin.auth.admin.generateLink({ type: "magiclink", email });
+      return link!.properties!.hashed_token;
+    };
+    const th1 = await mk();
+    const res1 = await signInGET(new NextRequest(`http://localhost:3001/auth/sign-in?token_hash=${th1}&type=magiclink&next=${encodeURIComponent("/exec/../admin")}`));
+    expect(new globalThis.URL(res1.headers.get("location") ?? "", "http://localhost:3001").pathname).toBe("/exec");
+
+    const th2 = await mk();
+    const res2 = await signInGET(new NextRequest(`http://localhost:3001/auth/sign-in?token_hash=${th2}&type=magiclink&next=${encodeURIComponent("/exec/meetings")}`));
+    expect(new globalThis.URL(res2.headers.get("location") ?? "", "http://localhost:3001").pathname).toBe("/exec/meetings");
+  });
+
+  // ── 8. exec_ea_login is a RELIABLE kill switch (the flag patch) ────────────
+  it("getFlagAuthoritative reads the flag via the service role, with no authenticated session", async () => {
+    await setExecEaLogin(true);
+    expect(await getFlagAuthoritative("exec_ea_login")).toBe(true);
+    await setExecEaLogin(false);
+    expect(await getFlagAuthoritative("exec_ea_login")).toBe(false);
+    await setExecEaLogin(true); // restore for following tests
+  });
+
+  it("the sign-in route fails closed when the flag is OFF: no verify, no bind, no session", async () => {
+    const email = `flagoff-route-${rand()}@exec.test`;
+    const execId = await mkExec(email);
+    await mkUser(email);
+    const { data: link } = await admin.auth.admin.generateLink({ type: "magiclink", email });
+    const th = link!.properties!.hashed_token;
+
+    await setExecEaLogin(false);
+    try {
+      const res = await signInGET(new NextRequest(`http://localhost:3001/auth/sign-in?token_hash=${th}&type=magiclink`));
+      const loc = new globalThis.URL(res.headers.get("location") ?? "", "http://localhost:3001");
+      expect(loc.pathname).toBe("/login");
+      expect(loc.searchParams.get("error")).toBe("link_invalid");
+      const { data: row } = await admin.from("executive").select("auth_user_id").eq("id", execId).single();
+      expect(row?.auth_user_id).toBeNull(); // never bound
+      expect(res.cookies.getAll().some((c) => c.name.includes("auth-token") && c.value)).toBe(false);
+    } finally {
+      await setExecEaLogin(true);
+    }
+  });
+
+  it("the charity-change RPC is flag-gated for non-staff: OFF refuses a bound exec, staff still works, ON allows", async () => {
+    const { execId, client } = await linkedExec();
+
+    await setExecEaLogin(false);
+    try {
+      const off = await client.rpc("request_standing_nomination", { p_executive_id: execId, p_charity_id: ids.charA });
+      expect(off.error?.message.toLowerCase()).toMatch(/not_authorized/);
+      const { data: unchanged } = await admin.from("executive").select("default_charity_id").eq("id", execId).single();
+      expect(unchanged?.default_charity_id).toBeNull(); // the flag-off call changed nothing
+
+      // Staff bypass the flag entirely.
+      const staff = await signedIn("admin@thegoodintro.test", SEED_PW);
+      const staffRes = await staff.rpc("request_standing_nomination", { p_executive_id: execId, p_charity_id: ids.charA });
+      expect(staffRes.error).toBeNull();
+    } finally {
+      await setExecEaLogin(true);
+    }
+
+    // ON: the exec can now make the change themselves.
+    const on = await client.rpc("request_standing_nomination", { p_executive_id: execId, p_charity_id: ids.charB });
+    expect(on.error).toBeNull();
+    const { data: after } = await admin.from("executive").select("default_charity_id").eq("id", execId).single();
+    expect(after?.default_charity_id).toBe(ids.charB);
   });
 });

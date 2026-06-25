@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
-import { getFlag } from "@/lib/flags";
+import { getFlag, getFlagAuthoritative } from "@/lib/flags";
 
 type AalLevels = {
   currentLevel: string | null;
@@ -134,7 +134,8 @@ export async function getExecPrincipal(): Promise<ExecPrincipal | null> {
     .maybeSingle();
   if (staff) return { supabase, user, kind: "staff", execId: null, staffId: staff.id as string };
 
-  if (await getFlag("exec_ea_login")) {
+  // Authoritative read: the same kill switch the sign-in route and the RPC honor.
+  if (await getFlagAuthoritative("exec_ea_login")) {
     const { data: exec } = await supabase
       .from("executive")
       .select("id")

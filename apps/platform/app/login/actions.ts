@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { safeNextPath } from "@/lib/safe-redirect";
-import { getFlag } from "@/lib/flags";
+import { getFlagAuthoritative } from "@/lib/flags";
 import { requestExecEaSignInLink } from "@/lib/exec-access";
 import { logSecurityEvent } from "@/lib/security-log";
 
@@ -32,7 +32,9 @@ export async function requestSignInLinkAction(
 ): Promise<SignInLinkState> {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
 
-  if (email && (await getFlag("exec_ea_login"))) {
+  // Authoritative read: this action runs for an anonymous submitter, who cannot
+  // read feature_flag under RLS; a session-scoped read would always be OFF.
+  if (email && (await getFlagAuthoritative("exec_ea_login"))) {
     const admin = createAdminClient();
     if (admin) await requestExecEaSignInLink(admin, email);
     // Logged identically whether or not the address is a member (no enumeration).

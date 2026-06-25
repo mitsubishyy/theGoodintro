@@ -18,7 +18,13 @@ export type SecurityEvent =
   // account-enumeration oracle (same rule as the reset flow).
   | "exec_signin_link_requested"
   | "exec_signin_link_provisioned"
-  | "exec_signin_linked";
+  | "exec_signin_linked"
+  // An email matched more than one unlinked exec/EA record (primary_email and
+  // ea.email are not unique), so the sign-in refused to guess which to bind.
+  | "exec_signin_ambiguous_email"
+  // A claim UPDATE failed (e.g. the auth user already occupies a soft-deleted
+  // record's unique slot); the sign-in fails closed rather than mis-binding.
+  | "exec_signin_link_conflict";
 
 export function logSecurityEvent(
   event: SecurityEvent,

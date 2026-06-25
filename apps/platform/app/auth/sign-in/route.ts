@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { linkAuthUserToExecOrEa } from "@/lib/exec-access";
+import { getFlagAuthoritative } from "@/lib/flags";
 import { safeNextPath } from "@/lib/safe-redirect";
 import { logSecurityEvent } from "@/lib/security-log";
 
@@ -31,9 +32,12 @@ export async function GET(req: NextRequest) {
   const type = url.searchParams.get("type") as EmailOtpType | null;
 
   // Honor an in-portal `next` only if it is same-origin (safeNextPath) AND inside
-  // /exec; anything else (a different portal, off-origin) falls back to /exec.
+  // /exec. Normalize through URL() first so `..` traversal is collapsed BEFORE the
+  // prefix check — `/exec/../admin` resolves to `/admin`, which then fails the
+  // prefix and falls back to /exec. Without this the prefix test is bypassable.
   const requested = safeNextPath(url.searchParams.get("next"));
-  const dest = requested === "/exec" || requested.startsWith("/exec/") ? requested : "/exec";
+  const normalized = new URL(requested, req.url).pathname;
+  const dest = normalized === "/exec" || normalized.startsWith("/exec/") ? normalized : "/exec";
 
   // Collect cookie writes so the final destination is chosen AFTER linking.
   const jar: CookieToSet[] = [];
@@ -57,6 +61,12 @@ export async function GET(req: NextRequest) {
   // written to the browser — the person stays signed out and is bounced with the
   // same generic notice. Membership is never confirmed or denied.
   const fail = () => NextResponse.redirect(new URL("/login?error=link_invalid", req.url));
+
+  // Kill switch (CHANGE_SAFETY.md): when exec/EA sign-in is off, do NOT verify the
+  // token or bind a session — binding auth_user_id is the gated behaviour change,
+  // so it must fail closed here, not only at the app/page layer. Read
+  // authoritatively: this route is anonymous and feature_flag is not anon-readable.
+  if (!(await getFlagAuthoritative("exec_ea_login"))) return fail();
 
   // Establish the session (PKCE `code`, or OTP `token_hash` for magic-link / email).
   let ok = false;

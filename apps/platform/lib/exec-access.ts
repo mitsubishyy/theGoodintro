@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { appBaseUrl } from "@/lib/app-url";
+import { logSecurityEvent } from "@/lib/security-log";
 
 /**
  * Exec / EA passwordless access (slice 2d). The pieces shared by the shared
@@ -77,17 +78,18 @@ export async function resolveExecOrEaByEmail(
 }
 
 /**
- * Send a sign-in link to `email`. `shouldCreateUser` is true because a member's
- * auth user does not exist until their first sign-in (most execs never log in);
- * the auth_user_id link is established on the landing route. Errors (including the
- * email-send rate limit) are swallowed so the caller's response never depends on
- * the outcome.
+ * Issue one OTP round-trip to GoTrue for `email`. `shouldCreateUser` must be true
+ * for a real member (a never-logged-in exec/EA has no auth user yet; the
+ * auth_user_id link is established on the landing route) and false for a non-
+ * member (GoTrue round-trips but creates nothing and sends nothing — "unknown
+ * addresses send nothing"). Errors (including the email-send rate limit) are
+ * swallowed so the caller's response never depends on the outcome.
  */
-export async function sendSignInLink(email: string): Promise<void> {
+export async function sendSignInLink(email: string, shouldCreateUser: boolean): Promise<void> {
   try {
     await anonClient().auth.signInWithOtp({
       email,
-      options: { shouldCreateUser: true, emailRedirectTo: signInRedirectTo() },
+      options: { shouldCreateUser, emailRedirectTo: signInRedirectTo() },
     });
   } catch {
     // Deliberately ignored — account safety depends on a constant response.
@@ -95,17 +97,20 @@ export async function sendSignInLink(email: string): Promise<void> {
 }
 
 /**
- * Self-service entry: resolve membership, and ONLY send a link to a real exec/EA
- * (the locked rule: "unknown addresses send nothing"). ALWAYS returns void and
- * swallows everything, so a known and an unknown email are indistinguishable to
- * the caller — no account enumeration.
+ * Self-service entry: resolve membership, then ALWAYS issue exactly one OTP
+ * round-trip so response LATENCY cannot distinguish a member from an unknown
+ * email (a member-only send would be a timing oracle). shouldCreateUser is true
+ * only for a real member, so a non-member still has nothing created and nothing
+ * sent ("unknown addresses send nothing"), and the unknown branch is now equally
+ * subject to Supabase's per-IP sign-in rate limit. Returns void and swallows
+ * everything, so a known and an unknown email are indistinguishable.
  */
 export async function requestExecEaSignInLink(
   admin: SupabaseClient,
   email: string,
 ): Promise<void> {
   const member = await resolveExecOrEaByEmail(admin, email);
-  if (member) await sendSignInLink(member.email);
+  await sendSignInLink(email, Boolean(member));
 }
 
 /**
@@ -123,68 +128,75 @@ export async function linkAuthUserToExecOrEa(
   authUserId: string,
   email: string,
 ): Promise<ExecEaPrincipal | null> {
-  // Already linked (a returning sign-in) — nothing to write.
-  const { data: linkedExec } = await admin
+  // Already linked (a returning sign-in), matched by the UNIQUE auth_user_id.
+  // Soft-deleted rows are INCLUDED on purpose: a UID that still occupies a deleted
+  // record must be refused (the record is gone) rather than falling through to
+  // claim a different row that shares the email — which would both mis-scope and
+  // collide on the unique auth_user_id constraint.
+  const { data: byUidExec } = await admin
     .from("executive")
-    .select("id, primary_email")
+    .select("id, primary_email, deleted_at")
     .eq("auth_user_id", authUserId)
-    .is("deleted_at", null)
     .maybeSingle();
-  if (linkedExec?.id) return { kind: "executive", id: linkedExec.id as string, email: linkedExec.primary_email as string };
-
-  const { data: linkedEa } = await admin
+  if (byUidExec) {
+    return byUidExec.deleted_at ? null : { kind: "executive", id: byUidExec.id as string, email: byUidExec.primary_email as string };
+  }
+  const { data: byUidEa } = await admin
     .from("ea")
-    .select("id, email")
+    .select("id, email, deleted_at")
     .eq("auth_user_id", authUserId)
-    .is("deleted_at", null)
     .maybeSingle();
-  if (linkedEa?.id) return { kind: "ea", id: linkedEa.id as string, email: linkedEa.email as string };
+  if (byUidEa) {
+    return byUidEa.deleted_at ? null : { kind: "ea", id: byUidEa.id as string, email: byUidEa.email as string };
+  }
 
   const needle = ilikeLiteral(email.trim());
   if (!needle) return null;
 
-  // Claim an unlinked executive whose email matches. The .is("auth_user_id", null)
-  // guard makes the write a no-op under a race, so two concurrent first sign-ins
-  // can never both claim the row.
-  const { data: execMatch } = await admin
-    .from("executive")
-    .select("id")
-    .ilike("primary_email", needle)
-    .is("deleted_at", null)
-    .is("auth_user_id", null)
-    .order("created_at", { ascending: true })
-    .limit(1)
-    .maybeSingle();
-  if (execMatch?.id) {
-    const { data: claimed } = await admin
+  // Bind by email ONLY when there is EXACTLY ONE unlinked subject. primary_email
+  // and ea.email are not unique, so a shared/role inbox or a duplicate can match
+  // more than one record; binding to the oldest would silently scope the session
+  // to the WRONG executive. Refuse (and log) any 0-or-many match so staff can
+  // disambiguate rather than the system guessing. (limit 2 is enough to detect
+  // "more than one".)
+  const [{ data: execMatches }, { data: eaMatches }] = await Promise.all([
+    admin.from("executive").select("id, primary_email").ilike("primary_email", needle).is("deleted_at", null).is("auth_user_id", null).limit(2),
+    admin.from("ea").select("id, email").ilike("email", needle).is("deleted_at", null).is("auth_user_id", null).limit(2),
+  ]);
+  const execN = execMatches?.length ?? 0;
+  const eaN = eaMatches?.length ?? 0;
+  if (execN + eaN !== 1) {
+    if (execN + eaN > 1) logSecurityEvent("exec_signin_ambiguous_email", { execMatches: execN, eaMatches: eaN });
+    return null; // 0 = no unlinked subject; >1 = ambiguous, never guess.
+  }
+
+  if (execN === 1) {
+    const target = execMatches![0];
+    const { data: claimed, error } = await admin
       .from("executive")
       .update({ auth_user_id: authUserId })
-      .eq("id", execMatch.id as string)
-      .is("auth_user_id", null)
+      .eq("id", target.id as string)
+      .is("auth_user_id", null) // takeover-safe: no-op under a race
       .select("id, primary_email")
       .maybeSingle();
-    if (claimed?.id) return { kind: "executive", id: claimed.id as string, email: claimed.primary_email as string };
+    if (error) {
+      logSecurityEvent("exec_signin_link_conflict", { kind: "executive" });
+      return null; // a real DB fault must not masquerade as success/non-membership
+    }
+    return claimed?.id ? { kind: "executive", id: claimed.id as string, email: claimed.primary_email as string } : null;
   }
 
-  const { data: eaMatch } = await admin
+  const target = eaMatches![0];
+  const { data: claimed, error } = await admin
     .from("ea")
-    .select("id")
-    .ilike("email", needle)
-    .is("deleted_at", null)
+    .update({ auth_user_id: authUserId })
+    .eq("id", target.id as string)
     .is("auth_user_id", null)
-    .order("created_at", { ascending: true })
-    .limit(1)
+    .select("id, email")
     .maybeSingle();
-  if (eaMatch?.id) {
-    const { data: claimed } = await admin
-      .from("ea")
-      .update({ auth_user_id: authUserId })
-      .eq("id", eaMatch.id as string)
-      .is("auth_user_id", null)
-      .select("id, email")
-      .maybeSingle();
-    if (claimed?.id) return { kind: "ea", id: claimed.id as string, email: claimed.email as string };
+  if (error) {
+    logSecurityEvent("exec_signin_link_conflict", { kind: "ea" });
+    return null;
   }
-
-  return null;
+  return claimed?.id ? { kind: "ea", id: claimed.id as string, email: claimed.email as string } : null;
 }
