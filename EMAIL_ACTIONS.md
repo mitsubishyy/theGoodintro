@@ -34,12 +34,27 @@ This split is deliberate and load-bearing:
 | `token` | text | High-entropy random, opaque |
 | `status` | enum | `active` → `consumed` / `revoked` |
 
-- **No expiry.** Valid **until the request is actioned or closed** (matches the
-  "requests never auto-expire" rule). Every follow-up email reuses the same link.
+- **Lifecycle-bound first, with a 90-day backstop.** The token is valid while its
+  request is open and dies the moment the request is actioned or closed. That
+  lifecycle is the **primary** mechanism. A **90-day safety-net expiry** is a
+  defence-in-depth backstop (added in slice 2c) so an action link cannot live in
+  an inbox forever if a request somehow stays open; it is not the main state
+  machine. Within the window, follow-up emails reuse the same link; past it, a
+  fresh token is issued.
+- **One active link per request.** A request carries at most one active token at a
+  time; issuing a fresh link revokes the prior one
+  (`ensure_request_action_token`).
 - The token authorises **the request**, not a specific action, so any of the
   three buttons resolves to the same safe confirm page.
-- **Revoked** when: the request is accepted or declined (consumed), Issy closes
-  the request, or the executive leaves mid-flight.
+- **Consumed / revoked** when: the request is accepted or declined (the terminal
+  step consumes **all** of the request's active tokens in one shot, so a sibling
+  link can never be replayed afterward), Issy closes the request, the executive
+  leaves mid-flight, the 90-day backstop fires, or a fresh link supersedes it.
+- An **expired link** shows a polite "this link has expired" page that routes to
+  the follow-up path and reveals **no request details**.
+- Issuing or minting a token is **service-only**: a vendor (or any authenticated
+  user) can never retrieve or mint the token that authorises actions on an
+  executive's request.
 
 ## The confirm page
 

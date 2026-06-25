@@ -224,4 +224,72 @@ describe("email-action token hardening (2c)", () => {
     expect(forwarded).toBeGreaterThan(0);
     expect(limited).toBeGreaterThan(0);
   });
+
+  it("an authenticated vendor (and anon) cannot mint or retrieve an action token", async () => {
+    // The escalation this closes: ensure_request_action_token is service-only, so
+    // a vendor cannot obtain the token that authorises actions on an exec request.
+    const { reqId } = await freshRequest();
+    const asVendor = await alex.rpc("ensure_request_action_token", { p_request_id: reqId });
+    expect(asVendor.error?.message).toMatch(/permission denied/i);
+    const asAnon = await anon().rpc("ensure_request_action_token", { p_request_id: reqId });
+    expect(asAnon.error?.message).toMatch(/permission denied|not find|function/i);
+  });
+
+  it("two active tokens racing accept yield ONE meeting; both tokens are consumed", async () => {
+    const { reqId, token } = await freshRequest();
+    // A second active token for the same request (service role bypasses the
+    // app-level single-active invariant, modelling a stray/legacy duplicate).
+    const token2 = `dup-${rand()}${rand()}`;
+    await admin
+      .from("email_action_token")
+      .insert({ request_id: reqId, token: token2, status: "active" });
+
+    const [a, b] = await Promise.all([
+      act(anon(), token, "accept"),
+      act(anon(), token2, "accept"),
+    ]);
+    const accepted = [a, b].filter((r) => r.data === "accepted");
+    const failed = [a, b].filter((r) => r.error);
+    expect(accepted).toHaveLength(1); // request lock serialises across DIFFERENT tokens
+    expect(failed).toHaveLength(1);
+    // The loser is rejected CLEANLY (token already consumed), not via a deadlock:
+    // the request-first lock order must keep the two paths deadlock-free.
+    expect(failed[0].error?.message).toMatch(/token_not_active|request_not_open/);
+    expect(failed[0].error?.message).not.toMatch(/deadlock/i);
+
+    const { count: meetingCount } = await admin
+      .from("meeting")
+      .select("id", { count: "exact", head: true })
+      .eq("request_id", reqId);
+    expect(meetingCount).toBe(1);
+
+    // Consume-all on terminal: neither link survives as active.
+    const { data: toks } = await admin
+      .from("email_action_token")
+      .select("status")
+      .eq("request_id", reqId);
+    expect(toks!.every((t) => t.status !== "active")).toBe(true);
+    expect(toks!.filter((t) => t.status === "consumed")).toHaveLength(2);
+  });
+
+  it("a terminal decline consumes EVERY active token, so no sibling link can be replayed", async () => {
+    const { reqId, token } = await freshRequest();
+    const token2 = `dup-${rand()}${rand()}`;
+    await admin
+      .from("email_action_token")
+      .insert({ request_id: reqId, token: token2, status: "active" });
+
+    const { error } = await act(anon(), token, "decline");
+    expect(error).toBeNull();
+
+    const { data: toks } = await admin
+      .from("email_action_token")
+      .select("status")
+      .eq("request_id", reqId);
+    expect(toks!.every((t) => t.status !== "active")).toBe(true);
+
+    // The unused sibling link is dead.
+    const replay = await act(anon(), token2, "decline");
+    expect(replay.error?.message).toMatch(/token_not_active|request_not_open/);
+  });
 });

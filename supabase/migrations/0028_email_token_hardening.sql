@@ -62,18 +62,26 @@ begin
   return v_hits <= p_limit;
 end;
 $$;
-revoke all on function public.consume_rate_limit(text, integer, integer) from public;
--- Callable only by the security-definer functions that wrap it (no direct grant).
+-- Supabase's default privileges auto-grant EXECUTE to anon/authenticated as
+-- NAMED roles, so revoking from `public` alone is not enough — revoke the named
+-- roles too. Only the security-definer functions that wrap it (running as owner)
+-- call this; no role needs a direct grant.
+revoke all on function public.consume_rate_limit(text, integer, integer) from public, anon, authenticated;
 
 -- 4. ── ensure_request_action_token: reuse-or-refresh for follow-up emails ─────
 -- Follow-up emails should reuse the still-valid link within the 90-day window, or
--- mint a fresh token if the prior one has hit the backstop. Keeps one usable
--- token per request by retiring any expired actives first.
+-- mint a fresh token if the prior one has hit the backstop. Maintains the
+-- single-active-token-per-request invariant: retires expired actives and revokes
+-- any extra actives, so a request never carries two live links.
 create or replace function public.ensure_request_action_token(p_request_id uuid)
 returns text language plpgsql security definer set search_path = '' as $$
 declare
   v_token text;
 begin
+  -- Serialize issuance for this request so concurrent callers cannot race the
+  -- single-active invariant into two live tokens.
+  perform 1 from public.request where id = p_request_id for update;
+
   update public.email_action_token
     set status = 'revoked'
     where request_id = p_request_id and status = 'active' and expires_at <= now();
@@ -84,18 +92,28 @@ begin
     order by created_at desc
     limit 1;
 
-  if v_token is null then
-    v_token := encode(extensions.gen_random_bytes(32), 'hex');
-    insert into public.email_action_token (request_id, token, status)
-      values (p_request_id, v_token, 'active');
+  if v_token is not null then
+    -- Single-active invariant: revoke any other live tokens for this request.
+    update public.email_action_token
+      set status = 'revoked'
+      where request_id = p_request_id and status = 'active' and token <> v_token;
+    return v_token;
   end if;
 
+  v_token := encode(extensions.gen_random_bytes(32), 'hex');
+  insert into public.email_action_token (request_id, token, status)
+    values (p_request_id, v_token, 'active');
   return v_token;
 end;
 $$;
-revoke all on function public.ensure_request_action_token(uuid) from public;
--- The email sender runs as service_role; staff may also resolve a link. NOT anon.
-grant execute on function public.ensure_request_action_token(uuid) to authenticated, service_role;
+-- Minting/retrieving an exec action token is a privileged operation: ONLY the
+-- email sender (service_role) may call it. Supabase's default privileges grant
+-- EXECUTE to anon/authenticated as NAMED roles, so they must be revoked
+-- explicitly (revoking `public` alone leaves those grants in place) — a vendor
+-- must never be able to obtain or mint the token that authorises actions on an
+-- executive's request.
+revoke all on function public.ensure_request_action_token(uuid) from public, anon, authenticated;
+grant execute on function public.ensure_request_action_token(uuid) to service_role;
 
 -- 5. ── The inert token read: expired tokens reveal NOTHING but "expired" ──────
 -- An expired link must show a polite "expired" page that routes to follow-up,
@@ -169,19 +187,29 @@ begin
     raise exception 'rate_limited';
   end if;
 
-  -- Lock the token row so concurrent POSTs serialize. Without this, two accepts
-  -- could both read status='active' and each insert a meeting (double booking).
-  select t.request_id, t.status::text, t.expires_at, r.status::text, r.executive_id, r.requested_by_user_id
-  into v_req, v_token_status, v_expires_at, v_req_status, v_exec, v_req_user
-  from public.email_action_token t join public.request r on r.id = t.request_id
-  where t.token = p_token
-  for update of t;
-
+  -- Find which request this token authorises (read-only; request_id is immutable).
+  select request_id into v_req from public.email_action_token where token = p_token;
   if v_req is null then raise exception 'invalid_token'; end if;
+
+  -- Lock the REQUEST row, not the token: replay safety is request-scoped, so two
+  -- concurrent actions on the same request via DIFFERENT active tokens still
+  -- serialize here and cannot both create a meeting (double booking). Locking the
+  -- request FIRST (before touching any token row) matches the lock order in
+  -- ensure_request_action_token, so the two paths can never deadlock.
+  select r.status::text, r.executive_id, r.requested_by_user_id
+  into v_req_status, v_exec, v_req_user
+  from public.request r where r.id = v_req for update;
+
+  -- The token's state is now stable under the request lock (every token mutator
+  -- for a request takes this same lock), so a plain read is race-free.
+  select t.status::text, t.expires_at into v_token_status, v_expires_at
+  from public.email_action_token t where t.token = p_token;
+
   if v_token_status <> 'active' then raise exception 'token_not_active'; end if;
   if now() >= v_expires_at then raise exception 'token_expired'; end if;
   if p_actor not in ('executive','ea_acting_for_exec') then raise exception 'bad_actor'; end if;
-  v_actor_type := case when p_actor = 'ea_acting_for_exec' then 'ea' else 'system' end;
+  -- Attribute the action to who acted: the executive, or their EA acting for them.
+  v_actor_type := case when p_actor = 'ea_acting_for_exec' then 'ea' else 'executive' end;
 
   if p_action = 'send_to_ea' then
     -- Forward only while the request is still open (tightened: was unconditional).
@@ -214,7 +242,10 @@ begin
     update public.request set status = 'accepted' where id = v_req;
     select default_charity_id into v_charity from public.executive where id = v_exec;
     insert into public.meeting (request_id, charity_id, status) values (v_req, v_charity, 'proposed');
-    update public.email_action_token set status = 'consumed' where token = p_token;
+    -- Terminal: consume EVERY active token for this request, not just the one
+    -- used, so no sibling link can be replayed after the decision.
+    update public.email_action_token set status = 'consumed'
+      where request_id = v_req and status = 'active';
     insert into public.notification (recipient_type, recipient_id, channel, event, status, request_id) values
       ('vendor_user', v_req_user, 'email', 'C1_exec_accepted', 'queued', v_req),
       ('staff', null, 'in_app', 'C1_confirm_time', 'queued', v_req);
@@ -223,7 +254,9 @@ begin
     return 'accepted';
   else
     update public.request set status = 'declined', decline_reason = p_decline_reason where id = v_req;
-    update public.email_action_token set status = 'consumed' where token = p_token;
+    -- Terminal: consume every active token for this request (see accept).
+    update public.email_action_token set status = 'consumed'
+      where request_id = v_req and status = 'active';
     insert into public.notification (recipient_type, recipient_id, channel, event, status, request_id)
       values ('staff', null, 'in_app', 'B5_decline_to_send', 'queued', v_req);
     insert into public.audit_entry (actor_type, acting_for_executive_id, action, target_type, target_id)

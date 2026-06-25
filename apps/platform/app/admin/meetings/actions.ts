@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/auth";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getFlag } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
 import { confirmMeeting, markHeld, releaseMeeting, rescheduleMeeting, reverseHeld } from "@/lib/meetings";
@@ -63,7 +64,13 @@ export async function sendQueuedEmailsAction(): Promise<void> {
   if (!(await getFlag("email_sending"))) return;
   const key = process.env.RESEND_API_KEY;
   if (!key) return;
-  const summary = await drainEmailQueue(supabase, resendTransport(key));
+  // The drain is a system operation over the GLOBAL queue and mints/refreshes
+  // action tokens via a service-role-only RPC, so it runs with the service-role
+  // client even though a staff member triggered it. requireStaff above is the
+  // authorisation gate; this is the execution context (matches the cron route).
+  const admin = createAdminClient();
+  if (!admin) return; // no service key configured -> inert, like the cron route
+  const summary = await drainEmailQueue(admin, resendTransport(key));
   await logAudit(supabase, staff.id, {
     action: "email.drain",
     targetType: "notification",

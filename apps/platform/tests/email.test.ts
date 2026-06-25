@@ -6,6 +6,7 @@ import { formatAud } from "../lib/format";
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const PASSWORD = "Passw0rd!test";
 const RILEY = "00000000-0000-0000-0000-00000000ec02";
 const ALPHA = "00000000-0000-0000-0000-00000000ad01";
@@ -43,11 +44,17 @@ async function preclear(admin: SupabaseClient) {
 }
 
 describe("email queue drain (A1)", () => {
-  let admin: SupabaseClient;
+  let admin: SupabaseClient; // staff: fixture setup + inspection
+  let service: SupabaseClient; // service-role: the drain (mirrors the cron/admin action)
   let alex: SupabaseClient;
 
   beforeAll(async () => {
     admin = await signIn("admin@thegoodintro.test");
+    // The drain runs as service_role in production (cron + admin action), which is
+    // the only role allowed to mint action tokens via ensure_request_action_token.
+    service = createClient(URL, SERVICE_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
     alex = await signIn("alex@alpha.test");
   });
 
@@ -66,7 +73,7 @@ describe("email queue drain (A1)", () => {
       .single();
 
     const calls: EmailMessage[] = [];
-    const summary = await drainEmailQueue(admin, fakeTransport(calls));
+    const summary = await drainEmailQueue(service, fakeTransport(calls));
     expect(summary).toMatchObject({ sent: 1, failed: 0 });
     expect(calls.length).toBe(1);
 
@@ -140,7 +147,7 @@ describe("email queue drain (A1)", () => {
     expect(row?.sent_at).toBeTruthy();
 
     // Idempotency: a second drain picks up nothing and sends nothing.
-    const again = await drainEmailQueue(admin, fakeTransport(calls));
+    const again = await drainEmailQueue(service, fakeTransport(calls));
     expect(again).toMatchObject({ picked: 0, sent: 0 });
     expect(calls.length).toBe(1);
 
@@ -165,7 +172,7 @@ describe("email queue drain (A1)", () => {
     });
 
     const calls: EmailMessage[] = [];
-    const summary = await drainEmailQueue(admin, fakeTransport(calls));
+    const summary = await drainEmailQueue(service, fakeTransport(calls));
     expect(summary).toMatchObject({ sent: 1 });
     expect(calls[0].subject).toBe("Casey Counsel (Alpha Pty Ltd) has requested 45 minutes");
     expect(calls[0].html).toContain("GM Finance · Alpha Pty Ltd");
@@ -184,7 +191,7 @@ describe("email queue drain (A1)", () => {
     });
 
     const failCalls: EmailMessage[] = [];
-    const s1 = await drainEmailQueue(admin, fakeTransport(failCalls, true));
+    const s1 = await drainEmailQueue(service, fakeTransport(failCalls, true));
     expect(s1).toMatchObject({ sent: 0, failed: 1 });
 
     const { data: failedRow } = await admin
@@ -197,7 +204,7 @@ describe("email queue drain (A1)", () => {
     expect(failedRow?.last_error).toContain("boom");
 
     const okCalls: EmailMessage[] = [];
-    const s2 = await drainEmailQueue(admin, fakeTransport(okCalls));
+    const s2 = await drainEmailQueue(service, fakeTransport(okCalls));
     expect(s2).toMatchObject({ sent: 1, failed: 0 });
     const { data: sentRow } = await admin
       .from("notification")
@@ -227,7 +234,7 @@ describe("email queue drain (A1)", () => {
       .single();
 
     const calls: EmailMessage[] = [];
-    const summary = await drainEmailQueue(admin, fakeTransport(calls));
+    const summary = await drainEmailQueue(service, fakeTransport(calls));
     delete process.env.EMAIL_ADMIN_ALERTS;
 
     expect(summary).toMatchObject({ sent: 1 });
@@ -254,7 +261,7 @@ describe("email queue drain (A1)", () => {
       .single();
 
     const calls: EmailMessage[] = [];
-    const summary = await drainEmailQueue(admin, fakeTransport(calls));
+    const summary = await drainEmailQueue(service, fakeTransport(calls));
     expect(summary).toMatchObject({ sent: 1 });
     expect(calls[0].subject).toBe("Payment received, thank you");
     expect(calls[0].html).toContain("5 meeting credits");
@@ -329,7 +336,7 @@ describe("email queue drain (A1)", () => {
     });
 
     const calls: EmailMessage[] = [];
-    const summary = await drainEmailQueue(admin, fakeTransport(calls));
+    const summary = await drainEmailQueue(service, fakeTransport(calls));
     expect(summary).toMatchObject({ sent: 1, failed: 0 });
     expect(calls.length).toBe(1);
 
@@ -417,7 +424,7 @@ describe("email queue drain (A1)", () => {
       .single();
 
     const calls: EmailMessage[] = [];
-    const summary = await drainEmailQueue(admin, fakeTransport(calls));
+    const summary = await drainEmailQueue(service, fakeTransport(calls));
     expect(summary).toMatchObject({ sent: 1, failed: 0 });
     expect(calls.length).toBe(1);
 
@@ -518,7 +525,7 @@ describe("email queue drain (A1)", () => {
       .single();
 
     const calls: EmailMessage[] = [];
-    const summary = await drainEmailQueue(admin, fakeTransport(calls));
+    const summary = await drainEmailQueue(service, fakeTransport(calls));
     expect(summary).toMatchObject({ sent: 1, failed: 0 });
     expect(calls[0].to).toBe(TEST_INBOX);
     expect(calls[0].subject).toBe("Riley Chen accepted."); // RILEY = Riley Chen
@@ -547,7 +554,7 @@ describe("email queue drain (A1)", () => {
       .single();
 
     const calls: EmailMessage[] = [];
-    const summary = await drainEmailQueue(admin, fakeTransport(calls));
+    const summary = await drainEmailQueue(service, fakeTransport(calls));
     expect(summary).toMatchObject({ sent: 1, failed: 0 });
     expect(calls[0].to).toBe(TEST_INBOX);
     expect(calls[0].subject).toBe(`You are confirmed with ${ex!.name}`);
@@ -589,7 +596,7 @@ describe("email queue drain (A1)", () => {
       .single();
 
     const calls: EmailMessage[] = [];
-    const summary = await drainEmailQueue(admin, fakeTransport(calls));
+    const summary = await drainEmailQueue(service, fakeTransport(calls));
     expect(summary).toMatchObject({ sent: 1, failed: 0 });
     expect(calls[0].to).toBe(TEST_INBOX);
     // Derive the exact gift from the seeded gift_record (avoid hardcoding a value
@@ -649,7 +656,7 @@ describe("email queue drain (A1)", () => {
       .single();
 
     const calls: EmailMessage[] = [];
-    const summary = await drainEmailQueue(admin, fakeTransport(calls));
+    const summary = await drainEmailQueue(service, fakeTransport(calls));
     expect(summary).toMatchObject({ sent: 1, failed: 0 });
     expect(calls[0].to).toBe(TEST_INBOX);
     expect(calls[0].subject).toBe("Welcome to TheGoodIntro");
