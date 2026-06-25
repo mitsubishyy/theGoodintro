@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { Avatar } from "@thegoodintro/ui";
 import { uploadPhotoFile } from "@/lib/upload/client";
+import { usePhotoCrop, urlToFile } from "@/app/_components/photo-crop-provider";
 import { saveVendorPhotoAction, saveVendorProfileAction } from "./actions";
 
 /**
@@ -30,6 +31,8 @@ export function VendorProfileCard({
   const [busy, setBusy] = useState(false);
   const [photoErr, setPhotoErr] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const { cropImage } = usePhotoCrop();
+  const [original, setOriginal] = useState<File | null>(null);
 
   const [name, setName] = useState(initialName);
   const [saving, setSaving] = useState(false);
@@ -37,25 +40,41 @@ export function VendorProfileCard({
   const [saved, setSaved] = useState(false);
   const dirty = name.trim() !== initialName.trim();
 
+  // Frame the avatar, then upload the cropped file through the same route +
+  // persist. Errors surface inside the modal (it stays open).
+  const runCrop = (f: File) =>
+    cropImage(f, {
+      title: "Frame your photo",
+      upload: async (cropped) => {
+        setBusy(true);
+        try {
+          const up = await uploadPhotoFile(cropped, "vendor-user", vendorUserId);
+          if ("error" in up) throw new Error(up.error);
+          const result = await saveVendorPhotoAction(up.url);
+          if (result.error) throw new Error(result.error);
+          return up.url;
+        } finally {
+          setBusy(false);
+        }
+      },
+    });
+
   const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
-    setBusy(true);
     setPhotoErr(null);
-    const up = await uploadPhotoFile(file, "vendor-user", vendorUserId);
-    if ("error" in up) {
-      setBusy(false);
-      setPhotoErr(up.error);
-      return;
-    }
-    const result = await saveVendorPhotoAction(up.url);
-    setBusy(false);
-    if (result.error) {
-      setPhotoErr(result.error);
-      return;
-    }
-    setPhotoUrl(up.url);
+    setOriginal(file);
+    const newUrl = await runCrop(file);
+    if (newUrl) setPhotoUrl(newUrl);
+  };
+
+  // Re-frame the current photo without re-uploading.
+  const onReposition = async () => {
+    const f = original ?? (photoUrl ? await urlToFile(photoUrl) : null);
+    if (!f) return;
+    const newUrl = await runCrop(f);
+    if (newUrl) setPhotoUrl(newUrl);
   };
 
   const onRemovePhoto = async () => {
@@ -150,12 +169,17 @@ export function VendorProfileCard({
                     <CameraIcon /> {photoUrl ? "Replace" : "Upload"}
                   </button>
                   {photoUrl && (
+                    <button type="button" onClick={onReposition} className="text-[13px] font-medium" style={{ color: "var(--portal-amber-ink)" }}>
+                      Reposition
+                    </button>
+                  )}
+                  {photoUrl && (
                     <button type="button" onClick={onRemovePhoto} className="text-[13px] font-medium" style={{ color: "oklch(0.58 0.18 25)" }}>
                       Remove
                     </button>
                   )}
                 </div>
-                <span className="mt-1 font-mono text-[11px]" style={mutedLabel}>PNG, JPG or WebP. Max 1MB.</span>
+                <span className="mt-1 font-mono text-[11px]" style={mutedLabel}>PNG, JPG or WebP.</span>
               </>
             )}
 

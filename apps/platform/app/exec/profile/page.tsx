@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
 import { ExecShell } from "../_components/exec-shell";
 import { ProfileView } from "./_components/profile-view";
+import { PhotoCropProvider } from "@/app/_components/photo-crop-provider";
 import { resolveDemoExecutiveId, loadExecProfile } from "../data";
 
 export const metadata: Metadata = {
@@ -36,7 +37,9 @@ export default async function ExecProfilePage() {
         photoUrl: data.exec.photoUrl,
       }}
     >
-      <ProfileView data={data} photoUploadEnabled={photoUploadEnabled} />
+      <PhotoCropProvider>
+        <ProfileView data={data} photoUploadEnabled={photoUploadEnabled} />
+      </PhotoCropProvider>
     </ExecShell>
   );
 }

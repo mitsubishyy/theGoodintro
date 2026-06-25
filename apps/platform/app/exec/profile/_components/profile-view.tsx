@@ -7,6 +7,7 @@ import { Avatar, Icon } from "@thegoodintro/ui";
 import type { ExecProfileData } from "../../data";
 import { saveProfileYouAction, saveProfileBusinessAction, saveProfileCalendarAction, saveProfilePhotoAction, setRequestPauseAction } from "../../actions";
 import { uploadPhotoFile } from "@/lib/upload/client";
+import { usePhotoCrop, urlToFile } from "@/app/_components/photo-crop-provider";
 import { TIMELINE_OPTIONS, CADENCE_OPTIONS, SENIORITY_OPTIONS, WINDOW_DAY_OPTIONS, TIMEZONE_OPTIONS, timezoneLabel, windowDaysLabel } from "../options";
 import { ProfileEaDrawer } from "./profile-ea-drawer";
 
@@ -69,6 +70,8 @@ function YouSection({ you, photoUploadEnabled }: { you: ExecProfileData["you"]; 
   const [photoBusy, setPhotoBusy] = useState(false);
   const [photoErr, setPhotoErr] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const { cropImage } = usePhotoCrop();
+  const [originalPhoto, setOriginalPhoto] = useState<File | null>(null);
 
   const save = async () => {
     setBusy(true);
@@ -80,24 +83,49 @@ function YouSection({ you, photoUploadEnabled }: { you: ExecProfileData["you"]; 
     router.refresh();
   };
 
+  // Frame the avatar, then upload the cropped file through the same route +
+  // persist. The route owns the real validation; ownerId is a fresh id (paths
+  // are content-hashed and the column write resolves the real executive).
+  // Errors surface inside the modal (it stays open).
+  const runCrop = (f: File) =>
+    cropImage(f, {
+      title: "Frame your photo",
+      upload: async (cropped) => {
+        setPhotoBusy(true);
+        try {
+          const up = await uploadPhotoFile(cropped, "exec", crypto.randomUUID());
+          if ("error" in up) throw new Error(up.error);
+          const res = await saveProfilePhotoAction(up.url);
+          if (res.error) throw new Error(res.error);
+          return up.url;
+        } finally {
+          setPhotoBusy(false);
+        }
+      },
+    });
+
   const onPickPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = ""; // let the same file be re-picked after an error
     if (!file) return;
-    setPhotoBusy(true);
     setPhotoErr(null);
-    // The route owns the real validation; ownerId is a fresh id (paths are
-    // content-hashed and the column write resolves the real executive).
-    const up = await uploadPhotoFile(file, "exec", crypto.randomUUID());
-    if ("error" in up) {
-      setPhotoBusy(false);
-      return setPhotoErr(up.error);
+    setOriginalPhoto(file);
+    const newUrl = await runCrop(file);
+    if (newUrl) {
+      setPhotoUrl(newUrl);
+      router.refresh();
     }
-    const res = await saveProfilePhotoAction(up.url);
-    setPhotoBusy(false);
-    if (res.error) return setPhotoErr(res.error);
-    setPhotoUrl(up.url);
-    router.refresh();
+  };
+
+  // Re-frame the current photo without re-uploading.
+  const onRepositionPhoto = async () => {
+    const f = originalPhoto ?? (photoUrl ? await urlToFile(photoUrl) : null);
+    if (!f) return;
+    const newUrl = await runCrop(f);
+    if (newUrl) {
+      setPhotoUrl(newUrl);
+      router.refresh();
+    }
   };
 
   return (
@@ -143,6 +171,11 @@ function YouSection({ you, photoUploadEnabled }: { you: ExecProfileData["you"]; 
                   <button type="button" onClick={() => fileRef.current?.click()} disabled={photoBusy} className="text-[12px] italic underline-offset-2 hover:underline disabled:opacity-60" style={{ color: "var(--portal-ink)" }}>
                     {photoBusy ? "Uploading…" : "Change photo"}
                   </button>
+                  {photoUrl && (
+                    <button type="button" onClick={onRepositionPhoto} disabled={photoBusy} className="text-[12px] italic underline-offset-2 hover:underline disabled:opacity-60" style={{ color: "var(--portal-ink)" }}>
+                      Reposition
+                    </button>
+                  )}
                   {photoErr && <span className="text-[12px]" style={{ color: "#b42318" }}>{photoErr}</span>}
                 </div>
               ) : (

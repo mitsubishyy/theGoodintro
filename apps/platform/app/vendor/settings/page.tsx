@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getVendor } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
 import { VendorProfileCard } from "./_profile-card";
+import { PhotoCropProvider } from "@/app/_components/photo-crop-provider";
 
 export const metadata: Metadata = {
   title: "Settings — TheGoodIntro",
@@ -51,14 +52,16 @@ export default async function VendorSettingsPage() {
         </header>
 
         <div className="flex flex-col gap-5">
-          <VendorProfileCard
-            vendorUserId={vu.id}
-            name={vu.name}
-            email={vu.email}
-            role={vu.role}
-            initialPhotoUrl={vu.photo_url ?? undefined}
-            photoEnabled={photoEnabled}
-          />
+          <PhotoCropProvider>
+            <VendorProfileCard
+              vendorUserId={vu.id}
+              name={vu.name}
+              email={vu.email}
+              role={vu.role}
+              initialPhotoUrl={vu.photo_url ?? undefined}
+              photoEnabled={photoEnabled}
+            />
+          </PhotoCropProvider>
 
           {/* ── Company (read-only) ── */}
           <section

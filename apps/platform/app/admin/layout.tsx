@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { requireStaff } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
+import { PhotoCropProvider } from "@/app/_components/photo-crop-provider";
 import { signOutAction } from "@/app/login/actions";
 import {
   PortalShell,
@@ -184,7 +185,7 @@ export default async function AdminLayout({
         />
       }
     >
-      {children}
+      <PhotoCropProvider>{children}</PhotoCropProvider>
     </PortalShell>
   );
 }

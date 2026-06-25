@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { Avatar } from "@thegoodintro/ui";
 import { uploadPhotoFile } from "@/lib/upload/client";
+import { usePhotoCrop, urlToFile } from "@/app/_components/photo-crop-provider";
 import { saveVendorUserPhotoAction } from "../actions";
 
 /**
@@ -28,26 +29,46 @@ export function VendorUserPhotoCell({
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const { cropImage } = usePhotoCrop();
+  const [original, setOriginal] = useState<File | null>(null);
+
+  // Frame the avatar, then upload the cropped file through the same route +
+  // persist. Errors surface inside the modal (it stays open).
+  const runCrop = (f: File) =>
+    cropImage(f, {
+      title: "Frame the photo",
+      upload: async (cropped) => {
+        setBusy(true);
+        try {
+          const up = await uploadPhotoFile(cropped, "vendor-user", userId);
+          if ("error" in up) throw new Error(up.error);
+          const saved = await saveVendorUserPhotoAction(userId, up.url);
+          if (saved.error) throw new Error(saved.error);
+          return up.url;
+        } finally {
+          setBusy(false);
+        }
+      },
+    });
 
   const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
-    setBusy(true);
     setErr(null);
-    const up = await uploadPhotoFile(file, "vendor-user", userId);
-    if ("error" in up) {
-      setBusy(false);
-      setErr(up.error);
-      return;
-    }
-    const saved = await saveVendorUserPhotoAction(userId, up.url);
-    setBusy(false);
-    if (saved.error) {
-      setErr(saved.error);
-      return;
-    }
-    setUrl(up.url);
+    setOpen(false); // hand off to the crop modal
+    setOriginal(file);
+    const newUrl = await runCrop(file);
+    if (newUrl) setUrl(newUrl);
+  };
+
+  // Re-frame the current photo without re-uploading.
+  const onReposition = async () => {
+    setOpen(false);
+    const f = original ?? (url ? await urlToFile(url) : null);
+    if (!f) return;
+    const newUrl = await runCrop(f);
+    if (newUrl) setUrl(newUrl);
   };
 
   const onRemove = async () => {
@@ -98,7 +119,7 @@ export function VendorUserPhotoCell({
                   {name}
                 </div>
                 <div className="font-mono text-[9.5px] leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
-                  PNG, JPG or WebP. Max 1MB.
+                  PNG, JPG or WebP.
                 </div>
               </div>
             </div>
@@ -121,6 +142,9 @@ export function VendorUserPhotoCell({
                   style={{ borderColor: "var(--portal-line)", background: "var(--portal-card)", color: "var(--portal-ink)" }}
                 >
                   Replace
+                </button>
+                <button type="button" onClick={onReposition} className="text-[11.5px]" style={{ color: "var(--portal-amber-ink)" }}>
+                  Reposition
                 </button>
                 <button type="button" onClick={onRemove} className="text-[11.5px]" style={{ color: "oklch(0.58 0.18 25)" }}>
                   Remove

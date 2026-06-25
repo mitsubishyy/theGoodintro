@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { Avatar } from "@thegoodintro/ui";
 import { uploadPhotoFile } from "@/lib/upload/client";
+import { usePhotoCrop, urlToFile } from "@/app/_components/photo-crop-provider";
 
 /**
  * Shared admin photo control (file-upload only, per the locked specs). On pick it
@@ -16,6 +17,9 @@ import { uploadPhotoFile } from "@/lib/upload/client";
 
 type Entity = "exec" | "vendor-user" | "charity-logo" | "charity-hero";
 
+const DEFAULT_HINT = "PNG, JPG or WebP. Max 1MB.";
+const AVATAR_HINT = "PNG, JPG or WebP.";
+
 export function PhotoUploadField({
   entity = "exec",
   fieldName = "photo_url",
@@ -25,7 +29,7 @@ export function PhotoUploadField({
   previewName,
   previewShape = "round",
   previewSize = 56,
-  hint = "PNG, JPG or WebP. Max 1MB.",
+  hint = DEFAULT_HINT,
   enabled,
   className = "sm:col-span-2",
 }: {
@@ -45,17 +49,54 @@ export function PhotoUploadField({
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const { cropImage } = usePhotoCrop();
+  const [original, setOriginal] = useState<File | null>(null);
+
+  // Round avatars (executive + vendor-user) get the crop / framing step; charity
+  // logo / hero are not 1:1 circular, so they keep the immediate upload for now.
+  const avatar = entity === "exec" || entity === "vendor-user";
+  // With the crop step the source-file size cap no longer bites (the crop is
+  // resampled to a small 512 file), so the avatar control drops the "Max 1MB".
+  const displayHint = avatar && hint === DEFAULT_HINT ? AVATAR_HINT : hint;
+
+  // Frame an avatar, then upload the cropped file through the same route.
+  const runCrop = (f: File) =>
+    cropImage(f, {
+      title: "Frame the photo",
+      upload: async (cropped) => {
+        const up = await uploadPhotoFile(cropped, entity, ownerId || crypto.randomUUID());
+        if ("error" in up) throw new Error(up.error); // shown inline in the modal
+        return up.url;
+      },
+    });
 
   const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
-    setBusy(true);
     setErr(null);
+
+    if (avatar) {
+      setOriginal(file);
+      const newUrl = await runCrop(file);
+      if (newUrl) setUrl(newUrl);
+      return;
+    }
+
+    setBusy(true);
     const up = await uploadPhotoFile(file, entity, ownerId || crypto.randomUUID());
     setBusy(false);
     if ("error" in up) return setErr(up.error);
     setUrl(up.url);
+  };
+
+  // Re-frame the current photo without re-uploading: the in-session original if
+  // we have it, otherwise the saved photo fetched back.
+  const onReposition = async () => {
+    const f = original ?? (url ? await urlToFile(url) : null);
+    if (!f) return;
+    const newUrl = await runCrop(f);
+    if (newUrl) setUrl(newUrl);
   };
 
   return (
@@ -78,13 +119,18 @@ export function PhotoUploadField({
               >
                 {busy ? "Uploading…" : url ? "Replace" : "Upload"}
               </button>
+              {avatar && url ? (
+                <button type="button" onClick={onReposition} className="text-sm" style={{ color: "var(--portal-amber-ink)" }}>
+                  Reposition
+                </button>
+              ) : null}
               {url ? (
                 <button type="button" onClick={() => setUrl("")} className="text-sm" style={{ color: "var(--muted-foreground)" }}>
                   Remove
                 </button>
               ) : null}
             </div>
-            <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{hint}</span>
+            <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{displayHint}</span>
             {err ? <span className="text-xs" style={{ color: "var(--portal-amber-ink)" }}>{err}</span> : null}
           </div>
         ) : (
