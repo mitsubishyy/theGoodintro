@@ -7,7 +7,7 @@ import { getStaff, getExecPrincipal } from "@/lib/auth";
 import { getFlag, getFlagAuthoritative } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
 import { isOwnAvatarUrl } from "@/lib/upload/url";
-import { resolveStaffSignInTarget, sendSignInLink } from "@/lib/exec-access";
+import { resolveStaffSignInTarget, sendSignInLink, upsertExecutiveAssistant } from "@/lib/exec-access";
 import { logSecurityEvent } from "@/lib/security-log";
 import { resolveDemoExecutiveId, loadCharityContent, loadCharityList, type CharityContent, type CharityListItem } from "./data";
 
@@ -211,6 +211,65 @@ export async function setStandingNominationAction(
 
   revalidatePath("/exec");
   revalidatePath("/exec/my-charity");
+  return { ok: true };
+}
+
+/**
+ * Add or save the executive's assistant, then send them a passwordless access
+ * link (the locked Profile EA drawer's "Add an assistant" / "Save changes").
+ * Wires the previously-inert drawer button. BOUNDED to EA add/link: one ea
+ * record + one ea_assignment + executive.ea_id + the link send (the privileged
+ * writes go through upsertExecutiveAssistant on the service role).
+ *
+ * Authorization: staff (the demo / admin-acting surface) OR the OWNING executive.
+ * An EA is deliberately refused — provisioning or replacing assistant access is
+ * not an EA power (privilege containment; matches the drawer's "they cannot
+ * change your charity or business context" contract). Flag-gated on
+ * exec_ea_login read authoritatively (the same kill switch the rest of the
+ * passwordless path honors; the access link is meaningless without it).
+ */
+export async function saveExecutiveAssistantAction(input: { name: string; email: string }): Promise<ExecActionState> {
+  if (!(await getFlagAuthoritative("exec_ea_login"))) return { error: "Assistant access is not enabled yet." };
+  const name = clean(input.name, 200);
+  const email = (clean(input.email, 320) ?? "").toLowerCase();
+  if (!name) return { error: "Enter your assistant's name." };
+  if (!email || !email.includes("@")) return { error: "Enter a valid email address for your assistant." };
+
+  // Authorize the principal (staff or the owning exec; never an EA), then resolve
+  // the executive whose assistant slot this writes.
+  const principal = await getExecPrincipal();
+  if (!principal || principal.kind === "ea") return { error: "Not authorized." };
+  const execId = principal.execId ?? (await resolveDemoExecutiveId(principal.supabase));
+  if (!execId) return { error: "No executive found." };
+
+  const admin = createAdminClient();
+  if (!admin) return { error: "The server is not configured to send access links." };
+
+  const res = await upsertExecutiveAssistant(admin, execId, name, email);
+  if (res.status === "ambiguous")
+    return { error: "That email already belongs to someone else on file. Ask us to link a shared assistant." };
+  if (res.status !== "ok") return { error: "That assistant could not be saved." };
+
+  // Audit as the acting principal (service role, so the exec-session-cannot-insert-
+  // audit constraint does not apply); mirrors request_standing_nomination's
+  // principal-attributed self-audit.
+  await admin.from("audit_entry").insert({
+    actor_type: principal.kind, // 'staff' | 'executive'
+    actor_id: principal.kind === "staff" ? (principal.staffId ?? null) : execId,
+    acting_for_executive_id: execId,
+    action: res.mode === "added" ? "executive.ea_linked" : "executive.ea_updated",
+    target_type: "executive",
+    target_id: execId,
+    metadata: { ea_id: res.eaId, email_changed: res.emailChanged },
+  });
+
+  // shouldCreateUser true: a never-logged-in EA has no auth user yet; the link
+  // binds ea.auth_user_id on first click (linkAuthUserToExecOrEa).
+  await sendSignInLink(email, true);
+  logSecurityEvent("exec_signin_link_provisioned", { kind: "ea", by: principal.kind });
+
+  revalidatePath("/exec/profile");
+  revalidatePath("/exec");
   return { ok: true };
 }
 

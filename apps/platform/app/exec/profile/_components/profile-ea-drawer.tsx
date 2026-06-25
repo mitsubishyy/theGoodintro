@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Avatar, Icon } from "@thegoodintro/ui";
 import type { ExecProfileData } from "../../data";
+import { saveExecutiveAssistantAction } from "../../actions";
 
 /**
  * Profile EA drawer (exec-profile VP3 + exec-small-states-batch VP3). 540px right
@@ -11,18 +13,36 @@ import type { ExecProfileData } from "../../data";
  * remove link. The numbered "what your assistant can do" circles are hairline +
  * ink (never amber on exec).
  *
- * The save ("Send access link" / "Save changes") creates/updates an EA record +
- * EAAssignment and sends a one-click access-link email — that email machinery is
- * not wired and execs/EAs have no login in v1, so the action stays DISABLED with
- * an honest note (the lock's degrade rule: disable rather than silently no-op).
+ * The save ("Send access link" / "Save changes") creates/updates the single EA
+ * record + ea_assignment and sends the one-click access link
+ * (saveExecutiveAssistantAction). It is LIVE when `enabled` (the exec_ea_login
+ * flag); while the flag is off the button stays DISABLED with an honest note (the
+ * lock's degrade rule: disable rather than silently no-op). The "Remove access"
+ * link stays inert here — revoke is out of this add/link scope.
  */
 
 const SERIF = "var(--font-display), Georgia, serif";
 
-export function ProfileEaDrawer({ ea, onClose }: { ea: ExecProfileData["ea"]; onClose: () => void }) {
+export function ProfileEaDrawer({ ea, enabled, onClose }: { ea: ExecProfileData["ea"]; enabled: boolean; onClose: () => void }) {
+  const router = useRouter();
   const isEdit = Boolean(ea);
   const [name, setName] = useState(ea?.name ?? "");
   const [email, setEmail] = useState(ea?.email ?? "");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const canSubmit = enabled && !busy && name.trim().length > 0 && email.trim().includes("@");
+
+  const save = async () => {
+    if (!canSubmit) return;
+    setBusy(true);
+    setErr(null);
+    const res = await saveExecutiveAssistantAction({ name, email });
+    setBusy(false);
+    if (res.error) return setErr(res.error);
+    onClose();
+    router.refresh();
+  };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -100,17 +120,31 @@ export function ProfileEaDrawer({ ea, onClose }: { ea: ExecProfileData["ea"]; on
             </div>
           </div>
 
-          <p className="mt-6 text-[12px] italic" style={{ color: "var(--muted-foreground)" }}>
-            Assistant access goes live with the one-click access-link email, which is coming soon.
-          </p>
+          {!enabled && (
+            <p className="mt-6 text-[12px] italic" style={{ color: "var(--muted-foreground)" }}>
+              Assistant access goes live with the one-click access-link email, which is coming soon.
+            </p>
+          )}
+          {err && (
+            <p className="mt-6 text-[12.5px]" style={{ color: "#b42318" }}>
+              {err}
+            </p>
+          )}
         </div>
 
         <div className="sticky bottom-0 flex gap-3 border-t px-6 py-5" style={{ background: "var(--portal-card-reading)", borderColor: "var(--portal-line)" }}>
-          <button type="button" onClick={onClose} className="flex-1 h-12 rounded-[10px] text-[13.5px] font-semibold" style={{ background: "transparent", color: "var(--portal-ink)", border: "1px solid var(--portal-line)" }}>
+          <button type="button" onClick={onClose} disabled={busy} className="flex-1 h-12 rounded-[10px] text-[13.5px] font-semibold disabled:opacity-60" style={{ background: "transparent", color: "var(--portal-ink)", border: "1px solid var(--portal-line)" }}>
             Cancel
           </button>
-          <button type="button" disabled className="flex-1 h-12 rounded-[10px] text-[13.5px] font-semibold text-white opacity-50" style={{ background: "var(--portal-emerald)" }} title="Coming with the access-link email">
-            {isEdit ? "Save changes" : "Send access link"}
+          <button
+            type="button"
+            onClick={save}
+            disabled={!canSubmit}
+            className="flex-1 h-12 rounded-[10px] text-[13.5px] font-semibold text-white disabled:opacity-50"
+            style={{ background: "var(--portal-emerald)" }}
+            title={enabled ? undefined : "Coming with the access-link email"}
+          >
+            {busy ? "Sending…" : isEdit ? "Save changes" : "Send access link"}
           </button>
         </div>
       </div>

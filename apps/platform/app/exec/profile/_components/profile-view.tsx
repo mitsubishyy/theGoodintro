@@ -26,7 +26,7 @@ import { ProfileEaDrawer } from "./profile-ea-drawer";
 const SERIF = "var(--font-display), Georgia, serif";
 const EMPTY = "Not on file";
 
-export function ProfileView({ data, photoUploadEnabled }: { data: ExecProfileData; photoUploadEnabled: boolean }) {
+export function ProfileView({ data, photoUploadEnabled, assistantAccessEnabled }: { data: ExecProfileData; photoUploadEnabled: boolean; assistantAccessEnabled: boolean }) {
   const [eaOpen, setEaOpen] = useState(false);
 
   return (
@@ -52,7 +52,7 @@ export function ProfileView({ data, photoUploadEnabled }: { data: ExecProfileDat
         <ConsentSection consent={data.consent} />
       </div>
 
-      {eaOpen && <ProfileEaDrawer ea={data.ea} onClose={() => setEaOpen(false)} />}
+      {eaOpen && <ProfileEaDrawer ea={data.ea} enabled={assistantAccessEnabled} onClose={() => setEaOpen(false)} />}
     </div>
   );
 }

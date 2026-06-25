@@ -6,6 +6,8 @@ import {
   resolveStaffSignInTarget,
   requestExecEaSignInLink,
   linkAuthUserToExecOrEa,
+  emailClaimedByOther,
+  upsertExecutiveAssistant,
 } from "@/lib/exec-access";
 import { getFlagAuthoritative } from "@/lib/flags";
 import { GET as signInGET } from "@/app/auth/sign-in/route";
@@ -134,7 +136,9 @@ describe("exec/EA passwordless access + controlled charity change (2d)", () => {
     // then best-effort hard-delete per id so the FK-pinned ones simply remain
     // harmless (a `db reset` reclaims them on the next run).
     if (cleanupExecs.length) {
-      await admin.from("executive").update({ default_charity_id: null, deleted_at: new Date().toISOString() }).in("id", cleanupExecs);
+      // Also null ea_id: executive.ea_id has no ON DELETE, so an exec still
+      // pointing at a throwaway ea would block that ea's delete below.
+      await admin.from("executive").update({ default_charity_id: null, ea_id: null, deleted_at: new Date().toISOString() }).in("id", cleanupExecs);
       await admin.from("nomination_history").delete().in("executive_id", cleanupExecs);
     }
     if (cleanupEas.length) {
@@ -519,5 +523,74 @@ describe("exec/EA passwordless access + controlled charity change (2d)", () => {
     await admin.from("executive").update({ title: "Updated CFO" }).eq("id", execId);
     const { data: still } = await admin.from("executive").select("auth_user_id").eq("id", execId).single();
     expect(still?.auth_user_id).toBe(bound?.auth_user_id);
+  });
+
+  // ── 10. Exec-side EA add/link provisioning (upsertExecutiveAssistant) ───────
+  it("adds an assistant: one ea + one assignment, executive.ea_id points at it", async () => {
+    const execId = await mkExec(`addea-${rand()}@exec.test`);
+    const eaEmail = `NewEA-${rand()}@ea.test`; // mixed case → stored lowercased
+    const res = await upsertExecutiveAssistant(admin, execId, "Pat Assistant", eaEmail);
+    expect(res).toMatchObject({ status: "ok", mode: "added", emailChanged: true });
+    const eaId = (res as { eaId: string }).eaId;
+    cleanupEas.push(eaId);
+
+    const { data: e } = await admin.from("executive").select("ea_id").eq("id", execId).single();
+    expect(e?.ea_id).toBe(eaId);
+    const { data: earow } = await admin.from("ea").select("name, email").eq("id", eaId).single();
+    expect(earow).toMatchObject({ name: "Pat Assistant", email: eaEmail.toLowerCase() });
+    const { data: asg } = await admin.from("ea_assignment").select("id").eq("ea_id", eaId).eq("executive_id", execId);
+    expect((asg ?? []).length).toBe(1);
+  });
+
+  it("editing the assistant with the same email updates the name and keeps the auth link", async () => {
+    const execId = await mkExec(`editea-${rand()}@exec.test`);
+    const eaEmail = `editea-t-${rand()}@ea.test`;
+    const first = await upsertExecutiveAssistant(admin, execId, "First Name", eaEmail);
+    const eaId = (first as { eaId: string }).eaId;
+    cleanupEas.push(eaId);
+    const uid = await mkUser(eaEmail); // the EA has signed in (bound)
+    await admin.from("ea").update({ auth_user_id: uid }).eq("id", eaId);
+
+    const res = await upsertExecutiveAssistant(admin, execId, "Second Name", eaEmail.toUpperCase());
+    expect(res).toMatchObject({ status: "ok", mode: "updated", emailChanged: false });
+    const { data: earow } = await admin.from("ea").select("name, auth_user_id").eq("id", eaId).single();
+    expect(earow?.name).toBe("Second Name");
+    expect(earow?.auth_user_id).toBe(uid); // same email → access preserved
+  });
+
+  it("changing the assistant's email drops the old auth link so the previous address loses access", async () => {
+    const execId = await mkExec(`swapea-${rand()}@exec.test`);
+    const oldEmail = `swap-old-${rand()}@ea.test`;
+    const first = await upsertExecutiveAssistant(admin, execId, "Old Assistant", oldEmail);
+    const eaId = (first as { eaId: string }).eaId;
+    cleanupEas.push(eaId);
+    const uid = await mkUser(oldEmail);
+    await admin.from("ea").update({ auth_user_id: uid }).eq("id", eaId);
+
+    const newEmail = `swap-new-${rand()}@ea.test`;
+    const res = await upsertExecutiveAssistant(admin, execId, "New Assistant", newEmail);
+    expect(res).toMatchObject({ status: "ok", mode: "updated", emailChanged: true });
+    const { data: earow } = await admin.from("ea").select("email, auth_user_id").eq("id", eaId).single();
+    expect(earow?.email).toBe(newEmail.toLowerCase());
+    expect(earow?.auth_user_id).toBeNull(); // previous address loses access
+  });
+
+  it("refuses to provision an email already held by another exec/EA, writing nothing", async () => {
+    const taken = `taken-${rand()}@person.test`;
+    await mkExec(taken); // an executive already holds the address
+    const execId = await mkExec(`amb-${rand()}@exec.test`);
+
+    const res = await upsertExecutiveAssistant(admin, execId, "Would Collide", taken);
+    expect(res).toEqual({ status: "ambiguous" });
+    const { data: e } = await admin.from("executive").select("ea_id").eq("id", execId).single();
+    expect(e?.ea_id).toBeNull(); // nothing linked
+  });
+
+  it("emailClaimedByOther: true for another record's email, false for a fresh one or the same slot", async () => {
+    const email = `claimed-${rand()}@ea.test`;
+    const eaId = await mkEa(email);
+    expect(await emailClaimedByOther(admin, email, null)).toBe(true);
+    expect(await emailClaimedByOther(admin, email.toUpperCase(), eaId)).toBe(false); // exclude the slot itself
+    expect(await emailClaimedByOther(admin, `fresh-${rand()}@ea.test`, null)).toBe(false);
   });
 });

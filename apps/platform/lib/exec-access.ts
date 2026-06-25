@@ -113,6 +113,105 @@ export async function resolveStaffSignInTarget(
 }
 
 /**
+ * Is `email` already held by a NON-DELETED exec/EA other than `exceptEaId` (the
+ * slot being written)? Used by the exec-side "add/save assistant" provisioning:
+ * if the email is held elsewhere, provisioning it would make the sign-in link
+ * unbindable on click (linkAuthUserToExecOrEa refuses a non-unique email match),
+ * so the caller must refuse up front rather than send a link that silently fails.
+ * Any executive holding the email is disqualifying; an EA holding it counts only
+ * if it is a different record than the slot being edited.
+ */
+export async function emailClaimedByOther(
+  admin: SupabaseClient,
+  email: string,
+  exceptEaId: string | null,
+): Promise<boolean> {
+  const needle = ilikeLiteral(email.trim());
+  if (!needle) return false;
+  const [{ data: execs }, { data: eas }] = await Promise.all([
+    admin.from("executive").select("id").ilike("primary_email", needle).is("deleted_at", null).limit(1),
+    admin.from("ea").select("id").ilike("email", needle).is("deleted_at", null).limit(5),
+  ]);
+  if ((execs?.length ?? 0) > 0) return true;
+  return (eas ?? []).some((r) => (r.id as string) !== exceptEaId);
+}
+
+export type SaveAssistantResult =
+  | { status: "ok"; eaId: string; mode: "added" | "updated"; emailChanged: boolean }
+  | { status: "ambiguous" }
+  | { status: "error" };
+
+/**
+ * Add or update an executive's single assistant slot and link it (the locked
+ * Profile EA drawer). BOUNDED to EA add/link: writes exactly one ea record + one
+ * ea_assignment + the executive.ea_id pointer (mirrors the admin linkEaAction),
+ * never broader profile data. Service-role only — ea / ea_assignment / executive
+ * are staff-only under RLS, so an exec session cannot write them directly.
+ *
+ *  - No EA on file  → INSERT a new ea, assign it, point executive.ea_id at it.
+ *  - EA on file     → UPDATE that ea's name/email in place (the single slot). If
+ *    the email changes to a new address, drop its auth_user_id so the previous
+ *    address loses access immediately and the new one must re-bind via its own
+ *    access link (the drawer's stated contract).
+ *
+ * Refuses (status 'ambiguous') if the email is already held by another exec/EA:
+ * provisioning a non-unique email yields a link that cannot bind. Shared-EA
+ * linking across executives stays an admin operation, not exec self-service.
+ */
+export async function upsertExecutiveAssistant(
+  admin: SupabaseClient,
+  executiveId: string,
+  name: string,
+  email: string,
+): Promise<SaveAssistantResult> {
+  const lower = email.trim().toLowerCase();
+  if (!lower || !name.trim()) return { status: "error" };
+
+  const { data: execRow } = await admin
+    .from("executive")
+    .select("ea_id")
+    .eq("id", executiveId)
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (!execRow) return { status: "error" };
+  const currentEaId = (execRow.ea_id as string | null) ?? null;
+
+  // Detect an email change against the current slot (edit mode).
+  let currentEmail = "";
+  if (currentEaId) {
+    const { data: cur } = await admin.from("ea").select("email").eq("id", currentEaId).maybeSingle();
+    currentEmail = ((cur?.email as string | null) ?? "").toLowerCase();
+  }
+  const emailChanged = lower !== currentEmail;
+
+  // The provisioned email must be unique enough to bind. Allow the slot we are
+  // about to write (exceptEaId), refuse any OTHER holder.
+  if (await emailClaimedByOther(admin, lower, currentEaId)) return { status: "ambiguous" };
+
+  let eaId = currentEaId;
+  if (currentEaId) {
+    const update: Record<string, unknown> = { name: name.trim(), email: lower };
+    if (emailChanged) update.auth_user_id = null; // previous address loses access
+    const { error } = await admin.from("ea").update(update).eq("id", currentEaId);
+    if (error) return { status: "error" };
+  } else {
+    const { data: created, error } = await admin.from("ea").insert({ name: name.trim(), email: lower }).select("id").single();
+    if (error || !created) return { status: "error" };
+    eaId = created.id as string;
+  }
+  if (!eaId) return { status: "error" };
+
+  const { error: asgErr } = await admin
+    .from("ea_assignment")
+    .upsert({ ea_id: eaId, executive_id: executiveId }, { onConflict: "ea_id,executive_id" });
+  if (asgErr) return { status: "error" };
+  const { error: linkErr } = await admin.from("executive").update({ ea_id: eaId }).eq("id", executiveId);
+  if (linkErr) return { status: "error" };
+
+  return { status: "ok", eaId, mode: currentEaId ? "updated" : "added", emailChanged };
+}
+
+/**
  * Issue one OTP round-trip to GoTrue for `email`. `shouldCreateUser` must be true
  * for a real member (a never-logged-in exec/EA has no auth user yet; the
  * auth_user_id link is established on the landing route) and false for a non-

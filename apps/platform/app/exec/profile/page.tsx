@@ -22,6 +22,9 @@ export default async function ExecProfilePage() {
   const data = execId ? await loadExecProfile(supabase, execId) : null;
   if (!data) return <FlagOff missingExec />;
   const photoUploadEnabled = await getFlag("photo_upload");
+  // Authenticated surface (exec_dashboard already gated above), so the session-
+  // scoped read is fine for the UI hint; the action keeps the authoritative gate.
+  const assistantAccessEnabled = await getFlag("exec_ea_login");
 
   return (
     <ExecShell
@@ -34,7 +37,7 @@ export default async function ExecProfilePage() {
         photoUrl: data.exec.photoUrl,
       }}
     >
-      <ProfileView data={data} photoUploadEnabled={photoUploadEnabled} />
+      <ProfileView data={data} photoUploadEnabled={photoUploadEnabled} assistantAccessEnabled={assistantAccessEnabled} />
     </ExecShell>
   );
 }
