@@ -7,7 +7,7 @@ import { getStaff, getExecPrincipal } from "@/lib/auth";
 import { getFlag, getFlagAuthoritative } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
 import { isOwnAvatarUrl } from "@/lib/upload/url";
-import { resolveExecOrEaByEmail, sendSignInLink } from "@/lib/exec-access";
+import { resolveStaffSignInTarget, sendSignInLink } from "@/lib/exec-access";
 import { logSecurityEvent } from "@/lib/security-log";
 import { resolveDemoExecutiveId, loadCharityContent, loadCharityList, type CharityContent, type CharityListItem } from "./data";
 
@@ -233,12 +233,18 @@ export async function sendAccessLinkAction(email: string): Promise<ExecActionSta
   const admin = createAdminClient();
   if (!admin) return { error: "The server is not configured to send sign-in links." };
 
-  const member = await resolveExecOrEaByEmail(admin, clean);
-  if (!member) return { error: "No executive or assistant is on file for that email." };
+  const target = await resolveStaffSignInTarget(admin, clean);
+  if (target.status === "none") return { error: "No executive or assistant is on file for that email." };
+  if (target.status === "ambiguous") {
+    // Don't report a false success: a non-unique address would send a link that
+    // then refuses to bind on click. Surface the duplicate for staff to resolve.
+    logSecurityEvent("exec_signin_ambiguous_email", { matches: target.matches, by: "staff" });
+    return { error: "That email matches more than one record. Resolve the duplicate before sending an access link." };
+  }
 
-  // member confirmed -> shouldCreateUser true (a never-logged-in exec/EA has no
-  // auth user yet); the sign-in link binds auth_user_id on first click.
-  await sendSignInLink(member.email, true);
-  logSecurityEvent("exec_signin_link_provisioned", { kind: member.kind, by: "staff" });
+  // shouldCreateUser true: a never-logged-in exec/EA has no auth user yet; the
+  // sign-in link binds auth_user_id on first click.
+  await sendSignInLink(target.subject.email, true);
+  logSecurityEvent("exec_signin_link_provisioned", { kind: target.subject.kind, by: "staff" });
   return { ok: true };
 }

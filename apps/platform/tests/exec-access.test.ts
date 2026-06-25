@@ -3,6 +3,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { NextRequest } from "next/server";
 import {
   resolveExecOrEaByEmail,
+  resolveStaffSignInTarget,
   requestExecEaSignInLink,
   linkAuthUserToExecOrEa,
 } from "@/lib/exec-access";
@@ -359,6 +360,19 @@ describe("exec/EA passwordless access + controlled charity change (2d)", () => {
     expect(res).toBeNull(); // ambiguous -> never guess
     const { data } = await admin.from("executive").select("auth_user_id").in("id", [eA, eB]);
     expect(data!.every((r) => r.auth_user_id === null)).toBe(true); // neither claimed
+  });
+
+  it("the staff send classifier flags a duplicate address instead of a false success", async () => {
+    const single = `staff-single-${rand()}@exec.test`;
+    const e1 = await mkExec(single);
+    expect(await resolveStaffSignInTarget(admin, single)).toMatchObject({ status: "ok", subject: { kind: "executive", id: e1 } });
+
+    const dupe = `staff-dupe-${rand()}@exec.test`;
+    await mkExec(dupe);
+    await mkExec(dupe); // two execs share the address
+    expect(await resolveStaffSignInTarget(admin, dupe)).toMatchObject({ status: "ambiguous", matches: 2 });
+
+    expect(await resolveStaffSignInTarget(admin, `staff-none-${rand()}@nowhere.test`)).toEqual({ status: "none" });
   });
 
   it("does not mis-claim when an auth user is bound to a soft-deleted record whose email was reused", async () => {

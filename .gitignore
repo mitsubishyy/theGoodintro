@@ -1,5 +1,7 @@
 .DS_Store
-node_modules/
+# No trailing slash: linked worktrees symlink node_modules to the main checkout,
+# and a trailing slash matches directories only, leaving the symlinks untracked.
+node_modules
 .env
 .env.local
 .env*.local

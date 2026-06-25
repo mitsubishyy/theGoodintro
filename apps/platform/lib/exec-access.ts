@@ -77,6 +77,41 @@ export async function resolveExecOrEaByEmail(
   return null;
 }
 
+export type StaffSignInTarget =
+  | { status: "none" }
+  | { status: "ambiguous"; matches: number }
+  | { status: "ok"; subject: ExecEaPrincipal };
+
+/**
+ * Classify an email for a STAFF "send access link" action. Unlike the self-service
+ * send (where an ambiguous address is harmless — the UI always shows "link sent"
+ * and the bind refuses on click), staff get an explicit ok/error result, so a
+ * silent "sent" on an ambiguous address would look successful and then fail when
+ * the executive clicks (linkAuthUserToExecOrEa refuses a non-unique match). This
+ * surfaces the same ambiguity up front: more than one non-deleted exec/EA sharing
+ * the email is reported as a duplicate to resolve, not a successful send.
+ */
+export async function resolveStaffSignInTarget(
+  admin: SupabaseClient,
+  email: string,
+): Promise<StaffSignInTarget> {
+  const needle = ilikeLiteral(email.trim());
+  if (!needle) return { status: "none" };
+
+  const [{ data: execs }, { data: eas }] = await Promise.all([
+    admin.from("executive").select("id, primary_email").ilike("primary_email", needle).is("deleted_at", null).limit(2),
+    admin.from("ea").select("id, email").ilike("email", needle).is("deleted_at", null).limit(2),
+  ]);
+  const e = execs ?? [];
+  const a = eas ?? [];
+  const total = e.length + a.length;
+  if (total === 0) return { status: "none" };
+  if (total > 1) return { status: "ambiguous", matches: total };
+  return e.length === 1
+    ? { status: "ok", subject: { kind: "executive", id: e[0].id as string, email: e[0].primary_email as string } }
+    : { status: "ok", subject: { kind: "ea", id: a[0].id as string, email: a[0].email as string } };
+}
+
 /**
  * Issue one OTP round-trip to GoTrue for `email`. `shouldCreateUser` must be true
  * for a real member (a never-logged-in exec/EA has no auth user yet; the
