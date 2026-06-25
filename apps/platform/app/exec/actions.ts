@@ -1,9 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getStaff, getExecPrincipal } from "@/lib/auth";
+import { getStaff, getExecPrincipal, EA_PRINCIPAL_COOKIE } from "@/lib/auth";
 import { getFlag, getFlagAuthoritative } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
 import { isOwnAvatarUrl } from "@/lib/upload/url";
@@ -270,6 +271,42 @@ export async function saveExecutiveAssistantAction(input: { name: string; email:
 
   revalidatePath("/exec/profile");
   revalidatePath("/exec");
+  return { ok: true };
+}
+
+/**
+ * Switch the active principal for a multi-executive EA (the locked EA Mode
+ * banner's "Switch executive"). Validates server-side that the target is one of
+ * THIS EA's own assignments — an EA can only scope to an executive they actually
+ * assist — then persists the choice in the EA_PRINCIPAL_COOKIE that
+ * getExecPrincipal honors. RLS (can_access_executive) is the backstop regardless
+ * of the cookie. Flag-gated (exec_ea_login, authoritative).
+ */
+export async function switchEaPrincipalAction(executiveId: string): Promise<ExecActionState> {
+  if (!(await getFlagAuthoritative("exec_ea_login"))) return { error: "Not enabled." };
+  if (!executiveId) return { error: "No executive selected." };
+  const p = await getExecPrincipal();
+  if (!p || p.kind !== "ea" || !p.eaId) return { error: "Not authorized." };
+
+  // Read under the EA's session RLS: ea_assignment is visible to its own EA, so a
+  // hit here proves the assignment is genuinely theirs.
+  const { data: asg } = await p.supabase
+    .from("ea_assignment")
+    .select("executive_id")
+    .eq("ea_id", p.eaId)
+    .eq("executive_id", executiveId)
+    .maybeSingle();
+  if (!asg) return { error: "That is not one of your executives." };
+
+  const jar = await cookies();
+  jar.set(EA_PRINCIPAL_COOKIE, executiveId, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
+  // Re-render the whole exec portal under the newly-scoped principal.
+  revalidatePath("/exec", "layout");
   return { ok: true };
 }
 

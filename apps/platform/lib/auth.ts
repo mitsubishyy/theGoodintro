@@ -1,7 +1,17 @@
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { getFlag, getFlagAuthoritative } from "@/lib/flags";
+
+/**
+ * The EA's chosen active principal (the EA Mode banner's "Switch executive").
+ * Read by getExecPrincipal to scope a multi-principal EA, set by
+ * switchEaPrincipalAction. Always re-validated against the EA's real assignments
+ * on read — a forged or stale value falls back to the first assignment, and RLS
+ * (can_access_executive) is the backstop regardless.
+ */
+export const EA_PRINCIPAL_COOKIE = "tgi_ea_principal";
 
 type AalLevels = {
   currentLevel: string | null;
@@ -151,18 +161,20 @@ export async function getExecPrincipal(): Promise<ExecPrincipal | null> {
       .is("deleted_at", null)
       .maybeSingle();
     if (ea?.id) {
-      // One principal at a time: the first assignment (RLS already lets the EA
-      // read all their assigned execs; the locked EA Mode banner switches which).
-      const { data: asg } = await supabase
+      // One principal at a time. RLS already lets the EA read all their assigned
+      // execs; the active principal is the EA Mode banner's choice (cookie) when it
+      // is genuinely one of their assignments, else the first assignment.
+      const { data: asgs } = await supabase
         .from("ea_assignment")
         .select("executive_id")
         .eq("ea_id", ea.id as string)
-        .order("created_at", { ascending: true })
-        .limit(1)
-        .maybeSingle();
+        .order("created_at", { ascending: true });
+      const assignmentIds = (asgs ?? []).map((r) => r.executive_id as string);
       // An EA with no assignment has nothing to act on — treat as no access.
-      if (asg?.executive_id) {
-        return { supabase, user, kind: "ea", execId: asg.executive_id as string, eaId: ea.id as string };
+      if (assignmentIds.length > 0) {
+        const chosen = (await cookies()).get(EA_PRINCIPAL_COOKIE)?.value;
+        const active = chosen && assignmentIds.includes(chosen) ? chosen : assignmentIds[0];
+        return { supabase, user, kind: "ea", execId: active, eaId: ea.id as string };
       }
     }
   }

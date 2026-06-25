@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { bandForMeetingNumber, charityShareCentsForMeetingNumber } from "@thegoodintro/pricing";
 import { formatAud } from "@/lib/format";
-import { requireExecOrEa } from "@/lib/auth";
+import { requireExecOrEa, getExecPrincipal } from "@/lib/auth";
 import { execCharityForPeriod, financialYearWindow, monthWindow } from "@/lib/reporting";
 import { asProgrammes, asStories } from "./charity-content";
 import type { CharityProgramme, CharityStory } from "./charity-content";
@@ -32,6 +32,60 @@ export async function resolveExecContext(): Promise<{ supabase: SupabaseClient; 
 }
 
 export type ExecPrincipalKind = "staff" | "executive" | "ea";
+
+export interface EaModePrincipal {
+  executiveId: string;
+  name: string;
+  title: string | null;
+  company: string | null;
+  photoUrl: string | null;
+}
+
+/**
+ * The locked EA Mode banner payload (design/locked/exec-ea-mode-banner). Non-null
+ * ONLY for an EA session: the signed-in EA (sidebar chip), the active principal
+ * (banner identity), and every assignment (the "Switch executive" switcher).
+ * `switchable` follows the conditional-render rule (the trigger shows only when
+ * the EA assists more than one executive). Read under the EA's session RLS, which
+ * already scopes them to their own ea row + assigned executives (0029).
+ */
+export interface EaModeData {
+  ea: { name: string; email: string };
+  principal: EaModePrincipal;
+  assignments: EaModePrincipal[];
+  activePrincipalId: string;
+  switchable: boolean;
+}
+
+export async function resolveEaMode(): Promise<EaModeData | null> {
+  const p = await getExecPrincipal();
+  if (!p || p.kind !== "ea" || !p.eaId || !p.execId) return null;
+  const supabase = p.supabase;
+
+  const { data: eaRow } = await supabase.from("ea").select("name, email").eq("id", p.eaId).is("deleted_at", null).maybeSingle();
+  if (!eaRow) return null;
+
+  const { data: rows } = await supabase
+    .from("ea_assignment")
+    .select("executive_id, executive:executive_id(id, name, title, company, photo_url, deleted_at)")
+    .eq("ea_id", p.eaId)
+    .order("created_at", { ascending: true });
+
+  const assignments: EaModePrincipal[] = (rows ?? [])
+    .map((r) => one<{ id: string; name: string; title: string | null; company: string | null; photo_url: string | null; deleted_at: string | null }>(r.executive))
+    .filter((e): e is NonNullable<typeof e> => Boolean(e) && !e!.deleted_at)
+    .map((e) => ({ executiveId: e.id, name: e.name, title: e.title, company: e.company, photoUrl: e.photo_url }));
+  if (assignments.length === 0) return null;
+
+  const principal = assignments.find((a) => a.executiveId === p.execId) ?? assignments[0];
+  return {
+    ea: { name: eaRow.name as string, email: eaRow.email as string },
+    principal,
+    assignments,
+    activePrincipalId: principal.executiveId,
+    switchable: assignments.length > 1,
+  };
+}
 
 /** The executive whose dashboard the demo shows: the locked sample, else the first active. */
 export async function resolveDemoExecutiveId(supabase: SupabaseClient): Promise<string | null> {

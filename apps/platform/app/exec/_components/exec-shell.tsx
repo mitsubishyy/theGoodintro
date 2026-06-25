@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Avatar, Icon, Wordmark, type IconName } from "@thegoodintro/ui";
 import { signOutAction } from "@/app/login/actions";
+import { useEaMode } from "./ea-mode";
 
 /**
  * The canonical exec portal shell (exec-dashboard lock 2026-06-08 — "locks the
@@ -82,18 +83,18 @@ function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () 
   );
 }
 
-function AccountBlock({ exec, subtitle }: { exec: ExecShellProps["exec"]; subtitle: string }) {
+function AccountBlock({ chip }: { chip: { name: string; subtitle: string; photoUrl: string | null } }) {
   return (
     <div className="px-4 pb-5">
       <div className="flex items-center gap-3">
-        <Avatar name={exec.name} src={exec.photoUrl ?? undefined} size={32} />
+        <Avatar name={chip.name} src={chip.photoUrl ?? undefined} size={32} />
         <div className="leading-tight min-w-0">
           <div className="text-[13px] font-semibold truncate" style={{ color: "var(--exec-sidebar-text)" }}>
-            {exec.name}
+            {chip.name}
           </div>
-          {subtitle && (
+          {chip.subtitle && (
             <div className="text-[11px] truncate" style={{ color: "var(--exec-sidebar-muted)" }}>
-              {subtitle}
+              {chip.subtitle}
             </div>
           )}
         </div>
@@ -113,7 +114,12 @@ function AccountBlock({ exec, subtitle }: { exec: ExecShellProps["exec"]; subtit
 
 export function ExecShell({ title, exec, children }: ExecShellProps) {
   const pathname = usePathname() ?? "/exec";
-  const subtitle = [exec.title, exec.company].filter(Boolean).join(" · ");
+  const eaMode = useEaMode();
+  // In an EA session the chip shows the SIGNED-IN EA (the principal lives in the
+  // banner); never the principal in both. Otherwise the exec themself.
+  const chip = eaMode
+    ? { name: eaMode.ea.name, subtitle: "Executive Assistant", photoUrl: null }
+    : { name: exec.name, subtitle: [exec.title, exec.company].filter(Boolean).join(" · "), photoUrl: exec.photoUrl ?? null };
   const [navOpen, setNavOpen] = useState(false);
 
   return (
@@ -126,7 +132,7 @@ export function ExecShell({ title, exec, children }: ExecShellProps) {
           </div>
           <NavLinks pathname={pathname} />
         </div>
-        <AccountBlock exec={exec} subtitle={subtitle} />
+        <AccountBlock chip={chip} />
       </aside>
 
       {/* Mobile slide-over drawer (below md). Same charcoal sidebar content. */}
@@ -160,7 +166,7 @@ export function ExecShell({ title, exec, children }: ExecShellProps) {
               </div>
               <NavLinks pathname={pathname} onNavigate={() => setNavOpen(false)} />
             </div>
-            <AccountBlock exec={exec} subtitle={subtitle} />
+            <AccountBlock chip={chip} />
           </aside>
         </div>
       )}

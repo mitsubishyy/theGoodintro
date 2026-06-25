@@ -593,4 +593,30 @@ describe("exec/EA passwordless access + controlled charity change (2d)", () => {
     expect(await emailClaimedByOther(admin, email.toUpperCase(), eaId)).toBe(false); // exclude the slot itself
     expect(await emailClaimedByOther(admin, `fresh-${rand()}@ea.test`, null)).toBe(false);
   });
+
+  // ── 11. EA Mode switcher authorization (the predicate switchEaPrincipalAction
+  //        relies on, under real EA-session RLS) ────────────────────────────────
+  it("an EA can resolve and switch to only its own assigned executives", async () => {
+    const eaEmail = `switch-ea-${rand()}@ea.test`;
+    const eaId = await mkEa(eaEmail);
+    const a = await mkExec(`switch-a-${rand()}@exec.test`);
+    const b = await mkExec(`switch-b-${rand()}@exec.test`);
+    await admin.from("ea_assignment").insert({ ea_id: eaId, executive_id: a });
+    await admin.from("ea_assignment").insert({ ea_id: eaId, executive_id: b });
+    const uid = await mkUser(eaEmail);
+    await admin.from("ea").update({ auth_user_id: uid }).eq("id", eaId);
+    const client = await signedIn(eaEmail);
+
+    // The switcher list: both assignments visible under the EA's own RLS, nothing else.
+    const { data: list } = await client.from("ea_assignment").select("executive_id").eq("ea_id", eaId);
+    expect((list ?? []).map((r) => r.executive_id as string).sort()).toEqual([a, b].sort());
+
+    // Switch-validation query (action's predicate) for an ASSIGNED exec → a hit.
+    const { data: okRow } = await client.from("ea_assignment").select("executive_id").eq("ea_id", eaId).eq("executive_id", b).maybeSingle();
+    expect(okRow?.executive_id).toBe(b);
+
+    // For an UNASSIGNED exec → nothing, so the action refuses the switch.
+    const { data: noRow } = await client.from("ea_assignment").select("executive_id").eq("ea_id", eaId).eq("executive_id", ids.e2).maybeSingle();
+    expect(noRow).toBeNull();
+  });
 });
