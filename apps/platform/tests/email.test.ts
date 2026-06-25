@@ -359,6 +359,48 @@ describe("email queue drain (A1)", () => {
     await admin.from("request").delete().eq("id", req!.id); // cascades to the token
   });
 
+  it("a queued action email for a closed request fails and sends nothing", async () => {
+    // ensure_request_action_token refuses to mint a link for a non-open request,
+    // so a B1 queued against a closed request fails to compose and the drain
+    // sends nothing (no live action link ever goes out for a closed request).
+    await preclear(admin);
+    const { data: req } = await admin
+      .from("request")
+      .insert({
+        vendor_id: ALPHA,
+        requested_by_user_id: ALPHA_USER,
+        executive_id: RILEY,
+        q1_what: "x",
+        q2_why: "y",
+        status: "closed",
+      })
+      .select("id")
+      .single();
+    await admin.from("notification").insert({
+      recipient_type: "executive",
+      recipient_id: RILEY,
+      channel: "email",
+      event: "B1_request_submitted",
+      status: "queued",
+      request_id: req!.id,
+    });
+
+    const calls: EmailMessage[] = [];
+    const summary = await drainEmailQueue(service, fakeTransport(calls));
+    expect(summary).toMatchObject({ sent: 0, failed: 1 });
+    expect(calls.length).toBe(0);
+
+    const { data: row } = await admin
+      .from("notification")
+      .select("status, last_error")
+      .eq("request_id", req!.id)
+      .single();
+    expect(row?.status).toBe("failed");
+    expect(row?.last_error).toMatch(/request_not_open|action token/i);
+
+    await admin.from("request").delete().eq("id", req!.id);
+  });
+
   it("the forward-to-EA email is EA-framed with two actions (no send-to-ea)", async () => {
     const { forwardToEaEmail } = await import("../lib/email/templates");
     const email = forwardToEaEmail({

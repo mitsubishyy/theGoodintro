@@ -109,8 +109,15 @@ async function resolveActionToken(
     p_request_id: requestId,
   });
   const token = typeof data === "string" ? data : null;
+  // ensure_request_action_token raises request_not_open for a closed/accepted/
+  // declined request, so an action email queued against one fails to compose and
+  // the drain sends nothing. Surface the reason for observability.
   if (error || !token)
-    throw new ComposeError("could not resolve an action token for request");
+    throw new ComposeError(
+      error?.message
+        ? `could not resolve an action token: ${error.message}`
+        : "could not resolve an action token for request",
+    );
   return token;
 }
 

@@ -77,10 +77,16 @@ create or replace function public.ensure_request_action_token(p_request_id uuid)
 returns text language plpgsql security definer set search_path = '' as $$
 declare
   v_token text;
+  v_status text;
 begin
-  -- Serialize issuance for this request so concurrent callers cannot race the
-  -- single-active invariant into two live tokens.
-  perform 1 from public.request where id = p_request_id for update;
+  -- Lock the request and read its status. Serializing here keeps concurrent
+  -- callers from racing the single-active invariant into two live tokens, AND a
+  -- link is only ever issued for an OPEN request: an accepted/declined/closed
+  -- request is no longer actionable, so a follow-up email must not mint a fresh
+  -- action link for it.
+  select status::text into v_status from public.request where id = p_request_id for update;
+  if v_status is null then raise exception 'invalid_request'; end if;
+  if v_status <> 'submitted' then raise exception 'request_not_open'; end if;
 
   update public.email_action_token
     set status = 'revoked'

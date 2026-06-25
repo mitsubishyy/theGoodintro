@@ -292,4 +292,18 @@ describe("email-action token hardening (2c)", () => {
     const replay = await act(anon(), token2, "decline");
     expect(replay.error?.message).toMatch(/token_not_active|request_not_open/);
   });
+
+  it("ensure_request_action_token refuses to issue a link for a non-open request", async () => {
+    // A closed/accepted/declined request is no longer actionable, so a follow-up
+    // email must not be able to self-heal a fresh action link for it.
+    for (const status of ["closed", "accepted", "declined"] as const) {
+      const { reqId } = await freshRequest();
+      await admin.from("request").update({ status }).eq("id", reqId);
+      const { data, error } = await admin.rpc("ensure_request_action_token", {
+        p_request_id: reqId,
+      });
+      expect(data).toBeNull();
+      expect(error?.message).toMatch(/request_not_open/);
+    }
+  });
 });
