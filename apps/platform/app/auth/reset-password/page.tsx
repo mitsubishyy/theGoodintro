@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { RECOVERY_INTENT_COOKIE } from "@/lib/password-reset";
 import { ResetForm } from "./reset-form";
 
 export const metadata: Metadata = {
@@ -10,12 +12,17 @@ export const metadata: Metadata = {
 
 export default async function ResetPasswordPage() {
   // The recovery link routes through /auth/confirm, which establishes the
-  // recovery session before forwarding here. If there is no session, the link
-  // was invalid, already used, or expired.
+  // recovery session AND sets the recovery-intent cookie before forwarding here.
+  // We require both: no session, or a session that did not arrive via the
+  // recovery link (no cookie), means the link was invalid/used/expired or this
+  // is not a recovery context — so this is not a general change-password page.
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const cookieStore = await cookies();
+  const hasRecoveryIntent =
+    cookieStore.get(RECOVERY_INTENT_COOKIE)?.value === "1";
 
   return (
     <main
@@ -36,7 +43,7 @@ export default async function ResetPasswordPage() {
           Set a new password
         </h1>
 
-        {user ? (
+        {user && hasRecoveryIntent ? (
           <ResetForm />
         ) : (
           <div className="flex flex-col gap-4">

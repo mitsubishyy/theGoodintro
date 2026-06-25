@@ -1,26 +1,37 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import {
-  NextResponse,
-  type NextRequest,
-} from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
-import { safeNextPath } from "@/lib/safe-redirect";
-import { RESET_PASSWORD_PATH } from "@/lib/password-reset";
+import {
+  RESET_PASSWORD_PATH,
+  RECOVERY_INTENT_COOKIE,
+  RECOVERY_INTENT_MAX_AGE,
+  RECOVERY_INTENT_PATH,
+} from "@/lib/password-reset";
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
 /**
- * Auth email-link landing (recovery + any future email confirmation). The
- * Supabase verify endpoint redirects here after the user clicks the emailed
- * link; we establish the session on THIS request (so the cookie is set on the
- * response) and forward to the in-app page named by `next`.
+ * Recovery email-link landing. The Supabase verify endpoint redirects here after
+ * the user clicks the reset link; we establish the recovery session on THIS
+ * request (so the cookie is set on the response) and ALWAYS forward to the
+ * set-new-password page.
+ *
+ * Deliberately recovery-only and with a FIXED destination:
+ *  - No caller-supplied `next`. Earlier this accepted a `next` path and redirected
+ *    there, which let anyone craft a recovery email (the public key can request
+ *    one) with `redirectTo=/auth/confirm?next=/admin` — turning a recovery email
+ *    into a magic login to an arbitrary route. The destination is now hard-wired
+ *    to RESET_PASSWORD_PATH; reintroduce a `next` only alongside a separate,
+ *    non-recovery email-confirmation flow.
+ *  - The OTP branch only accepts `type=recovery`; other email types are rejected
+ *    until their own flows exist.
  *
  * Handles both Supabase SSR flows:
- *  - PKCE: `?code=…`        -> exchangeCodeForSession
- *  - OTP : `?token_hash=…&type=recovery` -> verifyOtp
+ *  - PKCE (the SSR default): `?code=…`            -> exchangeCodeForSession
+ *  - OTP : `?token_hash=…&type=recovery`          -> verifyOtp
  *
- * `next` comes off an attacker-influenceable URL, so it is run through
- * safeNextPath before any redirect — same open-redirect guard as login.
+ * On success it sets a short-lived, HttpOnly recovery-intent cookie that the
+ * reset page and action require, so that page is reachable only via this route.
  */
 export async function GET(req: NextRequest) {
   const url = req.nextUrl;
@@ -28,12 +39,7 @@ export async function GET(req: NextRequest) {
   const tokenHash = url.searchParams.get("token_hash");
   const type = url.searchParams.get("type") as EmailOtpType | null;
 
-  // Validate the forward target; default to the set-new-password page when the
-  // link did not carry one (safeNextPath returns "/" for missing/unsafe values).
-  const safeNext = safeNextPath(url.searchParams.get("next"));
-  const next = safeNext === "/" ? RESET_PASSWORD_PATH : safeNext;
-
-  const success = NextResponse.redirect(new URL(next, req.url));
+  const success = NextResponse.redirect(new URL(RESET_PASSWORD_PATH, req.url));
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -56,7 +62,7 @@ export async function GET(req: NextRequest) {
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     ok = !error;
-  } else if (tokenHash && type) {
+  } else if (tokenHash && type === "recovery") {
     const { error } = await supabase.auth.verifyOtp({
       type,
       token_hash: tokenHash,
@@ -64,7 +70,16 @@ export async function GET(req: NextRequest) {
     ok = !error;
   }
 
-  if (ok) return success;
+  if (ok) {
+    success.cookies.set(RECOVERY_INTENT_COOKIE, "1", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: RECOVERY_INTENT_PATH,
+      maxAge: RECOVERY_INTENT_MAX_AGE,
+    });
+    return success;
+  }
 
   // Invalid, already-used, or expired link: send back to the request page with a
   // generic notice. Never echo a token-specific reason.

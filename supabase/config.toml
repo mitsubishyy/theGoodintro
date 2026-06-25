@@ -151,8 +151,9 @@ max_indexes = 5
 [auth]
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
-# in emails.
-site_url = "http://127.0.0.1:3000"
+# in emails. The platform (the only Supabase-Auth consumer here) runs on :3001, so this is the
+# platform origin — a stale :3000 would make recovery links fall back to the wrong host.
+site_url = "http://localhost:3001"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
 # A list of URLs (wildcards allowed) that auth providers are permitted to redirect to post

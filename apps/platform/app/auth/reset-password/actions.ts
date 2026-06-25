@@ -1,8 +1,13 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { MIN_PASSWORD_LENGTH } from "@/lib/password-reset";
+import {
+  MIN_PASSWORD_LENGTH,
+  RECOVERY_INTENT_COOKIE,
+  RECOVERY_INTENT_PATH,
+} from "@/lib/password-reset";
 import { logSecurityEvent } from "@/lib/security-log";
 
 export type ResetState = { error?: string };
@@ -26,13 +31,18 @@ export async function updatePasswordAction(
   if (password !== confirm) return { error: "The two passwords do not match." };
 
   const supabase = await createClient();
+  const cookieStore = await cookies();
 
-  // The recovery link must have landed a valid session here; without one
-  // updateUser cannot identify the account.
+  // The recovery link must have landed a valid session here AND set the
+  // recovery-intent cookie (proof this session came through /auth/confirm).
+  // Requiring both keeps this strictly a recovery surface, not a general
+  // change-password endpoint any signed-in user could POST to.
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user)
+  const hasRecoveryIntent =
+    cookieStore.get(RECOVERY_INTENT_COOKIE)?.value === "1";
+  if (!user || !hasRecoveryIntent)
     return {
       error:
         "Your reset link has expired or was already used. Request a new one.",
@@ -43,7 +53,15 @@ export async function updatePasswordAction(
 
   logSecurityEvent("password_reset_completed", { user_id: user.id });
 
-  // Invalidate the recovery session so the link cannot be reused as a live login.
+  // Single-use: clear the recovery-intent cookie, then invalidate the recovery
+  // session so the link cannot be reused as a live login.
+  cookieStore.set(RECOVERY_INTENT_COOKIE, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: RECOVERY_INTENT_PATH,
+    maxAge: 0,
+  });
   await supabase.auth.signOut();
   redirect("/login?reset=done");
 }

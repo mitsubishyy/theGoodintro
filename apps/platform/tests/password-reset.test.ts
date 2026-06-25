@@ -1,10 +1,14 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { NextRequest } from "next/server";
 import {
   sendPasswordReset,
   recoveryRedirectTo,
   MIN_PASSWORD_LENGTH,
+  RECOVERY_INTENT_COOKIE,
+  RESET_PASSWORD_PATH,
 } from "@/lib/password-reset";
+import { GET as confirmGET } from "@/app/auth/confirm/route";
 
 /**
  * Password reset flow (C11), against the LOCAL Supabase stack. Two properties
@@ -126,6 +130,74 @@ describe("password reset: recovery link sets a new password (single-use)", () =>
   });
 
   // Best-effort cleanup so reruns on a non-reset DB stay clean.
+  it("cleans up the throwaway user", async () => {
+    const { error } = await admin.auth.admin.deleteUser(userId);
+    expect(error).toBeNull();
+  });
+});
+
+describe("password reset: /auth/confirm route is recovery-only with a fixed destination", () => {
+  let admin: SupabaseClient;
+  let userId: string;
+  let email: string;
+
+  const confirm = (qs: string) =>
+    confirmGET(new NextRequest(`http://localhost:3001/auth/confirm${qs}`));
+  // NOTE: the module-level `const URL` (the Supabase URL) shadows the global URL
+  // constructor here, so reach for it explicitly.
+  const loc = (res: Response) =>
+    new globalThis.URL(res.headers.get("location") ?? "", "http://localhost:3001");
+
+  beforeAll(async () => {
+    if (!SERVICE_KEY) throw new Error("SUPABASE_SERVICE_ROLE_KEY is not set");
+    admin = createClient(URL, SERVICE_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    email = `confirm-${Math.random().toString(36).slice(2)}@reset.test`;
+    const { data, error } = await admin.auth.admin.createUser({
+      email,
+      password: "Init-Passw0rd!1",
+      email_confirm: true,
+    });
+    if (error) throw new Error(`createUser failed: ${error.message}`);
+    userId = data.user!.id;
+  });
+
+  it("a valid recovery token lands on the reset page (never the caller's next) and sets the intent cookie", async () => {
+    const { data: link, error } = await admin.auth.admin.generateLink({
+      type: "recovery",
+      email,
+    });
+    expect(error).toBeNull();
+    const tokenHash = link!.properties!.hashed_token;
+
+    // The crux of the P1 fix: an attacker-supplied next=/admin must be ignored.
+    const res = await confirm(
+      `?token_hash=${tokenHash}&type=recovery&next=${encodeURIComponent("/admin")}`,
+    );
+
+    expect(res.status).toBeGreaterThanOrEqual(300);
+    expect(res.status).toBeLessThan(400);
+    expect(loc(res).pathname).toBe(RESET_PASSWORD_PATH);
+    expect(loc(res).pathname).not.toBe("/admin");
+    // A session was established and the recovery-intent cookie was set.
+    expect(res.cookies.get(RECOVERY_INTENT_COOKIE)?.value).toBe("1");
+  });
+
+  it("an invalid token redirects to the request page with a generic error and no intent cookie", async () => {
+    const res = await confirm(`?token_hash=deadbeefdeadbeefdeadbeef&type=recovery`);
+    expect(loc(res).pathname).toBe("/login/forgot");
+    expect(loc(res).searchParams.get("error")).toBe("link_invalid");
+    expect(res.cookies.get(RECOVERY_INTENT_COOKIE)?.value).toBeUndefined();
+  });
+
+  it("a non-recovery OTP type is rejected (no other email flows yet)", async () => {
+    const res = await confirm(`?token_hash=whatever&type=magiclink`);
+    expect(loc(res).pathname).toBe("/login/forgot");
+    expect(loc(res).searchParams.get("error")).toBe("link_invalid");
+    expect(res.cookies.get(RECOVERY_INTENT_COOKIE)?.value).toBeUndefined();
+  });
+
   it("cleans up the throwaway user", async () => {
     const { error } = await admin.auth.admin.deleteUser(userId);
     expect(error).toBeNull();

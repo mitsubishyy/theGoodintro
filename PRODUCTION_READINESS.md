@@ -139,7 +139,14 @@ Most of the posture is in `SECURITY_AND_COMPLIANCE.md`; these are the build task
 - [ ] **C11 Password reset flow.** Email-based token, single-use, with expiry.
       *Done when:* a user can request a reset link from `/login`, click the email,
       and set a new password; the link is single-use and invalid after expiry; the
-      flow is rate-limited and logged. **Pre-launch must.**
+      flow is rate-limited and logged. **Pre-launch must.** Built on Supabase
+      built-in recovery (slice 2b): request at `/login/forgot` (generic, no
+      enumeration) → `/auth/confirm` (recovery-only, fixed destination) →
+      `/auth/reset-password` (recovery-intent cookie gated). **Deploy config (must
+      verify on staging/prod):** `NEXT_PUBLIC_APP_URL` is the real platform origin,
+      and Supabase Auth `site_url` + `additional_redirect_urls` allow-list that URL
+      and its `/auth/confirm` path, or recovery links silently break. Tune
+      `[auth.rate_limit].email_sent` (currently 2/hr) for production UX.
 
 ## 6. D. Test and CI infrastructure
 
