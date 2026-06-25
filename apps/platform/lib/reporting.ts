@@ -200,3 +200,24 @@ export async function reconcileAll(supabase: SupabaseClient): Promise<ReconcileR
   });
   return { threeWays, fees, balances: threeWays.balances && fees.balances };
 }
+
+/** Which CALCULATIONS §4 invariant drifted. */
+export type ReconcileDrift = "three_way_split" | "fee_master_identity";
+
+export interface ReconcileReport extends ReconcileResult {
+  /** Empty when everything ties out; otherwise the invariants out of balance:
+   *  'three_way_split' (invariant 1) and/or 'fee_master_identity' (invariant 9). */
+  drift: ReconcileDrift[];
+}
+
+/**
+ * Pure: turn a ReconcileResult into a report that names which invariants drifted,
+ * so the B4 job can alert with a precise reason and stay unit-testable without a
+ * DB. `drift` is empty exactly when `balances` is true.
+ */
+export function summarizeReconciliation(result: ReconcileResult): ReconcileReport {
+  const drift: ReconcileDrift[] = [];
+  if (!result.threeWays.balances) drift.push("three_way_split");
+  if (!result.fees.balances) drift.push("fee_master_identity");
+  return { ...result, drift };
+}

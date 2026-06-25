@@ -24,7 +24,11 @@ export type SecurityEvent =
   | "exec_signin_ambiguous_email"
   // A claim UPDATE failed (e.g. the auth user already occupies a soft-deleted
   // record's unique slot); the sign-in fails closed rather than mis-binding.
-  | "exec_signin_link_conflict";
+  | "exec_signin_link_conflict"
+  // The daily money-invariants reconciliation job (PRODUCTION_READINESS B4) found
+  // a CALCULATIONS section 4 invariant out of balance. The interim alert sink
+  // until the dedicated push alerter (B1 Sentry / B2 drain) lands.
+  | "reconcile_drift";
 
 export function logSecurityEvent(
   event: SecurityEvent,
