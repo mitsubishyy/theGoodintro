@@ -1,18 +1,19 @@
 import type { ReactNode } from "react";
-import { requireStaff } from "@/lib/auth";
+import { requireExecOrEa } from "@/lib/auth";
 
 /**
  * Auth gate for the ENTIRE exec portal. Unlike /admin and /vendor, /exec had no
  * layout, so middleware (which only checks that a user is signed IN, not their
  * role) let a signed-in vendor reach /exec and read executive data.
  *
- * Until real exec/EA login exists (the exec access model, a later slice), the
- * exec dashboard is a staff-operated surface — it resolves a demo executive
- * under the staff session — so it is gated to staff here. requireStaff() sends a
- * non-staff session to /login. When exec/EA auth lands, widen this to "staff OR
- * the exec/EA who owns this data".
+ * Slice 2d widens the interim staff-only gate to "staff OR the owning exec/EA":
+ * staff still operate the surface (the demo / admin-acting path), and a signed-in
+ * executive or their assigned EA reach their own scoped portal (enforced by the
+ * 0029 RLS). A vendor or any other session is bounced. The exec/EA branch only
+ * opens once the exec_ea_login flag is on (off by default), so until then this is
+ * effectively staff-only, unchanged.
  */
 export default async function ExecLayout({ children }: { children: ReactNode }) {
-  await requireStaff();
+  await requireExecOrEa();
   return <>{children}</>;
 }

@@ -2,10 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { getStaff } from "@/lib/auth";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getStaff, getExecPrincipal } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
 import { isOwnAvatarUrl } from "@/lib/upload/url";
+import { resolveExecOrEaByEmail, sendSignInLink } from "@/lib/exec-access";
+import { logSecurityEvent } from "@/lib/security-log";
 import { resolveDemoExecutiveId, loadCharityContent, loadCharityList, type CharityContent, type CharityListItem } from "./data";
 
 export type ExecActionState = { ok?: boolean; error?: string };
@@ -16,11 +19,12 @@ export type ExecActionState = { ok?: boolean; error?: string };
  */
 export async function getCharityListAction(): Promise<{ charities: CharityListItem[]; currentId: string | null }> {
   if (!(await getFlag("exec_dashboard"))) return { charities: [], currentId: null };
-  // Staff-only for now: the /exec portal is staff-operated until slice 2d builds
-  // the exec/EA access model. Fail closed on identity, not on RLS alone.
-  if (!(await getStaff())?.staff) return { charities: [], currentId: null };
-  const supabase = await createClient();
-  const execId = await resolveDemoExecutiveId(supabase);
+  // Authorize the principal (staff OR the owning exec/EA), then read under their
+  // session RLS. Fail closed on identity, not on RLS alone.
+  const principal = await getExecPrincipal();
+  if (!principal) return { charities: [], currentId: null };
+  const supabase = principal.supabase;
+  const execId = principal.execId ?? (await resolveDemoExecutiveId(supabase));
   const charities = await loadCharityList(supabase);
   let currentId: string | null = null;
   if (execId) {
@@ -39,9 +43,9 @@ export async function getCharityListAction(): Promise<{ charities: CharityListIt
 export async function getCharityContentAction(charityId: string): Promise<CharityContent | null> {
   if (!(await getFlag("exec_dashboard"))) return null;
   if (!charityId) return null;
-  if (!(await getStaff())?.staff) return null;
-  const supabase = await createClient();
-  return loadCharityContent(supabase, charityId);
+  const principal = await getExecPrincipal();
+  if (!principal) return null;
+  return loadCharityContent(principal.supabase, charityId);
 }
 
 /* ── Profile per-section saves (exec-profile lock). Each is flag-gated, resolves
@@ -162,14 +166,18 @@ export async function setRequestPauseAction(paused: boolean): Promise<ExecAction
 }
 
 /**
- * Set the executive's standing-nomination (default) charity. Flag-gated
- * (exec_dashboard), staff-gated, and recorded in the append-only audit log. In
- * the demo the caller is the synthetic admin session, so the change is logged as
- * staff acting for the executive — the same shape the real EA-acting-for-exec
- * path will use. The default_charity_id flip + the nomination_history close/open
- * run atomically inside the set_standing_nomination plpgsql function (migration
- * 0022; charity validation + the one-open-row invariant live there) so a partial
- * failure can never leave the executive with zero open nomination rows.
+ * Set the standing-nomination (default) charity — the single write the v1 exec
+ * portal grants an executive/EA (everything else is read-only). Flag-gated
+ * (exec_dashboard). Two authorization paths, both ending in the SAME atomic
+ * nomination core (migration 0030's private.apply_standing_nomination; charity
+ * validation + the one-open-row invariant live there, so a partial failure can
+ * never leave the executive with zero open nomination rows):
+ *  - staff (the demo / admin-acting surface): set_standing_nomination, audited at
+ *    the action layer as staff acting for the executive (unchanged behaviour);
+ *  - the owning exec or their assigned EA: request_standing_nomination, which is
+ *    scope-checked (private.can_access_executive) and self-audits as the acting
+ *    principal inside the SECURITY DEFINER function (an exec/EA session cannot
+ *    insert audit_entry under RLS).
  */
 export async function setStandingNominationAction(
   charityId: string,
@@ -177,25 +185,58 @@ export async function setStandingNominationAction(
   if (!(await getFlag("exec_dashboard"))) return { error: "Executive dashboard is not enabled." };
   if (!charityId) return { error: "No charity selected." };
 
-  const supabase = await createClient();
-  const staff = (await getStaff())?.staff;
-  if (!staff) return { error: "Not authorized." };
-
-  const execId = await resolveDemoExecutiveId(supabase);
+  const principal = await getExecPrincipal();
+  if (!principal) return { error: "Not authorized." };
+  const supabase = principal.supabase;
+  const execId = principal.execId ?? (await resolveDemoExecutiveId(supabase));
   if (!execId) return { error: "No executive found." };
 
-  const { error } = await supabase.rpc("set_standing_nomination", { p_executive_id: execId, p_charity_id: charityId });
-  if (error) return { error: error.message };
-
-  await logAudit(supabase, staff.id, {
-    action: "executive.standing_nomination_changed",
-    targetType: "executive",
-    targetId: execId,
-    actingForExecutiveId: execId,
-    metadata: { charity_id: charityId },
-  });
+  if (principal.kind === "staff") {
+    const { error } = await supabase.rpc("set_standing_nomination", { p_executive_id: execId, p_charity_id: charityId });
+    if (error) return { error: error.message };
+    if (principal.staffId) {
+      await logAudit(supabase, principal.staffId, {
+        action: "executive.standing_nomination_changed",
+        targetType: "executive",
+        targetId: execId,
+        actingForExecutiveId: execId,
+        metadata: { charity_id: charityId },
+      });
+    }
+  } else {
+    // The exec/EA self-service path: scope-checked + self-auditing in the DB.
+    const { error } = await supabase.rpc("request_standing_nomination", { p_executive_id: execId, p_charity_id: charityId });
+    if (error) return { error: error.message };
+  }
 
   revalidatePath("/exec");
   revalidatePath("/exec/my-charity");
+  return { ok: true };
+}
+
+/**
+ * Staff "send access link" provisioning (slice 2d): resolve an executive or EA by
+ * email and send them a passwordless sign-in link, so staff can grant portal
+ * access on demand (the locked EA drawer's "Send access link", and the exec
+ * equivalent). Staff-gated + flag-gated (exec_ea_login). Membership is resolved
+ * under the service role (authoritative across RLS); the send reuses the same OTP
+ * path as the self-service /login. Because this is staff-triggered, telling the
+ * operator there is no record for an email is fine — it is not a public
+ * enumeration oracle (contrast the self-service path, which never reveals).
+ */
+export async function sendAccessLinkAction(email: string): Promise<ExecActionState> {
+  if (!(await getFlag("exec_ea_login"))) return { error: "Sign-in links are not enabled." };
+  const clean = (email ?? "").trim().toLowerCase();
+  if (!clean) return { error: "No email provided." };
+  if (!(await getStaff())?.staff) return { error: "Not authorized." };
+
+  const admin = createAdminClient();
+  if (!admin) return { error: "The server is not configured to send sign-in links." };
+
+  const member = await resolveExecOrEaByEmail(admin, clean);
+  if (!member) return { error: "No executive or assistant is on file for that email." };
+
+  await sendSignInLink(member.email);
+  logSecurityEvent("exec_signin_link_provisioned", { kind: member.kind, by: "staff" });
   return { ok: true };
 }

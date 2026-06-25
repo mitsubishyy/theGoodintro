@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { LoginForm } from "./login-form";
+import { SignInLinkForm } from "./sign-in-link-form";
 import { safeNextPath } from "@/lib/safe-redirect";
+import { getFlag } from "@/lib/flags";
 
 export const metadata: Metadata = {
   title: "Sign in — TheGoodIntro",
@@ -13,6 +15,7 @@ export default async function LoginPage({
   searchParams: Promise<{ next?: string; error?: string; reset?: string }>;
 }) {
   const { next, error, reset } = await searchParams;
+  const execEaLogin = await getFlag("exec_ea_login");
 
   return (
     <main
@@ -36,6 +39,19 @@ export default async function LoginPage({
           </p>
         ) : null}
 
+        {error === "not_authorized" ? (
+          <p className="mb-4 text-sm" style={{ color: "var(--portal-amber-ink)" }}>
+            That account does not have access to this area.
+          </p>
+        ) : null}
+
+        {error === "link_invalid" ? (
+          <p className="mb-4 text-sm" style={{ color: "var(--portal-amber-ink)" }}>
+            That sign-in link did not work. Links work once and go stale quickly.
+            Request a fresh one below.
+          </p>
+        ) : null}
+
         {reset === "done" ? (
           <p className="mb-4 text-sm" style={{ color: "var(--muted-foreground)" }}>
             Your password has been updated. Sign in with your new password.
@@ -43,6 +59,19 @@ export default async function LoginPage({
         ) : null}
 
         <LoginForm next={safeNextPath(next)} />
+
+        {execEaLogin ? (
+          <>
+            <div className="my-6 flex items-center gap-3">
+              <span className="h-px flex-1" style={{ background: "var(--portal-line)" }} />
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
+                Or
+              </span>
+              <span className="h-px flex-1" style={{ background: "var(--portal-line)" }} />
+            </div>
+            <SignInLinkForm />
+          </>
+        ) : null}
       </div>
     </main>
   );

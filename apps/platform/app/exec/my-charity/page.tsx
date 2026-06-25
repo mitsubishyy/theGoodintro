@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
 import { ExecShell } from "../_components/exec-shell";
 import { MyCharityView } from "./_components/my-charity-view";
-import { resolveDemoExecutiveId, loadExecMyCharity } from "../data";
+import { resolveExecContext, loadExecMyCharity } from "../data";
 
 export const metadata: Metadata = {
   title: "My charity · TheGoodIntro",
@@ -19,8 +18,7 @@ export const metadata: Metadata = {
 export default async function ExecMyCharityPage() {
   if (!(await getFlag("exec_dashboard"))) return <FlagOff />;
 
-  const supabase = await createClient();
-  const execId = await resolveDemoExecutiveId(supabase);
+  const { supabase, execId } = await resolveExecContext();
   const data = execId ? await loadExecMyCharity(supabase, execId) : null;
   if (!data) return <FlagOff missingExec />;
 

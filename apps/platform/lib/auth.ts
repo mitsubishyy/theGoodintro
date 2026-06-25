@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
 
@@ -90,4 +91,98 @@ export async function requireStaff() {
   }
 
   return { user, staff, supabase };
+}
+
+/**
+ * The principal whose data the exec portal shows for the current session.
+ * - `staff`: the surface is staff-operated (the demo / admin-acting path);
+ *   `execId` is null and the caller resolves the demo executive. Staff can always
+ *   operate the portal, regardless of the exec/EA login flag.
+ * - `executive`: the signed-in executive themselves (`execId` is their id).
+ * - `ea`: an assigned EA; `execId` is the principal they are acting for (the
+ *   first assignment — one principal at a time, the locked EA Mode banner model).
+ */
+export interface ExecPrincipal {
+  supabase: SupabaseClient;
+  user: User;
+  kind: "staff" | "executive" | "ea";
+  execId: string | null;
+  /** Present for the staff principal — the staff row id, for action-layer audit. */
+  staffId?: string;
+  eaId?: string;
+}
+
+/**
+ * Resolve the exec-portal principal WITHOUT redirecting — returns null when there
+ * is no signed-in user, or the user is neither staff nor an exec/EA with access.
+ * For server actions (which return error states, not redirects). The exec/EA
+ * branches are gated on the exec_ea_login flag (CHANGE_SAFETY: the behaviour
+ * change of exec/EA reaching the portal ships off by default); staff are not.
+ */
+export async function getExecPrincipal(): Promise<ExecPrincipal | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data: staff } = await supabase
+    .from("staff")
+    .select("id")
+    .eq("auth_user_id", user.id)
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (staff) return { supabase, user, kind: "staff", execId: null, staffId: staff.id as string };
+
+  if (await getFlag("exec_ea_login")) {
+    const { data: exec } = await supabase
+      .from("executive")
+      .select("id")
+      .eq("auth_user_id", user.id)
+      .is("deleted_at", null)
+      .maybeSingle();
+    if (exec?.id) return { supabase, user, kind: "executive", execId: exec.id as string };
+
+    const { data: ea } = await supabase
+      .from("ea")
+      .select("id")
+      .eq("auth_user_id", user.id)
+      .is("deleted_at", null)
+      .maybeSingle();
+    if (ea?.id) {
+      // One principal at a time: the first assignment (RLS already lets the EA
+      // read all their assigned execs; the locked EA Mode banner switches which).
+      const { data: asg } = await supabase
+        .from("ea_assignment")
+        .select("executive_id")
+        .eq("ea_id", ea.id as string)
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      // An EA with no assignment has nothing to act on — treat as no access.
+      if (asg?.executive_id) {
+        return { supabase, user, kind: "ea", execId: asg.executive_id as string, eaId: ea.id as string };
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Gate the exec portal to "staff OR the owning exec/EA" (slice 2d), replacing the
+ * interim staff-only gate. Redirects a signed-out user to /login and a signed-in
+ * non-principal (e.g. a vendor) to /login with a generic notice. Returns the
+ * resolved principal for the page/layout.
+ */
+export async function requireExecOrEa(): Promise<ExecPrincipal> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const principal = await getExecPrincipal();
+  if (!principal) redirect("/login?error=not_authorized");
+  return principal;
 }

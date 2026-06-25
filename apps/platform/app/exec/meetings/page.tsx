@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
 import { ExecShell } from "../_components/exec-shell";
 import { MeetingsView } from "./_components/meetings-view";
-import { resolveDemoExecutiveId, loadExecMeetings } from "../data";
+import { resolveExecContext, loadExecMeetings } from "../data";
 
 export const metadata: Metadata = {
   title: "Meetings · TheGoodIntro",
@@ -21,8 +20,7 @@ export const metadata: Metadata = {
 export default async function ExecMeetingsPage({ searchParams }: { searchParams: Promise<{ view?: string; drawer?: string }> }) {
   if (!(await getFlag("exec_dashboard"))) return <FlagOff />;
 
-  const supabase = await createClient();
-  const execId = await resolveDemoExecutiveId(supabase);
+  const { supabase, execId } = await resolveExecContext();
   const data = execId ? await loadExecMeetings(supabase, execId) : null;
   if (!data) return <FlagOff missingExec />;
 

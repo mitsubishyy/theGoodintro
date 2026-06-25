@@ -1,22 +1,37 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { bandForMeetingNumber, charityShareCentsForMeetingNumber } from "@thegoodintro/pricing";
 import { formatAud } from "@/lib/format";
+import { requireExecOrEa } from "@/lib/auth";
 import { execCharityForPeriod, financialYearWindow, monthWindow } from "@/lib/reporting";
 import { asProgrammes, asStories } from "./charity-content";
 import type { CharityProgramme, CharityStory } from "./charity-content";
 
 export type { CharityProgramme, CharityStory };
 
-/* Demo executive resolution + live-data loader for the locked exec dashboard
-   (design/locked/exec-dashboard, VP1). Real magic-link exec/EA auth is deferred
-   (EXECUTIVE_PORTAL_BRIEF); for the staging demo we resolve one seeded executive
-   and the staff/admin session reads it under RLS. */
+/* Executive resolution + live-data loader for the locked exec dashboard
+   (design/locked/exec-dashboard, VP1). With slice 2d the portal is scoped to the
+   resolved principal: a signed-in executive (their own data), an EA (the exec
+   they act for), or staff operating the surface (the seeded demo executive). */
 
 const SEEDED_DEMO_EXEC = "00000000-0000-0000-0000-00000000ec03"; // Priya Raghavan (locked sample)
 
 function one<T>(v: unknown): T | undefined {
   return (Array.isArray(v) ? v[0] : v) as T | undefined;
 }
+
+/**
+ * The bound context for an exec-portal page: the gated principal's client and the
+ * executive id whose data the page renders. Staff fall back to the seeded demo
+ * executive (the surface stays staff-operable); an exec/EA get their own scope.
+ * Redirects (via requireExecOrEa) a signed-out or non-principal session away.
+ */
+export async function resolveExecContext(): Promise<{ supabase: SupabaseClient; execId: string | null; kind: ExecPrincipalKind }> {
+  const p = await requireExecOrEa();
+  const execId = p.execId ?? (await resolveDemoExecutiveId(p.supabase));
+  return { supabase: p.supabase, execId, kind: p.kind };
+}
+
+export type ExecPrincipalKind = "staff" | "executive" | "ea";
 
 /** The executive whose dashboard the demo shows: the locked sample, else the first active. */
 export async function resolveDemoExecutiveId(supabase: SupabaseClient): Promise<string | null> {

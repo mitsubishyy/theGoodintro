@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
 import { ExecShell } from "../_components/exec-shell";
 import { ImpactView } from "./_components/impact-view";
-import { resolveDemoExecutiveId, loadExecImpact } from "../data";
+import { resolveExecContext, loadExecImpact } from "../data";
 
 export const metadata: Metadata = {
   title: "Impact · TheGoodIntro",
@@ -20,8 +19,7 @@ export const metadata: Metadata = {
 export default async function ExecImpactPage({ searchParams }: { searchParams: Promise<{ view?: string; drawer?: string }> }) {
   if (!(await getFlag("exec_dashboard"))) return <FlagOff />;
 
-  const supabase = await createClient();
-  const execId = await resolveDemoExecutiveId(supabase);
+  const { supabase, execId } = await resolveExecContext();
   const data = execId ? await loadExecImpact(supabase, execId) : null;
   if (!data) return <FlagOff missingExec />;
 

@@ -12,7 +12,13 @@
  */
 export type SecurityEvent =
   | "password_reset_requested"
-  | "password_reset_completed";
+  | "password_reset_completed"
+  // Exec/EA passwordless sign-in (slice 2d). Logged identically for a member and
+  // an unknown email on the self-service path, so the log is never an
+  // account-enumeration oracle (same rule as the reset flow).
+  | "exec_signin_link_requested"
+  | "exec_signin_link_provisioned"
+  | "exec_signin_linked";
 
 export function logSecurityEvent(
   event: SecurityEvent,

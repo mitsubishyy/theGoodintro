@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
 import { ExecShell } from "../_components/exec-shell";
 import { ExecRequestsView } from "./_components/requests-view";
-import { resolveDemoExecutiveId, loadExecRequests } from "../data";
+import { resolveExecContext, loadExecRequests } from "../data";
 
 export const metadata: Metadata = {
   title: "Incoming requests · TheGoodIntro",
@@ -21,8 +20,7 @@ export const metadata: Metadata = {
 export default async function ExecRequestsPage() {
   if (!(await getFlag("exec_dashboard"))) return <FlagOff />;
 
-  const supabase = await createClient();
-  const execId = await resolveDemoExecutiveId(supabase);
+  const { supabase, execId } = await resolveExecContext();
   const data = execId ? await loadExecRequests(supabase, execId) : null;
   if (!data) return <FlagOff missingExec />;
 

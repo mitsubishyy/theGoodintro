@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
 import { ExecShell } from "./_components/exec-shell";
 import { ExecHomeView } from "./_components/home-view";
-import { resolveDemoExecutiveId, loadExecHome } from "./data";
+import { resolveExecContext, loadExecHome } from "./data";
 
 export const metadata: Metadata = {
   title: "Home · TheGoodIntro",
@@ -20,8 +19,7 @@ export const metadata: Metadata = {
 export default async function ExecHomePage() {
   if (!(await getFlag("exec_dashboard"))) return <FlagOff />;
 
-  const supabase = await createClient();
-  const execId = await resolveDemoExecutiveId(supabase);
+  const { supabase, execId } = await resolveExecContext();
   const data = execId ? await loadExecHome(supabase, execId) : null;
   if (!data) return <FlagOff missingExec />;
 
