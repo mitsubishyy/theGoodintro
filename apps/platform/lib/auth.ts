@@ -2,6 +2,27 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
 
+type AalLevels = {
+  currentLevel: string | null;
+  nextLevel: string | null;
+} | null;
+
+/**
+ * Decide what an admin must do to satisfy `admin_2fa_required`, given their
+ * Authenticator Assurance Level. Pure so it is unit-testable without a session.
+ *
+ * Fail-closed: anything other than a confirmed aal2 returns a step that keeps the
+ * cockpit out of reach. `nextLevel === "aal2"` means a *verified* factor exists
+ * but this session has not challenged it yet → send to the challenge, NOT the
+ * enrol screen (sending an already-enrolled admin to enrol is a soft lock-out).
+ * No determinable AAL (null, e.g. the lookup errored) → enrol, never allow.
+ */
+export function requiredMfaStep(aal: AalLevels): "challenge" | "enroll" | null {
+  if (!aal) return "enroll";
+  if (aal.currentLevel === "aal2") return null;
+  return aal.nextLevel === "aal2" ? "challenge" : "enroll";
+}
+
 /** The signed-in user plus their staff row (null if they are not staff). */
 export async function getStaff() {
   const supabase = await createClient();
@@ -59,9 +80,13 @@ export async function requireStaff() {
   if (!staff) redirect("/login?error=not_staff");
 
   if (await getFlag("admin_2fa_required")) {
-    const { data: aal } =
+    const { data: aal, error: aalError } =
       await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-    if (aal?.currentLevel !== "aal2") redirect("/account/security?enroll=1");
+    // Fail closed: an errored lookup is treated as "cannot confirm aal2" (null),
+    // which requiredMfaStep maps to the enrol path — never a pass-through.
+    const step = requiredMfaStep(aalError ? null : aal);
+    if (step === "challenge") redirect("/login/mfa?next=%2Fadmin");
+    if (step === "enroll") redirect("/account/security?enroll=1");
   }
 
   return { user, staff, supabase };

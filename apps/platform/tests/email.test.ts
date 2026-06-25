@@ -302,7 +302,10 @@ describe("email queue drain (A1)", () => {
     expect(email.html).not.toContain("Isobel Hardwick");
   });
 
-  it("a request with no active token fails the row instead of sending", async () => {
+  it("a request with no active token self-heals: a fresh link is minted and the email sends", async () => {
+    // Reuse-or-refresh (slice 2c): the sender resolves the link via
+    // ensure_request_action_token, so a missing/expired token is minted on demand
+    // and the email goes out with a live link instead of failing the row.
     await preclear(admin);
     const { data: req } = await admin
       .from("request")
@@ -327,18 +330,26 @@ describe("email queue drain (A1)", () => {
 
     const calls: EmailMessage[] = [];
     const summary = await drainEmailQueue(admin, fakeTransport(calls));
-    expect(summary).toMatchObject({ sent: 0, failed: 1 });
-    expect(calls.length).toBe(0);
+    expect(summary).toMatchObject({ sent: 1, failed: 0 });
+    expect(calls.length).toBe(1);
 
     const { data: row } = await admin
       .from("notification")
-      .select("status, last_error")
+      .select("status")
       .eq("request_id", req!.id)
       .single();
-    expect(row?.status).toBe("failed");
-    expect(row?.last_error).toContain("no active action token");
+    expect(row?.status).toBe("sent");
 
-    await admin.from("request").delete().eq("id", req!.id);
+    // A live (active, non-expired) token now exists for the request.
+    const { data: tok } = await admin
+      .from("email_action_token")
+      .select("status, expires_at")
+      .eq("request_id", req!.id)
+      .single();
+    expect(tok?.status).toBe("active");
+    expect(new Date(tok!.expires_at as string).getTime()).toBeGreaterThan(Date.now());
+
+    await admin.from("request").delete().eq("id", req!.id); // cascades to the token
   });
 
   it("the forward-to-EA email is EA-framed with two actions (no send-to-ea)", async () => {

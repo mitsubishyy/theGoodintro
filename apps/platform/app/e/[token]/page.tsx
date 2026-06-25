@@ -78,6 +78,20 @@ export default async function ActionPage({
     );
   }
 
+  // An expired link (90-day backstop) returns a row that carries ONLY is_expired
+  // — no request details — so we never reveal who/what to a stale link. Route to
+  // the human follow-up path; a fresh link is reissued from there.
+  if (row.is_expired) {
+    return (
+      <Shell>
+        <Quiet
+          title="This link has expired."
+          body="For security, action links stop working after a while. Just reply to the email and we will send a fresh one. It reaches a real person."
+        />
+      </Shell>
+    );
+  }
+
   const intentVal: "accept" | "decline" | "send_to_ea" | null =
     intent === "accept" || intent === "decline" || intent === "send_to_ea" ? intent : null;
 

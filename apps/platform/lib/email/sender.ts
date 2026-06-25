@@ -95,6 +95,25 @@ function one<T>(v: unknown): T | undefined {
   return (Array.isArray(v) ? v[0] : v) as T | undefined;
 }
 
+/**
+ * Resolve the live action-link token for a request: reuse the still-valid token
+ * or mint a fresh one if the 90-day backstop retired the old link (migration
+ * 0028). Centralised in the DB (ensure_request_action_token) so every email that
+ * links to /e/<token> agrees on the same live link.
+ */
+async function resolveActionToken(
+  supabase: SupabaseClient,
+  requestId: string,
+): Promise<string> {
+  const { data, error } = await supabase.rpc("ensure_request_action_token", {
+    p_request_id: requestId,
+  });
+  const token = typeof data === "string" ? data : null;
+  if (error || !token)
+    throw new ComposeError("could not resolve an action token for request");
+  return token;
+}
+
 /** B1: the exec request email, composed from the request + its signed link. */
 async function composeExecRequest(
   supabase: SupabaseClient,
@@ -107,8 +126,7 @@ async function composeExecRequest(
       `id, q1_what, q2_why, vendor_id, attendee, meeting_minutes,
        vendor:vendor_id(name),
        requester:requested_by_user_id(name),
-       executive:executive_id(name, primary_email, charity:default_charity_id(name), ea:ea_id(name)),
-       tokens:email_action_token(token, status)`,
+       executive:executive_id(name, primary_email, charity:default_charity_id(name), ea:ea_id(name))`,
     )
     .eq("id", row.request_id)
     .single();
@@ -121,9 +139,10 @@ async function composeExecRequest(
   );
   const charity = one<{ name: string }>(exec?.charity);
   const ea = one<{ name: string }>(exec?.ea);
-  const token = (req.tokens as { token: string; status: string }[]).find((t) => t.status === "active");
   if (!exec?.primary_email) throw new ComposeError("executive has no primary email");
-  if (!token) throw new ComposeError("no active action token for request");
+  // Reuse the still-valid action token, or mint a fresh one if the 90-day
+  // backstop retired the old link, so a follow-up email always carries a live link.
+  const tokenStr = await resolveActionToken(supabase, req.id as string);
 
   // The person in the vendor block is whoever will sit the meeting: the
   // on-behalf-of attendee when one was named, else the requesting user.
@@ -161,7 +180,7 @@ async function composeExecRequest(
       indicativeAmount: indicative,
       charityName: charity?.name ?? "your chosen charity",
       eaFirstName: ea?.name ? ea.name.split(" ")[0] : null,
-      confirmUrl: `${appBaseUrl()}/e/${token.token}`,
+      confirmUrl: `${appBaseUrl()}/e/${tokenStr}`,
     }),
   };
 }
@@ -193,8 +212,7 @@ async function composeForwardToEa(
       `id, q1_what, q2_why, vendor_id, attendee, meeting_minutes,
        vendor:vendor_id(name),
        requester:requested_by_user_id(name),
-       executive:executive_id(name, charity:default_charity_id(name)),
-       tokens:email_action_token(token, status)`,
+       executive:executive_id(name, charity:default_charity_id(name))`,
     )
     .eq("id", row.request_id)
     .single();
@@ -204,9 +222,9 @@ async function composeForwardToEa(
   const requester = one<{ name: string }>(req.requester);
   const exec = one<{ name: string; charity: unknown }>(req.executive);
   const charity = one<{ name: string }>(exec?.charity);
-  const token = (req.tokens as { token: string; status: string }[]).find((t) => t.status === "active");
   if (!exec?.name) throw new ComposeError("executive not found");
-  if (!token) throw new ComposeError("no active action token for request");
+  // Same reuse-or-refresh resolution as B1 (the EA acts on the same link).
+  const tokenStr = await resolveActionToken(supabase, req.id as string);
 
   const attendee = (req.attendee ?? null) as { name?: string; title?: string } | null;
   const requesterName = attendee?.name?.trim() || requester?.name || vendor?.name || "A member vendor";
@@ -235,7 +253,7 @@ async function composeForwardToEa(
       durationMinutes: (req.meeting_minutes as number | null) ?? 45,
       indicativeAmount: indicative,
       charityName: charity?.name ?? "their chosen charity",
-      confirmUrl: `${appBaseUrl()}/e/${token.token}`,
+      confirmUrl: `${appBaseUrl()}/e/${tokenStr}`,
     }),
   };
 }

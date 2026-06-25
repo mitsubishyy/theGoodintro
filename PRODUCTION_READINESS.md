@@ -121,9 +121,18 @@ Most of the posture is in `SECURITY_AND_COMPLIANCE.md`; these are the build task
       the test runs in CI.
 - [ ] **C2 Webhook signature verification** on Xero and (if built) Zoom/Teams. *Done
       when:* an unsigned/forged event is rejected.
-- [ ] **C3 Rate limiting** on auth and the signed-link confirm endpoints.
+- [ ] **C3 Rate limiting** on auth and the signed-link confirm endpoints. Auth
+      (login + reset) leans on Supabase's built-in `[auth.rate_limit]`
+      (sign_in_sign_ups / email_sent / token_verifications). The signed-link RPC
+      `act_on_request_token` has no Supabase limit, so slice 2c added a DB-backed
+      per-token limiter (`rate_limit` + `consume_rate_limit`, 20/min/token). *Verify
+      on staging:* confirm the Supabase auth limits are set on the cloud project too.
 - [ ] **C4 Admin 2FA enforced from launch** (the `login/mfa` route exists; enforce
-      it for staff).
+      it for staff). Slice 2c made `requireStaff` fail-closed behind the
+      `admin_2fa_required` flag: an unconfirmed-aal2 session is challenged
+      (verified factor present) or sent to enrol (none), and an errored AAL lookup
+      denies the cockpit. *Remaining:* flip `admin_2fa_required` on (Issy, in the
+      admin portal) once staff are enrolled.
 - [ ] **C5 Secrets** in env only, separate dev/prod, rotation on staff change; add a
       secret scan to CI. *Done when:* CI fails on a committed secret.
 - [ ] **C6 Server-side input validation** + the request content guard (strip
