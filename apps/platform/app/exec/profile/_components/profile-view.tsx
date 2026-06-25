@@ -378,7 +378,7 @@ function CalendarSection({ calendar, ea, onEditEa }: { calendar: ExecProfileData
               Add an assistant
             </button>
             <p className="mt-2 text-[12px] italic" style={{ color: "var(--muted-foreground)" }}>
-              An assistant can see your incoming requests and act on meetings on your behalf. They cannot change your charity or your business context.
+              An assistant can see your incoming requests and act on meetings on your behalf. They cannot change your business context.
             </p>
           </div>
         )}

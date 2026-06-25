@@ -18,11 +18,19 @@ import { switchEaPrincipalAction } from "../actions";
  * banner and the chip share one payload. Non-EA sessions get a null context and
  * no banner.
  *
- * NOT in this port (flagged for Issy, do not silently resolve): the greeting
- * personalisation (page content reads the signed-in human) and the permission-
- * hide matrix (charity-change / forward affordances removed in EA mode). The
- * latter also needs reconciling with the 2d access model, which currently lets an
- * assigned EA change the standing charity — the opposite of the banner lock.
+ * Charity-change permission RESOLVED 2026-06-25 (ratified 2d scope): an assigned
+ * EA MAY change their principal's standing charity (audited as the EA acting for
+ * that exec — built and tested in slice 2d). So the EA Mode banner's "remove the
+ * change-charity affordance" hide does NOT apply and is intentionally not
+ * implemented; the standing-charity path stays available to an assigned EA, with
+ * the server enforcing assigned-EA-only access and the audit attribution. (The
+ * banner README's "EA cannot change charity" line predates this ratification and
+ * is superseded unless Issy reverses the product call.)
+ *
+ * Still TODO for EA-mode completeness (tracked, not silently dropped): greeting
+ * personalisation (page content reads the signed-in human) and the remaining
+ * hides that ARE genuine EA restrictions — forward-to-self on the incoming queue,
+ * and editing the principal's business context (the read-only-plus-charity scope).
  */
 
 const EaModeContext = createContext<EaModeData | null>(null);

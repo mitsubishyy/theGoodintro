@@ -67,7 +67,7 @@ export function ProfileEaDrawer({ ea, enabled, onClose }: { ea: ExecProfileData[
             {isEdit ? "Edit executive assistant" : "Add executive assistant"}
           </h2>
           <p className="mt-2 text-[13px] italic leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
-            Your assistant can see your incoming requests and act on meetings on your behalf. They cannot change your charity or your business context.
+            Your assistant can see your incoming requests and act on meetings on your behalf. They cannot change your business context.
           </p>
 
           {isEdit && ea && (

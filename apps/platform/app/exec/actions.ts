@@ -223,11 +223,10 @@ export async function setStandingNominationAction(
  * writes go through upsertExecutiveAssistant on the service role).
  *
  * Authorization: staff (the demo / admin-acting surface) OR the OWNING executive.
- * An EA is deliberately refused — provisioning or replacing assistant access is
- * not an EA power (privilege containment; matches the drawer's "they cannot
- * change your charity or business context" contract). Flag-gated on
- * exec_ea_login read authoritatively (the same kill switch the rest of the
- * passwordless path honors; the access link is meaningless without it).
+ * An EA is deliberately refused — an EA may act for their principal, but granting
+ * or replacing assistant access is not an EA power (privilege containment).
+ * Flag-gated on exec_ea_login read authoritatively (the same kill switch the rest
+ * of the passwordless path honors; the access link is meaningless without it).
  */
 export async function saveExecutiveAssistantAction(input: { name: string; email: string }): Promise<ExecActionState> {
   if (!(await getFlagAuthoritative("exec_ea_login"))) return { error: "Assistant access is not enabled yet." };
