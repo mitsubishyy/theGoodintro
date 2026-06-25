@@ -45,18 +45,8 @@ create policy p_select on public.charity
   for select to authenticated
   using (private.is_staff() or private.current_vendor_id() is not null);
 
-drop policy p_select on public.notification;
-create policy p_select on public.notification
-  for select to authenticated
-  using (
-    private.is_staff() or (
-      recipient_type = 'vendor_user'
-      and recipient_id in (
-        select vu.id from public.vendor_user vu
-        where vu.vendor_id = private.current_vendor_id()
-      )
-    )
-  );
+-- notification was left unchanged by 0029 (kept staff + vendor-scoped), so the
+-- down migration does not touch it.
 
 drop policy p_select on public.ea;
 create policy p_select on public.ea

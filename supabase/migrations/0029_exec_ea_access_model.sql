@@ -126,16 +126,10 @@ create policy p_select on public.charity
     or private.current_ea_id() is not null
   );
 
-drop policy p_select on public.notification;
-create policy p_select on public.notification
-  for select to authenticated
-  using (
-    private.is_staff()
-    or (recipient_type = 'vendor_user' and recipient_id in (
-        select vu.id from public.vendor_user vu where vu.vendor_id = private.current_vendor_id()))
-    or (recipient_type = 'executive' and private.can_access_executive(recipient_id))
-    or (recipient_type = 'ea' and recipient_id = private.current_ea_id())
-  );
+-- notification: deliberately NOT opened to exec/EA. The v1 exec portal reads
+-- request/meeting/gift/charity/nomination, not notification delivery metadata
+-- (provider ids, send status, last_error). It stays staff + vendor-scoped (0003)
+-- so we do not expose delivery internals before a screen actually needs them.
 
 -- ea + ea_assignment were staff-only (0003). Let an EA read their own identity and
 -- the executives they cover, and an executive read the EA linked to them.
