@@ -24,7 +24,7 @@ describe("exec/EA access model RLS (2d)", () => {
   const ids = {
     e1: "", e2: "", ea: "", ea2: "",
     uExec1: "", uExec2: "", uEa: "",
-    r1: "", r2: "", m1: "", charity: "", notif: "",
+    r1: "", r2: "", m1: "", m2: "", charity: "", notif: "",
   };
 
   async function mkUser(email: string): Promise<{ id: string; client: SupabaseClient }> {
@@ -112,13 +112,30 @@ describe("exec/EA access model RLS (2d)", () => {
       .select("id")
       .single();
     ids.m1 = m!.id;
-    await admin.from("gift_record").insert({
-      meeting_id: ids.m1,
-      charity_id: ids.charity,
-      band_at_completion: "band_1",
-      charity_amount_cents: 90000,
-      admin_fee_cents: 60000,
-    });
+    // E2 gets its own meeting + gift too, so the meeting/gift negatives prove
+    // "does not see ANOTHER exec's rows", not merely "only one row exists".
+    const { data: m2 } = await admin
+      .from("meeting")
+      .insert({ request_id: ids.r2, charity_id: ids.charity, status: "proposed" })
+      .select("id")
+      .single();
+    ids.m2 = m2!.id;
+    await admin.from("gift_record").insert([
+      {
+        meeting_id: ids.m1,
+        charity_id: ids.charity,
+        band_at_completion: "band_1",
+        charity_amount_cents: 90000,
+        admin_fee_cents: 60000,
+      },
+      {
+        meeting_id: ids.m2,
+        charity_id: ids.charity,
+        band_at_completion: "band_1",
+        charity_amount_cents: 90000,
+        admin_fee_cents: 60000,
+      },
+    ]);
     await admin.from("nomination_history").insert([
       { executive_id: ids.e1, charity_id: ids.charity, started_at: new Date().toISOString() },
       { executive_id: ids.e2, charity_id: ids.charity, started_at: new Date().toISOString() },
@@ -153,8 +170,8 @@ describe("exec/EA access model RLS (2d)", () => {
     if (!admin) return;
     if (ids.notif) await admin.from("notification").delete().eq("id", ids.notif);
     await admin.from("nomination_history").delete().in("executive_id", [ids.e1, ids.e2]);
-    await admin.from("gift_record").delete().eq("meeting_id", ids.m1); // also cascades with the meeting
-    await admin.from("meeting").delete().eq("id", ids.m1);
+    await admin.from("gift_record").delete().in("meeting_id", [ids.m1, ids.m2]); // also cascades with the meeting
+    await admin.from("meeting").delete().in("id", [ids.m1, ids.m2]);
     await admin.from("request").delete().in("id", [ids.r1, ids.r2]);
     await admin.from("ea_assignment").delete().in("ea_id", [ids.ea, ids.ea2]);
     // Clear E1's ea link before deleting the ea rows (ea_id has no cascade).
@@ -198,14 +215,17 @@ describe("exec/EA access model RLS (2d)", () => {
     const { data: reqs } = await cExec2.from("request").select("id");
     expect(reqs?.map((r) => r.id)).toContain(ids.r2);
     expect(reqs?.map((r) => r.id)).not.toContain(ids.r1);
+    // E2 sees its OWN meeting, never E1's.
+    const { data: meetings } = await cExec2.from("meeting").select("id");
+    expect(meetings?.map((m) => m.id)).toEqual([ids.m2]);
   });
 
-  it("gift_record is scoped: an exec sees their own meeting's gift, never another exec's", async () => {
+  it("gift_record is scoped: each exec sees only their own meeting's gift, never the other's", async () => {
     const { data: mine } = await cExec1.from("gift_record").select("meeting_id");
-    expect(mine?.map((g) => g.meeting_id)).toEqual([ids.m1]);
-    // E2 has no gift (its meeting was never created); it certainly never sees E1's.
+    expect(mine?.map((g) => g.meeting_id)).toEqual([ids.m1]); // E1's gift, not E2's (m2)
+
     const { data: theirs } = await cExec2.from("gift_record").select("meeting_id");
-    expect(theirs?.map((g) => g.meeting_id) ?? []).not.toContain(ids.m1);
+    expect(theirs?.map((g) => g.meeting_id)).toEqual([ids.m2]); // E2's gift, not E1's (m1)
   });
 
   it("ea is scoped: an EA reads its own row, an exec reads its linked EA, neither sees another EA", async () => {
