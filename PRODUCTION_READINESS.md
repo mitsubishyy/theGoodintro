@@ -109,6 +109,18 @@ Email deliverability is the highest risk: the exec request email is the product.
       `@thegoodintro/pricing`) against live data and alerts on any drift. *Done
       when:* it runs on schedule, passes on clean data, and fires an alert when a gift
       row is deliberately corrupted in staging.
+      *Endpoint built 2026-06-25 (commit aa6fbef):* `app/api/jobs/reconcile` runs
+      `reconcileAll` (invariants 1 + 9) read-only, CRON_SECRET + `reconcile_job`-flag
+      gated, and on drift emits a `reconcile_drift` security-log line + an `alerted`
+      response. Clean-data tie-out is DB-tested (`reporting.test.ts`); gating + the
+      drift-alert branch are covered (`reconcile-job.test.ts`). **Box stays unchecked:
+      the daily SCHEDULER is NOT installed** — the contract is pg_cron + pg_net POSTing
+      the deployed URL with the CRON_SECRET bearer (DEC-7), a CLOUD Supabase change out
+      of scope for the local-only build chat (localhost can't be reached by pg_cron).
+      *Deferred to the cloud/ops step (same precedent as the Xero reconcile job):*
+      enable `pg_cron` + `pg_net`, schedule the daily POST, set `CRON_SECRET`, flip
+      `reconcile_job` on, then deliberately corrupt a gift row in staging to confirm
+      the alert. Only then tick this box.
 - [ ] **B5 Uptime / health check + alerting.** *Done when:* an endpoint-down
       condition pages someone.
 
