@@ -108,7 +108,7 @@ export default async function RequestsPage({
       title="Requests"
       breadcrumb={[{ label: "Home", href: "/admin" }, { label: "Requests" }]}
       count={status ? `${filteredCount} ${requestStatusPill(status).label.toLowerCase()} / ${totalCount} all` : `${totalCount} all`}
-      action={<StatusFilter active={status} counts={counts} total={totalCount} />}
+      action={<StatusFilter active={status} counts={counts} total={totalCount} perPage={perPage} />}
     >
       <MetricsRibbon groups={ribbonGroups} columns={4} numeralFont="fraunces" />
 
@@ -126,22 +126,33 @@ export default async function RequestsPage({
 
 /**
  * Server-rendered status filter (plain links, no client JS): All + the four
- * request states, each with a live count. Read navigation only; changing the
- * filter resets paging by dropping ?page/?per.
+ * request states, each with a live count. Read navigation only. Changing the
+ * filter resets the page (the result set changed, so ?page is dropped) but
+ * KEEPS the chosen page size (?per carries over), so a filter switch doesn't
+ * silently snap the rows-per-page back to the default.
  */
 function StatusFilter({
   active,
   counts,
   total,
+  perPage,
 }: {
   active: RequestStatusEnum | null;
   counts: Record<RequestStatusEnum, number>;
   total: number;
+  perPage: number;
 }) {
   const items: { key: RequestStatusEnum | null; label: string; count: number }[] = [
     { key: null, label: "All", count: total },
     ...REQUEST_STATUSES.map((s) => ({ key: s, label: requestStatusPill(s).label, count: counts[s] })),
   ];
+  const hrefFor = (key: RequestStatusEnum | null): string => {
+    const params = new URLSearchParams();
+    if (key) params.set("status", key);
+    if (perPage !== 25) params.set("per", String(perPage)); // 25 is the default; omit it
+    const qs = params.toString();
+    return qs ? `/admin/requests?${qs}` : "/admin/requests";
+  };
   return (
     <div className="flex items-center gap-1.5 flex-wrap">
       {items.map((it) => {
@@ -149,7 +160,7 @@ function StatusFilter({
         return (
           <a
             key={it.key ?? "all"}
-            href={it.key ? `/admin/requests?status=${it.key}` : "/admin/requests"}
+            href={hrefFor(it.key)}
             aria-current={on ? "page" : undefined}
             className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[12.5px] font-medium transition-colors"
             style={
