@@ -657,6 +657,63 @@ export function uncreditedBookedVendorEmail(c: {
   };
 }
 
+/**
+ * D3 · Auto-cancel, unpaid at the deadline — the vendor note (NOTIFICATION_TEMPLATES
+ * D3, from the brand). Wording verbatim: deliberately reassuring (no credit used,
+ * not charged), so no amount or date is shown. DRAFT (D-series not design-locked).
+ */
+export function unpaidCancelledVendorEmail(c: { execName: string }): ComposedEmail {
+  const subject = `Your meeting with ${c.execName} was cancelled`;
+  const lineHtml = `Your meeting with <strong>${esc(c.execName)}</strong> has been cancelled because payment did not clear in time. No credit was used, and you are welcome to rebook whenever you are ready.`;
+  const text = [
+    `Your meeting with ${c.execName} has been cancelled because payment did not clear in time. No credit was used, and you are welcome to rebook whenever you are ready.`,
+    ``,
+    `TheGoodIntro · invite-only · Australia`,
+  ].join("\n");
+  return {
+    subject,
+    html: lockedCard("Meeting cancelled", pEl(lineHtml), `Your meeting with ${c.execName} was cancelled; no credit was used.`),
+    text,
+    fromKind: "brand",
+  };
+}
+
+/**
+ * D3 · Auto-cancel — the executive (or their EA) note (NOTIFICATION_TEMPLATES D3,
+ * from Issy). Body wording verbatim. The doc's shared line opens "Hi
+ * {exec_first_name}"; for the EA recipient we greet the EA by name instead (as
+ * the forward-to-EA email does) since they are the one reading it, and refer to
+ * the executive in the body. DRAFT.
+ */
+export function unpaidCancelledExecEmail(c: {
+  execFirstName: string;
+  vendorName: string;
+  meetingDateLabel: string;
+  eaFirstName?: string | null;
+}): ComposedEmail {
+  const greetName = c.eaFirstName ?? c.execFirstName;
+  const subject = `A meeting has been cancelled`;
+  const inner =
+    pEl(`Hi ${esc(greetName)},`) +
+    pEl(
+      `the meeting with <strong>${esc(c.vendorName)}</strong> on <strong>${esc(c.meetingDateLabel)}</strong> will no longer go ahead. Apologies for the change, and thank you for your flexibility.`,
+    ) +
+    pEl("Issy");
+  const text = [
+    `Hi ${greetName},`,
+    ``,
+    `the meeting with ${c.vendorName} on ${c.meetingDateLabel} will no longer go ahead. Apologies for the change, and thank you for your flexibility.`,
+    ``,
+    `Issy`,
+  ].join("\n");
+  return {
+    subject,
+    html: lockedCard("Meeting cancelled", inner, `The meeting with ${c.vendorName} on ${c.meetingDateLabel} will no longer go ahead.`),
+    text,
+    fromKind: "personal",
+  };
+}
+
 /** A4 · Invoice paid, the vendor receipt (from the brand). */
 export function vendorReceiptEmail(c: {
   credits: number;

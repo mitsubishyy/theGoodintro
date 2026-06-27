@@ -10,6 +10,8 @@ import {
   meetingCompletedExecEmail,
   timeConfirmedVendorEmail,
   uncreditedBookedVendorEmail,
+  unpaidCancelledExecEmail,
+  unpaidCancelledVendorEmail,
   vendorReceiptEmail,
   vendorWelcomeEmail,
   type ComposedEmail,
@@ -47,6 +49,7 @@ export const SUPPORTED_EMAIL_EVENTS = [
   "C2_time_confirmed",
   "C6_meeting_completed",
   "D1_uncredited_booked",
+  "D3_unpaid_cancelled",
   "A1_vendor_signed_up",
   "A1_vendor_welcome",
   "A4_invoice_paid",
@@ -495,6 +498,84 @@ async function composeVendorReceipt(
   };
 }
 
+/**
+ * D3: an unpaid overcommit meeting auto-cancelled at its payment deadline
+ * (cancel_overdue_overcommit_meetings, migration 0034). ONE event, three
+ * recipient types — the requesting vendor user (reassuring brand note), the
+ * executive, and the linked EA (both the from-Issy note). We branch on
+ * recipient_type to resolve the address + the right copy. The meeting date for
+ * the exec/EA line comes from the now-cancelled meeting's scheduled time.
+ */
+async function composeUnpaidCancelled(
+  supabase: SupabaseClient,
+  row: NotificationRow,
+): Promise<{ email: ComposedEmail; to: string }> {
+  if (!row.request_id) throw new ComposeError("notification has no request_id");
+  const { data: req } = await supabase
+    .from("request")
+    .select(
+      `id, vendor:vendor_id(name), requester:requested_by_user_id(name, email), executive:executive_id(name, primary_email)`,
+    )
+    .eq("id", row.request_id)
+    .single();
+  if (!req) throw new ComposeError("request not found");
+  const vendor = one<{ name: string }>(req.vendor);
+  const requester = one<{ name: string; email: string }>(req.requester);
+  const exec = one<{ name: string; primary_email: string }>(req.executive);
+  if (!exec?.name) throw new ComposeError("executive not found");
+
+  if (row.recipient_type === "vendor_user") {
+    if (!requester?.email) throw new ComposeError("requesting vendor user has no email");
+    return { to: requester.email, email: unpaidCancelledVendorEmail({ execName: exec.name }) };
+  }
+
+  // exec + EA share the meeting-date line, from the cancelled meeting's time.
+  const { data: meeting } = await supabase
+    .from("meeting")
+    .select("scheduled_at")
+    .eq("request_id", req.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const meetingDateLabel = meeting?.scheduled_at
+    ? formatMeetingDate(meeting.scheduled_at as string)
+    : "the planned date";
+  const vendorName = vendor?.name ?? "a member vendor";
+
+  if (row.recipient_type === "executive") {
+    if (!exec.primary_email) throw new ComposeError("executive has no primary email");
+    return {
+      to: exec.primary_email,
+      email: unpaidCancelledExecEmail({
+        execFirstName: exec.name.split(" ")[0] || "there",
+        vendorName,
+        meetingDateLabel,
+        eaFirstName: null,
+      }),
+    };
+  }
+  if (row.recipient_type === "ea") {
+    if (!row.recipient_id) throw new ComposeError("ea notification has no recipient ea");
+    const { data: ea } = await supabase
+      .from("ea")
+      .select("name, email")
+      .eq("id", row.recipient_id)
+      .is("deleted_at", null)
+      .maybeSingle();
+    if (!ea?.email) throw new ComposeError("ea not found or has no email");
+    return {
+      to: ea.email as string,
+      email: unpaidCancelledExecEmail({
+        execFirstName: exec.name.split(" ")[0] || "the executive",
+        vendorName,
+        meetingDateLabel,
+        eaFirstName: (ea.name as string | null)?.split(" ")[0] || "there",
+      }),
+    };
+  }
+  throw new ComposeError(`unexpected recipient_type "${row.recipient_type}" for D3`);
+}
+
 async function compose(
   supabase: SupabaseClient,
   row: NotificationRow,
@@ -512,6 +593,8 @@ async function compose(
       return composeMeetingCompletedExec(supabase, row);
     case "D1_uncredited_booked":
       return composeUncreditedBooked(supabase, row);
+    case "D3_unpaid_cancelled":
+      return composeUnpaidCancelled(supabase, row);
     case "A1_vendor_signed_up":
       return composeSignupAlert(supabase, row);
     case "A1_vendor_welcome":
