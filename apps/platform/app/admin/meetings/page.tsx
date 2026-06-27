@@ -94,7 +94,7 @@ function shape(row: MeetingRow): MeetingItem {
 export default async function MeetingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string; m?: string; d?: string }>;
+  searchParams: Promise<{ view?: string; m?: string; d?: string; status?: string }>;
 }) {
   const sp = await searchParams;
   const supabase = await createClient();
@@ -143,7 +143,21 @@ export default async function MeetingsPage({
   ];
 
   const actionsEnabled = await getFlag("request_loop");
-  const initialView = sp.view === "list" ? "list" : "calendar";
+  // Sidebar sub-nav sends ?status=confirmed/held/cancelled (Scheduled / Completed
+  // / Cancellations). Validate it and seed the list filter; a status filter reads
+  // best in the list, so default to list view when one is present.
+  const MEETING_STATUSES: MeetingStatusEnum[] = [
+    "proposed",
+    "confirmed",
+    "held",
+    "no_show",
+    "cancelled",
+    "reversed",
+  ];
+  const initialStatus = MEETING_STATUSES.includes(sp.status as MeetingStatusEnum)
+    ? (sp.status as MeetingStatusEnum)
+    : null;
+  const initialView = sp.view === "list" || initialStatus ? "list" : "calendar";
   const initialKey = sp.d ?? (sp.m ? `${sp.m}-01` : null);
 
   return (
@@ -169,6 +183,7 @@ export default async function MeetingsPage({
         actionsEnabled={actionsEnabled}
         initialView={initialView}
         initialKey={initialKey}
+        initialStatus={initialStatus}
       />
     </PortalPage>
   );

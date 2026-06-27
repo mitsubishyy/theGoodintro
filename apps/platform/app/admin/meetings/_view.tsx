@@ -42,16 +42,22 @@ export function MeetingsView({
   actionsEnabled,
   initialView = "calendar",
   initialKey,
+  initialStatus = null,
 }: {
   meetings: MeetingItem[];
   nowIso: string;
   actionsEnabled: boolean;
   initialView?: View;
   initialKey?: string | null;
+  /** Seed the status filter from the sidebar sub-nav (?status=confirmed/held/…),
+   *  so Scheduled / Completed / Cancellations actually land pre-filtered. */
+  initialStatus?: MeetingStatusEnum | null;
 }) {
   const [view, setView] = useState<View>(initialView);
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<Set<MeetingStatusEnum>>(new Set());
+  const [statusFilter, setStatusFilter] = useState<Set<MeetingStatusEnum>>(
+    initialStatus ? new Set([initialStatus]) : new Set(),
+  );
   const [sort, setSort] = useState<Sort>("newest");
   const [page, setPage] = useState(1);
   const [drawerId, setDrawerId] = useState<string | null>(null);
