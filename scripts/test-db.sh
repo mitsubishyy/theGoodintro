@@ -38,6 +38,16 @@ fi
 # Manually-added secrets (the Resend key + email config A1; the Xero OAuth keys
 # + token-encryption key, DEC-13) must survive regeneration, or the manual setup
 # steps evaporate on every test run.
+#
+# FRESH WORKTREE CAVEAT: preservation only works if those secrets are ALREADY in
+# this worktree's apps/platform/.env.local. A brand-new worktree (e.g. the build
+# gate's `git worktree add /tmp/tgi-build <commit>`) has no prior .env.local, so
+# there is nothing to preserve and the generated file omits them. The xero-oauth
+# suite then fails with "XERO_TOKEN_ENC_KEY is not set" (and the Xero/email
+# integration tests skip or fail), which is environmental, not a code break. Fix:
+# copy the secret line(s) from a primary worktree before running the suite, e.g.
+#   grep '^XERO_TOKEN_ENC_KEY' ~/theGoodintro/apps/platform/.env.local \
+#     >> apps/platform/.env.local
 PRESERVED=""
 if [ -f apps/platform/.env.local ]; then
   PRESERVED="$(grep -E '^(RESEND_API_KEY|EMAIL_MODE|EMAIL_TEST_RECIPIENT|EMAIL_FROM_PERSONAL|EMAIL_FROM_BRAND|EMAIL_REPLY_TO|EMAIL_ADMIN_ALERTS|EMAIL_SIGNATURE_PHONE|XERO_CLIENT_ID|XERO_CLIENT_SECRET|XERO_REDIRECT_URI|XERO_WEBHOOK_KEY|XERO_TOKEN_ENC_KEY)=' apps/platform/.env.local || true)"
