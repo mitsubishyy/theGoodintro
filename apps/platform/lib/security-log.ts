@@ -28,7 +28,11 @@ export type SecurityEvent =
   // The daily money-invariants reconciliation job (PRODUCTION_READINESS B4) found
   // a CALCULATIONS section 4 invariant out of balance. The interim alert sink
   // until the dedicated push alerter (B1 Sentry / B2 drain) lands.
-  | "reconcile_drift";
+  | "reconcile_drift"
+  // The daily auto-cancel job (STATE_MACHINES confirmed -> cancelled) cancelled
+  // one or more unpaid, overdue overcommit meetings. A money-state change worth
+  // a structured line so the cron run is visible even before the email goes out.
+  | "overcommit_auto_cancelled";
 
 export function logSecurityEvent(
   event: SecurityEvent,

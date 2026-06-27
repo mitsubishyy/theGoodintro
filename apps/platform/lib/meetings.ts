@@ -194,3 +194,23 @@ export async function closeRequest(supabase: SupabaseClient, requestId: string):
   if (error) return { ok: false, error: rpcError(error.message) };
   return { ok: true, detail: data as string };
 }
+
+/**
+ * Auto-cancel confirmed overcommit meetings whose payment never cleared by
+ * `payment_due_at` (STATE_MACHINES.md `confirmed -> cancelled`, the uncredited-
+ * payment sub-flow step 5). Atomic + money-safe inside public.cancel_overdue_
+ * overcommit_meetings: it only ever touches uncredited (credit_lot_id null),
+ * genuinely past-due rows, so it can never cancel a credited booking, and queues
+ * the D3 vendor + exec + EA notices. Driven by the /api/jobs/cancel-overdue cron
+ * route (the daily SCHEDULE is a cloud/ops step). Returns how many it cancelled.
+ */
+export async function cancelOverdueOvercommitMeetings(
+  supabase: SupabaseClient,
+  now: Date = new Date(),
+): Promise<{ ok: true; cancelled: number } | { ok: false; error: string }> {
+  const { data, error } = await supabase.rpc("cancel_overdue_overcommit_meetings", {
+    p_now: now.toISOString(),
+  });
+  if (error) return { ok: false, error: rpcError(error.message) };
+  return { ok: true, cancelled: (data as number) ?? 0 };
+}
