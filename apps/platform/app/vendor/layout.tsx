@@ -56,15 +56,17 @@ export default async function VendorLayout({
 
   const supabase = result.supabase;
   const head = { count: "exact" as const, head: true };
-  const [submittedC, upcomingC, cycleRes] = await Promise.all([
+  const nowIso = new Date().toISOString();
+  const [submittedC, upcomingC, pendingC, cycleRes] = await Promise.all([
     // Sidebar Requests badge: open requests waiting on the exec.
     supabase.from("request").select("id", head).eq("status", "submitted"),
-    // Sidebar Meetings badge: proposed/confirmed with a future time locked in.
-    supabase
-      .from("meeting")
-      .select("id", head)
-      .in("status", ["proposed", "confirmed"])
-      .gte("scheduled_at", new Date().toISOString()),
+    // Sidebar Meetings > Upcoming badge: confirmed meetings with a future time.
+    // Matches the /vendor/meetings "upcoming" group exactly (confirmed + ahead),
+    // so the badge and the filtered list always agree.
+    supabase.from("meeting").select("id", head).eq("status", "confirmed").gte("scheduled_at", nowIso),
+    // Sidebar Meetings > Pending badge: proposed meetings still being scheduled.
+    // Matches the "pending" group (proposed has no time yet).
+    supabase.from("meeting").select("id", head).eq("status", "proposed"),
     supabase
       .from("cycle")
       .select("held_meetings_count")
@@ -73,7 +75,8 @@ export default async function VendorLayout({
       .maybeSingle(),
   ]);
   const requestsBadge = submittedC.count ?? 0;
-  const meetingsBadge = upcomingC.count ?? 0;
+  const upcomingBadge = upcomingC.count ?? 0;
+  const pendingBadge = pendingC.count ?? 0;
 
   // Band is recomputed on view from the pricing engine, never stored.
   const held = (cycleRes.data?.held_meetings_count as number) ?? 0;
@@ -103,7 +106,10 @@ export default async function VendorLayout({
       href: "/vendor/meetings",
       icon: "calendar",
       children: [
-        { label: "Upcoming", href: "/vendor/meetings?when=upcoming", icon: "calendar", badgeCount: meetingsBadge },
+        // status/time groups match the /vendor/meetings page buckets exactly;
+        // labels stay the locked vendor copy.
+        { label: "Upcoming", href: "/vendor/meetings?when=upcoming", icon: "calendar", badgeCount: upcomingBadge },
+        { label: "Pending", href: "/vendor/meetings?when=pending", icon: "calendar", badgeCount: pendingBadge },
         { label: "Past", href: "/vendor/meetings?when=past", icon: "calendar" },
       ],
     },
