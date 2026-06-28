@@ -103,6 +103,34 @@ For a `confirmed` meeting with **no reserved credit** (overcommit):
    vendor + exec + EA.
 6. A vendor may hold at most **4** booked-but-unpaid meetings at once.
 
+### Build status (v1)
+
+The whole sub-flow is built and DB-tested. Only the daily SCHEDULERS are deferred
+to the Supabase-connected cloud/ops step, exactly as the B4 reconcile job is
+(PRODUCTION_READINESS B4). Flags stay OFF until Issy enables them on staging.
+
+- **D1 (booked, payment due).** Queued inline by `confirm_meeting` (migration
+  0027); composer `composeUncreditedBooked` is wired into the email drain. No
+  schedule is needed: it fires on the `proposed → confirmed` overcommit
+  transition.
+- **D2 (payment reminder, ~7 days before due).** Built and tested as the RPC
+  `queue_overdue_payment_reminders` (migration 0035), the `payment_reminder`
+  flag, the CRON_SECRET-gated `/api/jobs/payment-reminders` route, and the
+  composer `composePaymentReminder`. Idempotent (once-only per meeting) via the
+  `meeting.payment_reminder_sent_at` stamp. The daily pg_cron schedule is NOT
+  installed (localhost is unreachable by pg_cron), so it is deferred to cloud/ops
+  with the flag OFF.
+- **D3 (auto-cancel plus notices at the deadline).** Built and tested as the RPC
+  `cancel_overdue_overcommit_meetings` (migration 0034), the
+  `auto_cancel_overcommit` flag, the `/api/jobs/cancel-overdue` route, and the
+  vendor / exec / EA composer. Idempotent via the `confirmed → cancelled` state
+  flip. The daily pg_cron schedule is NOT installed, so it is also deferred to
+  cloud/ops with the flag OFF.
+
+The cloud/ops step is the same for D2 and D3 as for B4: enable `pg_cron` plus
+`pg_net`, set `CRON_SECRET`, schedule the daily POST to the deployed route with
+that bearer, then flip the job's flag on in staging.
+
 ---
 
 ## Edges (decided)
