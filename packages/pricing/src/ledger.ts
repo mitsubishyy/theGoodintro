@@ -8,6 +8,8 @@
 export const OVERCOMMIT_MAX_UNPAID = 4;
 /** Uncredited meetings sit at least 30 days out; payment is due 30 days before. */
 export const UNCREDITED_LEAD_DAYS = 30;
+/** The uncredited-payment reminder (D2) fires ~7 days before `payment_due_at`. */
+export const PAYMENT_REMINDER_LEAD_DAYS = 7;
 /** Buying any credits opens the platform for 12 months. */
 export const ACCESS_WINDOW_MONTHS = 12;
 
@@ -77,4 +79,14 @@ export function earliestUncreditedSchedule(acceptedAt: Date): Date {
 /** Payment must clear 30 days before the meeting; recomputes on reschedule. */
 export function paymentDueAt(scheduledAt: Date): Date {
   return addDays(scheduledAt, -UNCREDITED_LEAD_DAYS);
+}
+
+/**
+ * The far edge of the D2 payment-reminder window: an uncredited meeting is due a
+ * reminder once its `payment_due_at` falls on or before this date (7 days out)
+ * while still being in the future. The scan passes this so no date math lives in
+ * SQL (mirrors how confirm/auto-cancel pass their dates in).
+ */
+export function paymentReminderWindowEnd(now: Date): Date {
+  return addDays(now, PAYMENT_REMINDER_LEAD_DAYS);
 }

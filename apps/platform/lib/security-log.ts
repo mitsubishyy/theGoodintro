@@ -32,7 +32,11 @@ export type SecurityEvent =
   // The daily auto-cancel job (STATE_MACHINES confirmed -> cancelled) cancelled
   // one or more unpaid, overdue overcommit meetings. A money-state change worth
   // a structured line so the cron run is visible even before the email goes out.
-  | "overcommit_auto_cancelled";
+  | "overcommit_auto_cancelled"
+  // The daily D2 payment-reminder job (STATE_MACHINES uncredited-payment sub-flow
+  // step 3) queued one or more vendor reminders ~7 days before a payment deadline.
+  // A structured line so the cron run is visible even before the email goes out.
+  | "payment_reminders_queued";
 
 export function logSecurityEvent(
   event: SecurityEvent,

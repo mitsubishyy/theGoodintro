@@ -8,6 +8,7 @@ import {
   execRequestEmail,
   forwardToEaEmail,
   meetingCompletedExecEmail,
+  paymentReminderVendorEmail,
   timeConfirmedVendorEmail,
   uncreditedBookedVendorEmail,
   unpaidCancelledExecEmail,
@@ -49,6 +50,7 @@ export const SUPPORTED_EMAIL_EVENTS = [
   "C2_time_confirmed",
   "C6_meeting_completed",
   "D1_uncredited_booked",
+  "D2_payment_reminder",
   "D3_unpaid_cancelled",
   "A1_vendor_signed_up",
   "A1_vendor_welcome",
@@ -330,6 +332,61 @@ async function composeUncreditedBooked(
   };
 }
 
+/**
+ * D2: the payment reminder for an unpaid overcommit meeting, ~7 days before the
+ * deadline (queue_overdue_payment_reminders, migration 0035). Vendor-only (the
+ * template has no exec/EA copy). The meeting is derived from request_id — the
+ * SAME parked inference as D1/C2/C6/D3 (STATE_MACHINES.md "Edges (decided)"): the
+ * notification carries request_id, not meeting_id, so "the meeting" is the latest
+ * on the request. Correct while `cancelled` is terminal and rebooks only spawn
+ * from `held`; if rebooking after auto-cancel is ever allowed, store/snapshot
+ * meeting_id and read the exact meeting by id here. `daysLeft` is computed live
+ * from the deadline at SEND time, so it is accurate even if the drain runs a
+ * little after the reminder was queued.
+ */
+async function composePaymentReminder(
+  supabase: SupabaseClient,
+  row: NotificationRow,
+): Promise<{ email: ComposedEmail; to: string }> {
+  if (!row.request_id) throw new ComposeError("notification has no request_id");
+  const { data: req } = await supabase
+    .from("request")
+    .select(`id, requester:requested_by_user_id(email), executive:executive_id(name)`)
+    .eq("id", row.request_id)
+    .single();
+  if (!req) throw new ComposeError("request not found");
+  const requester = one<{ email: string }>(req.requester);
+  const exec = one<{ name: string }>(req.executive);
+  if (!requester?.email) throw new ComposeError("requesting vendor user has no email");
+  if (!exec?.name) throw new ComposeError("executive not found");
+  const { data: meeting } = await supabase
+    .from("meeting")
+    .select("scheduled_at, payment_due_at")
+    .eq("request_id", row.request_id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (!meeting?.scheduled_at) throw new ComposeError("no scheduled meeting for request");
+  if (!meeting?.payment_due_at) throw new ComposeError("meeting has no payment deadline");
+
+  // Days remaining, from the live deadline at send time. Clamp to >= 1: the
+  // queue guarantees the deadline is in the future when it queues, and a same-day
+  // reminder should still read "1 day away", never "0".
+  const dueMs = new Date(meeting.payment_due_at as string).getTime();
+  const daysLeft = Math.max(1, Math.ceil((dueMs - Date.now()) / 86_400_000));
+
+  return {
+    to: requester.email,
+    email: paymentReminderVendorEmail({
+      execName: exec.name,
+      meetingDateLabel: formatMeetingDate(meeting.scheduled_at as string),
+      paymentDueDateLabel: formatMeetingDate(meeting.payment_due_at as string),
+      daysLeft,
+      payUrl: process.env.EMAIL_PAY_URL || `${appBaseUrl()}/vendor/billing`,
+    }),
+  };
+}
+
 /** A1: the vendor welcome (to the new owner user, queued at sign-up by 0025). */
 async function composeVendorWelcome(
   supabase: SupabaseClient,
@@ -598,6 +655,8 @@ async function compose(
       return composeMeetingCompletedExec(supabase, row);
     case "D1_uncredited_booked":
       return composeUncreditedBooked(supabase, row);
+    case "D2_payment_reminder":
+      return composePaymentReminder(supabase, row);
     case "D3_unpaid_cancelled":
       return composeUnpaidCancelled(supabase, row);
     case "A1_vendor_signed_up":

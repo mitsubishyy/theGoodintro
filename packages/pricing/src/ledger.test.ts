@@ -7,6 +7,7 @@ import {
   cycleEndsAt,
   earliestUncreditedSchedule,
   paymentDueAt,
+  paymentReminderWindowEnd,
   OVERCOMMIT_MAX_UNPAID,
 } from "./ledger";
 
@@ -57,5 +58,9 @@ describe("cycle + uncredited dates (UTC)", () => {
   it("payment is due 30 days before the meeting", () => {
     expect(paymentDueAt(new Date("2026-07-01T00:00:00Z")).toISOString())
       .toBe("2026-06-01T00:00:00.000Z");
+  });
+  it("the payment-reminder window reaches 7 days past now", () => {
+    expect(paymentReminderWindowEnd(new Date("2026-06-01T00:00:00Z")).toISOString())
+      .toBe("2026-06-08T00:00:00.000Z");
   });
 });

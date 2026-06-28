@@ -4,6 +4,7 @@ import {
   cycleEndsAt,
   earliestUncreditedSchedule,
   paymentDueAt,
+  paymentReminderWindowEnd,
   OVERCOMMIT_MAX_UNPAID,
 } from "@thegoodintro/pricing/ledger";
 
@@ -213,4 +214,27 @@ export async function cancelOverdueOvercommitMeetings(
   });
   if (error) return { ok: false, error: rpcError(error.message) };
   return { ok: true, cancelled: (data as number) ?? 0 };
+}
+
+/**
+ * Queue the D2 payment reminder for unpaid overcommit meetings ~7 days before
+ * their `payment_due_at` (STATE_MACHINES.md uncredited-payment sub-flow step 3;
+ * NOTIFICATION_TEMPLATES "D2 · Payment reminder"). Once-only per meeting inside
+ * public.queue_overdue_payment_reminders: it stamps `payment_reminder_sent_at`
+ * as it claims each row, so a daily re-run never re-reminds, and only ever
+ * targets confirmed, uncredited, not-yet-due meetings inside the 7-day window,
+ * queuing the single vendor D2 email. The window edge is computed here from the
+ * pricing ledger (no date math in SQL). Driven by the /api/jobs/payment-reminders
+ * cron route (the daily SCHEDULE is a cloud/ops step). Returns how many it queued.
+ */
+export async function queueOverduePaymentReminders(
+  supabase: SupabaseClient,
+  now: Date = new Date(),
+): Promise<{ ok: true; queued: number } | { ok: false; error: string }> {
+  const { data, error } = await supabase.rpc("queue_overdue_payment_reminders", {
+    p_now: now.toISOString(),
+    p_window_end: paymentReminderWindowEnd(now).toISOString(),
+  });
+  if (error) return { ok: false, error: rpcError(error.message) };
+  return { ok: true, queued: (data as number) ?? 0 };
 }

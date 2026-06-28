@@ -658,6 +658,40 @@ export function uncreditedBookedVendorEmail(c: {
 }
 
 /**
+ * D2 · Payment reminder, ~7 days before the deadline (NOTIFICATION_TEMPLATES D2,
+ * from the brand). Wording verbatim: names the meeting date, the pay-by date, and
+ * how many days are left, with a single "Pay now". The `daysLeft` figure is
+ * computed at SEND time from the live deadline (so it is accurate even if the
+ * drain runs a little after the reminder was queued). DRAFT (D-series not
+ * design-locked).
+ */
+export function paymentReminderVendorEmail(c: {
+  execName: string;
+  meetingDateLabel: string;
+  paymentDueDateLabel: string;
+  daysLeft: number;
+  payUrl: string;
+}): ComposedEmail {
+  const subject = `Payment reminder for your meeting with ${c.execName}`;
+  const daysPhrase = `${c.daysLeft} day${c.daysLeft === 1 ? "" : "s"} away`;
+  const lineHtml = `A reminder: your meeting with <strong>${esc(c.execName)}</strong> on <strong>${esc(c.meetingDateLabel)}</strong> will be cancelled unless payment clears by <strong>${esc(c.paymentDueDateLabel)}</strong>, now ${esc(daysPhrase)}.`;
+  const inner = pEl(lineHtml) + solidBtnEl(c.payUrl, "Pay now");
+  const text = [
+    `A reminder: your meeting with ${c.execName} on ${c.meetingDateLabel} will be cancelled unless payment clears by ${c.paymentDueDateLabel}, now ${daysPhrase}.`,
+    ``,
+    `Pay now: ${c.payUrl}`,
+    ``,
+    `TheGoodIntro · invite-only · Australia`,
+  ].join("\n");
+  return {
+    subject,
+    html: lockedCard("Payment reminder", inner, `Payment clears by ${c.paymentDueDateLabel} or your meeting is cancelled, ${daysPhrase}.`),
+    text,
+    fromKind: "brand",
+  };
+}
+
+/**
  * D3 · Auto-cancel, unpaid at the deadline — the vendor note (NOTIFICATION_TEMPLATES
  * D3, from the brand). Wording verbatim: deliberately reassuring (no credit used,
  * not charged), so no amount or date is shown. DRAFT (D-series not design-locked).
