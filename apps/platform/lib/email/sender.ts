@@ -530,6 +530,11 @@ async function composeUnpaidCancelled(
   }
 
   // exec + EA share the meeting-date line, from the cancelled meeting's time.
+  // PARKED (STATE_MACHINES.md "Edges (decided)"): the notification carries
+  // request_id, not meeting_id, so "the cancelled meeting" is the latest meeting
+  // on the request. Correct while `cancelled` is terminal and rebooks only spawn
+  // from `held`; if rebooking after auto-cancel is ever allowed, store/snapshot
+  // meeting_id and read the exact meeting by id here.
   const { data: meeting } = await supabase
     .from("meeting")
     .select("scheduled_at")

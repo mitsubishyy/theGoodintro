@@ -117,6 +117,18 @@ For a `confirmed` meeting with **no reserved credit** (overcommit):
 - **Vendor no-show while the exec attended.** Per the held rule (exec attended =
   `held`), this consumes the vendor's credit by default. The manual reversal is
   the relief valve if you choose to give the credit back.
+- **D3 auto-cancel notice derives the meeting, it does not store it (PARKED).**
+  Notification rows carry `request_id` but **not** `meeting_id`, so the D3
+  auto-cancel email composer resolves "the cancelled meeting" as the latest
+  meeting on the request. This is correct under the current state machine because
+  `cancelled` is terminal and a rebook only ever spawns from a `held` meeting
+  (the manual reversal), never from a cancelled one, so the auto-cancelled meeting
+  is always the latest on its request. **If future rebooking after auto-cancel
+  becomes allowed** (a new `proposed` meeting on the same request after a
+  `confirmed → cancelled`), this inference breaks and the wrong meeting's date
+  could show. At that point, D3 must snapshot/store `meeting_id` on the
+  notification (or in its payload) and the composer must read the exact meeting by
+  id. Same inference is used by the D1/C2/C6 composers; revisit them together.
 
 ## Deferred / owned by other docs
 
