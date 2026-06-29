@@ -65,6 +65,19 @@ Times stored UTC, displayed local (AU offsets + DST handled at display).
   land in spam.
 - **Bounce / undeliverable handling:** capture bounces; if an exec's primary
   email bounces, flag it to Issy (the request can't progress on a dead address).
+- **Gift-confirmation (C7) delivery check [PARKED ops check, do not build into
+  the current slice]:** every `paid` `gift_record` should have its
+  `C7_gift_confirmed` notifications (the exec email plus the vendor in-app note).
+  C7 is queued best-effort right after the released-to-paid flip in
+  `markGiftPaid`, so a crash between the flip and the insert could leave a paid
+  gift with no confirmation queued at all, and the exec email row could later
+  drain to `failed` (missing payload, dead address) with no visible signal. A
+  future reconcile pass (the B4 safety-net job in `PRODUCTION_READINESS.md`)
+  should assert "a paid gift implies a queued-or-sent C7 exec email row" and alert
+  on any paid gift missing one or stuck `failed`. The vendor in-app row stays
+  `queued` by design until an in-app surface renders it, so it is not part of the
+  failure signal. Build deferred; this is a monitoring backstop, not a change to
+  the C7 build.
 - **Channels:** email, in-app, and the single Slack new-signup alert, per the
   MVP_SCOPE notification matrix.
 
