@@ -628,6 +628,41 @@ export function meetingCompletedExecEmail(c: {
 }
 
 /**
+ * C7 · Gift paid to the charity, confirmed (NOTIFICATION_TEMPLATES C7, from Issy).
+ * Wording verbatim. This is the landed-confirmation that follows C6's "on its
+ * way": the amount is the EXACT frozen GiftRecord figure (snapshotted into the
+ * notification payload at the gift released -> paid transition), never
+ * "approximately". The vendor-side C7 is an in-app note (no email), so only the
+ * exec email is composed here. DRAFT (C-series not design-locked; B1/A1/A4 are).
+ */
+export function giftPaidExecEmail(c: {
+  execFirstName: string;
+  charityAmount: string; // exact, e.g. "$900"
+  charityName: string;
+}): ComposedEmail {
+  const subject = `Confirmed: your gift has reached ${c.charityName}`;
+  const inner =
+    pEl(`Hi ${esc(c.execFirstName)},`) +
+    pEl(
+      `confirmed: <strong>${esc(c.charityAmount)}</strong> has reached <strong>${esc(c.charityName)}</strong>. Thank you for making it happen.`,
+    ) +
+    pEl("Issy");
+  const text = [
+    `Hi ${c.execFirstName},`,
+    ``,
+    `confirmed: ${c.charityAmount} has reached ${c.charityName}. Thank you for making it happen.`,
+    ``,
+    `Issy`,
+  ].join("\n");
+  return {
+    subject,
+    html: lockedCard("Your gift is confirmed", inner, `${c.charityAmount} has reached ${c.charityName}.`),
+    text,
+    fromKind: "personal",
+  };
+}
+
+/**
  * D1 · Uncredited (overcommit) meeting booked, payment due (NOTIFICATION_TEMPLATES
  * D1, from the brand). Wording verbatim. The amount is the flat per-meeting fee
  * (MEETING_FEE_CENTS, pulled from the pricing module, never hardcoded). DRAFT.

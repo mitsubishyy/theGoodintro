@@ -7,6 +7,7 @@ import {
   execAcceptedVendorEmail,
   execRequestEmail,
   forwardToEaEmail,
+  giftPaidExecEmail,
   meetingCompletedExecEmail,
   paymentReminderVendorEmail,
   timeConfirmedVendorEmail,
@@ -49,6 +50,7 @@ export const SUPPORTED_EMAIL_EVENTS = [
   "C1_exec_accepted",
   "C2_time_confirmed",
   "C6_meeting_completed",
+  "C7_gift_confirmed",
   "D1_uncredited_booked",
   "D2_payment_reminder",
   "D3_unpaid_cancelled",
@@ -502,6 +504,46 @@ async function composeMeetingCompletedExec(
   };
 }
 
+/**
+ * C7: the gift-paid confirmation to the executive (queued at the gift
+ * released -> paid transition in lib/gifts.ts). The EXACT frozen amount and the
+ * charity name are snapshotted into the notification payload at queue time, so
+ * the composer reads them straight from the payload and never re-derives the
+ * gift from the request's latest meeting (sidestepping the parked
+ * meeting_id-vs-request_id inference; a paid gift can later be reversed, which
+ * spawns a new meeting on the same request). Only the exec address + first name
+ * come from the request. The vendor-side C7 is an in-app row (channel in_app),
+ * so the email drain's channel filter never reaches it here.
+ */
+async function composeGiftPaid(
+  supabase: SupabaseClient,
+  row: NotificationRow,
+): Promise<{ email: ComposedEmail; to: string }> {
+  if (!row.request_id) throw new ComposeError("notification has no request_id");
+  const p = row.payload ?? {};
+  const amountCents = Number(p.charity_amount_cents);
+  const charityName = typeof p.charity_name === "string" ? p.charity_name : null;
+  if (!Number.isFinite(amountCents) || amountCents < 0)
+    throw new ComposeError("C7 payload has no charity amount");
+  if (!charityName) throw new ComposeError("C7 payload has no charity name");
+  const { data: req } = await supabase
+    .from("request")
+    .select(`id, executive:executive_id(name, primary_email)`)
+    .eq("id", row.request_id)
+    .single();
+  if (!req) throw new ComposeError("request not found");
+  const exec = one<{ name: string; primary_email: string }>(req.executive);
+  if (!exec?.primary_email) throw new ComposeError("executive has no primary email");
+  return {
+    to: exec.primary_email,
+    email: giftPaidExecEmail({
+      execFirstName: (exec.name ?? "").split(" ")[0] || "there",
+      charityAmount: formatAud(amountCents),
+      charityName,
+    }),
+  };
+}
+
 /** A1: the new-sign-up alert to Issy. */
 async function composeSignupAlert(
   supabase: SupabaseClient,
@@ -653,6 +695,8 @@ async function compose(
       return composeTimeConfirmedVendor(supabase, row);
     case "C6_meeting_completed":
       return composeMeetingCompletedExec(supabase, row);
+    case "C7_gift_confirmed":
+      return composeGiftPaid(supabase, row);
     case "D1_uncredited_booked":
       return composeUncreditedBooked(supabase, row);
     case "D2_payment_reminder":

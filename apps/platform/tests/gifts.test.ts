@@ -69,10 +69,37 @@ describe("gift paid path", () => {
     const after = await charityDonatedForPeriod(sb);
     expect(after.totalCents - before.totalCents).toBe(90000);
 
+    // C7 queued on the flip: exec email + vendor in-app, with the EXACT frozen
+    // amount and the charity name snapshotted into the payload.
+    const { data: c7 } = await sb
+      .from("notification")
+      .select("recipient_type, recipient_id, channel, payload")
+      .eq("request_id", req!.id)
+      .eq("event", "C7_gift_confirmed");
+    expect(c7?.length).toBe(2);
+    const execNote = c7!.find((n) => n.recipient_type === "executive");
+    const vendorNote = c7!.find((n) => n.recipient_type === "vendor_user");
+    expect(execNote?.channel).toBe("email");
+    expect(vendorNote?.channel).toBe("in_app");
+    expect(vendorNote?.recipient_id).toBe(BETA_USER);
+    for (const n of c7!) {
+      expect((n.payload as { charity_amount_cents: number }).charity_amount_cents).toBe(90000);
+      expect((n.payload as { charity_name: string }).charity_name).toBeTruthy();
+    }
+
     // Only a released gift can be paid (guard, and DB trigger backs it).
     const again = await markGiftPaid(sb, gift!.id as string, staff!.id as string);
     expect(again.ok).toBe(false);
 
+    // The failed re-pay queued no second C7 (the flip is the idempotency guard).
+    const { data: c7After } = await sb
+      .from("notification")
+      .select("id")
+      .eq("request_id", req!.id)
+      .eq("event", "C7_gift_confirmed");
+    expect(c7After?.length).toBe(2);
+
+    await sb.from("notification").delete().eq("request_id", req!.id);
     await sb.from("request").delete().eq("id", req!.id);
   });
 });
