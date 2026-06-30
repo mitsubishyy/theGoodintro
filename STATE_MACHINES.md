@@ -164,3 +164,9 @@ that bearer, then flip the job's flag on in staging.
   forwarded-link trust, GET-prefetch safety) → email-actions doc (next task).
 - **Notification content/timing** per transition → the MVP_SCOPE matrix + a
   templates doc.
+- **Vendor + Executive lifecycle transitions** (the `vendor` / `executive` status
+  fields) sit outside the booking loop, so their allowed edges are documented in
+  [DATA_MODEL.md](DATA_MODEL.md) (the "lifecycle edges" notes under each entity),
+  not here. They are DB-enforced by migration 0036, the same defense-in-depth
+  trigger pattern as the Meeting/Gift guards (0012). Note: the documented vendor
+  `paid` status has no setter today (deferred); the app goes `approved → active`.

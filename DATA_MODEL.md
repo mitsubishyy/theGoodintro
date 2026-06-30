@@ -38,10 +38,29 @@ meetings.
 |---|---|---|
 | `name` | text | Company name |
 | `email_domain` | text | The work-email domain that owns this org; unique. A second org on the same domain is not allowed |
-| `status` | enum | `signed_up` → `call_booked` → `approved` → `paid` → `active` → `dormant` → `churned` |
+| `status` | enum | `signed_up` → `call_booked` → `approved` → `paid` → `active` → `dormant` → `churned` (see the DB-enforced lifecycle edges note below; `paid` is deferred) |
 | `owner_user_id` | vendor_user_id | The single billing Owner (transferable; admin can reassign) |
 | `access_expires_at` | timestamp | End of the current 12-month access window (see Money rules) |
 | `cycle_started_at` | timestamp | Anchor of the current 12-month clock (set at first purchase) |
+
+**Vendor lifecycle edges (DB-enforced, migration 0036).** The chain above is the
+documented progression; the DB allows the union of that chain and what the app
+actually performs today:
+
+- `signed_up → call_booked` (vetting call booked, 0007).
+- `signed_up → approved` **and** `call_booked → approved` (admin approve; the
+  approve action is offered from either state, so both are legal).
+- `approved → active` (first payment via `apply_paid_invoice`, which skips `paid`).
+- `paid → active` (documented chain step; reachable only once a `paid` setter exists).
+- `active → dormant` and `dormant → churned` (documented; setters deferred).
+- `dormant → active` (a returning vendor's payment reactivates them).
+- A same-status write is a no-op (an idempotent top-up re-pay while already `active`).
+
+`paid` is a **documented status not written by the app today (deferred):**
+`apply_paid_invoice` transitions `approved → active` directly. The guard still
+permits `approved → paid` and `paid → active`, so adding a `paid` setter later
+needs no migration. `active → churned` is intentionally NOT allowed: the chain
+churns via `dormant`.
 
 ### VendorUser (seat)
 **Purpose:** a person inside a Vendor org. Max **6** per org.
@@ -84,8 +103,14 @@ email asks them to log in and create their account.
 | `calendar_provider`, `calendar_connected_at`, `calendar_last_synced_at` | text / timestamp | (0019) Free/busy connection only, never event detail |
 | `default_charity_id` | charity_id | Their standing charity. Changed via the atomic `set_standing_nomination` function (0022), which also closes/opens the NominationHistory row |
 | `ea_id` | ea_id | Nullable; the EA who assists them |
-| `status` | enum | `invited` → `set_up` → `active` → `paused` → `left` |
+| `status` | enum | `invited` → `set_up` → `active` → `paused` → `left` (DB-enforced by 0036; see the lifecycle edges note below) |
 | `primary_email` | text | Where request emails go |
+
+**Executive lifecycle edges (DB-enforced, migration 0036).** The chain is enforced
+exactly as written, matching the admin `NEXT_STATUS` map: `invited → set_up`,
+`set_up → active`, `active → paused`, `active → left`, `paused → active`,
+`paused → left`. `left` is terminal; a same-status write is a no-op. No status is
+deferred here (every state has a setter via `setExecutiveStatusAction`).
 
 ### EA (executive assistant)
 **Purpose:** a person who can act for one **or more** executives. Their own
