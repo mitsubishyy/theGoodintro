@@ -170,3 +170,15 @@ that bearer, then flip the job's flag on in staging.
   not here. They are DB-enforced by migration 0036, the same defense-in-depth
   trigger pattern as the Meeting/Gift guards (0012). Note: the documented vendor
   `paid` status has no setter today (deferred); the app goes `approved → active`.
+- **Request** IS a booking-loop record and is documented above; its
+  `submitted → accepted | declined | closed` transitions are now DB-enforced by
+  migration 0037 (same pattern as 0012/0036).
+- **Invoice status is deliberately NOT DB-guarded (PARKED 2026-07-01).** Invoice
+  sits outside the booking loop and is intentionally absent from this doc: its
+  legal lifecycle is not settled, specifically whether a `paid` invoice can ever
+  become `void` (the manual reverse-unlock after Xero voids a paid invoice) or
+  whether that stays a `voided_in_xero_at` flag plus a credit reversal with no
+  status flip. That is a business/accounting decision (V2_BUILD_PLAN §7, Issy's
+  call). Full context and the code's current transitions are in the "Invoice
+  lifecycle edges" note in [DATA_MODEL.md](DATA_MODEL.md). Do not add an invoice
+  guard until the invoice state machine is explicitly decided.

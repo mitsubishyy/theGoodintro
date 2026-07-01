@@ -225,6 +225,29 @@ downstream workflows.
 | `status` | enum | `draft` → `sent` → `paid` → `void` |
 | `voided_in_xero_at` | timestamptz | Set by the daily reconcile (0024) when Xero VOIDs a **paid** invoice → manual reverse-unlock in admin Needs action; never auto-reversed (V2_BUILD_PLAN §7) |
 
+**Invoice lifecycle edges (NOT DB-guarded, PARKED 2026-07-01).** Unlike Meeting and
+GiftRecord (0012), Vendor and Executive (0036), and Request (0037), the Invoice
+`status` enum has **no DB-level transition guard**, and one is deliberately **not**
+added yet. The legal lifecycle is not settled. What the code does today:
+
+- `draft → sent` (`markInvoiceSent`).
+- `draft → paid` **and** `sent → paid` (`apply_paid_invoice` does not constrain the
+  source state, so a payment can land against a still-`draft` invoice).
+- `draft → void` **and** `sent → void` (daily reconcile, the never-paid branch, 0024).
+- A **paid** invoice VOIDed in Xero is **not** auto-flipped: the reconcile stamps
+  `voided_in_xero_at` and leaves `status = 'paid'` (surfaces as a manual
+  reverse-unlock; never auto-reversed, V2_BUILD_PLAN §7).
+
+**The open question that blocks the guard:** whether `paid → void` is ever a legal
+transition (the manual reverse-unlock after a Xero void), and whether it should be
+represented as a status flip at all or only via `voided_in_xero_at` plus a credit
+reversal. That is a business and accounting decision (V2_BUILD_PLAN §7, Issy's
+call), not an engineering one. Freezing an allow-list now would risk either
+forbidding a transition Issy will want or encoding one that should stay manual.
+**Do not add an invoice guard (a `guard_invoice_transition` trigger) until the
+invoice state machine is explicitly decided and documented here.** Invoice is
+intentionally absent from STATE_MACHINES.md for the same reason.
+
 ### GiftRecord
 **Purpose:** the **single canonical record** of a gift owed per held meeting.
 Vendor Giving, exec impact, and public impact numbers are all **read-only views**
