@@ -142,13 +142,24 @@ values
 on conflict (id) do nothing;
 
 -- Gift for the held meeting: 1st in the cycle => band 1, $900 charity / $600 admin.
+--
+-- REPORT-FIXTURE DATES: every gift date that feeds an FY-scoped report (sat_date,
+-- paid_date) is clamped to be no earlier than the current AU financial-year start
+-- (1 Jul). Without this, "N days ago" straddles the 30 Jun / 1 Jul boundary for
+-- the first ~6 weeks of each FY, dropping the seed gifts into the PRIOR FY, so the
+-- FY-scoped reporting tests (revenue/donated/per-vendor/per-exec this FY) go empty
+-- and fail every July. The clamp is a no-op mid-year (N-days-ago is already past
+-- fy_start) and only pins the dates to fy_start near the rollover, keeping the
+-- fixtures deterministically inside the FY the tests query (financialYearWindow()).
+--   fy_start expression: (date_trunc('year', now() + interval '6 months') - interval '6 months')::date
 insert into public.gift_record
   (id, meeting_id, charity_id, band_at_completion, charity_amount_cents, admin_fee_cents, status,
    sat_date, cycle_number, position_n, schedule_version)
 values
   ('00000000-0000-0000-0000-00000000610a','00000000-0000-0000-0000-0000000013a1',
    '00000000-0000-0000-0000-00000000c1a1','band_1', 90000, 60000, 'released',
-   (now() - interval '2 days')::date, 1, 3, 'v1')  -- 3rd held in Alpha's cycle 1
+   greatest((date_trunc('year', now() + interval '6 months') - interval '6 months')::date,
+            (now() - interval '2 days')::date), 1, 3, 'v1')  -- 3rd held in Alpha's cycle 1
 on conflict (id) do nothing;
 
 -- Pillar 3a sign-up test users (no vendor org yet): one work domain, one generic.
@@ -250,12 +261,18 @@ insert into public.gift_record
   (id, meeting_id, charity_id, band_at_completion, charity_amount_cents, admin_fee_cents, status, created_at,
    sat_date, cycle_number, position_n, paid_date, schedule_version)
 values
+  -- sat_date + paid_date clamped to the current FY start (see the report-fixture
+  -- note above); created_at stays relative (reporting never filters on it).
   ('00000000-0000-0000-0000-0000000061a2','00000000-0000-0000-0000-0000000013a2',
    '00000000-0000-0000-0000-00000000c1a2','band_1', 90000, 60000, 'paid', now() - interval '21 days',
-   (now() - interval '21 days')::date, 1, 2, (now() - interval '20 days')::date, 'v1'),  -- 2nd held, paid
+   greatest((date_trunc('year', now() + interval '6 months') - interval '6 months')::date,
+            (now() - interval '21 days')::date), 1, 2,
+   greatest((date_trunc('year', now() + interval '6 months') - interval '6 months')::date,
+            (now() - interval '20 days')::date), 'v1'),  -- 2nd held, paid
   ('00000000-0000-0000-0000-0000000061a3','00000000-0000-0000-0000-0000000013a3',
    '00000000-0000-0000-0000-00000000c1a1','band_1', 90000, 60000, 'released', now() - interval '42 days',
-   (now() - interval '42 days')::date, 1, 1, null, 'v1')  -- 1st held in Alpha's cycle 1
+   greatest((date_trunc('year', now() + interval '6 months') - interval '6 months')::date,
+            (now() - interval '42 days')::date), 1, 1, null, 'v1')  -- 1st held in Alpha's cycle 1
 on conflict (id) do nothing;
 
 -- Alpha cycle now reflects 3 held; credit lot: 5 bought, 3 held + 1 confirmed reserved => 1 left.
