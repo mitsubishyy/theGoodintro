@@ -221,7 +221,78 @@ async function queueVendorMeetingCompleted(supabase: SupabaseClient, meetingId: 
 export async function reverseHeld(supabase: SupabaseClient, meetingId: string): Promise<Result> {
   const { data, error } = await supabase.rpc("reverse_held", { p_meeting_id: meetingId });
   if (error) return { ok: false, error: rpcError(error.message) };
-  return { ok: true, detail: data as string };
+  const detail = data as string; // 'gift_voided' | 'gift_paid_kept'
+  // The reversal committed (the flip happened), so queue the E1 notices. The flip
+  // is the idempotency guard: a replay raises bad_state above and never reaches
+  // here. `gift_paid_kept` means a paid gift stood as a goodwill cost — surfaced
+  // to Issy on the staff task.
+  await queueReversalRebook(supabase, meetingId, detail === "gift_paid_kept");
+  return { ok: true, detail };
+}
+
+/**
+ * Queue the E1 reversal/rebook notices (NOTIFICATION_TEMPLATES E1): the vendor
+ * note (brand, email + in-app), the executive note (from Issy, email), and the
+ * staff dashboard task (in_app, carrying whether a paid gift was kept as a
+ * goodwill cost). Best-effort AFTER the reverse_held flip has committed: the
+ * reversal is the source of truth, so a queue hiccup must never fail (or undo)
+ * it, and it does NOT touch the reversal money logic. Recipients are vendor +
+ * executive + Issy only (the E1 template lists no EA). No gift figure is
+ * snapshotted — E1 is about the returned credit + a new time; the composer
+ * resolves the exec + vendor names from the request. Distinct event
+ * `E1_reversal_rebook` (customer) vs `E1_reversal_admin` (the staff task), the
+ * same split as C6/C5 and A4/A4_admin.
+ */
+async function queueReversalRebook(
+  supabase: SupabaseClient,
+  meetingId: string,
+  giftPaidKept: boolean,
+): Promise<void> {
+  const { data: m } = await supabase
+    .from("meeting")
+    .select(`request:request_id(id, requested_by_user_id)`)
+    .eq("id", meetingId)
+    .maybeSingle();
+  const req = m ? (Array.isArray(m.request) ? m.request[0] : m.request) : null;
+  const requestId = (req as { id?: string } | null)?.id;
+  if (!requestId) return;
+  const requesterId = (req as { requested_by_user_id?: string } | null)?.requested_by_user_id ?? null;
+
+  await supabase.from("notification").insert([
+    {
+      recipient_type: "vendor_user",
+      recipient_id: requesterId,
+      channel: "email",
+      event: "E1_reversal_rebook",
+      status: "queued",
+      request_id: requestId,
+    },
+    {
+      recipient_type: "vendor_user",
+      recipient_id: requesterId,
+      channel: "in_app",
+      event: "E1_reversal_rebook",
+      status: "queued",
+      request_id: requestId,
+    },
+    {
+      recipient_type: "executive",
+      recipient_id: null,
+      channel: "email",
+      event: "E1_reversal_rebook",
+      status: "queued",
+      request_id: requestId,
+    },
+    {
+      recipient_type: "staff",
+      recipient_id: null,
+      channel: "in_app",
+      event: "E1_reversal_admin",
+      status: "queued",
+      request_id: requestId,
+      payload: { gift_paid_kept: giftPaidKept },
+    },
+  ]);
 }
 
 /** No-show or cancellation of a confirmed meeting: release the reservation, no gift.

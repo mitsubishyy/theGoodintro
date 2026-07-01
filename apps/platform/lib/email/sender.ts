@@ -13,6 +13,8 @@ import {
   meetingCompletedExecEmail,
   meetingCompletedVendorEmail,
   paymentReminderVendorEmail,
+  reversalRebookExecEmail,
+  reversalRebookVendorEmail,
   timeConfirmedVendorEmail,
   uncreditedBookedVendorEmail,
   unpaidCancelledExecEmail,
@@ -58,6 +60,7 @@ export const SUPPORTED_EMAIL_EVENTS = [
   "D1_uncredited_booked",
   "D2_payment_reminder",
   "D3_unpaid_cancelled",
+  "E1_reversal_rebook",
   "A1_vendor_signed_up",
   "A1_vendor_welcome",
   "A4_invoice_paid",
@@ -784,6 +787,53 @@ async function composeMeetingCancelled(
   throw new ComposeError(`unexpected recipient_type "${row.recipient_type}" for C3`);
 }
 
+/**
+ * E1: a held meeting manually reversed (the vendor could not attend), credit
+ * returned and a rebook arranged (queued best-effort by lib/meetings.ts after the
+ * reverse_held flip). ONE event, two recipient types — the requesting vendor user
+ * (reassuring brand note) and the executive (from-Issy note). We branch on
+ * recipient_type to resolve the address + copy. No gift figure is needed (E1 is
+ * about the credit + a new time), so exec name + vendor name resolve straight from
+ * the request; no meeting/gift lookup. The separate staff dashboard task is the
+ * E1_reversal_admin in_app row (carrying the gift-paid-goodwill flag), which the
+ * email drain's channel filter never reaches. No EA recipient (the E1 template
+ * lists vendor + executive + Issy only).
+ */
+async function composeReversalRebook(
+  supabase: SupabaseClient,
+  row: NotificationRow,
+): Promise<{ email: ComposedEmail; to: string }> {
+  if (!row.request_id) throw new ComposeError("notification has no request_id");
+  const { data: req } = await supabase
+    .from("request")
+    .select(
+      `id, vendor:vendor_id(name), requester:requested_by_user_id(email), executive:executive_id(name, primary_email)`,
+    )
+    .eq("id", row.request_id)
+    .single();
+  if (!req) throw new ComposeError("request not found");
+  const vendor = one<{ name: string }>(req.vendor);
+  const requester = one<{ email: string }>(req.requester);
+  const exec = one<{ name: string; primary_email: string }>(req.executive);
+  if (!exec?.name) throw new ComposeError("executive not found");
+
+  if (row.recipient_type === "vendor_user") {
+    if (!requester?.email) throw new ComposeError("requesting vendor user has no email");
+    return { to: requester.email, email: reversalRebookVendorEmail({ execName: exec.name }) };
+  }
+  if (row.recipient_type === "executive") {
+    if (!exec.primary_email) throw new ComposeError("executive has no primary email");
+    return {
+      to: exec.primary_email,
+      email: reversalRebookExecEmail({
+        execFirstName: exec.name.split(" ")[0] || "there",
+        vendorName: vendor?.name ?? "a member vendor",
+      }),
+    };
+  }
+  throw new ComposeError(`unexpected recipient_type "${row.recipient_type}" for E1`);
+}
+
 async function compose(
   supabase: SupabaseClient,
   row: NotificationRow,
@@ -814,6 +864,8 @@ async function compose(
       return composePaymentReminder(supabase, row);
     case "D3_unpaid_cancelled":
       return composeUnpaidCancelled(supabase, row);
+    case "E1_reversal_rebook":
+      return composeReversalRebook(supabase, row);
     case "A1_vendor_signed_up":
       return composeSignupAlert(supabase, row);
     case "A1_vendor_welcome":

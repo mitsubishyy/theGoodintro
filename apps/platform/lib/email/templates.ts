@@ -870,6 +870,56 @@ export function meetingCancelledExecEmail(c: {
   };
 }
 
+/**
+ * E1 · Credit returned, rebooking — the vendor note (NOTIFICATION_TEMPLATES E1,
+ * from the brand). Queued when Issy manually reverses a held meeting (the vendor
+ * could not attend): the credit is returned and a rebook is being arranged.
+ * Wording verbatim; no gift figure (this is about the credit + a new time, not a
+ * donation). DRAFT (E-series not design-locked).
+ */
+export function reversalRebookVendorEmail(c: { execName: string }): ComposedEmail {
+  const subject = `We are arranging a new time with ${c.execName}`;
+  const lineHtml = `We have returned your credit and are arranging a new time with <strong>${esc(c.execName)}</strong>. Sorry the first attempt did not go ahead.`;
+  const text = [
+    `We have returned your credit and are arranging a new time with ${c.execName}. Sorry the first attempt did not go ahead.`,
+    ``,
+    `TheGoodIntro · invite-only · Australia`,
+  ].join("\n");
+  return {
+    subject,
+    html: lockedCard("A new time is on the way", pEl(lineHtml), `Your credit is back; we are arranging a new time with ${c.execName}.`),
+    text,
+    fromKind: "brand",
+  };
+}
+
+/**
+ * E1 · Credit returned, rebooking — the executive note (NOTIFICATION_TEMPLATES E1,
+ * from Issy). Body wording verbatim. DRAFT.
+ */
+export function reversalRebookExecEmail(c: { execFirstName: string; vendorName: string }): ComposedEmail {
+  const subject = `Let's find a new time`;
+  const inner =
+    pEl(`Hi ${esc(c.execFirstName)},`) +
+    pEl(
+      `let's find a new time for your meeting with <strong>${esc(c.vendorName)}</strong>. I will send a few options shortly.`,
+    ) +
+    pEl("Issy");
+  const text = [
+    `Hi ${c.execFirstName},`,
+    ``,
+    `let's find a new time for your meeting with ${c.vendorName}. I will send a few options shortly.`,
+    ``,
+    `Issy`,
+  ].join("\n");
+  return {
+    subject,
+    html: lockedCard("Let's find a new time", inner, `Let's find a new time for your meeting with ${c.vendorName}.`),
+    text,
+    fromKind: "personal",
+  };
+}
+
 /** A4 · Invoice paid, the vendor receipt (from the brand). */
 export function vendorReceiptEmail(c: {
   credits: number;
