@@ -102,6 +102,12 @@ export default async function VendorExecutivesPage({
   const drawerId = (Array.isArray(params.exec) ? params.exec[0] : params.exec) ?? null;
 
   // RLS already scopes: vendors read active executives, own requests/meetings.
+  // TODO(perf): this loads every executive + all requests to compute exact
+  // filter counts, the distinct filter options (industry/title/location), and
+  // the header strip (active/requested/met), then filters/sorts/paginates in
+  // memory. Correct at current scale; move the visible page to DB-level
+  // pagination once the executive count grows past a few hundred, keeping a
+  // separate count/distinct query so the filter totals stay exact.
   const [execsRes, requestsRes, heldRes] = await Promise.all([
     supabase
       .from("executive")

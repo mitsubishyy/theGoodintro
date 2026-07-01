@@ -104,11 +104,18 @@ Email deliverability is the highest risk: the exec request email is the product.
 - [ ] **B3 Backups / point-in-time recovery** enabled on Supabase, with a written
       restore runbook. *Done when:* a test restore to a scratch DB succeeds and the
       runbook is in the repo.
-- [ ] **B4 Reconciliation job (the safety net).** A daily scheduled job (Vercel cron
-      or pg_cron) runs the 10 invariants (`reconcileFees`, `reconcileThreeWays` from
-      `@thegoodintro/pricing`) against live data and alerts on any drift. *Done
-      when:* it runs on schedule, passes on clean data, and fires an alert when a gift
-      row is deliberately corrupted in staging.
+- [ ] **B4 Reconciliation job (the safety net).** A daily scheduled job (Supabase
+      `pg_cron` per XERO_INTEGRATION_CONTRACT §10, not Vercel cron) runs the 10
+      invariants (`reconcileFees`, `reconcileThreeWays` from `@thegoodintro/pricing`)
+      against live data and alerts on any drift. *Status (2026-06-26): endpoint built
+      (`/api/jobs/xero-reconcile`, inert 503 until `CRON_SECRET` is set); scheduler
+      hookup deferred. There is no Vercel cron (by design), and the `pg_cron` schedule
+      is not yet set. Hookup is two steps: set `CRON_SECRET` in the deploy env, and run
+      the `cron.schedule(...)` SQL from the contract against the cloud Supabase. Do it
+      in the Supabase-connected build chat (cloud DB plus a financial safety net, so
+      CHANGE_SAFETY applies and Issy approves go-live).* *Done when:* it runs on
+      schedule, passes on clean data, and fires an alert when a gift row is
+      deliberately corrupted in staging.
 - [ ] **B5 Uptime / health check + alerting.** *Done when:* an endpoint-down
       condition pages someone.
 

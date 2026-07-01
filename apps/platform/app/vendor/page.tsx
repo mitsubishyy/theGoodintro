@@ -84,7 +84,20 @@ export default async function VendorHome() {
   const lockedShell = await getFlag("vendor_shell");
   const now = new Date();
 
-  const [lotsRes, meetingsRes, cycleRes, giftsRes, requestsRes, execsRes] = await Promise.all([
+  // The locked dashboard only renders 4 "Executives for you" cards, so it fetches
+  // just those; the legacy (vendor_shell off) list below still shows every
+  // executive and keeps the unbounded read. `openExecIds` is derived from the
+  // vendor's requests, not this query, so the request-status flags stay correct
+  // either way.
+  const execQuery = supabase
+    .from("executive")
+    .select("id, name, title, company, photo_url, created_at, charity:default_charity_id(name)")
+    .order("created_at", { ascending: false });
+
+  // Money via the reporting layer (FY, on sat_date) is parallelised with the
+  // dashboard reads — it only needs vendor.id + the FY window (both known here),
+  // so it no longer runs sequentially after the group.
+  const [lotsRes, meetingsRes, cycleRes, giftsRes, requestsRes, execsRes, toCharityCents] = await Promise.all([
     supabase.from("credit_lot").select("quantity_remaining"),
     supabase
       .from("meeting")
@@ -97,10 +110,8 @@ export default async function VendorHome() {
       .select("id, charity_amount_cents, charity_id, sat_date, created_at, charity:charity_id(name), meeting:meeting_id(request:request_id(executive:executive_id(name,title,company)))")
       .order("sat_date", { ascending: false }),
     supabase.from("request").select("id, status, executive_id, created_at, executive:executive_id(name,title,company)"),
-    supabase
-      .from("executive")
-      .select("id, name, title, company, photo_url, created_at, charity:default_charity_id(name)")
-      .order("created_at", { ascending: false }),
+    lockedShell ? execQuery.limit(4) : execQuery,
+    vendorCharityForPeriod(supabase, vendor.id, financialYearWindow(now)),
   ]);
 
   const remaining = (lotsRes.data ?? []).reduce((s, l) => s + (l.quantity_remaining as number), 0);
@@ -123,9 +134,9 @@ export default async function VendorHome() {
   }
 
   const gifts = giftsRes.data ?? [];
-  // Money through the reporting layer (FY, on sat_date) so all three dashboards
-  // read one source and never drift. The gift list below is display only.
-  const toCharityCents = await vendorCharityForPeriod(supabase, vendor.id, financialYearWindow(now));
+  // toCharityCents (above, in the parallel group) is the FY total via the
+  // reporting layer so all three dashboards read one source and never drift. The
+  // gift list below is display only.
 
   const openExecIds = new Set(
     (requestsRes.data ?? []).filter((r) => r.status === "submitted" || r.status === "accepted").map((r) => r.executive_id as string),

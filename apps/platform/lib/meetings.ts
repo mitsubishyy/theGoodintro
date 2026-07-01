@@ -411,3 +411,59 @@ export async function releaseMeeting(
   if (!flipped?.length) return { ok: false, error: "bad_state" };
   return { ok: true };
 }
+
+/**
+ * Admin manual create (the loop's fallback when a meeting was not arranged by
+ * email): an accepted request + a proposed meeting for a vendor and executive,
+ * mirroring what act_on_request_token does on accept but driven by staff. The
+ * requester is attributed to a user of the vendor (requested_by_user_id is NOT
+ * NULL); the charity defaults to the executive's standing nomination when not
+ * given (it powers the gift at held). Confirming a time stays in confirmMeeting.
+ */
+export async function createProposedMeeting(
+  supabase: SupabaseClient,
+  input: { vendorId: string; executiveId: string; charityId: string | null; q1What: string; q2Why: string },
+): Promise<{ ok: true; requestId: string; meetingId: string } | { ok: false; error: string }> {
+  const { data: vendorUser } = await supabase
+    .from("vendor_user")
+    .select("id")
+    .eq("vendor_id", input.vendorId)
+    .is("deleted_at", null)
+    .limit(1)
+    .maybeSingle();
+  if (!vendorUser) return { ok: false, error: "no_vendor_user" };
+
+  let charityId = input.charityId;
+  if (!charityId) {
+    const { data: exec } = await supabase
+      .from("executive")
+      .select("default_charity_id")
+      .eq("id", input.executiveId)
+      .maybeSingle();
+    charityId = (exec?.default_charity_id as string | null) ?? null;
+  }
+  if (!charityId) return { ok: false, error: "no_charity" };
+
+  const { data: req, error: reqErr } = await supabase
+    .from("request")
+    .insert({
+      vendor_id: input.vendorId,
+      requested_by_user_id: vendorUser.id,
+      executive_id: input.executiveId,
+      q1_what: input.q1What,
+      q2_why: input.q2Why,
+      status: "accepted",
+    })
+    .select("id")
+    .single();
+  if (reqErr || !req) return { ok: false, error: reqErr?.message ?? "request_insert_failed" };
+
+  const { data: meeting, error: meetingErr } = await supabase
+    .from("meeting")
+    .insert({ request_id: req.id, charity_id: charityId, status: "proposed" })
+    .select("id")
+    .single();
+  if (meetingErr || !meeting) return { ok: false, error: meetingErr?.message ?? "meeting_insert_failed" };
+
+  return { ok: true, requestId: req.id as string, meetingId: meeting.id as string };
+}

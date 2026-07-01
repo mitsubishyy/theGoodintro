@@ -55,25 +55,18 @@ export default async function VendorLayout({
   if (!enabled || !vendor || !result?.vendorUser) return <>{children}</>;
 
   const supabase = result.supabase;
-  const head = { count: "exact" as const, head: true };
-  const [submittedC, upcomingC, cycleRes] = await Promise.all([
-    // Sidebar Requests badge: open requests waiting on the exec.
-    supabase.from("request").select("id", head).eq("status", "submitted"),
-    // Sidebar Meetings badge: proposed/confirmed with a future time locked in.
-    supabase
-      .from("meeting")
-      .select("id", head)
-      .in("status", ["proposed", "confirmed"])
-      .gte("scheduled_at", new Date().toISOString()),
-    supabase
-      .from("cycle")
-      .select("held_meetings_count")
-      .order("started_at", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-  ]);
-  const requestsBadge = submittedC.count ?? 0;
-  const meetingsBadge = upcomingC.count ?? 0;
+
+  // Sidebar badge counts are DEFERRED (hydrated after mount from
+  // /api/vendor/badges via PortalSidebar badgeSource) so the shell paints its
+  // stable nav immediately. The band/cycle lookup stays server-side — it feeds
+  // the identity card + topbar eyebrow, not a decorative badge — and is a single
+  // indexed lookup.
+  const cycleRes = await supabase
+    .from("cycle")
+    .select("held_meetings_count")
+    .order("started_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   // Band is recomputed on view from the pricing engine, never stored.
   const held = (cycleRes.data?.held_meetings_count as number) ?? 0;
@@ -89,11 +82,11 @@ export default async function VendorLayout({
       label: "Requests",
       href: "/vendor/requests",
       icon: "inbox",
-      badgeCount: requestsBadge,
+      badgeKey: "requests",
       children: [
         // status params are real request_status enum values
         // (submitted/accepted/declined); labels stay the locked vendor copy.
-        { label: "Pending", href: "/vendor/requests?status=submitted", icon: "inbox", badgeCount: requestsBadge },
+        { label: "Pending", href: "/vendor/requests?status=submitted", icon: "inbox", badgeKey: "requests" },
         { label: "Accepted", href: "/vendor/requests?status=accepted", icon: "inbox" },
         { label: "Declined", href: "/vendor/requests?status=declined", icon: "inbox" },
       ],
@@ -103,7 +96,7 @@ export default async function VendorLayout({
       href: "/vendor/meetings",
       icon: "calendar",
       children: [
-        { label: "Upcoming", href: "/vendor/meetings?when=upcoming", icon: "calendar", badgeCount: meetingsBadge },
+        { label: "Upcoming", href: "/vendor/meetings?when=upcoming", icon: "calendar", badgeKey: "meetings" },
         { label: "Past", href: "/vendor/meetings?when=past", icon: "calendar" },
       ],
     },
@@ -147,6 +140,7 @@ export default async function VendorLayout({
         <PortalSidebar
           portal="vendor"
           brand={brand}
+          badgeSource="/api/vendor/badges"
           groups={groups}
           identity={{
             initials: initialsOf(vendor.name),
