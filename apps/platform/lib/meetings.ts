@@ -151,7 +151,66 @@ export async function markHeld(
     p_schedule_version: SCHEDULE_VERSION,
   });
   if (error) return { ok: false, error: rpcError(error.message) };
+  // mark_held queues the exec C6 + staff C5 in-tx; the vendor C6 note is queued
+  // here (the RPC succeeded, so the flip happened). The flip is the idempotency
+  // guard: a replay raises bad_state above and never reaches here.
+  await queueVendorMeetingCompleted(supabase, meetingId);
   return { ok: true, detail: data as string };
+}
+
+/**
+ * Queue the vendor side of C6 (NOTIFICATION_TEMPLATES C6: "To vendor, email +
+ * in-app"): a completion note that the meeting is done and the gift is recorded.
+ * The exec C6 + staff C5 are queued inside mark_held; this adds the vendor rows
+ * best-effort AFTER the held flip (a queue hiccup must never un-hold a meeting).
+ * The EXACT frozen amount + charity NAME are snapshotted into the payload from
+ * the gift mark_held just created, so the composer reads them straight (no
+ * latest-meeting inference; the exec C6 keeps its own resolution). One email row
+ * (drained) + one in_app row (forward-compatible until an in-app surface renders
+ * it, like C5/C7). Distinct from the C7 gift-PAID confirmation.
+ */
+async function queueVendorMeetingCompleted(supabase: SupabaseClient, meetingId: string): Promise<void> {
+  const { data: gift } = await supabase
+    .from("gift_record")
+    .select(`charity_amount_cents, charity:charity_id(name)`)
+    .eq("meeting_id", meetingId)
+    .maybeSingle();
+  if (!gift) return; // no gift (e.g. a source that minted none); nothing to confirm
+  const { data: m } = await supabase
+    .from("meeting")
+    .select(`request:request_id(id, requested_by_user_id)`)
+    .eq("id", meetingId)
+    .maybeSingle();
+  const req = m ? (Array.isArray(m.request) ? m.request[0] : m.request) : null;
+  const requestId = (req as { id?: string } | null)?.id;
+  if (!requestId) return;
+  const requesterId = (req as { requested_by_user_id?: string } | null)?.requested_by_user_id ?? null;
+  const charity = Array.isArray(gift.charity) ? gift.charity[0] : gift.charity;
+  const payload = {
+    charity_amount_cents: gift.charity_amount_cents,
+    charity_name: (charity as { name?: string } | null)?.name ?? null,
+  };
+
+  await supabase.from("notification").insert([
+    {
+      recipient_type: "vendor_user",
+      recipient_id: requesterId,
+      channel: "email",
+      event: "C6_meeting_completed",
+      status: "queued",
+      request_id: requestId,
+      payload,
+    },
+    {
+      recipient_type: "vendor_user",
+      recipient_id: requesterId,
+      channel: "in_app",
+      event: "C6_meeting_completed",
+      status: "queued",
+      request_id: requestId,
+      payload,
+    },
+  ]);
 }
 
 /**

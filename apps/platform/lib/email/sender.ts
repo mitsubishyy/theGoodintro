@@ -11,6 +11,7 @@ import {
   meetingCancelledExecEmail,
   meetingCancelledVendorEmail,
   meetingCompletedExecEmail,
+  meetingCompletedVendorEmail,
   paymentReminderVendorEmail,
   timeConfirmedVendorEmail,
   uncreditedBookedVendorEmail,
@@ -508,6 +509,45 @@ async function composeMeetingCompletedExec(
 }
 
 /**
+ * C6 vendor completion note (queued best-effort by lib/meetings.ts after the held
+ * flip). Reads the EXACT frozen amount + charity name from the payload
+ * snapshotted at queue time (no re-derivation from the gift here); resolves the
+ * requester address + exec name from the request. The vendor also gets an in-app
+ * C6 row (channel in_app) which the email drain's channel filter never reaches.
+ * Distinct from the C7 gift-PAID confirmation.
+ */
+async function composeMeetingCompletedVendor(
+  supabase: SupabaseClient,
+  row: NotificationRow,
+): Promise<{ email: ComposedEmail; to: string }> {
+  if (!row.request_id) throw new ComposeError("notification has no request_id");
+  const p = row.payload ?? {};
+  const amountCents = Number(p.charity_amount_cents);
+  const charityName = typeof p.charity_name === "string" ? p.charity_name : null;
+  if (!Number.isFinite(amountCents) || amountCents < 0)
+    throw new ComposeError("C6 payload has no charity amount");
+  if (!charityName) throw new ComposeError("C6 payload has no charity name");
+  const { data: req } = await supabase
+    .from("request")
+    .select(`id, requester:requested_by_user_id(email), executive:executive_id(name)`)
+    .eq("id", row.request_id)
+    .single();
+  if (!req) throw new ComposeError("request not found");
+  const requester = one<{ email: string }>(req.requester);
+  const exec = one<{ name: string }>(req.executive);
+  if (!requester?.email) throw new ComposeError("requesting vendor user has no email");
+  if (!exec?.name) throw new ComposeError("executive not found");
+  return {
+    to: requester.email,
+    email: meetingCompletedVendorEmail({
+      execName: exec.name,
+      charityAmount: formatAud(amountCents),
+      charityName,
+    }),
+  };
+}
+
+/**
  * C7: the gift-paid confirmation to the executive (queued at the gift
  * released -> paid transition in lib/gifts.ts). The EXACT frozen amount and the
  * charity name are snapshotted into the notification payload at queue time, so
@@ -760,7 +800,12 @@ async function compose(
     case "C3_meeting_cancelled":
       return composeMeetingCancelled(supabase, row);
     case "C6_meeting_completed":
-      return composeMeetingCompletedExec(supabase, row);
+      // One event, two recipients (the D3/C3 convention): the exec note (from
+      // Issy, resolved from the gift) and the vendor note (from the brand, read
+      // from the payload snapshotted at the held transition).
+      return row.recipient_type === "vendor_user"
+        ? composeMeetingCompletedVendor(supabase, row)
+        : composeMeetingCompletedExec(supabase, row);
     case "C7_gift_confirmed":
       return composeGiftPaid(supabase, row);
     case "D1_uncredited_booked":

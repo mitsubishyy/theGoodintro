@@ -628,6 +628,34 @@ export function meetingCompletedExecEmail(c: {
 }
 
 /**
+ * C6 · Meeting completed (held) — the vendor note (NOTIFICATION_TEMPLATES C6, from
+ * the brand). The sibling of the exec C6 above: post-Held, so the gift is the
+ * EXACT frozen GiftRecord figure (snapshotted into the notification payload at the
+ * held transition), never "approximately". Wording verbatim. Separate from the C7
+ * gift-PAID confirmation (this is "recorded, will be confirmed within 14 days";
+ * C7 is "has reached"). DRAFT (C-series not design-locked).
+ */
+export function meetingCompletedVendorEmail(c: {
+  execName: string;
+  charityAmount: string; // exact, e.g. "$900"
+  charityName: string;
+}): ComposedEmail {
+  const subject = `Your meeting with ${c.execName} is complete`;
+  const lineHtml = `Your meeting with <strong>${esc(c.execName)}</strong> is complete. A gift of <strong>${esc(c.charityAmount)}</strong> to <strong>${esc(c.charityName)}</strong> has been recorded and will be confirmed within 14 days. Thank you for being the kind of introduction worth taking.`;
+  const text = [
+    `Your meeting with ${c.execName} is complete. A gift of ${c.charityAmount} to ${c.charityName} has been recorded and will be confirmed within 14 days. Thank you for being the kind of introduction worth taking.`,
+    ``,
+    `TheGoodIntro · invite-only · Australia`,
+  ].join("\n");
+  return {
+    subject,
+    html: lockedCard("Your meeting is complete", pEl(lineHtml), `A gift of ${c.charityAmount} to ${c.charityName} has been recorded.`),
+    text,
+    fromKind: "brand",
+  };
+}
+
+/**
  * C7 · Gift paid to the charity, confirmed (NOTIFICATION_TEMPLATES C7, from Issy).
  * Wording verbatim. This is the landed-confirmation that follows C6's "on its
  * way": the amount is the EXACT frozen GiftRecord figure (snapshotted into the
