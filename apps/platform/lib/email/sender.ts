@@ -8,6 +8,8 @@ import {
   execRequestEmail,
   forwardToEaEmail,
   giftPaidExecEmail,
+  meetingCancelledExecEmail,
+  meetingCancelledVendorEmail,
   meetingCompletedExecEmail,
   paymentReminderVendorEmail,
   timeConfirmedVendorEmail,
@@ -49,6 +51,7 @@ export const SUPPORTED_EMAIL_EVENTS = [
   "B_forward_to_ea",
   "C1_exec_accepted",
   "C2_time_confirmed",
+  "C3_meeting_cancelled",
   "C6_meeting_completed",
   "C7_gift_confirmed",
   "D1_uncredited_booked",
@@ -680,6 +683,67 @@ async function composeUnpaidCancelled(
   throw new ComposeError(`unexpected recipient_type "${row.recipient_type}" for D3`);
 }
 
+/**
+ * C3: a meeting cancelled by Issy (a `confirmed` or `proposed` cancellation;
+ * queued best-effort by lib/meetings.ts after the release_meeting /
+ * cancel_proposed_meeting flip). ONE event, two recipient types — the requesting
+ * vendor user (reassuring brand note) and the executive (from-Issy note). We
+ * branch on recipient_type to resolve the address + copy. This is DISTINCT from
+ * D3 (the unpaid auto-cancel): a general cancellation, no payment reason, and no
+ * EA recipient (the C3 template lists vendor + executive only; EA parked).
+ *
+ * The exec's date line comes from the cancelled meeting's scheduled time. PARKED
+ * (STATE_MACHINES.md "Edges (decided)"): the notification carries request_id, not
+ * meeting_id, so "the cancelled meeting" is the latest meeting on the request.
+ * Correct while `cancelled` is terminal and rebooks only spawn from `held`. A
+ * `proposed` cancel has no scheduled_at, so the exec note omits the date.
+ */
+async function composeMeetingCancelled(
+  supabase: SupabaseClient,
+  row: NotificationRow,
+): Promise<{ email: ComposedEmail; to: string }> {
+  if (!row.request_id) throw new ComposeError("notification has no request_id");
+  const { data: req } = await supabase
+    .from("request")
+    .select(
+      `id, vendor:vendor_id(name), requester:requested_by_user_id(email), executive:executive_id(name, primary_email)`,
+    )
+    .eq("id", row.request_id)
+    .single();
+  if (!req) throw new ComposeError("request not found");
+  const vendor = one<{ name: string }>(req.vendor);
+  const requester = one<{ email: string }>(req.requester);
+  const exec = one<{ name: string; primary_email: string }>(req.executive);
+  if (!exec?.name) throw new ComposeError("executive not found");
+
+  if (row.recipient_type === "vendor_user") {
+    if (!requester?.email) throw new ComposeError("requesting vendor user has no email");
+    return { to: requester.email, email: meetingCancelledVendorEmail({ execName: exec.name }) };
+  }
+  if (row.recipient_type === "executive") {
+    if (!exec.primary_email) throw new ComposeError("executive has no primary email");
+    const { data: meeting } = await supabase
+      .from("meeting")
+      .select("scheduled_at")
+      .eq("request_id", req.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const meetingDateLabel = meeting?.scheduled_at
+      ? formatMeetingDate(meeting.scheduled_at as string)
+      : null;
+    return {
+      to: exec.primary_email,
+      email: meetingCancelledExecEmail({
+        execFirstName: exec.name.split(" ")[0] || "there",
+        vendorName: vendor?.name ?? "a member vendor",
+        meetingDateLabel,
+      }),
+    };
+  }
+  throw new ComposeError(`unexpected recipient_type "${row.recipient_type}" for C3`);
+}
+
 async function compose(
   supabase: SupabaseClient,
   row: NotificationRow,
@@ -693,6 +757,8 @@ async function compose(
       return composeExecAcceptedVendor(supabase, row);
     case "C2_time_confirmed":
       return composeTimeConfirmedVendor(supabase, row);
+    case "C3_meeting_cancelled":
+      return composeMeetingCancelled(supabase, row);
     case "C6_meeting_completed":
       return composeMeetingCompletedExec(supabase, row);
     case "C7_gift_confirmed":

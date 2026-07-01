@@ -165,7 +165,10 @@ export async function reverseHeld(supabase: SupabaseClient, meetingId: string): 
   return { ok: true, detail: data as string };
 }
 
-/** No-show or cancellation of a confirmed meeting: release the reservation, no gift. */
+/** No-show or cancellation of a confirmed meeting: release the reservation, no gift.
+ *  On a CANCELLATION (not a no-show) it also queues the C3 cancellation notice to
+ *  the vendor + executive (STATE_MACHINES.md `confirmed -> cancelled`; the
+ *  `no_show` outcome is a separate C5 case and is not notified here). */
 export async function releaseMeeting(
   supabase: SupabaseClient,
   meetingId: string,
@@ -176,17 +179,72 @@ export async function releaseMeeting(
     p_outcome: outcome,
   });
   if (error) return { ok: false, error: rpcError(error.message) };
+  // Only a genuine cancellation notifies (the RPC succeeded, so the flip
+  // happened); a no-show does not. The flip is the idempotency guard: a replay
+  // raises `bad_state` above and never reaches here, so C3 is queued once.
+  if (outcome === "cancelled") await queueMeetingCancelled(supabase, meetingId);
   return { ok: true };
 }
 
-/** Cancel a meeting still in `proposed` (no credit was reserved yet). */
+/** Cancel a meeting still in `proposed` (no credit was reserved yet). Queues the
+ *  C3 cancellation notice to the vendor + executive (STATE_MACHINES.md
+ *  `proposed -> cancelled`: "notify vendor + exec"). */
 export async function cancelProposedMeeting(
   supabase: SupabaseClient,
   meetingId: string,
 ): Promise<Result> {
   const { data, error } = await supabase.rpc("cancel_proposed_meeting", { p_meeting_id: meetingId });
   if (error) return { ok: false, error: rpcError(error.message) };
+  await queueMeetingCancelled(supabase, meetingId);
   return { ok: true, detail: data as string };
+}
+
+/**
+ * Queue the C3 meeting-cancelled notices (NOTIFICATION_TEMPLATES C3): the vendor
+ * note (from the brand) and the executive note (from Issy). Best-effort and
+ * deliberately AFTER the state flip has committed: the cancellation is the source
+ * of truth, so a queue hiccup must never fail (or reverse) it. The transition
+ * flip is the idempotency guard — a caller only reaches here when the RPC
+ * actually flipped the row, so a double-cancel (which raises `bad_state`) can
+ * never double-queue.
+ *
+ * Recipients are vendor + executive only. The C3 template lists exactly those two
+ * (the "(any side, incl EA)" refers to who can trigger, not who is notified; the
+ * adjacent D3 auto-cancel row enumerates the EA explicitly, C3 does not). EA and
+ * the "To Issy (dashboard) rebook task" are PARKED, not queued here. Distinct
+ * event `C3_meeting_cancelled` keeps it semantically separate from the D3 unpaid
+ * auto-cancel. Notifications carry request_id (not meeting_id), the same parked
+ * inference as D1/C2/C6/D3.
+ */
+async function queueMeetingCancelled(supabase: SupabaseClient, meetingId: string): Promise<void> {
+  const { data: m } = await supabase
+    .from("meeting")
+    .select(`request:request_id(id, requested_by_user_id)`)
+    .eq("id", meetingId)
+    .maybeSingle();
+  const req = m ? (Array.isArray(m.request) ? m.request[0] : m.request) : null;
+  const requestId = (req as { id?: string } | null)?.id;
+  if (!requestId) return; // no request to resolve the vendor/exec from; skip (cancel stands)
+  const requesterId = (req as { requested_by_user_id?: string } | null)?.requested_by_user_id ?? null;
+
+  await supabase.from("notification").insert([
+    {
+      recipient_type: "vendor_user",
+      recipient_id: requesterId,
+      channel: "email",
+      event: "C3_meeting_cancelled",
+      status: "queued",
+      request_id: requestId,
+    },
+    {
+      recipient_type: "executive",
+      recipient_id: null,
+      channel: "email",
+      event: "C3_meeting_cancelled",
+      status: "queued",
+      request_id: requestId,
+    },
+  ]);
 }
 
 /** Close a still-open (`submitted`) request: admin housekeeping for stale/withdrawn. */

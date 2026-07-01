@@ -783,6 +783,65 @@ export function unpaidCancelledExecEmail(c: {
   };
 }
 
+/**
+ * C3 · Meeting cancelled — the vendor note (NOTIFICATION_TEMPLATES C3, from the
+ * brand). Fires when Issy cancels a `confirmed` meeting or a `proposed` one (a
+ * general cancellation), NOT the unpaid auto-cancel (that is D3, with its own
+ * "payment did not clear" reason). C3 is deliberately neutral: no reason, just
+ * reassurance that no credit was used. DRAFT (C-series not design-locked).
+ */
+export function meetingCancelledVendorEmail(c: { execName: string }): ComposedEmail {
+  const subject = `Your meeting with ${c.execName} has been cancelled`;
+  const lineHtml = `Your meeting with <strong>${esc(c.execName)}</strong> has been cancelled. No credit has been used, and you are welcome to rebook whenever you are ready.`;
+  const text = [
+    `Your meeting with ${c.execName} has been cancelled. No credit has been used, and you are welcome to rebook whenever you are ready.`,
+    ``,
+    `TheGoodIntro · invite-only · Australia`,
+  ].join("\n");
+  return {
+    subject,
+    html: lockedCard("Meeting cancelled", pEl(lineHtml), `Your meeting with ${c.execName} was cancelled; no credit was used.`),
+    text,
+    fromKind: "brand",
+  };
+}
+
+/**
+ * C3 · Meeting cancelled — the executive note (NOTIFICATION_TEMPLATES C3, from
+ * Issy). General cancellation (distinct from the D3 unpaid auto-cancel). The
+ * meeting date renders only when known: a `confirmed` cancel carries a
+ * `scheduled_at`; a `proposed` cancel has no time set yet, so the date phrase is
+ * omitted. DRAFT.
+ */
+export function meetingCancelledExecEmail(c: {
+  execFirstName: string;
+  vendorName: string;
+  meetingDateLabel: string | null;
+}): ComposedEmail {
+  const subject = `A meeting has been cancelled`;
+  const whenHtml = c.meetingDateLabel ? ` on <strong>${esc(c.meetingDateLabel)}</strong>` : "";
+  const whenText = c.meetingDateLabel ? ` on ${c.meetingDateLabel}` : "";
+  const inner =
+    pEl(`Hi ${esc(c.execFirstName)},`) +
+    pEl(
+      `the meeting with <strong>${esc(c.vendorName)}</strong>${whenHtml} has been cancelled. Apologies for the change, and thank you for your flexibility.`,
+    ) +
+    pEl("Issy");
+  const text = [
+    `Hi ${c.execFirstName},`,
+    ``,
+    `the meeting with ${c.vendorName}${whenText} has been cancelled. Apologies for the change, and thank you for your flexibility.`,
+    ``,
+    `Issy`,
+  ].join("\n");
+  return {
+    subject,
+    html: lockedCard("Meeting cancelled", inner, `The meeting with ${c.vendorName}${whenText} has been cancelled.`),
+    text,
+    fromKind: "personal",
+  };
+}
+
 /** A4 · Invoice paid, the vendor receipt (from the brand). */
 export function vendorReceiptEmail(c: {
   credits: number;
