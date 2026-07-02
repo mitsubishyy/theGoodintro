@@ -5,7 +5,7 @@ name: migration-guard
 # push-notifies. A clean run is silent.
 #
 # Lives on main (scheduled workflows only run from the default branch); checks
-# out platform/v2-foundation to run the actual check.
+# out platform/v2-integration to run the actual check.
 
 on:
   schedule:
@@ -23,7 +23,7 @@ jobs:
       - name: Check out the platform branch (where the script + migrations live)
         uses: actions/checkout@v4
         with:
-          ref: platform/v2-foundation
+          ref: platform/v2-integration
 
       - uses: actions/setup-node@v4
         with:
@@ -57,6 +57,6 @@ jobs:
                 report,
                 '```',
                 '',
-                'To clear it: open a Claude Code session on `platform/v2-foundation` and say **"write the missing rollbacks"** — Claude drafts each `down` migration for your review (or marks any deliberately-irreversible one with a `no-down:` reason). Schema work, so it waits for your approval before committing.',
+                'To clear it: open a Claude Code session on `platform/v2-integration` and say **"write the missing rollbacks"** — Claude drafts each `down` migration for your review (or marks any deliberately-irreversible one with a `no-down:` reason). Schema work, so it waits for your approval before committing.',
               ].join('\n'),
             });

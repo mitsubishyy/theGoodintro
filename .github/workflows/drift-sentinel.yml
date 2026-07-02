@@ -5,7 +5,7 @@ name: drift-sentinel
 # which GitHub then emails + pushes to the GitHub mobile app. Clean week = silence.
 #
 # Scheduled jobs only run from the default branch (main), so this file lives on
-# main, but it checks out the platform/v2-foundation branch to run the actual
+# main, but it checks out the platform/v2-integration branch to run the actual
 # check (that's where the script lives).
 
 on:
@@ -24,7 +24,7 @@ jobs:
       - name: Check out the platform branch (where the script lives)
         uses: actions/checkout@v4
         with:
-          ref: platform/v2-foundation
+          ref: platform/v2-integration
 
       - uses: actions/setup-node@v4
         with:
@@ -59,6 +59,6 @@ jobs:
                 report,
                 '```',
                 '',
-                'To clear it: open a Claude Code session on `platform/v2-foundation` and say **"fix the drift"** — Claude will read the correct figures off `CALCULATIONS.md`, fix any vocab/dashes, and show you a diff before committing.',
+                'To clear it: open a Claude Code session on `platform/v2-integration` and say **"fix the drift"** — Claude will read the correct figures off `CALCULATIONS.md`, fix any vocab/dashes, and show you a diff before committing.',
               ].join('\n'),
             });
