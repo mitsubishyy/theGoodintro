@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { requireStaff } from "@/lib/auth";
 import { getFlag } from "@/lib/flags";
+import { PhotoCropProvider } from "@/app/_components/photo-crop-provider";
 import { signOutAction } from "@/app/login/actions";
 import {
   PortalShell,
@@ -31,7 +32,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { staff, supabase } = await requireStaff();
+  const { staff } = await requireStaff();
   const enabled = await getFlag("admin_shell");
 
   if (!enabled) {
@@ -56,20 +57,13 @@ export default async function AdminLayout({
     );
   }
 
-  // Sidebar badge counts. Mirrors the data sources table in the Admin Dashboard
-  // README: Meetings = confirmed + proposed; Vendors = in onboarding; Inbox =
-  // unread; Pending requests sub-nav = submitted requests.
-  const head = { count: "exact" as const, head: true };
-  const [confirmedC, proposedC, vendorsOnboarding, submittedC] = await Promise.all([
-    supabase.from("meeting").select("id", head).eq("status", "confirmed"),
-    supabase.from("meeting").select("id", head).eq("status", "proposed"),
-    supabase.from("vendor").select("id", head).in("status", ["signed_up", "call_booked", "approved", "paid"]),
-    supabase.from("request").select("id", head).eq("status", "submitted"),
-  ]);
-  const meetingsBadge = (confirmedC.count ?? 0) + (proposedC.count ?? 0);
-  const vendorsBadge = vendorsOnboarding.count ?? 0;
-  const pendingRequestsBadge = submittedC.count ?? 0;
-  // Inbox is wired through the Admin Inbox port (separate); placeholder until then.
+  // Sidebar badge counts are DEFERRED: the shell paints its stable nav
+  // immediately and hydrates these amber numbers after mount from
+  // /api/admin/badges (PortalSidebar badgeSource) instead of blocking first
+  // render on four count queries. Data sources are unchanged (Admin Dashboard
+  // README): Meetings = confirmed + proposed; Vendors = in onboarding; Pending
+  // requests sub-nav = submitted requests. Inbox stays a static placeholder
+  // (0) until the Admin Inbox port wires its unread source.
   const inboxBadge = 0;
 
   const operations: NavItem[] = [
@@ -78,18 +72,18 @@ export default async function AdminLayout({
       label: "Meetings",
       href: "/admin/meetings",
       icon: "calendar",
-      badgeCount: meetingsBadge,
+      badgeKey: "meetings",
       children: [
         // status params must be real meeting_status enum values
         // (proposed/confirmed/held/no_show/cancelled/reversed); the labels stay
         // operator-friendly.
         { label: "Scheduled", href: "/admin/meetings?status=confirmed", icon: "calendar" },
-        { label: "Pending requests", href: "/admin/requests", icon: "inbox", badgeCount: pendingRequestsBadge },
+        { label: "Pending requests", href: "/admin/requests", icon: "inbox", badgeKey: "pendingRequests" },
         { label: "Completed", href: "/admin/meetings?status=held", icon: "calendar" },
         { label: "Cancellations", href: "/admin/meetings?status=cancelled", icon: "calendar" },
       ],
     },
-    { label: "Vendors", href: "/admin/vendors", icon: "box", badgeCount: vendorsBadge },
+    { label: "Vendors", href: "/admin/vendors", icon: "box", badgeKey: "vendors" },
     { label: "Executives", href: "/admin/executives", icon: "user" },
     { label: "Checklists", href: "/admin/checklists", icon: "grid" },
     { label: "Gifts & Charities", href: "/admin/giving", icon: "heart" },
@@ -156,6 +150,7 @@ export default async function AdminLayout({
         <PortalSidebar
           portal="admin"
           brand={brand}
+          badgeSource="/api/admin/badges"
           groups={[
             { heading: "Operations", items: operations },
             { heading: "Communication", items: communication },
@@ -184,7 +179,7 @@ export default async function AdminLayout({
         />
       }
     >
-      {children}
+      <PhotoCropProvider>{children}</PhotoCropProvider>
     </PortalShell>
   );
 }

@@ -213,68 +213,82 @@ function attendeeTitle(attendee: unknown): string | null {
 }
 
 export async function loadExecHome(supabase: SupabaseClient, execId: string, now = new Date()): Promise<ExecHomeData | null> {
-  const { data: execRow } = await supabase
-    .from("executive")
-    .select("id, name, title, company, primary_email, photo_url, timezone, default_charity_id")
-    .eq("id", execId)
-    .maybeSingle();
+  const fy = financialYearWindow(now);
+  const month = monthWindow(now);
+
+  // ── Level 1: reads keyed only on execId, run in parallel. Was a sequential
+  //    head (executive → requests) plus a tail of money/count reads; those all
+  //    depend only on execId, so they fold into one wave. ─────────────────────
+  const [execRowRes, reqRowsRes, fyCharity, lifetimeCharity, incomingCountRes] = await Promise.all([
+    supabase
+      .from("executive")
+      .select("id, name, title, company, primary_email, photo_url, timezone, default_charity_id")
+      .eq("id", execId)
+      .maybeSingle(),
+    supabase
+      .from("request")
+      .select("id, status, vendor_id, attendee, meeting_minutes, created_at, vendor:vendor_id(name), requester:requested_by_user_id(name, photo_url)")
+      .eq("executive_id", execId)
+      .order("created_at", { ascending: true }),
+    execCharityForPeriod(supabase, execId, fy),
+    execCharityForPeriod(supabase, execId, {}),
+    supabase
+      .from("request")
+      .select("id", { count: "exact", head: true })
+      .eq("executive_id", execId)
+      .eq("status", "submitted"),
+  ]);
+
+  const execRow = execRowRes.data;
   if (!execRow) return null;
 
   const tz = (execRow.timezone as string) || AEST;
   const defaultCharityId = (execRow.default_charity_id as string) ?? null;
-  const fy = financialYearWindow(now);
-  const month = monthWindow(now);
+  const allReqs = reqRowsRes.data ?? [];
+  const requestIds = allReqs.map((r) => r.id as string);
+  const vendorIds = [...new Set(allReqs.map((r) => r.vendor_id as string))];
+  const incomingCount = incomingCountRes.count;
+
+  // ── Level 2: reads keyed on execRow.defaultCharityId (charity/nom) or on the
+  //    request set (cycles/meetings), in parallel. `mtgRes` feeds BOTH the
+  //    upcoming/impact widgets and the lifetime counts, so the old duplicate
+  //    `allMtg` round-trip is dropped (it fetched the identical meeting set). ──
+  const [charityRes, nomRes, cyclesRes, mtgRes] = await Promise.all([
+    defaultCharityId
+      ? supabase.from("charity").select("id, name, short_name, abn, dgr_status, cause, dgr_item, logo_url").eq("id", defaultCharityId).maybeSingle()
+      : Promise.resolve({ data: null }),
+    defaultCharityId
+      ? supabase.from("nomination_history").select("started_at").eq("executive_id", execId).eq("charity_id", defaultCharityId).is("ended_at", null).order("started_at", { ascending: false }).limit(1).maybeSingle()
+      : Promise.resolve({ data: null }),
+    vendorIds.length
+      ? supabase.from("cycle").select("vendor_id, held_meetings_count, started_at").in("vendor_id", vendorIds).order("started_at", { ascending: false })
+      : Promise.resolve({ data: [] }),
+    requestIds.length
+      ? supabase.from("meeting").select("id, request_id, charity_id, scheduled_at, join_url, status, charity:charity_id(name)").in("request_id", requestIds)
+      : Promise.resolve({ data: [] }),
+  ]);
 
   // ── Standing charity + "since" from the open nomination row ────────────────
   let standing: ExecHomeData["standing"] = null;
-  if (defaultCharityId) {
-    const [{ data: charity }, { data: nom }] = await Promise.all([
-      supabase.from("charity").select("id, name, short_name, abn, dgr_status, cause, dgr_item, logo_url").eq("id", defaultCharityId).maybeSingle(),
-      supabase
-        .from("nomination_history")
-        .select("started_at")
-        .eq("executive_id", execId)
-        .eq("charity_id", defaultCharityId)
-        .is("ended_at", null)
-        .order("started_at", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-    ]);
-    if (charity) {
-      standing = {
-        charityId: charity.id as string,
-        name: charity.name as string,
-        cause: (charity.cause as string) ?? null,
-        abn: (charity.abn as string) ?? null,
-        dgrItem: (charity.dgr_item as string) ?? null,
-        dgrStatus: (charity.dgr_status as string) ?? null,
-        logoUrl: (charity.logo_url as string) ?? null,
-        sinceLabel: nom?.started_at ? shortDateNum(nom.started_at as string, tz) : null,
-      };
-    }
+  const charity = charityRes.data;
+  if (defaultCharityId && charity) {
+    const nom = nomRes.data;
+    standing = {
+      charityId: charity.id as string,
+      name: charity.name as string,
+      cause: (charity.cause as string) ?? null,
+      abn: (charity.abn as string) ?? null,
+      dgrItem: (charity.dgr_item as string) ?? null,
+      dgrStatus: (charity.dgr_status as string) ?? null,
+      logoUrl: (charity.logo_url as string) ?? null,
+      sinceLabel: nom?.started_at ? shortDateNum(nom.started_at as string, tz) : null,
+    };
   }
-
-  // ── Requests for this exec (incoming + the id set for meetings/gifts) ──────
-  const { data: reqRows } = await supabase
-    .from("request")
-    .select("id, status, vendor_id, attendee, meeting_minutes, created_at, vendor:vendor_id(name), requester:requested_by_user_id(name, photo_url)")
-    .eq("executive_id", execId)
-    .order("created_at", { ascending: true });
-  const allReqs = reqRows ?? [];
-  const requestIds = allReqs.map((r) => r.id as string);
-  const vendorIds = [...new Set(allReqs.map((r) => r.vendor_id as string))];
 
   // Per-vendor held count → indicative band amount for each request's vendor.
   const heldByVendor = new Map<string, number>();
-  if (vendorIds.length) {
-    const { data: cycles } = await supabase
-      .from("cycle")
-      .select("vendor_id, held_meetings_count, started_at")
-      .in("vendor_id", vendorIds)
-      .order("started_at", { ascending: false });
-    for (const c of cycles ?? []) {
-      if (!heldByVendor.has(c.vendor_id as string)) heldByVendor.set(c.vendor_id as string, (c.held_meetings_count as number) ?? 0);
-    }
+  for (const c of cyclesRes.data ?? []) {
+    if (!heldByVendor.has(c.vendor_id as string)) heldByVendor.set(c.vendor_id as string, (c.held_meetings_count as number) ?? 0);
   }
   const indicativeForVendor = (vendorId: string): string =>
     formatAud(bandForMeetingNumber((heldByVendor.get(vendorId) ?? 0) + 1).rateCents);
@@ -294,122 +308,81 @@ export async function loadExecHome(supabase: SupabaseClient, execId: string, now
       };
     });
 
-  // ── Meetings: upcoming (confirmed) + gifts (held) ─────────────────────────
-  let upcoming: UpcomingRow[] = [];
+  // ── Meetings: upcoming (confirmed) + recent impact (held) ─────────────────
+  const reqMeta = new Map(
+    allReqs.map((r) => {
+      const v = one<{ name: string }>(r.vendor);
+      const u = one<{ name: string; photo_url: string | null }>(r.requester);
+      return [
+        r.id as string,
+        { vendorId: r.vendor_id as string, vendor: v?.name ?? "", person: u?.name ?? "", photo: u?.photo_url ?? null, role: attendeeTitle(r.attendee) },
+      ];
+    }),
+  );
+
+  const meetings = mtgRes.data ?? [];
+  const meetingIds = meetings.map((m) => m.id as string);
+  const mtgToReq = new Map(meetings.map((m) => [m.id as string, m.request_id as string]));
+
+  const upcoming: UpcomingRow[] = meetings
+    .filter((m) => m.status === "confirmed" && m.scheduled_at)
+    .sort((a, b) => (a.scheduled_at as string).localeCompare(b.scheduled_at as string))
+    .map((m) => {
+      const meta = reqMeta.get(m.request_id as string)!;
+      const c = one<{ name: string }>(m.charity);
+      const charityName = c?.name ?? standing?.name ?? "your charity";
+      return {
+        id: m.id as string,
+        dateLabel: shortDateNum(m.scheduled_at as string, tz),
+        timeLabel: clockLabel(m.scheduled_at as string, tz),
+        name: meta.person || meta.vendor,
+        role: meta.role,
+        company: meta.vendor,
+        photoUrl: meta.photo,
+        joinUrl: (m.join_url as string) ?? null,
+        provider: providerFromUrl(m.join_url as string | null),
+        amount: indicativeForVendor(meta.vendorId),
+        charityName,
+        isOverride: Boolean(m.charity_id && standing && m.charity_id !== standing.charityId),
+        standingCharityName: standing?.name ?? "",
+      };
+    });
+
+  const upcomingMonthCount = meetings.filter(
+    (m) => m.status === "confirmed" && m.scheduled_at && (m.scheduled_at as string) >= month.from && (m.scheduled_at as string) < month.to,
+  ).length;
+
+  // ── Level 3: gift reads keyed on the meeting id set, in parallel. Impact
+  //    (recent 3), FY held count, and the lifetime gift set share one id set. ─
   let impact: ImpactRow[] = [];
-  let upcomingMonthCount = 0;
   let fyHeldCount = 0;
-
-  if (requestIds.length) {
-    const reqMeta = new Map(
-      allReqs.map((r) => {
-        const v = one<{ name: string }>(r.vendor);
-        const u = one<{ name: string; photo_url: string | null }>(r.requester);
-        return [
-          r.id as string,
-          { vendorId: r.vendor_id as string, vendor: v?.name ?? "", person: u?.name ?? "", photo: u?.photo_url ?? null, role: attendeeTitle(r.attendee) },
-        ];
-      }),
-    );
-
-    const { data: mtgRows } = await supabase
-      .from("meeting")
-      .select("id, request_id, charity_id, scheduled_at, join_url, status, charity:charity_id(name)")
-      .in("request_id", requestIds);
-    const meetings = mtgRows ?? [];
-
-    upcoming = meetings
-      .filter((m) => m.status === "confirmed" && m.scheduled_at)
-      .sort((a, b) => (a.scheduled_at as string).localeCompare(b.scheduled_at as string))
-      .map((m) => {
-        const meta = reqMeta.get(m.request_id as string)!;
-        const c = one<{ name: string }>(m.charity);
-        const charityName = c?.name ?? standing?.name ?? "your charity";
-        return {
-          id: m.id as string,
-          dateLabel: shortDateNum(m.scheduled_at as string, tz),
-          timeLabel: clockLabel(m.scheduled_at as string, tz),
-          name: meta.person || meta.vendor,
-          role: meta.role,
-          company: meta.vendor,
-          photoUrl: meta.photo,
-          joinUrl: (m.join_url as string) ?? null,
-          provider: providerFromUrl(m.join_url as string | null),
-          amount: indicativeForVendor(meta.vendorId),
-          charityName,
-          isOverride: Boolean(m.charity_id && standing && m.charity_id !== standing.charityId),
-          standingCharityName: standing?.name ?? "",
-        };
-      });
-
-    upcomingMonthCount = meetings.filter(
-      (m) => m.status === "confirmed" && m.scheduled_at && (m.scheduled_at as string) >= month.from && (m.scheduled_at as string) < month.to,
-    ).length;
-
-    // Recent impact: gift_records on this exec's held meetings.
-    const meetingIds = meetings.map((m) => m.id as string);
-    const mtgToReq = new Map(meetings.map((m) => [m.id as string, m.request_id as string]));
-    if (meetingIds.length) {
-      const { data: gifts } = await supabase
-        .from("gift_record")
-        .select("meeting_id, charity_amount_cents, status, sat_date, created_at, charity:charity_id(name)")
-        .in("meeting_id", meetingIds)
-        .neq("status", "voided")
-        .order("sat_date", { ascending: false })
-        .limit(3);
-      impact = (gifts ?? []).map((g) => {
-        const meta = reqMeta.get(mtgToReq.get(g.meeting_id as string) ?? "");
-        const c = one<{ name: string }>(g.charity);
-        const iso = (g.sat_date as string) ?? (g.created_at as string);
-        const who = [meta?.person, meta?.vendor].filter(Boolean).join(", ") || "A meeting";
-        return {
-          id: g.meeting_id as string,
-          datePrefix: monoDatePrefix(iso, tz),
-          body: `${who} sent ${formatAud(g.charity_amount_cents as number)} to ${c?.name ?? "charity"}.`,
-          status: g.status === "paid" ? "Confirmed." : "Pending.",
-          name: meta?.person || meta?.vendor || "Meeting",
-          photoUrl: meta?.photo ?? null,
-        };
-      });
-
-      const { count: fyHeld } = await supabase
-        .from("gift_record")
-        .select("meeting_id", { count: "exact", head: true })
-        .in("meeting_id", meetingIds)
-        .neq("status", "voided")
-        .gte("sat_date", fy.from)
-        .lt("sat_date", fy.to);
-      fyHeldCount = fyHeld ?? 0;
-    }
-  }
-
-  // ── Money + lifetime counts through the reporting layer ────────────────────
-  const [fyCharity, lifetimeCharity] = await Promise.all([
-    execCharityForPeriod(supabase, execId, fy),
-    execCharityForPeriod(supabase, execId, {}),
-  ]);
-
   let lifetimeMeetings = 0;
   let lifetimeCharities = 0;
-  if (requestIds.length) {
-    const { data: allMtg } = await supabase.from("meeting").select("id").in("request_id", requestIds);
-    const ids = (allMtg ?? []).map((m) => m.id as string);
-    if (ids.length) {
-      const { data: giftAll } = await supabase
-        .from("gift_record")
-        .select("charity_id")
-        .in("meeting_id", ids)
-        .neq("status", "voided");
-      lifetimeMeetings = (giftAll ?? []).length;
-      lifetimeCharities = new Set((giftAll ?? []).map((g) => g.charity_id as string)).size;
-    }
+  if (meetingIds.length) {
+    const [giftsRes, fyHeldRes, giftAllRes] = await Promise.all([
+      supabase.from("gift_record").select("meeting_id, charity_amount_cents, status, sat_date, created_at, charity:charity_id(name)").in("meeting_id", meetingIds).neq("status", "voided").order("sat_date", { ascending: false }).limit(3),
+      supabase.from("gift_record").select("meeting_id", { count: "exact", head: true }).in("meeting_id", meetingIds).neq("status", "voided").gte("sat_date", fy.from).lt("sat_date", fy.to),
+      supabase.from("gift_record").select("charity_id").in("meeting_id", meetingIds).neq("status", "voided"),
+    ]);
+    impact = (giftsRes.data ?? []).map((g) => {
+      const meta = reqMeta.get(mtgToReq.get(g.meeting_id as string) ?? "");
+      const c = one<{ name: string }>(g.charity);
+      const iso = (g.sat_date as string) ?? (g.created_at as string);
+      const who = [meta?.person, meta?.vendor].filter(Boolean).join(", ") || "A meeting";
+      return {
+        id: g.meeting_id as string,
+        datePrefix: monoDatePrefix(iso, tz),
+        body: `${who} sent ${formatAud(g.charity_amount_cents as number)} to ${c?.name ?? "charity"}.`,
+        status: g.status === "paid" ? "Confirmed." : "Pending.",
+        name: meta?.person || meta?.vendor || "Meeting",
+        photoUrl: meta?.photo ?? null,
+      };
+    });
+    fyHeldCount = fyHeldRes.count ?? 0;
+    const giftAll = giftAllRes.data ?? [];
+    lifetimeMeetings = giftAll.length;
+    lifetimeCharities = new Set(giftAll.map((g) => g.charity_id as string)).size;
   }
-
-  const { count: incomingCount } = await supabase
-    .from("request")
-    .select("id", { count: "exact", head: true })
-    .eq("executive_id", execId)
-    .eq("status", "submitted");
 
   const name = (execRow.name as string) ?? "there";
   return {

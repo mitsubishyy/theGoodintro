@@ -121,6 +121,12 @@ Email deliverability is the highest risk: the exec request email is the product.
       enable `pg_cron` + `pg_net`, schedule the daily POST, set `CRON_SECRET`, flip
       `reconcile_job` on, then deliberately corrupt a gift row in staging to confirm
       the alert. Only then tick this box.
+      *Xero reconcile status (2026-06-26, from platform/photo-crop-step):* the related
+      Xero payment reconcile endpoint (`/api/jobs/xero-reconcile`, inert 503 until
+      `CRON_SECRET` is set) is also built; its scheduler hookup is deferred the same
+      way (set `CRON_SECRET`, then run the contract's `cron.schedule(...)` SQL against
+      the cloud Supabase in the Supabase-connected build chat). Distinct from the
+      money-invariants `/api/jobs/reconcile` job above.
 - [ ] **B5 Uptime / health check + alerting.** *Done when:* an endpoint-down
       condition pages someone.
 

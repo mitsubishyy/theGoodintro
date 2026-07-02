@@ -25,15 +25,19 @@ export interface AssetVariant {
   height: number;
 }
 
-export type AssetEntity = "exec" | "charity-logo" | "charity-hero";
+export type AssetEntity = "exec" | "vendor-user" | "charity-logo" | "charity-hero";
 
 /**
- * One spec per asset class so the pipeline is reusable. Only `exec` is wired in
- * v1; charity entries are built-ready for the residual logo/hero gap. Vendor
- * self-serve is Pass B (own its own flag) and is intentionally absent here.
+ * One spec per asset class so the pipeline is reusable. `exec` (staff-written)
+ * and `vendor-user` (vendor self-serve + admin override, Pass B behind the
+ * `vendor_photo_upload` flag) share the 512² avatar variant. The `vendor-user`
+ * key doubles as the storage path prefix (`vendor-user/{id}/…`), which the
+ * path-scoped RLS in migration 0026 keys off, so it must stay exactly that
+ * string. Charity entries are built-ready for the residual logo/hero gap.
  */
 export const ASSET_SPECS: Record<AssetEntity, { variant: AssetVariant }> = {
   exec: { variant: { key: "avatar", width: 512, height: 512 } },
+  "vendor-user": { variant: { key: "avatar", width: 512, height: 512 } },
   "charity-logo": { variant: { key: "logo", width: 512, height: 512 } },
   "charity-hero": { variant: { key: "hero", width: 1200, height: 480 } },
 };

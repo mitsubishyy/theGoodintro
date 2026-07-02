@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button, Icon, Popover } from "@thegoodintro/ui";
 import { vendorStatusPill } from "./_status";
@@ -31,6 +31,7 @@ interface VendorListControlsProps {
 export function VendorListControls({ filters, sort, statusCounts, tierCounts }: VendorListControlsProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   const setParams = useCallback(
     (updates: Record<string, string | null>) => {
@@ -41,7 +42,11 @@ export function VendorListControls({ filters, sort, statusCounts, tierCounts }: 
       }
       params.delete("page");
       const qs = params.toString();
-      router.replace(qs ? `?${qs}` : "/admin/vendors", { scroll: false });
+      // Transition so the controls read as busy while the server re-renders the
+      // filtered list (a same-route searchParam change does not trip loading.tsx).
+      startTransition(() => {
+        router.replace(qs ? `?${qs}` : "/admin/vendors", { scroll: false });
+      });
     },
     [router, searchParams],
   );
@@ -54,7 +59,11 @@ export function VendorListControls({ filters, sort, statusCounts, tierCounts }: 
   };
 
   return (
-    <>
+    <span
+      className="inline-flex items-center gap-2"
+      style={{ opacity: isPending ? 0.6 : 1, transition: "opacity 150ms ease" }}
+      aria-busy={isPending || undefined}
+    >
       <Popover
         align="end"
         width={320}
@@ -225,7 +234,7 @@ export function VendorListControls({ filters, sort, statusCounts, tierCounts }: 
           </div>
         )}
       </Popover>
-    </>
+    </span>
   );
 }
 

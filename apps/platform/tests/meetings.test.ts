@@ -1,6 +1,6 @@
 import { describe, it, expect, afterAll } from "vitest";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { confirmMeeting, markHeld, releaseMeeting, rescheduleMeeting, reverseHeld } from "../lib/meetings";
+import { confirmMeeting, createProposedMeeting, markHeld, releaseMeeting, rescheduleMeeting, reverseHeld } from "../lib/meetings";
 import { markGiftPaid } from "../lib/gifts";
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -33,6 +33,35 @@ async function newProposedMeeting(sb: SupabaseClient) {
 }
 
 describe("meeting money path", () => {
+  it("createProposedMeeting: accepted request + proposed meeting, then confirm reserves", async () => {
+    const sb = await admin();
+    const { data: lot } = await sb
+      .from("credit_lot")
+      .insert({ vendor_id: BETA, quantity: 1, quantity_remaining: 1 })
+      .select("id")
+      .single();
+    const created = await createProposedMeeting(sb, {
+      vendorId: BETA,
+      executiveId: RILEY,
+      charityId: CHARITY,
+      q1What: "x",
+      q2Why: "y",
+    });
+    expect(created.ok).toBe(true);
+    if (!created.ok) return;
+    const { data: m } = await sb
+      .from("meeting")
+      .select("status, charity_id")
+      .eq("id", created.meetingId)
+      .single();
+    expect(m!.status).toBe("proposed");
+    expect(m!.charity_id).toBe(CHARITY);
+    const r = await confirmMeeting(sb, created.meetingId, new Date().toISOString(), null);
+    expect(r).toMatchObject({ ok: true, detail: "reserved" });
+    await sb.from("request").delete().eq("id", created.requestId);
+    await sb.from("credit_lot").delete().eq("id", lot!.id);
+  });
+
   it("reserve a credit, hold the meeting, lock the gift, consume the credit", async () => {
     const sb = await admin();
     const { data: lot } = await sb

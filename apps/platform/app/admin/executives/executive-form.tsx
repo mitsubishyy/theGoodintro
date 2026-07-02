@@ -56,6 +56,13 @@ export function ExecutiveForm({
     <form action={formAction} className="grid max-w-2xl gap-4 sm:grid-cols-2">
       {initial.id ? <input type="hidden" name="id" value={initial.id} /> : null}
 
+      <PhotoUploadField
+        initialUrl={initial.photo_url ?? ""}
+        ownerId={initial.id}
+        previewName={initial.name ?? ""}
+        enabled={photoUploadEnabled}
+        previewSize={96}
+      />
       <label className="flex flex-col gap-1.5">
         <Label>Name *</Label>
         <input name="name" required defaultValue={initial.name ?? ""} className="rounded-lg border px-3 py-2.5 text-sm" style={inputStyle} />
@@ -89,12 +96,6 @@ export function ExecutiveForm({
         <Label>Suggested cadence</Label>
         <input name="suggested_cadence" placeholder="e.g. up to 2 / month" defaultValue={initial.suggested_cadence ?? ""} className="rounded-lg border px-3 py-2.5 text-sm" style={inputStyle} />
       </label>
-      <PhotoUploadField
-        initialUrl={initial.photo_url ?? ""}
-        ownerId={initial.id}
-        previewName={initial.name ?? ""}
-        enabled={photoUploadEnabled}
-      />
       <label className="flex flex-col gap-1.5 sm:col-span-2">
         <Label>Business-context notes</Label>
         <textarea name="context_notes" rows={4} defaultValue={initial.context_notes ?? ""} className="rounded-lg border px-3 py-2.5 text-sm" style={inputStyle} />

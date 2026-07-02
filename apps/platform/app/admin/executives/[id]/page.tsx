@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Badge } from "@thegoodintro/ui";
+import { Avatar, Badge } from "@thegoodintro/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
 import { ExecutiveForm } from "../executive-form";
@@ -55,6 +55,7 @@ export default async function ExecutiveDetailPage({
         ← Executives
       </Link>
       <div className="mt-2 mb-1 flex items-center gap-3">
+        <Avatar name={exec.name} src={exec.photo_url ?? undefined} size={40} />
         <h1 className="text-[20px] font-semibold tracking-tight">{exec.name}</h1>
         {(() => {
           const { label, tone } = execStatusPill(exec.status as ExecStatusEnum);

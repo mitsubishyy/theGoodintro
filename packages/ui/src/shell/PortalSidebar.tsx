@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Fragment, type ReactNode } from "react";
+import { Fragment, useEffect, useState, type ReactNode } from "react";
 import { Icon } from "../icons";
 import { Wordmark } from "../Wordmark";
 import { initialsOf } from "../primitives/Avatar";
@@ -43,6 +43,40 @@ export interface PortalSidebarProps {
   onSignOut?: () => void;
   /** Render slot for the sign-out form (e.g. server-action `<form action={signOutAction}>`). */
   signOutSlot?: ReactNode;
+  /** Optional endpoint returning `{ [badgeKey]: number }`. When set, nav items
+   *  with a `badgeKey` hydrate their count from here after mount, so the shell
+   *  paints its stable nav immediately instead of blocking on badge queries
+   *  server-side. Failure is silent (badges simply stay absent). */
+  badgeSource?: string;
+}
+
+/** Fetch the deferred badge counts once after mount; silent on any failure. */
+function useLiveBadges(badgeSource?: string): Record<string, number> | null {
+  const [counts, setCounts] = useState<Record<string, number> | null>(null);
+  useEffect(() => {
+    if (!badgeSource) return;
+    let cancelled = false;
+    fetch(badgeSource, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!cancelled && d && typeof d === "object") {
+          setCounts(d as Record<string, number>);
+        }
+      })
+      .catch(() => {
+        /* badges are decorative; leave them absent on error */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [badgeSource]);
+  return counts;
+}
+
+/** Resolve a nav item's badge: the live count when available, else the static one. */
+function badgeFor(item: NavItem, live: Record<string, number> | null): number | undefined {
+  if (item.badgeKey && live && item.badgeKey in live) return live[item.badgeKey];
+  return item.badgeCount;
 }
 
 interface Palette {
@@ -90,9 +124,10 @@ function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-export function PortalSidebar({ portal, brand, groups, identity, account, onSignOut, signOutSlot }: PortalSidebarProps) {
+export function PortalSidebar({ portal, brand, groups, identity, account, onSignOut, signOutSlot, badgeSource }: PortalSidebarProps) {
   const pathname = usePathname() ?? "";
   const p = PALETTES[portal];
+  const liveBadges = useLiveBadges(badgeSource);
   return (
     <aside
       className="w-60 shrink-0 hidden md:flex flex-col justify-between"
@@ -115,7 +150,7 @@ export function PortalSidebar({ portal, brand, groups, identity, account, onSign
               )}
               <div className="space-y-1">
                 {g.items.map((item) => (
-                  <NavRow key={item.label} item={item} pathname={pathname} palette={p} />
+                  <NavRow key={item.label} item={item} pathname={pathname} palette={p} liveBadges={liveBadges} />
                 ))}
               </div>
             </Fragment>
@@ -175,8 +210,19 @@ export function PortalSidebar({ portal, brand, groups, identity, account, onSign
   );
 }
 
-function NavRow({ item, pathname, palette }: { item: NavItem; pathname: string; palette: Palette }) {
+function NavRow({
+  item,
+  pathname,
+  palette,
+  liveBadges,
+}: {
+  item: NavItem;
+  pathname: string;
+  palette: Palette;
+  liveBadges: Record<string, number> | null;
+}) {
   const active = isActive(pathname, item.href);
+  const badge = badgeFor(item, liveBadges);
   return (
     <>
       <Link
@@ -186,13 +232,14 @@ function NavRow({ item, pathname, palette }: { item: NavItem; pathname: string; 
       >
         <Icon name={item.icon} />
         <span className="flex-1 truncate">{item.label}</span>
-        {item.badgeCount && item.badgeCount > 0 && <Badge tone="amber" count={item.badgeCount} />}
+        {badge !== undefined && badge > 0 && <Badge tone="amber" count={badge} />}
         {item.locked && <Icon name="padlock" size={12} className="opacity-60" />}
       </Link>
       {item.children && item.children.length > 0 && (
         <div className="mt-0.5 mb-1 ml-7 space-y-0.5">
           {item.children.map((child) => {
             const childActive = isActive(pathname, child.href);
+            const childBadge = badgeFor(child, liveBadges);
             return (
               <Link
                 key={child.label}
@@ -201,7 +248,7 @@ function NavRow({ item, pathname, palette }: { item: NavItem; pathname: string; 
                 style={childActive ? { background: palette.active, color: palette.activeInk, fontWeight: 600 } : { color: palette.ink, opacity: 0.9 }}
               >
                 <span className="flex-1 truncate">{child.label}</span>
-                {child.badgeCount && child.badgeCount > 0 && <Badge tone="amber" count={child.badgeCount} />}
+                {childBadge !== undefined && childBadge > 0 && <Badge tone="amber" count={childBadge} />}
                 {child.locked && <Icon name="padlock" size={12} className="opacity-60" />}
               </Link>
             );

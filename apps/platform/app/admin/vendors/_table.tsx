@@ -70,6 +70,7 @@ export function AdminVendorsTable({
   const searchParams = useSearchParams();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [archiving, startArchive] = useTransition();
+  const [navPending, startNav] = useTransition();
 
   const setParams = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams?.toString() ?? "");
@@ -78,7 +79,10 @@ export function AdminVendorsTable({
       else params.set(k, v);
     }
     const qs = params.toString();
-    router.push(qs ? `?${qs}` : "/admin/vendors");
+    // Transition so the table dims while the next page renders on the server.
+    startNav(() => {
+      router.push(qs ? `?${qs}` : "/admin/vendors");
+    });
   };
 
   const onPage = (next: number) => setParams({ page: next <= 1 ? null : String(next) });
@@ -212,40 +216,45 @@ export function AdminVendorsTable({
           onCancel={() => setSelected(new Set())}
         />
       )}
-      <DataTable
-        density="admin"
-        columns={columns}
-        rows={rows}
-        rowKey={(r) => r.id}
-        rowHref={(r) => `/admin/vendors/${r.id}`}
-        rowActions={(r) => <Menu items={rowMenu(r)} label={`Actions for ${r.name}`} />}
-        selectable
-        selectedKeys={selected}
-        onSelectionChange={setSelected}
-        pagination={{
-          page,
-          pageCount,
-          onPage,
-          rangeLabel,
-          perPage,
-          onPerPage,
-        }}
-        state={rows.length === 0 ? "empty" : "ready"}
-        emptyIcon={isUnfiltered ? "box" : undefined}
-        emptyText={isUnfiltered ? "No vendors yet" : "No vendors match the current filters."}
-        emptyHint={
-          isUnfiltered
-            ? "Vendors arrive through the public sign-up and the vetting call. You can also add one by hand."
-            : undefined
-        }
-        emptyAction={
-          isUnfiltered ? (
-            <Button variant="primary" size="md" href="/admin/vendors/new">
-              + Add a vendor manually
-            </Button>
-          ) : undefined
-        }
-      />
+      <div
+        style={{ opacity: navPending ? 0.55 : 1, transition: "opacity 150ms ease" }}
+        aria-busy={navPending || undefined}
+      >
+        <DataTable
+          density="admin"
+          columns={columns}
+          rows={rows}
+          rowKey={(r) => r.id}
+          rowHref={(r) => `/admin/vendors/${r.id}`}
+          rowActions={(r) => <Menu items={rowMenu(r)} label={`Actions for ${r.name}`} />}
+          selectable
+          selectedKeys={selected}
+          onSelectionChange={setSelected}
+          pagination={{
+            page,
+            pageCount,
+            onPage,
+            rangeLabel,
+            perPage,
+            onPerPage,
+          }}
+          state={rows.length === 0 ? "empty" : "ready"}
+          emptyIcon={isUnfiltered ? "box" : undefined}
+          emptyText={isUnfiltered ? "No vendors yet" : "No vendors match the current filters."}
+          emptyHint={
+            isUnfiltered
+              ? "Vendors arrive through the public sign-up and the vetting call. You can also add one by hand."
+              : undefined
+          }
+          emptyAction={
+            isUnfiltered ? (
+              <Button variant="primary" size="md" href="/admin/vendors/new">
+                + Add a vendor manually
+              </Button>
+            ) : undefined
+          }
+        />
+      </div>
     </div>
   );
 }

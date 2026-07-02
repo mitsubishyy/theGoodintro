@@ -165,7 +165,9 @@ export default async function VendorsPage({
 
     // List rows — load all vendors so the in-memory filter + slice + page
     // count are accurate against the locked "14 active / 17 all" mono count.
-    // Move to a DB-level pagination once vendor count grows past a few hundred.
+    // TODO(perf): move to DB-level pagination once vendor count grows past a few
+    // hundred, keeping separate count queries so the locked filter counts stay
+    // exact (asserted by tests/admin-vendors-list.test.ts — do not regress).
     supabase
       .from("vendor")
       .select(

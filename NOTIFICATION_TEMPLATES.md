@@ -9,8 +9,8 @@ reminders, reversal/rebook, bounces). Companion to the state machines in
 
 - **Sender (decided):** exec-facing emails come **personally from Issy**
   ("Issy at theGoodintro", signed "Issy"). Routine vendor transactional emails
-  come **from the brand** ("theGoodintro"). A few vendor-facing judgement messages
-  (a decline) come from Issy for warmth; noted per template.
+  come **from the brand** ("theGoodintro"). A few vendor-facing messages (the
+  welcome **A1**, a decline) come **from Issy** for warmth; noted per template.
 - **Voice:** confident concierge, warm but never gushing. Premium hospitality.
 - **"Good"** as the brand concept is capitalised and shown in emerald in HTML.
 - **No em or en dashes** in copy (hyphens like "45-minute" are fine).
@@ -21,10 +21,30 @@ reminders, reversal/rebook, bounces). Companion to the state machines in
 
 ## A. Vendor onboarding & billing (from the brand)
 
-**A1 · New sign-up**
-- To vendor (email + in-app): _Subject:_ Welcome to theGoodintro.
-  Welcome to theGoodintro. The next step is a short call so we can get to know
-  you and what you are hoping to achieve. [Book your call]
+**A1 · New sign-up** — FINAL copy approved by Issy 2026-06-13. The vendor email
+is sent **personally from Issy** (overrides the "from the brand" default for
+this one message). The 👋 emoji is intentional and approved; do NOT strip it in
+brand-rule validation. Copy uses "TheGoodIntro" (one word) and "requesting"
+meetings (matches the vendor portal button). Reuse the locked email chrome from
+[`design/locked/exec-request-email/`](design/locked/exec-request-email/) (warm
+cream, single emerald CTA, Inter/Fraunces with safe fallbacks).
+- To vendor (email, from Issy): _Subject:_ Welcome to TheGoodIntro
+
+  Hi {first_name},
+
+  A warm welcome to TheGoodIntro 👋
+
+  Building pipeline has never been harder, with the noise of AI and thousands of new startups arriving every year. Regardless of how much research you do, cold outreach still goes unanswered, and the senior leaders you most want to reach are the hardest to get in front of. That's the problem we're aiming to solve.
+
+  The next step is a short call with me, so I can get to know you and who you're hoping to meet.
+  [Book your call]
+
+  Once we've been introduced and found some executives for you to meet, you'll be able to view the full executive list and start requesting meetings!
+
+  Looking forward to meeting you.
+
+  Issy
+  {issy_gmail_signature}
 - To Issy (Slack + dashboard): New vendor sign-up: {company} ({name}, {email}).
   Next step: book a vetting call.
 
@@ -55,6 +75,35 @@ reminders, reversal/rebook, bounces). Companion to the state machines in
 ---
 
 ## B. The request loop (exec-facing, from Issy)
+
+**B0 · Executive set up** (sent once, right after Issy creates the exec profile
+on the onboarding call; FINAL copy approved by Issy 2026-06-13). **From Issy**,
+like every exec-facing email. Honors the email-first rule: nothing for the exec
+to do, **NO login, NO "confirm your account" CTA.** Consent still binds at the
+first Accept/Decline (per EXECUTIVE_PORTAL_BRIEF consent section), NOT here. No
+EA clause (not all execs have an EA). The charity line is deliberately
+**cumulative/total impact** ("the more you take, the more they receive"), NOT a
+per-meeting-rate claim — the per-meeting charity share is driven by the
+**vendor's** band, never the exec's volume; do not reword it into a per-exec
+escalator (that would be a pricing-model change, not copy). Reuse the locked
+email chrome from [`design/locked/exec-request-email/`](design/locked/exec-request-email/).
+- To executive (email, from Issy): _Subject:_ You're all set with TheGoodIntro
+
+  Hi {exec_first_name},
+
+  Thank you for taking the time to speak with me. You are all set up, and there is nothing you need to do.
+
+  Here is how it works from here. When a vetted leader wants 45 minutes with you, I will send the request straight to your inbox, with who they are, why they think you specifically, and the charity your meeting will support. You accept or decline right from the email. No login, no platform to learn.
+
+  Every meeting you take sends a real gift to {charity_name}, the charity you chose. The more you are able to take, the more they receive. You can change your charity any time, just reply and let me know.
+
+  If anything above is not quite right, simply reply and I will fix it.
+
+  Looking forward to introducing you to some people worth your time.
+
+  Issy
+  {issy_gmail_signature}
+- To Issy (dashboard): Welcome sent to {exec_name}; profile live. Standing charity: {charity_name}.
 
 **B1 · Request submitted, the first touch**
 - To executive (email, from Issy): _Subject:_ An introduction worth your time
