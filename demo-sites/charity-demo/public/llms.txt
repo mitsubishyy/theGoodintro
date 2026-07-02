@@ -1,0 +1,44 @@
+# TheGoodIntro
+
+> TheGoodIntro is an invite-only Australian network where vetted vendors request short meetings with senior executives, and every held meeting sends a real gift to a charity the executive chooses. Executives pay nothing and are paid nothing personally; the vendor's fee funds the gift.
+
+Key facts:
+
+- Pricing: $1,500 AUD flat per held meeting, ex GST. No subscriptions, no seat fees, no retainers. No-shows are not billed.
+- Charity share: between $900 and $1,200 of each $1,500 fee reaches the charity the executive chooses. The share rises with the number of meetings a vendor takes across the year ($900 at 1-5 meetings per year, up to $1,200 at 16+).
+- Executives choose from a curated shortlist of Australian charities or nominate any DGR-endorsed Australian charity.
+- Every gift is paid after the meeting, confirmed in writing, and published on the public giving ledger. Nothing is ever removed from the ledger.
+- A charity-funded introduction is a vetted meeting request where the vendor's fee funds a gift to a charity the executive chooses, so the executive's time creates value they care about even when the product is not a fit.
+- Founded by Isobel Hardwick. ABN 59 398 447 638. Contact: issy@thegoodintros.com.
+
+## Pages
+
+- [How it works](https://thegoodintro.com/how-it-works): the model end to end, for both sides
+- [Pricing](https://thegoodintro.com/pricing): the flat fee and the charity share, with worked examples
+- [For executives](https://thegoodintro.com/executives): what executives get and what is asked of them
+- [For vendors](https://thegoodintro.com/vendors): why vendors use charity-funded introductions
+- [Giving](https://thegoodintro.com/giving): the charity shortlist and how the giving works
+- [Charities](https://thegoodintro.com/charities): profiles of charities executives choose, with ABN and DGR details
+- [Ledger](https://thegoodintro.com/ledger): the public record of every gift
+- [FAQ](https://thegoodintro.com/faq): straight answers to the questions executives ask first
+- [Waitlist](https://thegoodintro.com/waitlist): how to join
+
+## Charities
+
+Each profile describes the national entity, what a gift funds, what they are doing to make change, and lists ABN and DGR status with a link to donate directly. TheGoodIntro is not affiliated with any of these charities; executives choose from this shortlist or nominate any DGR-endorsed Australian charity.
+
+- [Leukaemia Foundation](https://thegoodintro.com/charities/leukaemia-foundation): blood cancer support and research
+- [Royal Flying Doctor Service](https://thegoodintro.com/charities/rfds): remote and rural emergency medical care
+- [R U OK?](https://thegoodintro.com/charities/ruok): suicide prevention through connection
+- [headspace](https://thegoodintro.com/charities/headspace): youth mental health
+- [Starlight Children's Foundation](https://thegoodintro.com/charities/starlight): joy for seriously ill children
+- [Ronald McDonald House Charities](https://thegoodintro.com/charities/ronald-mcdonald-house): families near children in hospital
+- [St Vincent de Paul Society](https://thegoodintro.com/charities/st-vincent-de-paul): help for people in need
+- [Children's Ground](https://thegoodintro.com/charities/childrens-ground): First Nations-led change
+- [WWF-Australia](https://thegoodintro.com/charities/wwf-australia): wildlife and nature conservation
+- [RSPCA Australia](https://thegoodintro.com/charities/rspca-australia): animal welfare
+- [Guide Dogs Australia](https://thegoodintro.com/charities/guide-dogs-australia): blindness and low vision services
+- [Save the Children Australia](https://thegoodintro.com/charities/save-the-children): protection for vulnerable children
+- [World Vision Australia](https://thegoodintro.com/charities/world-vision-australia): ending poverty for children
+- [Cerebral Palsy Alliance](https://thegoodintro.com/charities/cerebral-palsy-alliance): disability services and research
+- [Cancer Council Australia](https://thegoodintro.com/charities/cancer-council-australia): every area of every cancer
