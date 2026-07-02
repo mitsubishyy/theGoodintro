@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TheGoodIntro x Children's Ground — Partnership deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --s:.5;
+    --paper1:#F6F3EA; --paper2:#F1ECDF;
+    --ink:#1E1B17; --em:#157852; --muted:#5A554C; --grey:#666666; --hair:rgba(30,27,23,0.12);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#14110c}
+  body{font-family:'Inter',sans-serif;overflow:hidden}
+  @keyframes pulse{0%{transform:scale(1);opacity:.55}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
+
+  #deck{position:fixed;inset:0;overflow:hidden;background:#14110c}
+  .slide{display:none}
+  .slide.active{position:fixed;inset:0;display:grid;place-items:center}
+  .scaler{width:1920px;height:1080px;transform:scale(var(--s));transform-origin:center center;box-shadow:0 40px 120px rgba(0,0,0,.45)}
+  section.page{width:1920px;height:1080px;overflow:hidden;padding:92px 120px;display:flex;flex-direction:column}
+
+  /* shared atoms */
+  .eyebrow{font-family:'Courier New',Courier,monospace;font-size:18px;letter-spacing:.20em;text-transform:uppercase;color:var(--grey);display:inline-flex;align-items:center;gap:12px}
+  .eyebrow .dot{position:relative;width:9px;height:9px;display:inline-flex}
+  .eyebrow .dot::before{content:"";position:absolute;inset:0;border-radius:50%;background:var(--em);animation:pulse 2.4s ease-out infinite}
+  .eyebrow .dot::after{content:"";position:relative;width:9px;height:9px;border-radius:50%;background:var(--em)}
+
+  .topbar{display:flex;align-items:flex-start;justify-content:space-between}
+  .cglogo{height:64px;width:auto;object-fit:contain}
+
+  .gmark{width:78px;height:78px;border-radius:50%;background:var(--em);display:grid;place-items:center;color:var(--paper1);font-family:'Fraunces',serif;font-weight:600;font-style:italic;font-size:44px;line-height:1}
+
+  /* wordmark: Fraunces normal, green "Good" italic */
+  .wm{font-family:'Fraunces',serif;font-weight:600;letter-spacing:-.01em}
+  .wm .k{font-style:normal;color:var(--ink)}
+  .wm .g{font-style:italic;color:var(--em)}
+
+  /* green emphasis word = Fraunces italic emerald */
+  .em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--em)}
+
+  h1,h2{margin:0;font-family:'Inter',sans-serif;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.05}
+  p{margin:0;font-family:'Inter',sans-serif;font-weight:700}
+  .muted{color:var(--muted)}
+  .rule{width:64px;height:3px;background:var(--em);border:0}
+
+  .body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:34px}
+
+  /* footer line */
+  .foot{display:flex;align-items:center;gap:18px;font-family:'Courier New',Courier,monospace;font-size:17px;letter-spacing:.08em;text-transform:uppercase;color:var(--grey)}
+  .foot .bar{width:46px;height:2px;background:var(--em)}
+
+  /* HUD */
+  #hud{position:fixed;bottom:22px;right:28px;z-index:20;font-family:'Courier New',monospace;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#F6F3EA;opacity:.55;user-select:none}
+  #hint{position:fixed;bottom:22px;left:28px;z-index:20;font-family:'Courier New',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#F6F3EA;opacity:.4;transition:opacity .6s;user-select:none}
+  #hint.hide{opacity:0}
+
+  @media print{
+    @page{size:1920px 1080px;margin:0}
+    html,body{background:#fff;overflow:visible;height:auto}
+    #deck{position:static;overflow:visible;background:#fff}
+    #hud,#hint{display:none!important}
+    .slide{display:block!important;position:static!important;page-break-after:always;break-after:page}
+    .slide:last-child{break-after:auto}
+    .scaler{transform:none!important;box-shadow:none!important}
+  }
+</style>
+</head>
+<body>
+<div id="deck">
+
+  <!-- 1 · COVER -->
+  <div class="slide"><div class="scaler">
+    <section class="page" data-notes="Open warm. Founder to founder, a partnership invitation. The premise: an introduction that gives back. Calm, no hard sell." style="background:var(--paper1);justify-content:space-between">
+      <span class="eyebrow"><span class="dot"></span>Charity Partnership</span>
+      <div style="display:flex;flex-direction:column;gap:30px">
+        <div class="gmark">G</div>
+        <div class="wm" style="font-size:128px;line-height:.98"><span class="k">The</span><span class="g">Good</span><span class="k">Intro</span></div>
+        <h1 style="font-size:54px">The introduction that <span class="em" style="font-size:56px">gives</span> back.</h1>
+        <p class="muted" style="font-size:30px;margin-top:18px">Prepared for
+          <img src="childrens-ground-logo.png" alt="Children's Ground" style="height:64px;vertical-align:middle;margin-left:14px"></p>
+      </div>
+      <div style="border-top:1px solid var(--hair);padding-top:26px">
+        <span class="foot"><span class="bar"></span>Issy Hardwick, Founder, TheGoodIntro &nbsp;&middot;&nbsp; June 2026</span>
+      </div>
+    </section>
+  </div></div>
+
+  <!-- 2 · WHAT DO WE DO -->
+  <div class="slide"><div class="scaler">
+    <section class="page" data-notes="The five-second version. Invite-only network, every meeting funds a gift, the executive picks the cause." style="background:var(--paper2)">
+      <div class="topbar">
+        <span class="eyebrow"><span class="dot"></span>What do we do?</span>
+        <img class="cglogo" src="childrens-ground-logo.png" alt="Children's Ground">
+      </div>
+      <div class="body">
+        <h2 style="font-size:62px;max-width:1500px;line-height:1.12">
+          <span class="wm" style="font-weight:700"><span class="k" style="font-family:inherit">The</span><span class="g">Good</span><span class="k" style="font-family:inherit">Intro</span></span>
+          is an invite-only network where senior executives take a meeting with SaaS vendors. After every meeting, I'll donate a real <span class="em">gift</span> to a charity the executive chooses.</h2>
+        <hr class="rule">
+        <p class="muted" style="font-size:32px">I have chosen <span class="em">Children's Ground</span> to be one of the charities available to choose from.</p>
+      </div>
+    </section>
+  </div></div>
+
+  <!-- 3 · WHAT THIS MEANS FOR YOU -->
+  <div class="slide"><div class="scaler">
+    <section class="page" data-notes="The money, plainly. 900 to 1200 of every meeting goes to the chosen charity. Up to 80% of my revenue. Paid within 30 days of the meeting." style="background:var(--paper1)">
+      <div class="topbar">
+        <span class="eyebrow"><span class="dot"></span>What this means for you</span>
+        <img class="cglogo" src="childrens-ground-logo.png" alt="Children's Ground">
+      </div>
+      <div class="body" style="gap:24px">
+        <h2 style="font-size:60px">Every booked meeting can earn <span class="em" style="font-size:62px">you</span></h2>
+        <div style="margin-top:10px">
+          <div style="font-family:'Inter';font-weight:800;color:var(--em);font-size:140px;letter-spacing:-.03em;line-height:1">$900 to $1,200</div>
+          <p class="muted" style="font-size:26px;margin-top:6px">to the chosen charity, per meeting</p>
+        </div>
+        <p style="font-size:32px;max-width:1320px;margin-top:14px">$900 to $1,200 goes straight to the executive's chosen charity. Which is up to 80% of my revenue per meeting.</p>
+        <p class="muted" style="font-size:26px">Once the meeting has been sat, TheGoodIntro will donate the money within 30 days.</p>
+      </div>
+    </section>
+  </div></div>
+
+  <!-- 4 · ON OUR WEBSITE -->
+  <div class="slide"><div class="scaler">
+    <section class="page" data-notes="Here is how Children's Ground would appear on our site: a dedicated card, your mission in your words, your photos, and a donation button." style="background:var(--paper2)">
+      <div class="topbar">
+        <span class="eyebrow"><span class="dot"></span>On our website</span>
+        <img class="cglogo" src="childrens-ground-logo.png" alt="Children's Ground">
+      </div>
+      <div class="body" style="justify-content:flex-start;gap:50px;margin-top:30px">
+        <h2 style="font-size:54px">I want to give <span class="em">Children's Ground</span> a real <span class="em">home</span> on our site.</h2>
+        <div style="display:grid;grid-template-columns:1fr 1.05fr;gap:64px;align-items:center">
+          <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:26px">
+            <li style="display:flex;gap:18px;align-items:flex-start;font-size:30px;font-weight:700"><span style="width:12px;height:12px;background:var(--em);margin-top:12px;flex:none"></span>A dedicated card in our giving gallery.</li>
+            <li style="display:flex;gap:18px;align-items:flex-start;font-size:30px;font-weight:700"><span style="width:12px;height:12px;background:var(--em);margin-top:12px;flex:none"></span>Your mission, in your own words.</li>
+            <li style="display:flex;gap:18px;align-items:flex-start;font-size:30px;font-weight:700"><span style="width:12px;height:12px;background:var(--em);margin-top:12px;flex:none"></span>Photos of your work.</li>
+            <li style="display:flex;gap:18px;align-items:flex-start;font-size:30px;font-weight:700"><span style="width:12px;height:12px;background:var(--em);margin-top:12px;flex:none"></span>Donation button.</li>
+          </ul>
+
+          <!-- partner card -->
+          <div style="display:grid;grid-template-columns:300px 1fr;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 30px 70px rgba(30,27,23,.14)">
+            <div style="position:relative;min-height:430px;background:#5E4A30">
+              <img src="childrens-ground-photo.webp" alt="First Nations educators, Children's Ground" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%">
+              <span style="position:absolute;left:20px;bottom:18px;font-family:'Courier New',monospace;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.92)">In community</span>
+            </div>
+            <div style="padding:30px 34px;display:flex;flex-direction:column">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:14px">
+                <span style="font-family:'Courier New',monospace;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--grey)">Charity partner</span>
+                <img src="childrens-ground-logo.png" alt="" style="height:40px">
+              </div>
+              <span style="align-self:flex-start;margin-top:18px;font-family:'Courier New',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--em);background:rgba(21,120,82,.09);border:1px solid rgba(21,120,82,.22);padding:6px 12px;border-radius:999px">First Nations-led</span>
+              <h2 style="font-size:32px;margin-top:14px">Children's Ground</h2>
+              <p class="muted" style="font-size:18px;margin-top:10px;line-height:1.4">First Nations-led learning, health and wellbeing, designed and delivered with Aboriginal communities.</p>
+              <p style="font-size:18px;margin-top:16px;padding-top:16px;border-top:1px solid var(--hair);line-height:1.45">Every booked meeting sends a real <span class="em" style="font-size:18px">gift</span> of <span style="color:var(--em)">$900 to $1,200</span> to Children's Ground.</p>
+              <div style="margin-top:auto;padding-top:22px;display:flex;align-items:center;justify-content:space-between">
+                <span style="display:inline-flex;align-items:center;gap:9px;background:var(--em);color:#F6F3EA;font-size:16px;font-weight:700;padding:11px 18px;border-radius:999px">Choose Children's Ground &nbsp;&rarr;</span>
+                <span class="wm" style="font-size:16px;font-weight:600"><span class="k">The</span><span class="g">Good</span><span class="k">Intro</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div></div>
+
+  <!-- 5 · YOUR PAGE -->
+  <div class="slide"><div class="scaler">
+    <section class="page" data-notes="I have already built a draft of your page. Here is the live link. Click through and see exactly how Children's Ground would be shown." style="background:var(--paper1)">
+      <div class="topbar">
+        <span class="eyebrow"><span class="dot"></span>Your page</span>
+        <img class="cglogo" src="childrens-ground-logo.png" alt="Children's Ground">
+      </div>
+      <div class="body">
+        <h2 style="font-size:74px">A page built <span class="em" style="font-size:76px">for</span> you.</h2>
+        <p class="muted" style="font-size:32px;max-width:1100px">I've built a draft website of what I would like to do and how to showcase Children's Ground.</p>
+        <a href="https://thegoodintro-childrens-ground.vercel.app/charities" target="_blank" rel="noopener"
+           style="display:inline-block;margin-top:18px;font-size:40px;font-weight:800;color:var(--em);text-decoration:underline;text-underline-offset:8px;text-decoration-thickness:3px;word-break:break-word;max-width:1400px">
+          https://thegoodintro-childrens-ground.vercel.app/charities</a>
+      </div>
+    </section>
+  </div></div>
+
+  <!-- 6 · THE ASK -->
+  <div class="slide"><div class="scaler">
+    <section class="page" data-notes="What I need from you. Permission for name and logo, a short description, and a couple of photos. No cost, no commitment." style="background:var(--paper2)">
+      <div class="topbar">
+        <span class="eyebrow"><span class="dot"></span>The ask</span>
+        <img class="cglogo" src="childrens-ground-logo.png" alt="Children's Ground">
+      </div>
+      <div class="body" style="gap:30px">
+        <h2 style="font-size:66px">What I'm asking from <span class="em" style="font-size:68px">you</span>.</h2>
+        <div style="display:flex;flex-direction:column;gap:24px;max-width:1500px">
+          <div style="display:grid;grid-template-columns:70px 1fr;align-items:start;gap:24px;border-top:1px solid var(--hair);padding-top:24px"><span class="em" style="font-size:44px">1</span><p style="font-size:30px">Permission to use Children's Ground's name and logo on our website &amp; platform.</p></div>
+          <div style="display:grid;grid-template-columns:70px 1fr;align-items:start;gap:24px;border-top:1px solid var(--hair);padding-top:24px"><span class="em" style="font-size:44px">2</span><p style="font-size:30px">A short description of your work &amp; the <span class="em">Good</span> you do (or permission to use what is already public on your site).</p></div>
+          <div style="display:grid;grid-template-columns:70px 1fr;align-items:start;gap:24px;border-top:1px solid var(--hair);padding-top:24px"><span class="em" style="font-size:44px">3</span><p style="font-size:30px">A few photographs we can feature, or permission to use images from your public materials.</p></div>
+        </div>
+        <p class="muted" style="font-size:28px">That is all. No cost, no exclusivity, no commitment on your side.</p>
+      </div>
+    </section>
+  </div></div>
+
+  <!-- 7 · WHO AM I -->
+  <div class="slide"><div class="scaler">
+    <section class="page" data-notes="A little about me, founder to founder. Four years getting senior leaders to the table; now turning that into donations for causes like yours." style="background:var(--paper1)">
+      <div class="topbar"><span class="eyebrow"><span class="dot"></span>Who am I?</span></div>
+      <div style="flex:1;display:grid;grid-template-columns:560px 1fr;gap:80px;align-items:center;margin-top:10px">
+        <div style="position:relative;height:760px;border-radius:20px;overflow:hidden;background:#1d1a16;display:grid;place-items:center">
+          <img src="issy.jpg" alt="Issy Hardwick" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">
+          <span style="font-family:'Courier New',monospace;font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:rgba(246,243,234,.5)">Issy Hardwick · photo</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:30px">
+          <h2 style="font-size:60px">The person <span class="em" style="font-size:62px">behind</span> it all.</h2>
+          <p style="font-size:30px;line-height:1.45;max-width:900px">My name is Isobel Hardwick, I'm building this business to create my own freedom, use my current skills in business development and give back to the community I grew up in. Melbourne raised but currently living abroad in Bali doing airbnb's with my fiance.</p>
+          <hr class="rule">
+          <p style="font-size:28px;line-height:1.45;color:var(--em);max-width:900px">I've spent 4 years getting senior leaders to the table. Now I'm using that same skill to turn those meetings into donations for charities like yours.</p>
+          <p class="foot" style="margin-top:6px;text-transform:none;font-size:18px;letter-spacing:.04em">
+            <a href="https://www.linkedin.com/in/isobel-hardwick/" target="_blank" rel="noopener" style="color:var(--em)">LinkedIn</a>
+            &nbsp;|&nbsp; +61 414 442 687 &nbsp;|&nbsp; Issy@thegoodintros.com</p>
+        </div>
+      </div>
+    </section>
+  </div></div>
+
+  <!-- 8 · FULL TRANSPARENCY -->
+  <div class="slide"><div class="scaler">
+    <section class="page" data-notes="Full transparency. We are a for-profit business, and proud to give the majority away. Early stage, aiming for thousands of users and nine charities." style="background:var(--paper2)">
+      <div class="topbar">
+        <span class="eyebrow"><span class="dot"></span>Full transparency</span>
+        <img class="cglogo" src="childrens-ground-logo.png" alt="Children's Ground">
+      </div>
+      <div class="body" style="gap:30px">
+        <h2 style="font-size:58px;max-width:1500px">We are a for-profit company, and we are proud of how we <span class="em" style="font-size:60px">share</span> it.</h2>
+        <p style="font-size:30px;max-width:1450px;line-height:1.45"><span class="wm" style="font-weight:700"><span class="k" style="font-family:inherit">The</span><span class="g">Good</span><span class="k" style="font-family:inherit">Intro</span></span> is not a charity and not a fundraiser. We are a commercial business that earns a fee for each meeting. I choose to give the majority of that fee away. Up to 80% goes to the charity the executive chose.</p>
+        <p class="muted" style="font-size:28px;max-width:1450px;line-height:1.45">I am in the early stages of building this out but I plan to have thousands of users on my platform and managing 20-30 meetings per month.</p>
+        <p class="muted" style="font-size:28px">I am aiming to have 9 charities total to choose from.</p>
+      </div>
+    </section>
+  </div></div>
+
+  <!-- 9 · NEXT STEP -->
+  <div class="slide"><div class="scaler">
+    <section class="page" data-notes="The close. If this sounds right, reply and we send a one-page agreement and publish the page." style="background:var(--paper1);justify-content:space-between">
+      <div class="topbar">
+        <span class="eyebrow"><span class="dot"></span>Next step</span>
+        <img class="cglogo" src="childrens-ground-logo.png" alt="Children's Ground">
+      </div>
+      <div class="body" style="flex:none;margin:auto 0">
+        <h2 style="font-size:78px">Let's give your cause a <span class="em" style="font-size:80px">bigger</span> table.</h2>
+        <p class="muted" style="font-size:34px;max-width:1200px;margin-top:20px">If this sounds right, reply and we'll send a one-page agreement and publish your page!</p>
+      </div>
+      <div style="border-top:1px solid var(--hair);padding-top:26px;display:flex;align-items:center;justify-content:space-between">
+        <span class="wm" style="font-size:34px;font-weight:600"><span class="k">The</span><span class="g">Good</span><span class="k">Intro</span></span>
+        <span class="foot" style="text-transform:none;letter-spacing:.04em">Issy Hardwick, Founder &nbsp;&middot;&nbsp; hello@thegoodintro.com</span>
+      </div>
+    </section>
+  </div></div>
+
+</div>
+
+<div id="hud"><span id="num">1</span> / 9</div>
+<div id="hint">← → to move &nbsp;·&nbsp; F fullscreen &nbsp;·&nbsp; P print to PDF</div>
+
+<script>
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var i=0;
+  function fit(){var sc=Math.min(window.innerWidth/1920,window.innerHeight/1080);document.documentElement.style.setProperty('--s',sc)}
+  function show(n){i=(n+slides.length)%slides.length;slides.forEach(function(s,k){s.classList.toggle('active',k===i)});document.getElementById('num').textContent=i+1}
+  window.addEventListener('resize',fit);fit();show(0);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){show(i+1);e.preventDefault()}
+    else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){show(i-1);e.preventDefault()}
+    else if(e.key==='f'||e.key==='F'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen()}
+    else if(e.key==='p'||e.key==='P'){window.print()}
+  });
+  document.getElementById('deck').addEventListener('click',function(e){if(e.target.closest('a'))return;show(i+1)});
+  setTimeout(function(){document.getElementById('hint').classList.add('hide')},4000);
+</script>
+</body>
+</html>
