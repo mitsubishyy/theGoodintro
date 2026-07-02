@@ -3,8 +3,11 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/auth";
-import { getFlag } from "@/lib/flags";
+import { getFlag, getFlagAuthoritative } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { resolveStaffSignInTarget, sendSignInLink } from "@/lib/exec-access";
+import { logSecurityEvent } from "@/lib/security-log";
 
 export type FormState = { error?: string; ok?: boolean };
 
@@ -155,4 +158,95 @@ export async function linkEaAction(fd: FormData): Promise<void> {
     metadata: { ea_id: eaId },
   });
   revalidatePath(`/admin/executives/${execId}`);
+}
+
+async function sendStaffAccessLink(email: string): Promise<FormState> {
+  if (!(await getFlagAuthoritative("exec_ea_login"))) return { error: "Sign-in links are not enabled." };
+  const clean = email.trim().toLowerCase();
+  if (!clean) return { error: "No email provided." };
+
+  const admin = createAdminClient();
+  if (!admin) return { error: "The server is not configured to send sign-in links." };
+
+  const target = await resolveStaffSignInTarget(admin, clean);
+  if (target.status === "none") return { error: "No executive or assistant is on file for that email." };
+  if (target.status === "ambiguous") {
+    logSecurityEvent("exec_signin_ambiguous_email", { matches: target.matches, by: "staff" });
+    return { error: "That email matches more than one record. Resolve the duplicate before sending an access link." };
+  }
+
+  await sendSignInLink(target.subject.email, true);
+  logSecurityEvent("exec_signin_link_provisioned", { kind: target.subject.kind, by: "staff" });
+  return { ok: true };
+}
+
+/** Staff support: send a sign-in link to the executive on this admin detail page. */
+export async function sendExecutiveAccessLinkAction(
+  _prev: FormState,
+  fd: FormData,
+): Promise<FormState> {
+  await requireStaff();
+  return sendStaffAccessLink(str(fd, "email"));
+}
+
+/** Staff support: send a sign-in link to the current EA on this admin detail page. */
+export async function sendEaAccessLinkAction(
+  _prev: FormState,
+  fd: FormData,
+): Promise<FormState> {
+  await requireStaff();
+  return sendStaffAccessLink(str(fd, "email"));
+}
+
+/**
+ * Staff support: clear the executive's bound auth user without deleting the
+ * executive. This is the manual revoke path for already-bound read-only RLS
+ * access; the exec can re-bind later via a fresh access link.
+ */
+export async function clearExecutiveAccessAction(
+  _prev: FormState,
+  fd: FormData,
+): Promise<FormState> {
+  const { staff, supabase } = await requireStaff();
+  const id = str(fd, "id");
+  if (!id) return { error: "Missing executive id." };
+
+  const { error } = await supabase.from("executive").update({ auth_user_id: null }).eq("id", id);
+  if (error) return { error: error.message };
+
+  await logAudit(supabase, staff.id, {
+    action: "executive.access_cleared",
+    targetType: "executive",
+    targetId: id,
+    actingForExecutiveId: id,
+  });
+  revalidatePath(`/admin/executives/${id}`);
+  return { ok: true };
+}
+
+/**
+ * Staff support: clear a bound EA auth user without removing the EA assignment.
+ * This revokes the current session's RLS scope while preserving the relationship
+ * so staff can send a new access link when ready.
+ */
+export async function clearEaAccessAction(
+  _prev: FormState,
+  fd: FormData,
+): Promise<FormState> {
+  const { staff, supabase } = await requireStaff();
+  const eaId = str(fd, "ea_id");
+  const execId = str(fd, "executive_id");
+  if (!eaId || !execId) return { error: "Missing assistant id." };
+
+  const { error } = await supabase.from("ea").update({ auth_user_id: null }).eq("id", eaId);
+  if (error) return { error: error.message };
+
+  await logAudit(supabase, staff.id, {
+    action: "ea.access_cleared",
+    targetType: "ea",
+    targetId: eaId,
+    actingForExecutiveId: execId,
+  });
+  revalidatePath(`/admin/executives/${execId}`);
+  return { ok: true };
 }

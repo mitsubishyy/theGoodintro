@@ -123,6 +123,58 @@ export interface ExecPrincipal {
 }
 
 /**
+ * Resolve a supplied user/client pair into the exec-portal principal. Kept pure
+ * of cookies/redirects so the app-layer scoping can be tested against the same
+ * RLS client the pages use.
+ */
+export async function resolveExecPrincipalForUser(
+  supabase: SupabaseClient,
+  user: User,
+  options: { execEaLoginEnabled: boolean; selectedExecutiveId?: string | null },
+): Promise<ExecPrincipal | null> {
+  const { data: staff } = await supabase
+    .from("staff")
+    .select("id")
+    .eq("auth_user_id", user.id)
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (staff) return { supabase, user, kind: "staff", execId: null, staffId: staff.id as string };
+
+  if (!options.execEaLoginEnabled) return null;
+
+  const { data: exec } = await supabase
+    .from("executive")
+    .select("id")
+    .eq("auth_user_id", user.id)
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (exec?.id) return { supabase, user, kind: "executive", execId: exec.id as string };
+
+  const { data: ea } = await supabase
+    .from("ea")
+    .select("id")
+    .eq("auth_user_id", user.id)
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (!ea?.id) return null;
+
+  // One principal at a time. RLS already lets the EA read all their assigned
+  // execs; the active principal is the EA Mode banner's choice when it is
+  // genuinely one of their assignments, else the first assignment.
+  const { data: asgs } = await supabase
+    .from("ea_assignment")
+    .select("executive_id")
+    .eq("ea_id", ea.id as string)
+    .order("created_at", { ascending: true });
+  const assignmentIds = (asgs ?? []).map((r) => r.executive_id as string);
+  if (assignmentIds.length === 0) return null;
+
+  const chosen = options.selectedExecutiveId;
+  const active = chosen && assignmentIds.includes(chosen) ? chosen : assignmentIds[0];
+  return { supabase, user, kind: "ea", execId: active, eaId: ea.id as string };
+}
+
+/**
  * Resolve the exec-portal principal WITHOUT redirecting — returns null when there
  * is no signed-in user, or the user is neither staff nor an exec/EA with access.
  * For server actions (which return error states, not redirects). The exec/EA
@@ -136,50 +188,11 @@ export async function getExecPrincipal(): Promise<ExecPrincipal | null> {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data: staff } = await supabase
-    .from("staff")
-    .select("id")
-    .eq("auth_user_id", user.id)
-    .is("deleted_at", null)
-    .maybeSingle();
-  if (staff) return { supabase, user, kind: "staff", execId: null, staffId: staff.id as string };
-
-  // Authoritative read: the same kill switch the sign-in route and the RPC honor.
-  if (await getFlagAuthoritative("exec_ea_login")) {
-    const { data: exec } = await supabase
-      .from("executive")
-      .select("id")
-      .eq("auth_user_id", user.id)
-      .is("deleted_at", null)
-      .maybeSingle();
-    if (exec?.id) return { supabase, user, kind: "executive", execId: exec.id as string };
-
-    const { data: ea } = await supabase
-      .from("ea")
-      .select("id")
-      .eq("auth_user_id", user.id)
-      .is("deleted_at", null)
-      .maybeSingle();
-    if (ea?.id) {
-      // One principal at a time. RLS already lets the EA read all their assigned
-      // execs; the active principal is the EA Mode banner's choice (cookie) when it
-      // is genuinely one of their assignments, else the first assignment.
-      const { data: asgs } = await supabase
-        .from("ea_assignment")
-        .select("executive_id")
-        .eq("ea_id", ea.id as string)
-        .order("created_at", { ascending: true });
-      const assignmentIds = (asgs ?? []).map((r) => r.executive_id as string);
-      // An EA with no assignment has nothing to act on — treat as no access.
-      if (assignmentIds.length > 0) {
-        const chosen = (await cookies()).get(EA_PRINCIPAL_COOKIE)?.value;
-        const active = chosen && assignmentIds.includes(chosen) ? chosen : assignmentIds[0];
-        return { supabase, user, kind: "ea", execId: active, eaId: ea.id as string };
-      }
-    }
-  }
-
-  return null;
+  return resolveExecPrincipalForUser(supabase, user, {
+    // Authoritative read: the same kill switch the sign-in route and the RPC honor.
+    execEaLoginEnabled: await getFlagAuthoritative("exec_ea_login"),
+    selectedExecutiveId: (await cookies()).get(EA_PRINCIPAL_COOKIE)?.value,
+  });
 }
 
 /**

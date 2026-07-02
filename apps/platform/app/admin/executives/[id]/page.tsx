@@ -6,8 +6,14 @@ import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
 import { ExecutiveForm } from "../executive-form";
 import { EaSection } from "../ea-section";
+import { AccessActionForm } from "../access-actions";
 import { execStatusPill, type ExecStatusEnum } from "../_status";
-import { updateExecutiveAction, setExecutiveStatusAction } from "../actions";
+import {
+  updateExecutiveAction,
+  setExecutiveStatusAction,
+  sendExecutiveAccessLinkAction,
+  clearExecutiveAccessAction,
+} from "../actions";
 
 export const metadata: Metadata = {
   title: "Executive — TheGoodIntro admin",
@@ -36,7 +42,7 @@ export default async function ExecutiveDetailPage({
   const [{ data: exec }, { data: charities }, { data: eas }] = await Promise.all([
     supabase.from("executive").select("*").eq("id", id).maybeSingle(),
     supabase.from("charity").select("id,name").is("deleted_at", null).order("name"),
-    supabase.from("ea").select("id,name,email").is("deleted_at", null).order("name"),
+    supabase.from("ea").select("id,name,email,auth_user_id").is("deleted_at", null).order("name"),
   ]);
 
   if (!exec) notFound();
@@ -96,6 +102,36 @@ export default async function ExecutiveDetailPage({
             submitLabel="Save changes"
             photoUploadEnabled={photoUploadEnabled}
           />
+
+          <h2 className="mb-3 mt-10 text-sm font-semibold uppercase tracking-wide" style={{ color: "var(--muted-foreground)" }}>
+            Portal access
+          </h2>
+          <div className="mb-10 rounded-xl border p-4" style={{ background: "var(--portal-card)", borderColor: "var(--portal-line)" }}>
+            <div className="flex flex-col gap-3">
+              <div>
+                <p className="text-sm font-semibold" style={{ color: "var(--portal-ink)" }}>
+                  Executive sign-in link
+                </p>
+                <p className="mt-1 text-xs" style={{ color: "var(--muted-foreground)" }}>
+                  Current binding: {exec.auth_user_id ? "linked to an auth user" : "not linked yet"}.
+                </p>
+              </div>
+              <AccessActionForm
+                action={sendExecutiveAccessLinkAction}
+                hidden={{ email: (exec.primary_email as string | null) ?? "" }}
+              >
+                Send access link
+              </AccessActionForm>
+              {exec.auth_user_id ? (
+                <AccessActionForm
+                  action={clearExecutiveAccessAction}
+                  hidden={{ id: exec.id as string }}
+                >
+                  Clear linked auth user
+                </AccessActionForm>
+              ) : null}
+            </div>
+          </div>
 
           <h2 className="mb-3 mt-10 text-sm font-semibold uppercase tracking-wide" style={{ color: "var(--muted-foreground)" }}>
             Executive assistant
