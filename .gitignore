@@ -23,6 +23,9 @@ next-env.d.ts
 # Local MCP config (machine-specific, may hold tokens)
 .mcp.json
 
+# Codex CLI local config (machine-specific MCP wiring)
+.codex/
+
 # Stale nested duplicate of the repo (do not track)
 /theGoodintro/
 
