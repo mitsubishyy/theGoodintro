@@ -5,7 +5,9 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Avatar, Icon, Wordmark, type IconName } from "@thegoodintro/ui";
 import { signOutAction } from "@/app/login/actions";
+import { exitActingAsExecAction } from "@/app/admin/executives/actions";
 import { useEaMode } from "./ea-mode";
+import { useActingAs } from "./acting-as";
 
 /**
  * The canonical exec portal shell (exec-dashboard lock 2026-06-08 — "locks the
@@ -112,9 +114,36 @@ function AccountBlock({ chip }: { chip: { name: string; subtitle: string; photoU
   );
 }
 
+/**
+ * Slim staff acting-for banner (admin "Open portal as this executive"). Sits at
+ * the top of the content column so it reads as chrome over the page being
+ * operated. Amber (the sanctioned portal accent) marks the "you are operating as
+ * someone else" state, distinct from the charcoal EA Mode banner. Exit clears the
+ * staff_acting_exec_id cookie server-side and returns to the exec's admin detail
+ * page (exitActingAsExecAction).
+ */
+function ActingAsBanner({ name }: { name: string }) {
+  return (
+    <div
+      className="flex h-9 shrink-0 items-center justify-between gap-3 px-4 md:px-8 text-[13px]"
+      style={{ background: "var(--portal-amber-soft)", color: "var(--portal-amber-ink)", borderBottom: "1px solid var(--portal-line)" }}
+    >
+      <span className="min-w-0 truncate">
+        Viewing as <span className="font-semibold">{name}</span>
+      </span>
+      <form action={exitActingAsExecAction}>
+        <button type="submit" className="shrink-0 font-semibold underline underline-offset-2">
+          Exit
+        </button>
+      </form>
+    </div>
+  );
+}
+
 export function ExecShell({ title, exec, children }: ExecShellProps) {
   const pathname = usePathname() ?? "/exec";
   const eaMode = useEaMode();
+  const actingAs = useActingAs();
   // In an EA session the chip shows the SIGNED-IN EA (the principal lives in the
   // banner); never the principal in both. Otherwise the exec themself.
   const chip = eaMode
@@ -172,6 +201,7 @@ export function ExecShell({ title, exec, children }: ExecShellProps) {
       )}
 
       <div className="flex-1 min-w-0 flex flex-col">
+        {actingAs && <ActingAsBanner name={actingAs.name} />}
         <header
           className="h-14 shrink-0 px-4 md:px-8 flex items-center gap-3 border-b"
           style={{ background: "var(--portal-header)", borderColor: "var(--portal-line)" }}

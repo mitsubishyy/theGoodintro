@@ -87,6 +87,28 @@ export async function resolveEaMode(): Promise<EaModeData | null> {
   };
 }
 
+export interface ActingAsExec {
+  execId: string;
+  name: string;
+}
+
+/**
+ * Non-null ONLY when a STAFF member is operating the portal as a specific
+ * executive (the admin "Open portal as this executive" path): getExecPrincipal
+ * resolves a staff principal with a non-null execId exactly when the httpOnly
+ * `staff_acting_exec_id` cookie was present AND validated against a live
+ * executive (resolveExecPrincipalForUser). Drives the slim "Viewing as [name]"
+ * banner in ExecShell. An exec/EA session, or plain staff demo browsing (no
+ * acting cookie, so execId is null), returns null → no banner.
+ */
+export async function resolveActingAsExec(): Promise<ActingAsExec | null> {
+  const p = await getExecPrincipal();
+  if (!p || p.kind !== "staff" || !p.execId) return null;
+  const { data } = await p.supabase.from("executive").select("name").eq("id", p.execId).maybeSingle();
+  if (!data) return null;
+  return { execId: p.execId, name: (data.name as string) ?? "this executive" };
+}
+
 /** The executive whose dashboard the demo shows: the locked sample, else the first active. */
 export async function resolveDemoExecutiveId(supabase: SupabaseClient): Promise<string | null> {
   const { data: known } = await supabase

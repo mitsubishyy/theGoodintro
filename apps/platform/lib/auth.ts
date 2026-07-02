@@ -14,6 +14,18 @@ import { getFlag, getFlagAuthoritative } from "@/lib/flags";
  */
 export const EA_PRINCIPAL_COOKIE = "tgi_ea_principal";
 
+/**
+ * The executive a STAFF member has chosen to operate the exec portal as (the
+ * admin "Open portal as this executive" button). Set httpOnly by
+ * openExecPortalAsAction, read by getExecPrincipal, cleared by
+ * exitActingAsExecAction. Honored ONLY inside the staff branch of
+ * resolveExecPrincipalForUser and always re-validated against the executive
+ * table — a non-staff caller's cookie is structurally ignored, and a
+ * forged/stale/archived id falls back to the demo executive. Never changes actor
+ * attribution: the principal stays `kind: "staff"` with the acting staff id.
+ */
+export const STAFF_ACTING_EXEC_COOKIE = "staff_acting_exec_id";
+
 type AalLevels = {
   currentLevel: string | null;
   nextLevel: string | null;
@@ -140,7 +152,7 @@ export interface ExecPrincipal {
 export async function resolveExecPrincipalForUser(
   supabase: SupabaseClient,
   user: User,
-  options: { execEaLoginEnabled: boolean; selectedExecutiveId?: string | null },
+  options: { execEaLoginEnabled: boolean; selectedExecutiveId?: string | null; actingExecutiveId?: string | null },
 ): Promise<ExecPrincipal | null> {
   const { data: staff } = await supabase
     .from("staff")
@@ -148,7 +160,23 @@ export async function resolveExecPrincipalForUser(
     .eq("auth_user_id", user.id)
     .is("deleted_at", null)
     .maybeSingle();
-  if (staff) return { supabase, user, kind: "staff", execId: null, staffId: staff.id as string };
+  if (staff) {
+    // Staff-acting-for: honor the acting cookie ONLY here (never for a non-staff
+    // caller), and only when it resolves to a live executive. A forged, stale, or
+    // archived id resolves to null → the caller falls back to the demo executive.
+    // kind stays "staff" (+ staffId) so actor attribution is unchanged.
+    let execId: string | null = null;
+    if (options.actingExecutiveId) {
+      const { data: acting } = await supabase
+        .from("executive")
+        .select("id")
+        .eq("id", options.actingExecutiveId)
+        .is("deleted_at", null)
+        .maybeSingle();
+      execId = (acting?.id as string) ?? null;
+    }
+    return { supabase, user, kind: "staff", execId, staffId: staff.id as string };
+  }
 
   if (!options.execEaLoginEnabled) return null;
 
@@ -198,10 +226,12 @@ export async function getExecPrincipal(): Promise<ExecPrincipal | null> {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
+  const jar = await cookies();
   return resolveExecPrincipalForUser(supabase, user, {
     // Authoritative read: the same kill switch the sign-in route and the RPC honor.
     execEaLoginEnabled: await getFlagAuthoritative("exec_ea_login"),
-    selectedExecutiveId: (await cookies()).get(EA_PRINCIPAL_COOKIE)?.value,
+    selectedExecutiveId: jar.get(EA_PRINCIPAL_COOKIE)?.value,
+    actingExecutiveId: jar.get(STAFF_ACTING_EXEC_COOKIE)?.value,
   });
 }
 

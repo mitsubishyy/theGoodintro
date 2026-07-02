@@ -13,6 +13,7 @@ import {
   setExecutiveStatusAction,
   sendExecutiveAccessLinkAction,
   clearExecutiveAccessAction,
+  openExecPortalAsAction,
 } from "../actions";
 
 export const metadata: Metadata = {
@@ -123,6 +124,22 @@ export default async function ExecutiveDetailPage({
               >
                 Send access link
               </AccessActionForm>
+              <div className="border-t pt-3" style={{ borderColor: "var(--portal-line)" }}>
+                <p className="mb-2 text-xs" style={{ color: "var(--muted-foreground)" }}>
+                  Operate this executive&apos;s portal on their behalf. Everything you do is logged
+                  under your staff account.
+                </p>
+                <form action={openExecPortalAsAction}>
+                  <input type="hidden" name="id" value={exec.id as string} />
+                  <button
+                    type="submit"
+                    className="rounded-lg px-3 py-1.5 text-sm font-medium"
+                    style={{ background: "var(--portal-ink)", color: "var(--portal-page)" }}
+                  >
+                    Open portal as this executive →
+                  </button>
+                </form>
+              </div>
               {exec.auth_user_id ? (
                 <AccessActionForm
                   action={clearExecutiveAccessAction}

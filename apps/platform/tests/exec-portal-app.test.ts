@@ -26,6 +26,7 @@ describe("exec portal app-layer scoping (2d)", () => {
   let cExec1: SupabaseClient;
   let cExec2: SupabaseClient;
   let cEa: SupabaseClient;
+  let cStaff: SupabaseClient;
   const ids = {
     e1: "",
     e2: "",
@@ -34,6 +35,9 @@ describe("exec portal app-layer scoping (2d)", () => {
     uExec1: "",
     uExec2: "",
     uEa: "",
+    uStaff: "",
+    staff: "",
+    archived: "",
     r1: "",
     r2: "",
     m1: "",
@@ -151,6 +155,22 @@ describe("exec portal app-layer scoping (2d)", () => {
     ids.uEa = eaUser.id;
     cEa = eaUser.client;
     await admin.from("ea").update({ auth_user_id: ids.uEa }).eq("id", ids.ea);
+
+    // Staff principal (for the acting-for resolver) + an archived executive (the
+    // safe-fallback case). ids.e1 doubles as the valid live-exec control.
+    const staffEmail = `portal-staff-${rand()}@staff.test`;
+    const staffUser = await mkUser(staffEmail);
+    ids.uStaff = staffUser.id;
+    cStaff = staffUser.client;
+    const { data: st } = await admin
+      .from("staff")
+      .insert({ auth_user_id: ids.uStaff, name: "Portal Staff", email: staffEmail, role: "staff" })
+      .select("id")
+      .single();
+    ids.staff = st!.id as string;
+
+    ids.archived = await mkExec("Archived");
+    await admin.from("executive").update({ deleted_at: "2026-07-01T00:00:00.000Z" }).eq("id", ids.archived);
   });
 
   afterAll(async () => {
@@ -160,8 +180,9 @@ describe("exec portal app-layer scoping (2d)", () => {
     await admin.from("request").delete().in("id", [ids.r1, ids.r2]);
     await admin.from("ea_assignment").delete().eq("ea_id", ids.ea);
     await admin.from("ea").delete().eq("id", ids.ea);
-    await admin.from("executive").delete().in("id", [ids.e1, ids.e2, ids.e3]);
-    for (const id of [ids.uExec1, ids.uExec2, ids.uEa]) {
+    if (ids.staff) await admin.from("staff").delete().eq("id", ids.staff);
+    await admin.from("executive").delete().in("id", [ids.e1, ids.e2, ids.e3, ids.archived]);
+    for (const id of [ids.uExec1, ids.uExec2, ids.uEa, ids.uStaff]) {
       if (id) await admin.auth.admin.deleteUser(id);
     }
   });
@@ -220,5 +241,53 @@ describe("exec portal app-layer scoping (2d)", () => {
       selectedExecutiveId: ids.e3,
     });
     expect(forged).toMatchObject({ kind: "ea", execId: ids.e1 });
+  });
+
+  // ── Staff acting-for (admin "Open portal as this executive") ────────────────
+
+  it("a non-staff caller's acting cookie is denied on the flag-off path", async () => {
+    const user = (await cExec2.auth.getUser()).data.user!;
+    const p = await resolveExecPrincipalForUser(cExec2, user, {
+      execEaLoginEnabled: false,
+      actingExecutiveId: ids.e1,
+    });
+    expect(p).toBeNull();
+  });
+
+  it("a non-staff caller with the acting cookie set never resolves to the acting exec, even with login on", async () => {
+    // Guards against the flag-off case passing for the wrong reason: with login ON,
+    // exec2 must still land on their OWN identity, never the exec named in the cookie.
+    const user = (await cExec2.auth.getUser()).data.user!;
+    const p = await resolveExecPrincipalForUser(cExec2, user, {
+      execEaLoginEnabled: true,
+      actingExecutiveId: ids.e1,
+    });
+    expect(p).toMatchObject({ kind: "executive", execId: ids.e2 });
+    expect(p!.execId).not.toBe(ids.e1);
+  });
+
+  it("staff acting-for binds a live exec (actor stays staff) and falls back safely on an archived id", async () => {
+    const user = (await cStaff.auth.getUser()).data.user!;
+
+    // A live executive binds; kind stays "staff" (+ staffId) so actor attribution
+    // is unchanged — every staff-acting action still logs the staff member.
+    const ok = await resolveExecPrincipalForUser(cStaff, user, {
+      execEaLoginEnabled: true,
+      actingExecutiveId: ids.e1,
+    });
+    expect(ok).toMatchObject({ kind: "staff", execId: ids.e1 });
+    expect(ok!.staffId).toBe(ids.staff);
+
+    // An archived (soft-deleted) exec id resolves to execId null → the caller falls
+    // back to the demo executive rather than scoping to a dead row.
+    const archived = await resolveExecPrincipalForUser(cStaff, user, {
+      execEaLoginEnabled: true,
+      actingExecutiveId: ids.archived,
+    });
+    expect(archived).toMatchObject({ kind: "staff", execId: null });
+
+    // No acting cookie at all → plain staff demo path, unchanged.
+    const none = await resolveExecPrincipalForUser(cStaff, user, { execEaLoginEnabled: true });
+    expect(none).toMatchObject({ kind: "staff", execId: null });
   });
 });
