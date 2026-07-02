@@ -71,6 +71,8 @@ export default async function AdminLayout({
   const pendingRequestsBadge = submittedC.count ?? 0;
   // Inbox is wired through the Admin Inbox port (separate); placeholder until then.
   const inboxBadge = 0;
+  // Read-only staff notifications feed (0038); nav item hidden while OFF.
+  const notificationsEnabled = await getFlag("admin_notifications");
 
   const operations: NavItem[] = [
     { label: "Dashboard", href: "/admin", icon: "grid" },
@@ -97,6 +99,9 @@ export default async function AdminLayout({
 
   const communication: NavItem[] = [
     { label: "Inbox", href: "/admin/inbox", icon: "inbox", badgeCount: inboxBadge },
+    ...(notificationsEnabled
+      ? [{ label: "Notifications", href: "/admin/notifications", icon: "bell" as const }]
+      : []),
     { label: "Templates", href: "/admin/templates", icon: "chat" },
   ];
 
