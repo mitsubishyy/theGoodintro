@@ -13,7 +13,22 @@
       "dependsOn": ["^build"]
     },
     "test": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "env": [
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "NEXT_PUBLIC_APP_URL",
+        "EMAIL_TOKEN_SECRET"
+      ],
+      "passThroughEnv": [
+        "XERO_*",
+        "RESEND_API_KEY",
+        "EMAIL_*",
+        "CRON_SECRET",
+        "DEMO_*",
+        "NEXT_PUBLIC_DEMO_OPEN_ACCESS"
+      ]
     }
   }
 }
