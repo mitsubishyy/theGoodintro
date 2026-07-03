@@ -39,7 +39,13 @@ jobs:
       - name: Install Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          # Pinned, NOT "latest". The CLI version selects the whole local stack
+          # (Postgres / PostgREST / GoTrue images). On newer stacks the
+          # new-format sb_secret_ key stops mapping to service_role, so every
+          # service-role query fails "permission denied for table ...". 2.101.0
+          # is the version the suite is green against locally; bump deliberately
+          # and re-verify the DB-backed suite, never float on latest.
+          version: 2.101.0
 
       - name: Start local Supabase (applies migrations + seed)
         run: supabase start
