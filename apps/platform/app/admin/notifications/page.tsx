@@ -4,10 +4,15 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
 import { ageShort } from "@/lib/format";
-import { describeStaffNotification, type StaffNotificationContext } from "./_display";
+import {
+  describeStaffNotification,
+  FEED_LIMIT,
+  isFeedTruncated,
+  type StaffNotificationContext,
+} from "./_display";
 
 export const metadata: Metadata = {
-  title: "Notifications — TheGoodIntro admin",
+  title: "Activity — TheGoodIntro admin",
   robots: { index: false, follow: false },
 };
 
@@ -16,12 +21,14 @@ function one<T>(v: unknown): T | undefined {
 }
 
 /**
- * Read-only staff notifications feed: the first renderer for the queued
+ * Read-only staff ACTIVITY LOG: the first renderer for the queued
  * channel='in_app', recipient_type='staff' rows the loop has been accumulating
- * with nowhere to show them. No mutations, no mark-read (the notification table
- * has no read-state column, DEC noted 2026-07-02), no new workflow actions — each
- * row just links to the relevant admin parent route. Flag-gated
+ * with nowhere to show them. Framed as a log, not a to-do list: the notification
+ * table has no read-state column (DEC noted 2026-07-02), so rows never clear, and
+ * calling them tasks would be dishonest. No mutations, no mark-read, no new
+ * workflow actions. Each row just links to the related admin record. Flag-gated
  * (admin_notifications, OFF by default); the route 404s until Issy enables it.
+ * The route path stays /admin/notifications; the surface presents as "Activity".
  */
 export default async function AdminNotificationsPage() {
   if (!(await getFlag("admin_notifications"))) notFound();
@@ -35,13 +42,19 @@ export default async function AdminNotificationsPage() {
     .eq("channel", "in_app")
     .eq("recipient_type", "staff")
     .order("created_at", { ascending: false })
-    .limit(50);
+    .limit(FEED_LIMIT + 1);
+  // Fetch one MORE than we show purely to detect truncation honestly: the footer
+  // must only claim older events exist when they actually do. Exactly FEED_LIMIT
+  // total events comes back as FEED_LIMIT rows here (the +1 finds nothing), so
+  // isFeedTruncated is false and no false "older activity" note appears.
+  const truncated = isFeedTruncated(rows?.length ?? 0);
+  const visible = (rows ?? []).slice(0, FEED_LIMIT);
 
   // B4 rows (invoice voided / reconcile drift) carry no request_id; the vendor
-  // is on payload.vendor_id. Batch-resolve those names in one query.
+  // is on payload.vendor_id. Batch-resolve those names in one query (visible only).
   const payloadVendorIds = Array.from(
     new Set(
-      (rows ?? [])
+      visible
         .map((r) => (r.payload as { vendor_id?: string } | null)?.vendor_id)
         .filter((v): v is string => typeof v === "string"),
     ),
@@ -55,7 +68,7 @@ export default async function AdminNotificationsPage() {
     for (const v of vendors ?? []) vendorNameById.set(v.id as string, v.name as string);
   }
 
-  const items = (rows ?? [])
+  const items = visible
     .map((r) => {
       const req = one<{ vendor: unknown; executive: unknown }>(r.request);
       const payload = (r.payload ?? {}) as {
@@ -81,10 +94,10 @@ export default async function AdminNotificationsPage() {
 
   return (
     <div className="max-w-3xl px-8 py-6">
-      <h1 className="text-[20px] font-semibold tracking-tight">Notifications</h1>
+      <h1 className="text-[20px] font-semibold tracking-tight">Activity</h1>
       <p className="mt-1 mb-6 text-sm" style={{ color: "var(--muted-foreground)" }}>
-        Staff tasks and alerts from the booking loop. Read-only; manual follow-ups
-        are marked with a red dot.
+        A running log of staff events from the booking loop, newest first.
+        Read-only. Items worth a closer look are flagged in red.
       </p>
 
       {items.length === 0 ? (
@@ -92,7 +105,8 @@ export default async function AdminNotificationsPage() {
           className="rounded-xl border px-5 py-10 text-center text-sm"
           style={{ borderColor: "var(--portal-line)", color: "var(--muted-foreground)" }}
         >
-          Nothing here yet. New staff tasks will appear as the loop runs.
+          No activity yet. Staff events from the booking loop will appear here as
+          they happen.
         </div>
       ) : (
         <div
@@ -111,7 +125,7 @@ export default async function AdminNotificationsPage() {
                 <span
                   className="mt-1.5 size-2 shrink-0 rounded-full"
                   style={{
-                    background: it.manual ? "oklch(0.55 0.18 25)" : "var(--portal-amber)",
+                    background: it.alert ? "oklch(0.55 0.18 25)" : "var(--portal-amber)",
                   }}
                 />
                 <div className="min-w-0 flex-1">
@@ -136,6 +150,15 @@ export default async function AdminNotificationsPage() {
             );
           })}
         </div>
+      )}
+
+      {truncated && (
+        <p
+          className="mt-3 text-[12px]"
+          style={{ color: "var(--muted-foreground)" }}
+        >
+          Showing the {FEED_LIMIT} most recent events. Older activity is not listed.
+        </p>
       )}
     </div>
   );
