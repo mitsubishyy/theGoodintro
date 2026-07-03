@@ -1,0 +1,90 @@
+# gitleaks config for TheGoodIntro (PRODUCTION_READINESS C5 — secret scanning).
+#
+# Runs in CI as the `secret-scan` gate. Extends gitleaks' built-in ruleset
+# (AWS keys, GitHub/Slack tokens, private keys, generic high-entropy assignments)
+# and adds provider-specific rules for the three secret families this repo
+# actually handles: Supabase service keys, Resend API keys, and Xero secrets.
+#
+# The allowlist at the bottom carves out the KNOWN non-secret placeholders that
+# live in tracked files (CI dummy values, .env.example blanks) so the gate stays
+# green on real content and only fires on a genuine leak. If this ever flags a
+# real value that was committed, do NOT just allowlist it — rotate the key first.
+
+title = "TheGoodIntro secret scan"
+
+[extend]
+useDefault = true
+
+# ── Supabase ────────────────────────────────────────────────────────────────
+[[rules]]
+id = "supabase-secret-key"
+description = "Supabase secret/service key (new sb_secret_ format — bypasses RLS)"
+regex = '''sb_secret_[A-Za-z0-9]{16,}'''
+keywords = ["sb_secret_"]
+
+[[rules]]
+id = "supabase-legacy-service-role-jwt"
+description = "Supabase legacy service_role JWT (long three-part token)"
+regex = '''eyJ[A-Za-z0-9_-]{15,}\.eyJ[A-Za-z0-9_-]{30,}\.[A-Za-z0-9_-]{20,}'''
+keywords = ["eyj"]
+
+# ── Resend ──────────────────────────────────────────────────────────────────
+[[rules]]
+id = "resend-api-key"
+description = "Resend API key"
+regex = '''re_[A-Za-z0-9]{20,}'''
+keywords = ["re_"]
+
+# ── Xero ────────────────────────────────────────────────────────────────────
+# Xero client secrets / webhook keys have no distinctive prefix, so key off the
+# env-var name assigned to a real-looking (long) value. Empty placeholders like
+# `XERO_CLIENT_SECRET=` in .env.example do not match (a value is required).
+[[rules]]
+id = "xero-client-secret"
+description = "Xero OAuth2 client secret assigned to a value"
+regex = '''(?i)xero_client_secret\s*[:=]\s*["']?[A-Za-z0-9._~+/-]{30,}["']?'''
+keywords = ["xero_client_secret"]
+
+[[rules]]
+id = "xero-webhook-key"
+description = "Xero webhook signing key assigned to a value"
+regex = '''(?i)xero_webhook_key\s*[:=]\s*["']?[A-Za-z0-9+/=]{20,}["']?'''
+keywords = ["xero_webhook_key"]
+
+[[rules]]
+id = "xero-token-enc-key"
+description = "Xero token-encryption key (32-byte base64) assigned to a value"
+regex = '''(?i)xero_token_enc_key\s*[:=]\s*["']?[A-Za-z0-9+/]{43}=["']?'''
+keywords = ["xero_token_enc_key"]
+
+# ── Allowlist: known non-secret placeholders in tracked files ────────────────
+[[allowlists]]
+description = "CI/test dummy values and doc placeholders that are not real secrets"
+regexTarget = "line"
+regexes = [
+  # ci.yml dummy XERO_TOKEN_ENC_KEY: public base64 of the ASCII string
+  # "theGoodintro-ci-test-enc-key-32b" — a throwaway 32-byte test key.
+  '''dGhlR29vZGludHJvLWNpLXRlc3QtZW5jLWtleS0zMmI=''',
+  '''ci-local-not-a-secret''',
+  '''local-dev-only-not-a-real-secret''',
+]
+
+[[allowlists]]
+description = "Files that only ever hold placeholders/references, never real secrets"
+paths = [
+  '''apps/platform/\.env\.example''',
+]
+
+# outreach/ is carved out DELIBERATELY, not because it is clean. It holds a real,
+# already-committed shared secret — RSVP_SECRET in outreach/outreach-sender.gs, a
+# Google Apps Script that "MUST match Vercel". It cannot be fixed from a platform
+# session (outreach/ is out of bounds per CLAUDE.md, and purging it needs a
+# history rewrite / force-push, which is forbidden). This gate guards the
+# platform; the outreach RSVP_SECRET is tracked as a separate action for Issy
+# (rotate the key in Vercel + the script, then scrub history). Everything else in
+# the repo — apps/web, brand/, exec-pipeline/ — stays IN scope for scanning.
+[[allowlists]]
+description = "outreach/: out-of-bounds tree with a known pre-existing secret (see note)"
+paths = [
+  '''outreach/''',
+]

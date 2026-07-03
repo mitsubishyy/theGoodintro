@@ -94,3 +94,28 @@ jobs:
       - name: Stop local Supabase
         if: always()
         run: supabase stop || true
+
+  # Secret scanning (PRODUCTION_READINESS C5). Independent of the gates job so a
+  # leaked credential blocks merge even if the tests are green. Scans the FULL
+  # git history of the checkout with gitleaks against .gitleaks.toml, which
+  # carries provider rules for the secret families this repo handles (Supabase
+  # sb_secret_ keys, Resend re_ keys, Xero client/webhook/enc secrets) on top of
+  # gitleaks' built-in ruleset. gitleaks exits non-zero when it finds anything.
+  secret-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history, so the scan covers every commit not just the tip
+
+      - name: Install gitleaks (pinned)
+        run: |
+          VER=8.30.1
+          curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${VER}/gitleaks_${VER}_linux_x64.tar.gz" -o /tmp/gitleaks.tar.gz
+          tar xzf /tmp/gitleaks.tar.gz -C /tmp gitleaks
+          sudo install /tmp/gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+
+      - name: Scan git history for leaked secrets
+        run: gitleaks git . --config .gitleaks.toml --redact --no-banner --exit-code 1
