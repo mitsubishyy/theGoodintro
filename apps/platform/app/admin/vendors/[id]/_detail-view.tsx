@@ -16,6 +16,7 @@ import {
 } from "@thegoodintro/ui";
 import { formatAud } from "@/lib/format";
 import { VendorUserPhotoCell } from "./_photo-cell";
+import { VendorForm } from "./vendor-form";
 import {
   approveVendorAction,
   issueInvoiceAction,
@@ -134,6 +135,7 @@ export interface VendorDetailViewProps {
   activity: ActivityRow[];
   pendingRequestCount: number;
   photoUploadEnabled: boolean;
+  editEnabled: boolean;
 }
 
 function requestStatusBadge(s: RequestSubRow["status"]): { tone: Tone; label: string } {
@@ -673,6 +675,7 @@ export function VendorDetailView({
   activity,
   pendingRequestCount,
   photoUploadEnabled,
+  editEnabled,
 }: VendorDetailViewProps) {
   const headerPill = vendorStatusPill(vendor.status);
 
@@ -702,6 +705,19 @@ export function VendorDetailView({
       label: "Overview",
       content: <OverviewModule vendor={vendor} vetting={vetting} />,
     },
+    ...(editEnabled
+      ? [
+          {
+            key: "edit",
+            label: "Edit details",
+            content: (
+              <Section>
+                <VendorForm initial={{ id: vendor.id, name: vendor.name, emailDomain: vendor.emailDomain }} />
+              </Section>
+            ),
+          },
+        ]
+      : []),
     {
       key: "users",
       label: "Users & seats",

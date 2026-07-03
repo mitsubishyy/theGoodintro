@@ -8,6 +8,7 @@ import { applyPaidInvoice } from "@/lib/billing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { isOwnAvatarUrl } from "@/lib/upload/url";
+import { isWorkEmailDomain } from "@/lib/email-domain";
 import {
   createCreditPurchaseInvoice,
   getValidAccessToken,
@@ -21,6 +22,79 @@ import {
 import { MEETING_FEE_CENTS, gstCentsForCredits } from "@thegoodintro/pricing";
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
+
+export type FormState = { error?: string; ok?: boolean };
+
+/**
+ * Edit a vendor's profile fields (name, email_domain) — the vendor equivalent of
+ * updateExecutiveAction. Staff-only, gated on admin_vendors_actions (CHANGE_SAFETY:
+ * off by default), following the same shape as the other vendor-admin mutations.
+ *
+ * email_domain is a GUARDED field: it is UNIQUE and reserves the work-email domain
+ * for the org at signup (private.signup_vendor), which rejects generic domains and
+ * enforces one-org-per-domain. It does NOT gate an existing user's access: login
+ * resolves a vendor_user by auth_user_id (lib/auth getVendor) and vendor_user RLS
+ * keys on membership, never the current domain, so existing users keep access
+ * across a domain change. We validate format + not-generic + uniqueness here and
+ * reject a collision with a clear message before the DB unique constraint would.
+ */
+export async function updateVendorAction(_prev: FormState, fd: FormData): Promise<FormState> {
+  const { staff, supabase } = await requireStaff();
+  if (!(await getFlag("admin_vendors_actions"))) return { error: "Vendor management is not enabled." };
+
+  const id = str(fd, "id");
+  if (!id) return { error: "Missing vendor id." };
+  const name = str(fd, "name");
+  const emailDomain = str(fd, "email_domain").toLowerCase();
+  if (!name || !emailDomain) return { error: "Name and email domain are required." };
+  if (!isWorkEmailDomain(emailDomain)) {
+    return { error: "Enter a valid work email domain, for example acme.com. Generic domains are not allowed." };
+  }
+
+  // Current values: to compute the changed-field set and skip a no-op write.
+  const { data: current, error: readErr } = await supabase
+    .from("vendor")
+    .select("name, email_domain")
+    .eq("id", id)
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (readErr) return { error: readErr.message };
+  if (!current) return { error: "Vendor not found." };
+
+  // Uniqueness: another vendor already on this domain. Checked across ALL rows
+  // (including archived) to match the column's plain unique constraint, which is
+  // the backstop for a race past this pre-check.
+  if (emailDomain !== current.email_domain) {
+    const { data: clash } = await supabase
+      .from("vendor")
+      .select("id")
+      .eq("email_domain", emailDomain)
+      .neq("id", id)
+      .limit(1)
+      .maybeSingle();
+    if (clash) return { error: "Another vendor already uses that email domain. Choose a different one." };
+  }
+
+  const changed: string[] = [];
+  if (name !== current.name) changed.push("name");
+  if (emailDomain !== current.email_domain) changed.push("email_domain");
+  if (changed.length === 0) return { ok: true };
+
+  const { error } = await supabase.from("vendor").update({ name, email_domain: emailDomain }).eq("id", id);
+  if (error) {
+    if (error.code === "23505") return { error: "Another vendor already uses that email domain. Choose a different one." };
+    return { error: error.message };
+  }
+
+  await logAudit(supabase, staff.id, {
+    action: "vendor.profile_updated",
+    targetType: "vendor",
+    targetId: id,
+    metadata: { fields: changed },
+  });
+  revalidatePath(`/admin/vendors/${id}`);
+  return { ok: true };
+}
 
 /** Approve a vetted vendor: unlocks payment. */
 export async function approveVendorAction(fd: FormData): Promise<void> {

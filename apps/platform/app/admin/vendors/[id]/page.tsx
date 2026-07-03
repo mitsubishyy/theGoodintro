@@ -62,6 +62,7 @@ export default async function VendorDetailPage({
   const supabase = await createClient();
   const payments = await getFlag("vendor_payments");
   const photoUploadEnabled = await getFlag("vendor_photo_upload");
+  const editEnabled = await getFlag("admin_vendors_actions");
   const now = new Date();
   const nowIso = now.toISOString();
 
@@ -268,6 +269,7 @@ export default async function VendorDetailPage({
         activity={activity}
         pendingRequestCount={pendingRequestCount}
         photoUploadEnabled={photoUploadEnabled}
+        editEnabled={editEnabled}
       />
     </PortalPage>
   );

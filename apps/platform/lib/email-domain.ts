@@ -15,3 +15,13 @@ export function isWorkEmail(email: string): boolean {
   const d = emailDomain(email);
   return d.length > 0 && d.includes(".") && !GENERIC.has(d);
 }
+
+// A syntactically valid, non-generic work email domain (e.g. acme.com,
+// team.acme.co.uk). Used to validate a vendor's email_domain, which reserves the
+// domain for the org and gates new-signup matching (private.signup_vendor). Mirrors
+// the DB checks (unique + is_generic_email_domain); the DB stays authoritative.
+const DOMAIN_RE = /^(?=.{1,253}$)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/;
+export function isWorkEmailDomain(domain: string): boolean {
+  const d = domain.toLowerCase().trim();
+  return DOMAIN_RE.test(d) && !GENERIC.has(d);
+}
