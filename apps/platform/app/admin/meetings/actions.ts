@@ -5,9 +5,13 @@ import { requireStaff } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getFlag } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
-import { confirmMeeting, markHeld, releaseMeeting, rescheduleMeeting, reverseHeld } from "@/lib/meetings";
+import { redirect } from "next/navigation";
+import { confirmMeeting, createProposedMeeting, markHeld, releaseMeeting, rescheduleMeeting, reverseHeld } from "@/lib/meetings";
+import { parseNewMeetingForm } from "@/lib/meetings-form";
 import { drainEmailQueue } from "@/lib/email/sender";
 import { resendTransport } from "@/lib/email/transport";
+
+export type FormState = { error?: string };
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
 
@@ -25,6 +29,55 @@ export async function confirmMeetingAction(fd: FormData): Promise<void> {
   const iso = when ? new Date(when).toISOString() : null;
   await confirmMeeting(supabase, id, iso, str(fd, "join_url") || null);
   revalidatePath("/admin/meetings");
+}
+
+export async function createMeetingAction(_prev: FormState, fd: FormData): Promise<FormState> {
+  const { staff, supabase } = await requireStaff();
+  if (!(await getFlag("request_loop"))) return { error: "Meeting scheduling is not enabled." };
+
+  const parsed = parseNewMeetingForm({
+    vendorId: str(fd, "vendor_id"),
+    executiveId: str(fd, "executive_id"),
+    charityId: str(fd, "charity_id"),
+    q1What: str(fd, "q1_what"),
+    q2Why: str(fd, "q2_why"),
+    scheduledAt: str(fd, "scheduled_at"),
+    joinUrl: str(fd, "join_url"),
+  });
+  if (!parsed.ok) return { error: parsed.error };
+  const v = parsed.value;
+
+  const created = await createProposedMeeting(supabase, {
+    vendorId: v.vendorId,
+    executiveId: v.executiveId,
+    charityId: v.charityId,
+    q1What: v.q1What,
+    q2Why: v.q2Why,
+  });
+  if (!created.ok) {
+    return {
+      error:
+        created.error === "no_vendor_user"
+          ? "This vendor has no users to attribute the request to."
+          : created.error === "no_charity"
+            ? "Pick a charity (this executive has no default charity)."
+            : `Could not create the meeting: ${created.error}`,
+    };
+  }
+
+  // Confirm a time now if one was given (reserve a credit, else schedule overcommit).
+  if (v.scheduledAtISO) {
+    await confirmMeeting(supabase, created.meetingId, v.scheduledAtISO, v.joinUrl);
+  }
+
+  await logAudit(supabase, staff.id, {
+    action: "meeting.created",
+    targetType: "meeting",
+    targetId: created.meetingId,
+    metadata: { vendorId: v.vendorId, executiveId: v.executiveId, scheduled: Boolean(v.scheduledAtISO) },
+  });
+  revalidatePath("/admin/meetings");
+  redirect("/admin/meetings");
 }
 
 export async function rescheduleMeetingAction(fd: FormData): Promise<void> {

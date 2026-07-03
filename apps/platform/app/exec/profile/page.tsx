@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getFlag } from "@/lib/flags";
 import { ExecShell } from "../_components/exec-shell";
 import { ProfileView } from "./_components/profile-view";
+import { PhotoCropProvider } from "@/app/_components/photo-crop-provider";
 import { resolveExecContext, loadExecProfile } from "../data";
 
 export const metadata: Metadata = {
@@ -37,7 +38,9 @@ export default async function ExecProfilePage() {
         photoUrl: data.exec.photoUrl,
       }}
     >
-      <ProfileView data={data} photoUploadEnabled={photoUploadEnabled} assistantAccessEnabled={assistantAccessEnabled} />
+      <PhotoCropProvider>
+        <ProfileView data={data} photoUploadEnabled={photoUploadEnabled} assistantAccessEnabled={assistantAccessEnabled} />
+      </PhotoCropProvider>
     </ExecShell>
   );
 }

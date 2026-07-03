@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TGI x Children's Ground — Slide 4 card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #F1ECDF;            /* warm paper, same as the deck slide */
+    display: grid; place-items: center; min-height: 100%;
+  }
+
+  /* The artifact is JUST the card unit (drop it on the right of slide 4,
+     exactly like the RSPCA card). Stage = card + a little paper margin so the
+     drop shadow has room when you screenshot it. */
+  #stage { padding: 70px; transform-origin: center center; }
+
+  .card {
+    width: 1360px;
+    display: grid;
+    grid-template-columns: 600px 1fr;
+    background: #FFFFFF;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 40px 90px rgba(30,27,23,0.16), 0 2px 0 rgba(30,27,23,0.03);
+  }
+
+  /* ── Photo panel (left). Tasteful earthy brand panel, not a dev placeholder.
+        No stock imagery of people, given the First Nations context — swap in a
+        real Children's Ground photo when supplied. ───────────────────────── */
+  .photo { position: relative; min-height: 720px; overflow: hidden; background: #5E4A30; }
+  .photo .shot {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: center 35%;
+  }
+  .photo .scrim {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 180px;
+    background: linear-gradient(to top, rgba(20,17,12,0.55), transparent);
+  }
+  .photo .field {
+    position: absolute; left: 30px; bottom: 26px; z-index: 1;
+    font-family: 'JetBrains Mono', monospace; font-size: 17px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: rgba(255,255,255,0.92);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .photo .field::before {
+    content: ""; width: 7px; height: 7px; border-radius: 50%;
+    background: rgba(255,255,255,0.92);
+  }
+
+  /* ── Partner card content (right) ───────────────────────────────────────── */
+  .body { padding: 52px 56px; display: flex; flex-direction: column; }
+  .row {
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 17px; letter-spacing: 0.26em;
+    text-transform: uppercase; color: #8A8276;
+    display: inline-flex; align-items: center; gap: 11px;
+  }
+  .eyebrow::before {
+    content: ""; width: 9px; height: 9px; border-radius: 50%; background: #157852;
+  }
+  .row .logo { height: 56px; width: auto; object-fit: contain; }
+
+  .tag {
+    align-self: flex-start; margin-top: 34px;
+    font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: #157852;
+    background: rgba(21,120,82,0.09); border: 1px solid rgba(21,120,82,0.22);
+    padding: 8px 15px; border-radius: 999px;
+  }
+  .name {
+    margin: 18px 0 0; font-size: 50px; font-weight: 600;
+    letter-spacing: -0.02em; line-height: 1.04; color: #1E1B17;
+  }
+  .mission {
+    margin: 18px 0 0; font-size: 24px; line-height: 1.48; color: #5A554C;
+    max-width: 30ch;
+  }
+  .gift {
+    margin: 30px 0 0; padding-top: 28px; font-size: 24px; line-height: 1.5;
+    color: #1E1B17; border-top: 1px solid rgba(30,27,23,0.10);
+  }
+  .gift .em { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; color: #157852; }
+  .gift b { color: #157852; font-weight: 600; }
+
+  .foot {
+    margin-top: auto; padding-top: 40px;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  }
+  .choose {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: #157852; color: #F6F3EA; font-size: 22px; font-weight: 600;
+    padding: 16px 28px; border-radius: 999px; text-decoration: none;
+    box-shadow: 0 8px 22px rgba(21,120,82,0.28);
+  }
+  .choose svg { width: 17px; height: 17px; }
+  .wm { font-size: 23px; font-weight: 700; letter-spacing: -0.01em; }
+  .wm .g { color: #157852; }
+  .wm .k { color: #1E1B17; }
+
+  @media print {
+    @page { size: 1500px 880px; margin: 0; }
+    html, body { background: #fff; }
+    #stage { transform: none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="card">
+
+    <!-- PHOTO PANEL — Children's Ground's own programme photo (First Nations
+         educators gathering in Garramilla), from childrensground.org.au. Used
+         here to mock up how their card would look; confirm with them before any
+         public use. -->
+    <div class="photo">
+      <img class="shot" src="childrens-ground-photo.webp" alt="First Nations educators, Children's Ground">
+      <span class="scrim"></span>
+      <span class="field">In community</span>
+    </div>
+
+    <!-- PARTNER CARD CONTENT -->
+    <div class="body">
+      <div class="row">
+        <span class="eyebrow">Charity partner</span>
+        <img class="logo" src="childrens-ground-logo.png" alt="Children's Ground">
+      </div>
+
+      <span class="tag">First Nations-led</span>
+      <h3 class="name">Children's Ground</h3>
+      <p class="mission">First Nations-led learning, health and wellbeing,
+        designed and delivered with Aboriginal communities.</p>
+
+      <p class="gift">Every booked meeting sends a real <span class="em">gift</span>
+        of <b>$900 to $1,200</b> to Children's Ground.</p>
+
+      <div class="foot">
+        <a class="choose" href="#">Choose Children's Ground
+          <svg viewBox="0 0 12 12" fill="none">
+            <path d="M3 9 L9 3 M4.5 3 H9 V7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </a>
+        <span class="wm"><span class="k">The</span><span class="g">Good</span><span class="k">Intro</span></span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Scale the card to fit the window for easy on-screen review / screenshot.
+  function fit() {
+    var s = document.getElementById('stage');
+    var r = s.getBoundingClientRect();
+    var scale = Math.min(window.innerWidth / 1500, window.innerHeight / 880, 1);
+    s.style.transform = 'scale(' + scale + ')';
+  }
+  window.addEventListener('resize', fit); fit();
+</script>
+</body>
+</html>

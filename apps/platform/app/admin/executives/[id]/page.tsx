@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Badge } from "@thegoodintro/ui";
+import { Avatar, Badge } from "@thegoodintro/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
 import { ExecutiveForm } from "../executive-form";
@@ -13,6 +13,7 @@ import {
   setExecutiveStatusAction,
   sendExecutiveAccessLinkAction,
   clearExecutiveAccessAction,
+  openExecPortalAsAction,
 } from "../actions";
 
 export const metadata: Metadata = {
@@ -55,6 +56,7 @@ export default async function ExecutiveDetailPage({
         ← Executives
       </Link>
       <div className="mt-2 mb-1 flex items-center gap-3">
+        <Avatar name={exec.name} src={exec.photo_url ?? undefined} size={40} />
         <h1 className="text-[20px] font-semibold tracking-tight">{exec.name}</h1>
         {(() => {
           const { label, tone } = execStatusPill(exec.status as ExecStatusEnum);
@@ -122,6 +124,22 @@ export default async function ExecutiveDetailPage({
               >
                 Send access link
               </AccessActionForm>
+              <div className="border-t pt-3" style={{ borderColor: "var(--portal-line)" }}>
+                <p className="mb-2 text-xs" style={{ color: "var(--muted-foreground)" }}>
+                  Operate this executive&apos;s portal on their behalf. Everything you do is logged
+                  under your staff account.
+                </p>
+                <form action={openExecPortalAsAction}>
+                  <input type="hidden" name="id" value={exec.id as string} />
+                  <button
+                    type="submit"
+                    className="rounded-lg px-3 py-1.5 text-sm font-medium"
+                    style={{ background: "var(--portal-ink)", color: "var(--portal-page)" }}
+                  >
+                    Open portal as this executive →
+                  </button>
+                </form>
+              </div>
               {exec.auth_user_id ? (
                 <AccessActionForm
                   action={clearExecutiveAccessAction}

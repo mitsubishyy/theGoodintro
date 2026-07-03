@@ -2,7 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { requireStaff } from "@/lib/auth";
+import { cookies } from "next/headers";
+import { requireStaff, STAFF_ACTING_EXEC_COOKIE } from "@/lib/auth";
 import { getFlag, getFlagAuthoritative } from "@/lib/flags";
 import { logAudit } from "@/lib/audit";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -249,4 +250,61 @@ export async function clearEaAccessAction(
   });
   revalidatePath(`/admin/executives/${execId}`);
   return { ok: true };
+}
+
+/**
+ * Staff-only: operate the exec portal as a specific executive. Sets the httpOnly
+ * `staff_acting_exec_id` cookie (validated here against a live executive, and
+ * re-validated on every read in resolveExecPrincipalForUser) and sends the staff
+ * member to /exec. This is admin tooling, not an exec/EA-facing behaviour change,
+ * so it is deliberately unflagged. Actor attribution is unaffected: the principal
+ * stays `kind: "staff"`, so every action taken while acting-for still logs the
+ * staff member as the actor (with acting_for_executive_id set), exactly as the
+ * pre-existing demo/admin-acting path did.
+ */
+export async function openExecPortalAsAction(fd: FormData): Promise<void> {
+  const { staff, supabase } = await requireStaff();
+  const id = str(fd, "id");
+  if (!id) return;
+
+  // Validate against a LIVE executive before trusting the id into a cookie; an
+  // archived or unknown id is a no-op (never set an un-resolvable cookie).
+  const { data: exec } = await supabase
+    .from("executive")
+    .select("id")
+    .eq("id", id)
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (!exec) return;
+
+  const jar = await cookies();
+  jar.set(STAFF_ACTING_EXEC_COOKIE, id, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
+
+  await logAudit(supabase, staff.id, {
+    action: "executive.portal_opened_as",
+    targetType: "executive",
+    targetId: id,
+    actingForExecutiveId: id,
+  });
+
+  redirect("/exec");
+}
+
+/**
+ * Staff-only: stop acting as an executive. Clears the acting cookie and returns
+ * to that executive's admin detail page (parent route, not browser history). If
+ * the cookie is already gone, falls back to the executives list so Exit never
+ * lands on a broken /admin/executives/undefined.
+ */
+export async function exitActingAsExecAction(): Promise<void> {
+  await requireStaff();
+  const jar = await cookies();
+  const actingId = jar.get(STAFF_ACTING_EXEC_COOKIE)?.value;
+  jar.delete(STAFF_ACTING_EXEC_COOKIE);
+  redirect(actingId ? `/admin/executives/${actingId}` : "/admin/executives");
 }

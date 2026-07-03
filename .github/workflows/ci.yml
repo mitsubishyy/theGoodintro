@@ -11,7 +11,7 @@ name: ci
 on:
   pull_request:
   push:
-    branches: [main, platform/v2-foundation]
+    branches: [main, platform/v2-foundation, platform/v2-integration]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -40,6 +40,17 @@ jobs:
       - name: Start local Supabase (applies migrations + seed)
         run: supabase start
 
+      # These vars are consumed by the vitest suite via process.env. NOTE: the
+      # test task in turbo.json must DECLARE them (env / passThroughEnv) or
+      # Turbo 2.x strict env mode prunes them before vitest runs and every
+      # DB-backed test dies with "supabaseKey is required" — even though they
+      # are set here. See turbo.json's `test` task.
+      #
+      # XERO_TOKEN_ENC_KEY below is NOT a secret: it is a throwaway, publicly
+      # committed base64 of the ASCII string "theGoodintro-ci-test-enc-key-32b"
+      # (exactly 32 bytes, the size AES-256-GCM needs). The crypto unit tests
+      # assert isSecretEncryptionConfigured() === true, so CI must supply a
+      # well-formed key; real Xero tokens never touch CI.
       - name: Export local Supabase env for the build + tests
         run: |
           ENV_OUT="$(supabase status -o env)"
@@ -50,6 +61,7 @@ jobs:
             echo "SUPABASE_SERVICE_ROLE_KEY=$(get SECRET_KEY)"
             echo "EMAIL_TOKEN_SECRET=ci-local-not-a-secret"
             echo "NEXT_PUBLIC_APP_URL=http://localhost:3001"
+            echo "XERO_TOKEN_ENC_KEY=dGhlR29vZGludHJvLWNpLXRlc3QtZW5jLWtleS0zMmI="
           } >> "$GITHUB_ENV"
 
       # Scope: apps/platform + shared packages only. apps/web is the separately

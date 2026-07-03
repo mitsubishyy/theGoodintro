@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TGI x RSPCA — Slide 2 redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #14110c; }
+  body { font-family: 'Inter', sans-serif; display: grid; place-items: center; min-height: 100%; }
+
+  /* 1920x1080 stage, scaled to fit the window */
+  #stage { width: 1920px; height: 1080px; transform-origin: center center; box-shadow: 0 30px 100px rgba(0,0,0,0.4); }
+
+  @keyframes tgiPulse { 0%{transform:scale(1);opacity:.55} 70%{transform:scale(2.8);opacity:0} 100%{opacity:0} }
+
+  .slide {
+    width: 1920px; height: 1080px; background: #F1ECDF; color: #1E1B17;
+    padding: 80px 120px; display: flex; flex-direction: column;
+  }
+
+  /* top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; }
+  .gmark {
+    width: 70px; height: 70px; border-radius: 50%; background: #157852;
+    display: grid; place-items: center; color: #F1ECDF;
+    font-family: 'Fraunces', serif; font-weight: 600; font-size: 40px; line-height: 1;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 24px; letter-spacing: 0.34em;
+    text-transform: uppercase; color: #8A8276;
+  }
+  /* RSPCA logo placeholder — replace with the real logo image */
+  .rspca {
+    display: flex; align-items: center; gap: 14px;
+    font-weight: 700; font-size: 44px; letter-spacing: -0.01em; color: #1f9ad6;
+  }
+  .rspca .paw { width: 40px; height: 40px; border-radius: 50%;
+    background: #6aa84f; display: inline-block; }
+  .rspca-note { position: absolute; }
+
+  /* centred body block */
+  .body { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 40px; max-width: 1500px; }
+  h2 {
+    margin: 0; font-size: 66px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.12;
+  }
+  h2 .em { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; color: #157852; }
+  .rule { width: 64px; height: 3px; background: #157852; border: 0; margin: 4px 0; }
+  .payoff { margin: 0; font-size: 34px; line-height: 1.35; color: #5A554C; max-width: 1300px; }
+  .payoff b { color: #157852; font-weight: 600; }
+
+  /* wordmark colours in the headline */
+  .wm-the, .wm-intro { color: #1E1B17; }
+  .wm-good { color: #157852; }
+
+  @media print {
+    @page { size: 1920px 1080px; margin: 0; }
+    html, body { background: #fff; }
+    #stage { transform: none !important; box-shadow: none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="slide">
+
+    <div class="topbar">
+      <div class="gmark">G</div>
+      <div class="eyebrow">What we do</div>
+      <!-- Replace this whole block with the real RSPCA logo image -->
+      <div class="rspca"><span class="paw"></span>RSPCA</div>
+    </div>
+
+    <div class="body">
+      <h2><span class="wm-the">The</span><span class="wm-good">Good</span><span class="wm-intro">Intro</span> is an invite-only network where senior executives take a meeting with SaaS vendors. After every meeting, I'll donate a real <span class="em">gift</span> to a charity they choose.</h2>
+      <hr class="rule">
+      <p class="payoff">I have chosen <b>RSPCA</b> to be one of the charities available to choose from.</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function fit() {
+    var s = document.getElementById('stage');
+    var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    s.style.transform = 'scale(' + scale + ')';
+  }
+  window.addEventListener('resize', fit); fit();
+</script>
+</body>
+</html>

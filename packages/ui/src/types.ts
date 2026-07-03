@@ -17,6 +17,11 @@ export interface NavItem {
   icon: IconName;
   /** Renders an amber count badge on the right when > 0. */
   badgeCount?: number;
+  /** Deferred badge: when set (and the sidebar has a `badgeSource`), the count is
+   *  hydrated client-side after mount from that endpoint's JSON keyed by this
+   *  string, so the shell paints its stable nav without waiting on badge queries.
+   *  Falls back to `badgeCount` until the live value arrives. */
+  badgeKey?: string;
   /** Pre-payment / pre-vetting gate: shows a padlock at the END of the row;
    *  the item stays clickable and routes to the lockout page (UI_KIT_DESIGN_LOG
    *  "Reusable lockout page pattern"). Admin items never use this. */

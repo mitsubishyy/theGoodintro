@@ -15,6 +15,7 @@ import {
   type Tone,
 } from "@thegoodintro/ui";
 import { formatAud } from "@/lib/format";
+import { VendorUserPhotoCell } from "./_photo-cell";
 import {
   approveVendorAction,
   issueInvoiceAction,
@@ -69,6 +70,7 @@ export interface UserRow {
   email: string;
   role: "owner" | "member";
   status: "invited" | "active" | "removed";
+  photoUrl?: string;
 }
 
 export interface RequestSubRow {
@@ -131,6 +133,7 @@ export interface VendorDetailViewProps {
   vetting: VetState;
   activity: ActivityRow[];
   pendingRequestCount: number;
+  photoUploadEnabled: boolean;
 }
 
 function requestStatusBadge(s: RequestSubRow["status"]): { tone: Tone; label: string } {
@@ -287,7 +290,7 @@ function OverviewModule({ vendor, vetting }: { vendor: VendorDetailRow; vetting:
 
 // ── Users & Seats ───────────────────────────────────────────────────────────
 
-function UsersModule({ users }: { users: UserRow[] }) {
+function UsersModule({ users, photoUploadEnabled }: { users: UserRow[]; photoUploadEnabled: boolean }) {
   return (
     <>
       <ModuleHeader title="Users & seats" hint={`${users.length} user${users.length === 1 ? "" : "s"} on this vendor.`} />
@@ -313,7 +316,11 @@ function UsersModule({ users }: { users: UserRow[] }) {
               <tr key={u.id} style={{ borderTop: i === 0 ? "1px solid var(--portal-line)" : "1px solid var(--portal-line)" }}>
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <Avatar name={u.name} size={32} />
+                    {photoUploadEnabled ? (
+                      <VendorUserPhotoCell userId={u.id} name={u.name} initialUrl={u.photoUrl} />
+                    ) : (
+                      <Avatar name={u.name} src={u.photoUrl} size={32} />
+                    )}
                     <div className="min-w-0">
                       <div className="text-[13.5px] font-semibold truncate" style={{ color: "var(--portal-ink)" }}>
                         {u.name}
@@ -665,6 +672,7 @@ export function VendorDetailView({
   vetting,
   activity,
   pendingRequestCount,
+  photoUploadEnabled,
 }: VendorDetailViewProps) {
   const headerPill = vendorStatusPill(vendor.status);
 
@@ -697,7 +705,7 @@ export function VendorDetailView({
     {
       key: "users",
       label: "Users & seats",
-      content: <UsersModule users={users} />,
+      content: <UsersModule users={users} photoUploadEnabled={photoUploadEnabled} />,
     },
     {
       key: "requests",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Avatar,
@@ -98,6 +98,7 @@ export function ExecutivesList({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
   const activeCount =
     active.industry.length + active.title.length + active.location.length + active.status.length;
   const [barOpen, setBarOpen] = useState(activeCount > 0);
@@ -109,7 +110,11 @@ export function ExecutivesList({
     mutate(params);
     params.delete("page"); // any filter/sort/search change resets paging
     const qs = params.toString();
-    router.push(qs ? `${pathname}?${qs}` : pathname);
+    // Wrap the navigation in a transition so the results dim while the server
+    // re-renders (a same-route searchParam change does not trip loading.tsx).
+    startTransition(() => {
+      router.push(qs ? `${pathname}?${qs}` : pathname);
+    });
   };
 
   const toggleValue = (key: keyof typeof PILL_LABELS, value: string) =>
@@ -302,7 +307,11 @@ export function ExecutivesList({
         </div>
       )}
 
-      <div className="mt-3">
+      <div
+        className="mt-3"
+        style={{ opacity: isPending ? 0.55 : 1, transition: "opacity 150ms ease" }}
+        aria-busy={isPending || undefined}
+      >
         <DataTable<ExecListRow>
           density="vendor"
           columns={columns}

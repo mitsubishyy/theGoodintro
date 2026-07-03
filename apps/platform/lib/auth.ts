@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
@@ -12,6 +13,18 @@ import { getFlag, getFlagAuthoritative } from "@/lib/flags";
  * (can_access_executive) is the backstop regardless.
  */
 export const EA_PRINCIPAL_COOKIE = "tgi_ea_principal";
+
+/**
+ * The executive a STAFF member has chosen to operate the exec portal as (the
+ * admin "Open portal as this executive" button). Set httpOnly by
+ * openExecPortalAsAction, read by getExecPrincipal, cleared by
+ * exitActingAsExecAction. Honored ONLY inside the staff branch of
+ * resolveExecPrincipalForUser and always re-validated against the executive
+ * table — a non-staff caller's cookie is structurally ignored, and a
+ * forged/stale/archived id falls back to the demo executive. Never changes actor
+ * attribution: the principal stays `kind: "staff"` with the acting staff id.
+ */
+export const STAFF_ACTING_EXEC_COOKIE = "staff_acting_exec_id";
 
 type AalLevels = {
   currentLevel: string | null;
@@ -34,13 +47,20 @@ export function requiredMfaStep(aal: AalLevels): "challenge" | "enroll" | null {
   return aal.nextLevel === "aal2" ? "challenge" : "enroll";
 }
 
-/** The signed-in user plus their staff row (null if they are not staff). */
-export async function getStaff() {
+/**
+ * The signed-in user + their staff row, loaded once per request. Memoized with
+ * React `cache()` so the layout gate (`requireStaff`) and any page-level
+ * `getStaff()` in the same render share a single `getUser` + staff lookup
+ * instead of each doing its own round-trip. Per-request only; still runs as the
+ * signed-in user's client, so RLS is unchanged. No redirect here — callers
+ * decide what to do with a missing user/staff.
+ */
+const loadStaffSession = cache(async () => {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) return { supabase, user: null, staff: null };
 
   const { data: staff } = await supabase
     .from("staff")
@@ -49,11 +69,23 @@ export async function getStaff() {
     .is("deleted_at", null)
     .maybeSingle();
 
+  return { supabase, user, staff: staff ?? null };
+});
+
+/** The signed-in user plus their staff row (null if they are not staff). */
+export async function getStaff() {
+  const { user, staff } = await loadStaffSession();
+  if (!user) return null;
   return { user, staff };
 }
 
-/** The signed-in user plus their vendor membership + org (nulls if none). */
-export async function getVendor() {
+/**
+ * The signed-in user plus their vendor membership + org (nulls if none).
+ * Memoized per request: the vendor shell (`layout.tsx`) and the page it wraps
+ * both call this, so caching collapses the duplicate `getUser` + vendor_user
+ * lookup to one. Per-request only; RLS/session unchanged.
+ */
+export const getVendor = cache(async () => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -68,7 +100,7 @@ export async function getVendor() {
     .maybeSingle();
 
   return { user, vendorUser, supabase };
-}
+});
 
 /**
  * Gate a page to staff only. Redirects to /login if signed out, away if not
@@ -76,18 +108,8 @@ export async function getVendor() {
  * launch; enforcement flips on via the flag so staging can be tested first).
  */
 export async function requireStaff() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user, staff } = await loadStaffSession();
   if (!user) redirect("/login");
-
-  const { data: staff } = await supabase
-    .from("staff")
-    .select("*")
-    .eq("auth_user_id", user.id)
-    .is("deleted_at", null)
-    .maybeSingle();
   if (!staff) redirect("/login?error=not_staff");
 
   if (await getFlag("admin_2fa_required")) {
@@ -130,7 +152,7 @@ export interface ExecPrincipal {
 export async function resolveExecPrincipalForUser(
   supabase: SupabaseClient,
   user: User,
-  options: { execEaLoginEnabled: boolean; selectedExecutiveId?: string | null },
+  options: { execEaLoginEnabled: boolean; selectedExecutiveId?: string | null; actingExecutiveId?: string | null },
 ): Promise<ExecPrincipal | null> {
   const { data: staff } = await supabase
     .from("staff")
@@ -138,7 +160,23 @@ export async function resolveExecPrincipalForUser(
     .eq("auth_user_id", user.id)
     .is("deleted_at", null)
     .maybeSingle();
-  if (staff) return { supabase, user, kind: "staff", execId: null, staffId: staff.id as string };
+  if (staff) {
+    // Staff-acting-for: honor the acting cookie ONLY here (never for a non-staff
+    // caller), and only when it resolves to a live executive. A forged, stale, or
+    // archived id resolves to null → the caller falls back to the demo executive.
+    // kind stays "staff" (+ staffId) so actor attribution is unchanged.
+    let execId: string | null = null;
+    if (options.actingExecutiveId) {
+      const { data: acting } = await supabase
+        .from("executive")
+        .select("id")
+        .eq("id", options.actingExecutiveId)
+        .is("deleted_at", null)
+        .maybeSingle();
+      execId = (acting?.id as string) ?? null;
+    }
+    return { supabase, user, kind: "staff", execId, staffId: staff.id as string };
+  }
 
   if (!options.execEaLoginEnabled) return null;
 
@@ -188,10 +226,12 @@ export async function getExecPrincipal(): Promise<ExecPrincipal | null> {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
+  const jar = await cookies();
   return resolveExecPrincipalForUser(supabase, user, {
     // Authoritative read: the same kill switch the sign-in route and the RPC honor.
     execEaLoginEnabled: await getFlagAuthoritative("exec_ea_login"),
-    selectedExecutiveId: (await cookies()).get(EA_PRINCIPAL_COOKIE)?.value,
+    selectedExecutiveId: jar.get(EA_PRINCIPAL_COOKIE)?.value,
+    actingExecutiveId: jar.get(STAFF_ACTING_EXEC_COOKIE)?.value,
   });
 }
 

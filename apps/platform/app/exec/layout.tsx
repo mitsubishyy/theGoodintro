@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { requireExecOrEa } from "@/lib/auth";
-import { resolveEaMode } from "./data";
+import { resolveEaMode, resolveActingAsExec } from "./data";
 import { EaModeProvider } from "./_components/ea-mode";
+import { ActingAsProvider } from "./_components/acting-as";
 
 /**
  * Auth gate for the ENTIRE exec portal. Unlike /admin and /vendor, /exec had no
@@ -21,6 +22,10 @@ import { EaModeProvider } from "./_components/ea-mode";
  */
 export default async function ExecLayout({ children }: { children: ReactNode }) {
   await requireExecOrEa();
-  const eaMode = await resolveEaMode();
-  return <EaModeProvider eaMode={eaMode}>{children}</EaModeProvider>;
+  const [eaMode, actingAs] = await Promise.all([resolveEaMode(), resolveActingAsExec()]);
+  return (
+    <ActingAsProvider actingAs={actingAs}>
+      <EaModeProvider eaMode={eaMode}>{children}</EaModeProvider>
+    </ActingAsProvider>
+  );
 }

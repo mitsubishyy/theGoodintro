@@ -51,3 +51,38 @@ body {
   outline: 2px solid var(--portal-emerald);
   outline-offset: 2px;
 }
+
+/* Photo crop modal — zoom slider thumb. Range inputs cannot be styled inline
+   (pseudo-elements need a stylesheet), so the one bespoke control lives here:
+   an antique-gold thumb on a hairline track, matching the portal accent.
+   Component: app/_components/photo-crop-modal.tsx */
+.tgi-crop-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 9999px;
+  background: var(--portal-line);
+  cursor: pointer;
+}
+.tgi-crop-slider:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.tgi-crop-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: var(--portal-amber);
+  border: 2px solid var(--portal-card-reading);
+  box-shadow: 0 1px 3px color-mix(in oklch, var(--portal-ink) 30%, transparent);
+  cursor: grab;
+}
+.tgi-crop-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: var(--portal-amber);
+  border: 2px solid var(--portal-card-reading);
+  cursor: grab;
+}

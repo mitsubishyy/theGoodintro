@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStaff, getExecPrincipal, EA_PRINCIPAL_COOKIE } from "@/lib/auth";
 import { getFlag, getFlagAuthoritative } from "@/lib/flags";
@@ -63,19 +62,23 @@ function clean(v: unknown, max = 2000): string | null {
 
 async function updateExecProfile(updates: Record<string, unknown>, auditAction: string): Promise<ExecActionState> {
   if (!(await getFlag("exec_dashboard"))) return { error: "Executive portal is not enabled." };
-  const supabase = await createClient();
-  // Explicit staff gate — authorization does not rest on RLS alone, and the
-  // audit row is then guaranteed (not a silent `if (staff)` skip). This is the
-  // sanctioned staff-acting-for-exec path; the real EA/exec path will reuse it.
-  const staff = (await getStaff())?.staff;
-  if (!staff) return { error: "Not authorized." };
-  const execId = await resolveDemoExecutiveId(supabase);
+  // Explicit staff gate — authorization does not rest on RLS alone, and the audit
+  // row is then guaranteed (not a silent `if (staff)` skip). This is the sanctioned
+  // staff-acting-for-exec path; the real EA/exec path will reuse it. Resolve the
+  // TARGET exec through the principal so a staff member operating a specific exec's
+  // portal (staff_acting_exec_id) writes to THAT exec, not the seeded demo — the
+  // same `principal.execId ?? demo` rule as the charity actions. Actor attribution
+  // stays staff (audited as staff acting for the exec).
+  const principal = await getExecPrincipal();
+  if (!principal || principal.kind !== "staff" || !principal.staffId) return { error: "Not authorized." };
+  const supabase = principal.supabase;
+  const execId = principal.execId ?? (await resolveDemoExecutiveId(supabase));
   if (!execId) return { error: "No executive found." };
 
   const { error } = await supabase.from("executive").update(updates).eq("id", execId);
   if (error) return { error: error.message };
 
-  await logAudit(supabase, staff.id, { action: auditAction, targetType: "executive", targetId: execId, actingForExecutiveId: execId, metadata: { fields: Object.keys(updates) } });
+  await logAudit(supabase, principal.staffId, { action: auditAction, targetType: "executive", targetId: execId, actingForExecutiveId: execId, metadata: { fields: Object.keys(updates) } });
   revalidatePath("/exec/profile");
   revalidatePath("/exec");
   return { ok: true };
@@ -149,10 +152,14 @@ export async function setRequestPauseAction(paused: boolean): Promise<ExecAction
   // exec or skip onboarding by force-writing 'active'. Guard the transition (the
   // same edge the admin status machine encodes), then delegate the write.
   if (!(await getFlag("exec_dashboard"))) return { error: "Executive portal is not enabled." };
-  const supabase = await createClient();
-  // Establish staff identity before any executive read (action-level consistency).
-  if (!(await getStaff())?.staff) return { error: "Not authorized." };
-  const execId = await resolveDemoExecutiveId(supabase);
+  // Resolve the acting principal (staff-acting-for-exec) and its target exec with
+  // the same `principal.execId ?? demo` rule updateExecProfile uses, so the status
+  // read and the write below both act on the exec the staff member is operating
+  // (not the seeded demo). Establishes staff identity before any executive read.
+  const principal = await getExecPrincipal();
+  if (!principal || principal.kind !== "staff" || !principal.staffId) return { error: "Not authorized." };
+  const supabase = principal.supabase;
+  const execId = principal.execId ?? (await resolveDemoExecutiveId(supabase));
   if (!execId) return { error: "No executive found." };
   const { data: row } = await supabase.from("executive").select("status").eq("id", execId).maybeSingle();
   const current = row?.status as string | undefined;
