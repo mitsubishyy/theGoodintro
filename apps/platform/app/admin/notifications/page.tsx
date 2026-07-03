@@ -4,17 +4,17 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getFlag } from "@/lib/flags";
 import { ageShort } from "@/lib/format";
-import { describeStaffNotification, type StaffNotificationContext } from "./_display";
+import {
+  describeStaffNotification,
+  FEED_LIMIT,
+  isFeedTruncated,
+  type StaffNotificationContext,
+} from "./_display";
 
 export const metadata: Metadata = {
   title: "Activity — TheGoodIntro admin",
   robots: { index: false, follow: false },
 };
-
-/** Hard cap on rows fetched + shown. The feed is an unbounded append-only log, so
- *  it must be bounded here; older events beyond this are not listed (disclosed in
- *  the footer when the cap is hit). No pagination in v1 (read-only, smallest useful). */
-const FEED_LIMIT = 50;
 
 function one<T>(v: unknown): T | undefined {
   return (Array.isArray(v) ? v[0] : v) as T | undefined;
@@ -42,16 +42,19 @@ export default async function AdminNotificationsPage() {
     .eq("channel", "in_app")
     .eq("recipient_type", "staff")
     .order("created_at", { ascending: false })
-    .limit(FEED_LIMIT);
-  // Truncation is judged on rows FETCHED (hit the DB cap), not rows shown: an
-  // unmapped staff event drops during mapping but still counts against the cap.
-  const truncated = (rows?.length ?? 0) >= FEED_LIMIT;
+    .limit(FEED_LIMIT + 1);
+  // Fetch one MORE than we show purely to detect truncation honestly: the footer
+  // must only claim older events exist when they actually do. Exactly FEED_LIMIT
+  // total events comes back as FEED_LIMIT rows here (the +1 finds nothing), so
+  // isFeedTruncated is false and no false "older activity" note appears.
+  const truncated = isFeedTruncated(rows?.length ?? 0);
+  const visible = (rows ?? []).slice(0, FEED_LIMIT);
 
   // B4 rows (invoice voided / reconcile drift) carry no request_id; the vendor
-  // is on payload.vendor_id. Batch-resolve those names in one query.
+  // is on payload.vendor_id. Batch-resolve those names in one query (visible only).
   const payloadVendorIds = Array.from(
     new Set(
-      (rows ?? [])
+      visible
         .map((r) => (r.payload as { vendor_id?: string } | null)?.vendor_id)
         .filter((v): v is string => typeof v === "string"),
     ),
@@ -65,7 +68,7 @@ export default async function AdminNotificationsPage() {
     for (const v of vendors ?? []) vendorNameById.set(v.id as string, v.name as string);
   }
 
-  const items = (rows ?? [])
+  const items = visible
     .map((r) => {
       const req = one<{ vendor: unknown; executive: unknown }>(r.request);
       const payload = (r.payload ?? {}) as {

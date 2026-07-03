@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import {
   describeStaffNotification,
+  isFeedTruncated,
+  FEED_LIMIT,
   type StaffNotificationContext,
 } from "@/app/admin/notifications/_display";
 
@@ -109,5 +111,20 @@ describe("describeStaffNotification", () => {
     expect(
       describeStaffNotification("B4_reconcile_drift", { ...base, credits: 2 })!.detail,
     ).toBe("Payment webhook missed · Atelier Ridgeway · 2 credits unlocked");
+  });
+});
+
+describe("isFeedTruncated", () => {
+  // The page fetches FEED_LIMIT + 1 and passes the FETCHED count here. Truncation
+  // is true only when that extra row came back, so exactly FEED_LIMIT total events
+  // must NOT be flagged as truncated (the honesty fix).
+  it("is false when fewer than or exactly FEED_LIMIT events exist", () => {
+    expect(isFeedTruncated(0)).toBe(false);
+    expect(isFeedTruncated(FEED_LIMIT - 1)).toBe(false);
+    expect(isFeedTruncated(FEED_LIMIT)).toBe(false); // exactly full, nothing older
+  });
+
+  it("is true only once the extra fetched row proves older events exist", () => {
+    expect(isFeedTruncated(FEED_LIMIT + 1)).toBe(true);
   });
 });

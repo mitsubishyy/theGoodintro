@@ -1,6 +1,26 @@
 import { formatAud } from "@/lib/format";
 
 /**
+ * Hard cap on how many staff events the Activity log shows. The feed is an
+ * unbounded append-only log, so it must be bounded; older events beyond this are
+ * not listed. No pagination in v1 (read-only, smallest useful).
+ *
+ * Truncation honesty: the page fetches FEED_LIMIT + 1 rows and shows at most
+ * FEED_LIMIT. The footer only claims older events exist when that extra row came
+ * back, so exactly FEED_LIMIT total events shows no false "older activity" note.
+ * See isFeedTruncated (fed the FETCHED count, before display mapping drops any
+ * unhandled rows).
+ */
+export const FEED_LIMIT = 50;
+
+/** True when the page fetched more than FEED_LIMIT rows, i.e. at least one older
+ *  event exists beyond the window. `fetchedCount` is the raw row count from the
+ *  FEED_LIMIT + 1 query, not the mapped/shown count. */
+export function isFeedTruncated(fetchedCount: number): boolean {
+  return fetchedCount > FEED_LIMIT;
+}
+
+/**
  * Display mapping for the staff ACTIVITY LOG (/admin/notifications). This surface
  * is an append-only log of staff-directed events, NOT a to-do list: the
  * notification table has no read-state, so rows never clear, and framing them as
