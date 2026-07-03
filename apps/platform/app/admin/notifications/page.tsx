@@ -7,21 +7,28 @@ import { ageShort } from "@/lib/format";
 import { describeStaffNotification, type StaffNotificationContext } from "./_display";
 
 export const metadata: Metadata = {
-  title: "Notifications — TheGoodIntro admin",
+  title: "Activity — TheGoodIntro admin",
   robots: { index: false, follow: false },
 };
+
+/** Hard cap on rows fetched + shown. The feed is an unbounded append-only log, so
+ *  it must be bounded here; older events beyond this are not listed (disclosed in
+ *  the footer when the cap is hit). No pagination in v1 (read-only, smallest useful). */
+const FEED_LIMIT = 50;
 
 function one<T>(v: unknown): T | undefined {
   return (Array.isArray(v) ? v[0] : v) as T | undefined;
 }
 
 /**
- * Read-only staff notifications feed: the first renderer for the queued
+ * Read-only staff ACTIVITY LOG: the first renderer for the queued
  * channel='in_app', recipient_type='staff' rows the loop has been accumulating
- * with nowhere to show them. No mutations, no mark-read (the notification table
- * has no read-state column, DEC noted 2026-07-02), no new workflow actions — each
- * row just links to the relevant admin parent route. Flag-gated
+ * with nowhere to show them. Framed as a log, not a to-do list: the notification
+ * table has no read-state column (DEC noted 2026-07-02), so rows never clear, and
+ * calling them tasks would be dishonest. No mutations, no mark-read, no new
+ * workflow actions. Each row just links to the related admin record. Flag-gated
  * (admin_notifications, OFF by default); the route 404s until Issy enables it.
+ * The route path stays /admin/notifications; the surface presents as "Activity".
  */
 export default async function AdminNotificationsPage() {
   if (!(await getFlag("admin_notifications"))) notFound();
@@ -35,7 +42,10 @@ export default async function AdminNotificationsPage() {
     .eq("channel", "in_app")
     .eq("recipient_type", "staff")
     .order("created_at", { ascending: false })
-    .limit(50);
+    .limit(FEED_LIMIT);
+  // Truncation is judged on rows FETCHED (hit the DB cap), not rows shown: an
+  // unmapped staff event drops during mapping but still counts against the cap.
+  const truncated = (rows?.length ?? 0) >= FEED_LIMIT;
 
   // B4 rows (invoice voided / reconcile drift) carry no request_id; the vendor
   // is on payload.vendor_id. Batch-resolve those names in one query.
@@ -81,10 +91,10 @@ export default async function AdminNotificationsPage() {
 
   return (
     <div className="max-w-3xl px-8 py-6">
-      <h1 className="text-[20px] font-semibold tracking-tight">Notifications</h1>
+      <h1 className="text-[20px] font-semibold tracking-tight">Activity</h1>
       <p className="mt-1 mb-6 text-sm" style={{ color: "var(--muted-foreground)" }}>
-        Staff tasks and alerts from the booking loop. Read-only; manual follow-ups
-        are marked with a red dot.
+        A running log of staff events from the booking loop, newest first.
+        Read-only. Items worth a closer look are flagged in red.
       </p>
 
       {items.length === 0 ? (
@@ -92,7 +102,8 @@ export default async function AdminNotificationsPage() {
           className="rounded-xl border px-5 py-10 text-center text-sm"
           style={{ borderColor: "var(--portal-line)", color: "var(--muted-foreground)" }}
         >
-          Nothing here yet. New staff tasks will appear as the loop runs.
+          No activity yet. Staff events from the booking loop will appear here as
+          they happen.
         </div>
       ) : (
         <div
@@ -111,7 +122,7 @@ export default async function AdminNotificationsPage() {
                 <span
                   className="mt-1.5 size-2 shrink-0 rounded-full"
                   style={{
-                    background: it.manual ? "oklch(0.55 0.18 25)" : "var(--portal-amber)",
+                    background: it.alert ? "oklch(0.55 0.18 25)" : "var(--portal-amber)",
                   }}
                 />
                 <div className="min-w-0 flex-1">
@@ -136,6 +147,15 @@ export default async function AdminNotificationsPage() {
             );
           })}
         </div>
+      )}
+
+      {truncated && (
+        <p
+          className="mt-3 text-[12px]"
+          style={{ color: "var(--muted-foreground)" }}
+        >
+          Showing the {FEED_LIMIT} most recent events. Older activity is not listed.
+        </p>
       )}
     </div>
   );
