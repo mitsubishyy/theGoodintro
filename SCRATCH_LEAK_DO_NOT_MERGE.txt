@@ -1,0 +1,6 @@
+Throwaway file to prove the gitleaks secret-scan gate catches leaks.
+All values below are FABRICATED (never real credentials).
+
+SUPABASE_SERVICE_ROLE_KEY=sb_secret_9fKq2Xr7wLmA0bTnPzYc4dHvGjE1sUoI
+RESEND_API_KEY=re_ABCdef1234567890ghIJKLmnop
+XERO_CLIENT_SECRET=Zx9Qm2Wk7Lp4Rt8Yb1Nc6Vf3Hj5Dg0Ss2Aa4Bb6Cc8Dd
