@@ -6,9 +6,8 @@ import {
   ComparisonRow,
   Faq,
   ClosingCta,
-  SecondaryCta,
 } from "../_components/ui";
-import { LogoMarquee } from "../_components/LogoMarquee";
+import CharityMarqueeSection from "../_components/home/charity-marquee-section";
 import {
   IconStethoscope,
   IconBook,
@@ -20,11 +19,7 @@ import {
   IconNetwork,
   IconGift,
 } from "../_components/icons";
-import {
-  DGR_CHARITY_EXAMPLES,
-  ACNC_REGISTER_URL,
-  ABN_LOOKUP_URL,
-} from "@/lib/config";
+import { ACNC_REGISTER_URL, ABN_LOOKUP_URL } from "@/lib/config";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
@@ -355,26 +350,8 @@ export default function Giving() {
         </div>
       </section>
 
-      {/* ── Example charities marquee ────────────────────────────── */}
-      <section style={{ background: "var(--paper-white)" }}>
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 md:py-24">
-          <p className="text-center text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground mb-10">
-            Examples of DGR-endorsed Australian charities
-          </p>
-          <LogoMarquee
-            items={DGR_CHARITY_EXAMPLES}
-            ariaLabel="Example DGR-endorsed Australian charities"
-          />
-          <p className="mt-10 text-center text-xs text-muted-foreground italic max-w-2xl mx-auto">
-            The executive chooses any DGR-endorsed Australian charity.
-          </p>
-          <div className="mt-10 flex justify-center">
-            <SecondaryCta href="/charities">
-              View all charities available here
-            </SecondaryCta>
-          </div>
-        </div>
-      </section>
+      {/* ── Where your gift can go (charity band) ────────────────── */}
+      <CharityMarqueeSection />
 
       {/* ── Verify it yourself ───────────────────────────────────── */}
       <section
