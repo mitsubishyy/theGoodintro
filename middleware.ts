@@ -17,7 +17,7 @@ import { NextResponse, type NextRequest } from "next/server";
 // PREVIEW_TOKEN env var to make it private.
 // ============================================================================
 
-const WALL_DEFAULT = true;
+const WALL_DEFAULT = false;
 
 function wallIsUp(): boolean {
   if (process.env.COMING_SOON === "true") return true;
